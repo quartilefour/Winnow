@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # GFN
 Gene Function Navigation Tool
 
@@ -27,3 +28,6 @@ gfn
  * gfnui/models.py - Implements data models
 
 
+=======
+# GFN
+>>>>>>> b299300190cbdfbe5ed32b1ac7541d5563c85597
