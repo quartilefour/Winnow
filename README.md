@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # GFN
 Gene Function Navigation Tool
 
@@ -30,4 +29,3 @@ gfn
 
 =======
 # GFN
->>>>>>> b299300190cbdfbe5ed32b1ac7541d5563c85597
