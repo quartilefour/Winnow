@@ -11,14 +11,19 @@ Placeholders:
  
 ### Python Virtual Environment 
 For local development, non-Docker
-
 ```shell script
 python -m venv gfn_venv
-
 ```
- 
-### Django Global Project
+
+### Python Requirements
+```shell script
+pip install -r requirements.txt
+```
+## Django Global Project
 gfn
 
-#### Django/React UI Application
-gfnui
+### Django/React UI Application
+ * gfnui
+ * gfnui/models.py - Implements data models
+
+
