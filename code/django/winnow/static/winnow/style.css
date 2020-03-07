@@ -1,0 +1,110 @@
+a {
+    color: #050000;
+    font-family: sans-serif;
+
+}
+
+a:link {
+    color: #020000;
+}
+
+body {
+    font-family: sans-serif;
+}
+
+.container-note {
+    border: 1px solid #dedede;
+    background-color: #f1f1f1;
+    border-radius: 5px;
+    padding: 25px;
+    margin: 10px 0;
+}
+
+.darker-note {
+    border-color: #ccc;
+    background-color: #ddd;
+}
+
+.time-right {
+    float: right;
+    color: #aaa;
+}
+
+.author-left {
+    float: left;
+    color: black;
+}
+
+input[type=text], input[type=password], input[type=number] {
+    width: 100%;
+    padding: 12px 20px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.custom-file {
+    width: 100%;
+    margin: 8px 0;
+}
+
+.delete-item {
+    margin: 8px 0;
+    horiz-align: center;
+}
+
+.linked_customer {
+    width: 100%;
+    padding: 12px 20px;
+    height: 43px;
+    margin: 8px 0;
+    display: inline-block;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+.div-custom-file {
+    width: 100%;
+    height: 100%;
+    padding: 0px 0px;
+    margin: 0px 0;
+}
+
+.div-rcorners {
+    border-radius: 25px;
+    background: #ada204;
+    padding: 20px;
+    width: 300px;
+    height: 170px;
+    margin: 10px;
+    vertical-align: text-top;
+    horiz-align: center;
+}
+
+.customizeitem {
+    background: #2cad0e;
+    horiz-align: left;
+    max-width: 100px;
+}
+
+.danger {
+    background-color: #f44336;
+}
+
+.addtocart {
+    background: #a8a1ad;
+    horiz-align: left;
+    max-width: 100px;
+}
+
+#topheader .navbar-nav li > a {
+    text-transform: capitalize;
+    color: #333;
+    transition: background-color .2s, color .2s;
+}
+
+#topheader .navbar-nav li.active > a {
+    background-color: #333;
+    color: #fff;
+}

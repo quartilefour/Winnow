@@ -1,0 +1,27 @@
+version: "3.7"
+services:
+  db:
+    build:
+      context: ./      
+      dockerfile: ./deploy/local/sql/Dockerfile
+    ports:
+      - 5432:5432
+    volumes:
+      - ./postgres-data:/var/lib/postgresql/data
+  adminer:
+    build:
+      context: ./
+      dockerfile: ./deploy/local/adminer/Dockerfile
+    depends_on:
+      - db
+    ports:
+      - 8090:8080
+  webapp:
+    build:
+      context: ./
+      dockerfile: ./deploy/local/webapp/Dockerfile
+    depends_on:
+      - db
+    command: ["/wait-for-it.sh", "db:5432", "--timeout=120", "--strict","--", "/code/start-server.sh"]
+    ports:
+      - 8000:8000

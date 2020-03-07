@@ -13,10 +13,18 @@ Including another URLconf
     1. Import the include() function: from django.urls import include, path
     2. Add a URL to urlpatterns:  path('blog/', include('blog.urls'))
 """
+from django.conf.urls import url
 from django.contrib import admin
-from django.urls import include, path
+from winnow import views
+from django.urls import path
 
 urlpatterns = [
-    path('winnow/', include('winnow.urls')),
     path('admin/', admin.site.urls),
+    path('', views.index, name="index"),
+    # url for logging into the system
+    path("login", views.login_view, name="login"),
+    path("register_account", views.new_user_register_view, name="register_account"),
+    # url for registerig a user
+    path("register", views.register_view, name="register"),
+    
 ]

@@ -25,7 +25,7 @@ SECRET_KEY = 'f@+*kj03apu898n#egi1-2u3=g(#80)!1!fv%z4u_47^*-lfl2'
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ['*']
 
 
 # Application definition
@@ -76,8 +76,12 @@ WSGI_APPLICATION = 'gfn.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
+        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'NAME': 'gfn',
+        'USER': 'admin',
+        'PASSWORD': 'test',
+        'HOST': 'db',
+        'PORT': '5432'
     }
 }
 
@@ -116,6 +120,6 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/2.2/howto/static-files/
+# https://docs.djangoproject.com/en/1.11/howto/static-files/
 
 STATIC_URL = '/static/'
