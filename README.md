@@ -7,9 +7,9 @@ Gene Function Navigation Tool
  To configure the system to start on your local machine, make sure you have docker agent running on your laptop. Local setup is orchestrated using doker-compose(https://docs.docker.com/compose/gettingstarted/).
  
  Environment consists of 3 containers.
- * postgres container as db,
- * adminer container to view the contents of the db.
- * webapp container that runs the django app.
+ * postgres container as db running on port 5432.
+ * adminer container to view the contents of the db. The container is running adminer UI at http://127.0.0.1:8090
+ * webapp container that runs the django app. The Django app can be accessed in UI at http://127.0.0.1:8000
  
  To start all the containers we first need to build them. (All the docker-compose commands should be run from the directory which has docker-compose.yml file) To build the 3 containers run the below command, it will take a few minutes the first time this command is run as it has to download a bunch of dependent images.
  
@@ -51,6 +51,10 @@ For local development, non-Docker
 ```shell script
 python -m venv gfn_venv
 ```
+Recommendation is still to run the DB in the container. To connect to the DB running in the container, add the following entry in the `/etc/hosts` file
+
+`127.0.0.1	db`
+
 #### Python Requirements
 ```shell script
 pip install -r requirements.txt
