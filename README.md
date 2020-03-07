@@ -1,31 +1,47 @@
-# GFN
+# GFN (Winnow)
 Gene Function Navigation Tool
 
 ## Project Structure
-Python >= 3.6
 
 ### Docker Setup
-Placeholders:
  * Dockerfile
  * docker-compose.yml
  
-### Python Virtual Environment 
+## Code Organization
+* django/ - Django backend
+* ingest/ - Data ingest and compute
+* winnow-ui/ - ReactJS front end
+
+### Django Application
+ ```
+django
+├── gfn (django project settings)
+├── manage.py
+├── requirements.txt
+└── winnow (django backend application)
+    ├── admin.py
+    ├── apps.py
+    ├── migrations (database migrations)
+    ├── models.py  (data models)
+    ├── tests      (test suite)
+    └── views.py
+```
+#### Python Virtual Environment 
 For local development, non-Docker
 ```shell script
 python -m venv gfn_venv
 ```
-
-### Python Requirements
+#### Python Requirements
 ```shell script
 pip install -r requirements.txt
 ```
-## Django Global Project
-gfn
-
-### Django/React UI Application
- * gfnui
- * gfnui/models.py - Implements data models
 
 
-=======
-# GFN
+### ReactJS UI
+```
+winnow-ui
+├── package.json
+├── package-lock.json
+├── public
+└── src
+```
