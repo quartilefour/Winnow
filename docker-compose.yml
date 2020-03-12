@@ -22,6 +22,8 @@ services:
       dockerfile: ./deploy/local/webapp/Dockerfile
     depends_on:
       - db
-    command: ["/wait-for-it.sh", "db:5432", "--timeout=120", "--strict","--", "/code/start-server.sh"]
+    command: ["/wait-for-it.sh", "db:5432", "--timeout=120", "--strict","--", "catalina.sh","run"]
     ports:
-      - 8000:8000
+      - 8080:8080
+    volumes:
+      - ./test-data:/data
