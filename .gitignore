@@ -142,3 +142,5 @@ dmypy.json
 # Java
 code/winnow/build
 code/winnow/.gradle
+
+code/winnow-ui/node_modules/
