@@ -5,16 +5,8 @@
  */
 package com.cscie599.gfn.entities;
 
+import javax.persistence.*;
 import java.io.Serializable;
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
 
 /**
  *
@@ -52,7 +44,7 @@ public class Address implements Serializable {
     private String country;
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false, insertable = false, updatable = false)
     @OneToOne(optional = false)
-    private Users users;
+    private User user;
 
     public Address() {
     }
@@ -117,12 +109,12 @@ public class Address implements Serializable {
         this.country = country;
     }
 
-    public Users getUsers() {
-        return users;
+    public User getUser() {
+        return user;
     }
 
-    public void setUsers(Users users) {
-        this.users = users;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override
