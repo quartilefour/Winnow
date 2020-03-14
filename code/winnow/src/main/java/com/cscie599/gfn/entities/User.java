@@ -28,16 +28,16 @@ import javax.persistence.TemporalType;
  * @author bhanotp
  */
 @Entity
-@Table(name = "users")
+@Table(name = "user")
 @NamedQueries({
-    @NamedQuery(name = "Users.findAll", query = "SELECT u FROM Users u"),
-    @NamedQuery(name = "Users.findByUserId", query = "SELECT u FROM Users u WHERE u.userId = :userId"),
-    @NamedQuery(name = "Users.findByUserEmail", query = "SELECT u FROM Users u WHERE u.userEmail = :userEmail"),
-    @NamedQuery(name = "Users.findByFirstName", query = "SELECT u FROM Users u WHERE u.firstName = :firstName"),
-    @NamedQuery(name = "Users.findByLastName", query = "SELECT u FROM Users u WHERE u.lastName = :lastName"),
-    @NamedQuery(name = "Users.findByCreatedAt", query = "SELECT u FROM Users u WHERE u.createdAt = :createdAt"),
-    @NamedQuery(name = "Users.findByUpdatedAt", query = "SELECT u FROM Users u WHERE u.updatedAt = :updatedAt")})
-public class Users implements Serializable {
+    @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
+    @NamedQuery(name = "User.findByUserId", query = "SELECT u FROM User u WHERE u.userId = :userId"),
+    @NamedQuery(name = "User.findByUserEmail", query = "SELECT u FROM User u WHERE u.userEmail = :userEmail"),
+    @NamedQuery(name = "User.findByFirstName", query = "SELECT u FROM User u WHERE u.firstName = :firstName"),
+    @NamedQuery(name = "User.findByLastName", query = "SELECT u FROM User u WHERE u.lastName = :lastName"),
+    @NamedQuery(name = "User.findByCreatedAt", query = "SELECT u FROM User u WHERE u.createdAt = :createdAt"),
+    @NamedQuery(name = "User.findByUpdatedAt", query = "SELECT u FROM User u WHERE u.updatedAt = :updatedAt")})
+public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -45,8 +45,10 @@ public class Users implements Serializable {
     @Basic(optional = false)
     @Column(name = "user_id", nullable = false)
     private Integer userId;
-    @Column(name = "user_email", length = 100)
+    @Column(name = "user_email", length = 254)
     private String userEmail;
+    @Column(name = "user_password", length = 512)
+    private String userPassword;
     @Column(name = "first_name", length = 40)
     private String firstName;
     @Column(name = "last_name", length = 40)
@@ -59,19 +61,22 @@ public class Users implements Serializable {
     private Date updatedAt;
     @OneToMany(mappedBy = "sharedBy")
     private Collection<UserSearchSharing> userSearchSharingCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Collection<UserSearchSharing> userSearchSharingCollection1;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "users")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     private Address address;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Collection<UserTeam> userTeamCollection;
     @OneToMany(mappedBy = "createdBy")
     private Collection<Search> searchCollection;
+    @ManyToMany
+    private Set<Role> roles;
 
-    public Users() {
+
+    public User() {
     }
 
-    public Users(Integer userId) {
+    public User(Integer userId) {
         this.userId = userId;
     }
 
@@ -161,6 +166,14 @@ public class Users implements Serializable {
 
     public void setSearchCollection(Collection<Search> searchCollection) {
         this.searchCollection = searchCollection;
+    }
+
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
     }
 
     @Override
