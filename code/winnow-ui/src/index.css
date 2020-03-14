@@ -11,3 +11,23 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
+
+.tab-container {
+  margin: 5em 5em 0 5em;
+}
+
+.tab-pane {
+}
+
+.tab-content {
+  border-radius: 0 4px 4px 0;
+  border-top: 1px solid #ddd;
+  border-right: 1px solid #ddd;
+  border-bottom: 1px solid #ddd;
+  padding: 10px;
+}
+
+.nav-tabs {
+  margin-right: 0;
+    border-right: 0;
+}

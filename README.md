@@ -59,5 +59,12 @@ winnow-ui
 └── src
 ```
 
+#### Run UI locally
+```shell script
+cd code/winnow-ui
+nmp install
+nmp start
+```
+
 
 ### Production Setup ###
