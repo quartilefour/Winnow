@@ -8,27 +8,29 @@ import java.util.Set;
 public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @Column(name = "role_id", nullable = false)
+    private Long roleId;
 
-    private String name;
+    @Column(name = "role_name", length = 40)
+    private String roleName;
 
     @ManyToMany(mappedBy = "roles")
     private Set<User> users;
 
-    public Long getId() {
-        return id;
+    public Long getRoleId() {
+        return roleId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setRoleId(Long id) {
+        this.roleId = id;
     }
 
     public String getName() {
-        return name;
+        return roleName;
     }
 
     public void setName(String name) {
-        this.name = name;
+        this.roleName = name;
     }
 
     public Set<User> getUsers() {

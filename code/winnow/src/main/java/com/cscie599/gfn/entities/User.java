@@ -37,6 +37,8 @@ public class User implements Serializable {
     private String userEmail;
     @Column(name = "user_password", length = 512)
     private String userPassword;
+    @Transient
+    private String passwordConfirm;
     @Column(name = "first_name", length = 40)
     private String firstName;
     @Column(name = "last_name", length = 40)
@@ -82,6 +84,22 @@ public class User implements Serializable {
 
     public void setUserEmail(String userEmail) {
         this.userEmail = userEmail;
+    }
+
+    public String getPassword() {
+        return userPassword;
+    }
+
+    public void setPassword(String password) {
+        this.userPassword = password;
+    }
+
+    public String getPasswordConfirm() {
+        return passwordConfirm;
+    }
+
+    public void setPasswordConfirm(String passwordConfirm) {
+        this.passwordConfirm = passwordConfirm;
     }
 
     public String getFirstName() {

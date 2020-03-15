@@ -1,6 +1,7 @@
 package com.cscie599.gfn.service;
 
 import com.cscie599.gfn.entities.User;
+import com.cscie599.gfn.entities.Role;
 import com.cscie599.gfn.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.GrantedAuthority;
@@ -22,7 +23,7 @@ public class UserDetailsServiceImpl implements UserDetailsService{
     @Override
     @Transactional(readOnly = true)
     public UserDetails loadUserByUsername(String username) {
-        User user = userRepository.findByUsername(username);
+        User user = userRepository.findByUserEmail(username);
         if (user == null) throw new UsernameNotFoundException(username);
 
         Set<GrantedAuthority> grantedAuthorities = new HashSet<>();
@@ -30,6 +31,6 @@ public class UserDetailsServiceImpl implements UserDetailsService{
             grantedAuthorities.add(new SimpleGrantedAuthority(role.getName()));
         }
 
-        return new org.springframework.security.core.userdetails.User(user.getUsername(), user.getPassword(), grantedAuthorities);
+        return new org.springframework.security.core.userdetails.User(user.getUserEmail(), user.getPassword(), grantedAuthorities);
     }
 }
