@@ -25,8 +25,13 @@ public class UserServiceImpl implements UserService {
         userRepository.saveAndFlush(user);
     }
 
-    @Override
-    public User findByUsername(String username) {
-        return userRepository.findByUserEmail(username);
+
+    public User findByUserEmail(String userEmail) {
+        return userRepository.findByUserEmail(userEmail);
+    }
+
+
+    public boolean isUserExist(User user) {
+        return findByUserEmail(user.getUserEmail())!=null;
     }
 }

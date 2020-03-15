@@ -5,5 +5,6 @@ import com.cscie599.gfn.entities.User;
 public interface UserService {
     void save(User user);
 
-    User findByUsername(String username);
+    User findByUserEmail(String userEmail);
+    boolean isUserExist(User user);
 }
