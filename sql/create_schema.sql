@@ -136,6 +136,14 @@ CREATE TABLE "user_team" (
 
 );
 
+CREATE TABLE "user_role" (
+  "role_id" char(20) REFERENCES role (role_id),
+  "user_id" INTEGER REFERENCES "user" (user_id),
+  "created_date" timestamp,
+  "deleted_date" timestamp,
+  PRIMARY KEY ("role_id", "user_id")
+);
+
 CREATE TABLE "gene_goterm" (
   "gene_id" char(20) REFERENCES gene (gene_id),
   "go_id" char(20)  REFERENCES goterm (go_id),

@@ -1,14 +1,14 @@
 /**
  * POST to /api/registration {
- * "username": "john_harvard@harvard.edu",
- * "password": "mysecret",
- * "firstname": "John",
- * "lastname": "Harvard"
+ * "userEmail": "john_harvard@harvard.edu",
+ * "userPassword": "mysecret",
+ * "firstName": "John",
+ * "lastName": "Harvard"
  * }
  *
  * POST to /api/login {
- *     "username": "john_harvard@harvard.edu",
- *     "password": "mysecret"
+ *     "userEmail": "john_harvard@harvard.edu",
+ *     "userPassword": "mysecret"
  * }
  */
 package com.cscie599.gfn.controller;
@@ -26,6 +26,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+import io.swagger.annotations.Api;
+import io.swagger.annotations.ApiOperation;
 
 @RestController
 @RequestMapping("/api")
@@ -48,9 +50,10 @@ public class UserController {
         return "registration";
     }
 
+    @ApiOperation(value = "Register new user")
     @PostMapping("/registration")
     public ResponseEntity<?> registration(@RequestBody User user, UriComponentsBuilder uriComponentsBuilder) {
-        logger.info("Hitting API registration route.");
+        logger.info("Hitting API registration route with User: " + user);
         if (userService.isUserExist(user)) {
         logger.error("Unable to create. A User with name {} already exist", user.getUserEmail());
         return new ResponseEntity("Unable to register. A User with email " +

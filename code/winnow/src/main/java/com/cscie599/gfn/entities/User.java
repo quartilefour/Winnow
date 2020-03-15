@@ -16,7 +16,7 @@ import java.util.Set;
  * @author bhanotp
  */
 @Entity
-@Table(name = "user")
+@Table(name = "`user`")
 @NamedQueries({
     @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
     @NamedQuery(name = "User.findByUserId", query = "SELECT u FROM User u WHERE u.userId = :userId"),
@@ -86,11 +86,11 @@ public class User implements Serializable {
         this.userEmail = userEmail;
     }
 
-    public String getPassword() {
+    public String getUserPassword() {
         return userPassword;
     }
 
-    public void setPassword(String password) {
+    public void setUserPassword(String password) {
         this.userPassword = password;
     }
 
@@ -204,7 +204,12 @@ public class User implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cscie599.gfn.entities.User[ userId=" + userId + " ]";
+        return "com.cscie599.gfn.entities.User[ userId="
+                + userId + ":"
+                + userEmail + ":"
+                + firstName + ":"
+                + lastName + ":"
+                + userPassword + " ]";
     }
     
 }

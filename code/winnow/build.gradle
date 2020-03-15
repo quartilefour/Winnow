@@ -10,6 +10,9 @@ version = '0.0.1-SNAPSHOT'
 sourceCompatibility = '1.8'
 
 configurations {
+	all {
+		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+	}
 	developmentOnly
 	runtimeClasspath {
 		extendsFrom developmentOnly
@@ -30,12 +33,12 @@ dependencies {
 	implementation 'com.thoughtworks.xstream:xstream:1.4.11.1'
 	implementation 'org.springframework:spring-oxm'
 	implementation 'org.springframework.boot:spring-boot-starter-security'
-	//implementation 'org.springframework.boot:spring-boot-starter-web'
+	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'io.springfox:springfox-swagger2:2.9.2'
 	implementation 'io.springfox:springfox-swagger-ui:2.9.2'
-	compile('org.springframework.boot:spring-boot-starter-web') {
-		exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-	{
+	//compile('org.springframework.boot:spring-boot-starter-web') {
+	//	exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
+	//}
 	compile('org.springframework.boot:spring-boot-starter-log4j2')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	compileOnly 'org.projectlombok:lombok'
