@@ -1,6 +1,6 @@
 #tax_id	GeneID	Symbol	LocusTag	Synonyms	dbXrefs	chromosome	map_location	description	type_of_gene	Symbol_from_nomenclature_authority	Full_name_from_nomenclature_authority	Nomenclature_status	Other_designations	Modification_date	Feature_type
-7	sdfd5692769	NEWENTRY	-	-	-	-	-	Record to support submission of GeneRIFs for a gene not in Gene (Azotirhizobium caulinodans.  Use when strain, subtype, isolate, etc. is unspecified, or when different from all specified ones in Gene.).	other	-	-	-	-	20190202	-
-9	dfssd1246500	repA1	pLeuDn_01	-	-	-	-	putative replication-associated protein	protein-coding	-	-	-	-	20180129	-
+7	5692769	NEWENTRY	-	-	-	-	-	Record to support submission of GeneRIFs for a gene not in Gene (Azotirhizobium caulinodans.  Use when strain, subtype, isolate, etc. is unspecified, or when different from all specified ones in Gene.).	other	-	-	-	-	20190202	-
+9	1246500	repA1	pLeuDn_01	-	-	-	-	putative replication-associated protein	protein-coding	-	-	-	-	20180129	-
 9	1246501	repA2	pLeuDn_03	-	-	-	-	putative replication-associated protein	protein-coding	-	-	-	-	20180129	-
 9	1246502	leuA	pLeuDn_04	-	-	-	-	2-isopropylmalate synthase	protein-coding	-	-	-	-	20180129	-
 9	1246503	leuB	pLeuDn_05	-	-	-	-	3-isopropylmalate dehydrogenase	protein-coding	-	-	-	-	20180129	-
@@ -18,3 +18,10 @@
 9	20468915	trpG	D654_p10002	-	-	-	-	anthranilate synthase small subunit	protein-coding	-	-	-	-	20180129	-
 9	20468916	trpE	D654_p10001	-	-	-	-	anthranilate synthase large subunit	protein-coding	-	-	-	-	20180129	-
 11	10823747	NEWENTRY	-	-	-	-	-	Record to support submission of GeneRIFs for a gene not in Gene (Cellvibrio gilvus.  Use when strain, subtype, isolate, etc. is unspecified, or when different from all specified ones in Gene.).	other	-	-	-	-	20190325	-
+3702	814629	AT2G01050	AT2G01050	F23H14.2|F23H14_2	Araport:AT2G01050|TAIR:AT2G01050	2	-	zinc ion binding / nucleic acid binding protein	protein-coding	-	-	-zinc ion binding / nucleic acid binding protein	20190222
+3702	814630	AT2G01060	AT2G01060	F23H14.3|F23H14_3	Araport:AT2G01060|TAIR:AT2G01060	2	-	myb-like HTH transcriptional regulator family protein	protein-coding	-	--	myb-like HTH transcriptional regulator family protein	20190927	-
+3702	814636	AT2G01080	AT2G01080	F23H14.5|F23H14_5	Araport:AT2G01080|TAIR:AT2G01080	2	-	Late embryogenesis abundant (LEA) hydroxyproline-rich glycoprotein family	protein-coding	-	-	-	Late embryogenesis abundant (LEA) hydroxyproline-rich glycoprotein family	20190222	-
+3702	814637	AT2G01070	AT2G01070	F23H14.4|F23H14_4	Araport:AT2G01070|TAIR:AT2G01070	2	-	Lung seven transmembrane receptor family protein	protein-coding	-	--	Lung seven transmembrane receptor family protein	20191010	-
+4081	543551	Mi-1.2	-	-	-	-	-	root-knot nematode resistance protein	protein-coding	-	-	-	root-knot nematode resistance protein	20190602	-
+4081	101265033	Mi-1A	-	-	-	6	-	NBS-LRR resistance protein-like protein	pseudo	-	-	-	-	20191121	-
+4081	101265647	Mi-1D	-	-	-	6	-	NBS-LRR resistance protein-like	pseudo	-	-	-	putative late blight resistance protein homolog R1A-3	20191121	-

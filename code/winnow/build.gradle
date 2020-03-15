@@ -29,11 +29,13 @@ dependencies {
 	implementation 'org.springframework.boot:spring-boot-starter-jersey'
 	implementation 'com.thoughtworks.xstream:xstream:1.4.11.1'
 	implementation 'org.springframework:spring-oxm'
+	//implementation('org.apache.tomcat:tomcat-jdbc')
 	//implementation 'org.springframework.boot:spring-boot-starter-security'
 	implementation 'org.springframework.boot:spring-boot-starter-web'
 	implementation 'io.springfox:springfox-swagger2:2.9.2'
 	implementation 'io.springfox:springfox-swagger-ui:2.9.2'
 	compileOnly 'org.projectlombok:lombok'
+	compile("org.springframework.boot:spring-boot-starter-actuator")
 	//developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'

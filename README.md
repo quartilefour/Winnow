@@ -41,14 +41,16 @@ Gene Function Navigation Tool
 * code/winnow-ui/ - ReactJS front end
 * deploy/local/ - Contains the files required to bring up the docker containers.
 * sql/ - Contains the SQL file with which the db container is initialized.
+* test-data/ - Contains an example file with a subset of data for each of the datasets to be ingested for the analysis.
 
 #### Java Local Environment 
 For local development, non-Docker in your editor set an additional vm option `-Dspring.profiles.active=dev` This would enable the server to pick up springboot application-dev.properties 
 
-
 Recommendation is still to run the DB in the container. To connect to the DB running in the container, add the following entry in the `/etc/hosts` file
 
 `127.0.0.1	db`
+
+See [here](./code/winnow/HELP.md) for some documentation around springboot.
 
 ### ReactJS UI
 ```

@@ -13,9 +13,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -62,11 +59,8 @@ public class Meshterm implements Serializable {
     private String supplementalId;
     @Column(name = "name", length = 30)
     private String name;
-    @JoinTable(name = "publication_meshterm", joinColumns = {
-        @JoinColumn(name = "mesh_id", referencedColumnName = "mesh_id", nullable = false)}, inverseJoinColumns = {
-        @JoinColumn(name = "publication_id", referencedColumnName = "publication_id", nullable = false)})
-    @ManyToMany
-    private Collection<Publication> publicationCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "meshterm")
+    private Collection<PublicationMeshterm> publicationMeshtermCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "meshterm")
     private Collection<GeneMeshterm> geneMeshtermCollection;
 
@@ -141,12 +135,12 @@ public class Meshterm implements Serializable {
         this.name = name;
     }
 
-    public Collection<Publication> getPublicationCollection() {
-        return publicationCollection;
+    public Collection<PublicationMeshterm> getPublicationMeshtermCollection() {
+        return publicationMeshtermCollection;
     }
 
-    public void setPublicationCollection(Collection<Publication> publicationCollection) {
-        this.publicationCollection = publicationCollection;
+    public void setPublicationMeshtermCollection(Collection<PublicationMeshterm> publicationMeshtermCollection) {
+        this.publicationMeshtermCollection = publicationMeshtermCollection;
     }
 
     public Collection<GeneMeshterm> getGeneMeshtermCollection() {

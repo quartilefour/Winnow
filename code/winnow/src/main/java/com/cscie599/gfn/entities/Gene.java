@@ -13,9 +13,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -62,22 +59,16 @@ public class Gene implements Serializable {
     @Column(name = "count_modification_time")
     @Temporal(TemporalType.TIMESTAMP)
     private Date countModificationTime;
-    @JoinTable(name = "gene_publication", joinColumns = {
-        @JoinColumn(name = "gene_id", referencedColumnName = "gene_id", nullable = false)}, inverseJoinColumns = {
-        @JoinColumn(name = "publication_id", referencedColumnName = "publication_id", nullable = false)})
-    @ManyToMany
-    private Collection<Publication> publicationCollection;
-    @JoinTable(name = "gene_goterm", joinColumns = {
-        @JoinColumn(name = "gene_id", referencedColumnName = "gene_id", nullable = false)}, inverseJoinColumns = {
-        @JoinColumn(name = "go_id", referencedColumnName = "go_id", nullable = false)})
-    @ManyToMany
-    private Collection<Goterm> gotermCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "gene")
+    private Collection<GenePublication> genePublicationCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "gene")
     private Collection<GeneGene> geneGeneCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "gene1")
     private Collection<GeneGene> geneGeneCollection1;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "gene")
     private Collection<GeneMeshterm> geneMeshtermCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "gene")
+    private Collection<GeneGoterm> geneGotermCollection;
 
     public Gene() {
     }
@@ -150,20 +141,12 @@ public class Gene implements Serializable {
         this.countModificationTime = countModificationTime;
     }
 
-    public Collection<Publication> getPublicationCollection() {
-        return publicationCollection;
+    public Collection<GenePublication> getGenePublicationCollection() {
+        return genePublicationCollection;
     }
 
-    public void setPublicationCollection(Collection<Publication> publicationCollection) {
-        this.publicationCollection = publicationCollection;
-    }
-
-    public Collection<Goterm> getGotermCollection() {
-        return gotermCollection;
-    }
-
-    public void setGotermCollection(Collection<Goterm> gotermCollection) {
-        this.gotermCollection = gotermCollection;
+    public void setGenePublicationCollection(Collection<GenePublication> genePublicationCollection) {
+        this.genePublicationCollection = genePublicationCollection;
     }
 
     public Collection<GeneGene> getGeneGeneCollection() {
@@ -188,6 +171,14 @@ public class Gene implements Serializable {
 
     public void setGeneMeshtermCollection(Collection<GeneMeshterm> geneMeshtermCollection) {
         this.geneMeshtermCollection = geneMeshtermCollection;
+    }
+
+    public Collection<GeneGoterm> getGeneGotermCollection() {
+        return geneGotermCollection;
+    }
+
+    public void setGeneGotermCollection(Collection<GeneGoterm> geneGotermCollection) {
+        this.geneGotermCollection = geneGotermCollection;
     }
 
     @Override
