@@ -1,5 +1,7 @@
 package com.cscie599.gfn.config;
 
+import com.cscie599.gfn.auth.JWTAuthenticationFilter;
+import com.cscie599.gfn.auth.JWTAuthorizationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Bean;
@@ -9,14 +11,16 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityConfigurerAdapter;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 
 @Configuration
 @EnableWebSecurity
 public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
-    @Qualifier("userDetailsServiceImpl")
+
     @Autowired
+    @Qualifier("userDetailsServiceImpl")
     private UserDetailsService userDetailsService;
 
     @Bean
@@ -29,15 +33,18 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
         http
                 .cors().and().csrf().disable()
                 .authorizeRequests()
-                .antMatchers("/resources/**", "/api/registration", "/genes", "/jobLauncher.html").permitAll()
+                .antMatchers("/resources/**", "/api/registration", "/jobLauncher.html").permitAll()
                 .anyRequest().authenticated()
                 .and()
-                .formLogin()
-                .loginPage("/api/login")
-                .permitAll()
-                .and()
-                .logout()
-                .permitAll();
+                .addFilter(jwtAuthenticationFilter())
+                .addFilter(new JWTAuthorizationFilter(authenticationManager()))
+                .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+    }
+
+    public JWTAuthenticationFilter jwtAuthenticationFilter() throws Exception {
+        JWTAuthenticationFilter jwtAuthenticationFilter = new JWTAuthenticationFilter(authenticationManager());
+        jwtAuthenticationFilter.setFilterProcessesUrl("/api/login");
+        return jwtAuthenticationFilter;
     }
 
     @Bean

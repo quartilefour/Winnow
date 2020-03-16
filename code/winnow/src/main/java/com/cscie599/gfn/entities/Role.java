@@ -12,7 +12,7 @@ public class Role {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id", nullable = false)
-    private Long roleId;
+    private String roleId;
 
     @Column(name = "role_name", length = 40)
     private String roleName;
@@ -20,11 +20,11 @@ public class Role {
     @ManyToMany(mappedBy = "roles")
     private Set<User> users;
 
-    public Long getRoleId() {
+    public String getRoleId() {
         return roleId;
     }
 
-    public void setRoleId(Long id) {
+    public void setRoleId(String id) {
         this.roleId = id;
     }
 

@@ -10,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
 import java.util.HashSet;
 
 @Service
@@ -28,6 +29,8 @@ public class UserServiceImpl implements UserService {
     public void save(User user) {
         logger.info("Going to create new user with pass: " + user.getUserPassword());
         user.setUserPassword(bCryptPasswordEncoder.encode(user.getUserPassword()));
+        user.setCreatedAt(new Date());
+        user.setUpdatedAt(new Date());
         user.setRoles(new HashSet<>(roleRepository.findAll()));
         logger.info("Saved new user with pass: " + user.getUserPassword());
         userRepository.saveAndFlush(user);
