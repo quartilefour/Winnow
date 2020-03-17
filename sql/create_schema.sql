@@ -86,6 +86,12 @@ CREATE TABLE "meshterm" (
   "name" char(30)
 );
 
+CREATE TABLE "meshterm_tree" (
+  "mesh_id" char(20) REFERENCES meshterm (mesh_id),
+  "tree_id" char(60),
+  PRIMARY KEY ("mesh_id", "tree_id")
+);
+
 CREATE TABLE "gene_gene" (
   "gene_id" char(20) REFERENCES gene (gene_id),
   "other_gene_id" char(20) REFERENCES gene (gene_id),
