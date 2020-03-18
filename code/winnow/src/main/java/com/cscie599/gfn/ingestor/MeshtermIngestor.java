@@ -179,14 +179,14 @@ public class MeshtermIngestor {
                 meshterm.setMeshId(record.getDescriptorUI());
 
                 // set the date_created
-                DateFormat format = new SimpleDateFormat("YYYY-MM-DD");
+                DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
                 Date dateCreated = format.parse(record.getDateCreated().getYear() + "-" + record.getDateCreated().getMonth()+ "-" + record.getDateCreated().getDay());
                 meshterm.setDateCreated(dateCreated);
 
                 // set the date_revised
-                DateFormat format2 = new SimpleDateFormat("YYYY-MM-DD");
+                DateFormat format2 = new SimpleDateFormat("yyyy-MM-dd");
                 Date dateRevised = format2.parse(record.getDateRevised().getYear() + "-" + record.getDateRevised().getMonth()+ "-" + record.getDateRevised().getDay());
-                meshterm.setDateCreated(dateRevised);
+                meshterm.setDateRevised(dateRevised);
 
                 // set note
                 meshterm.setNote(record.getPublicMeSHNote());
