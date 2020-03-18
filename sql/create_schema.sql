@@ -136,7 +136,7 @@ CREATE TABLE "user_team" (
 
 );
 
-CREATE TABLE "user_role" (
+CREATE TABLE "user_roles" (
   "role_id" char(20) REFERENCES role (role_id),
   "user_id" INTEGER REFERENCES "user" (user_id),
   "created_date" timestamp,
