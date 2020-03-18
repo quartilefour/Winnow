@@ -1,24 +1,12 @@
 import axios from 'axios';
 
-const USER_API_BASE_URL = 'http://localhost:8080/api/';
+const USER_API_BASE_URL = 'http://localhost:8080/token/';
 
 class AuthService {
 
     login(credentials) {
-        //console.log("Login creds: "+JSON.stringify(credentials));
-        return axios.post(USER_API_BASE_URL + "login", credentials);
-    }
-
-    parseToken(token) {
-        if (token) {
-            try {
-                return JSON.parse(atob(token.split('.')[1]));
-            } catch (error) {
-                // ignore
-            }
-        }
-
-        return null;
+        return '{ "res": [ "data": [ "status": 200, "result": ["username": "esantora"] ]] }';
+        // return axios.post(USER_API_BASE_URL + "generate-token", credentials);
     }
 
     getUserInfo() {

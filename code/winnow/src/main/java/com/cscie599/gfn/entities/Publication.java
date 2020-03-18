@@ -13,7 +13,6 @@ import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -31,7 +30,9 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "Publication.findAll", query = "SELECT p FROM Publication p"),
     @NamedQuery(name = "Publication.findByPublicationId", query = "SELECT p FROM Publication p WHERE p.publicationId = :publicationId"),
     @NamedQuery(name = "Publication.findByCompletedDate", query = "SELECT p FROM Publication p WHERE p.completedDate = :completedDate"),
-    @NamedQuery(name = "Publication.findByDateRevised", query = "SELECT p FROM Publication p WHERE p.dateRevised = :dateRevised")})
+    @NamedQuery(name = "Publication.findByDateRevised", query = "SELECT p FROM Publication p WHERE p.dateRevised = :dateRevised"),
+    @NamedQuery(name = "Publication.findByTitle", query = "SELECT p FROM Publication p WHERE p.title = :title"),
+    @NamedQuery(name = "Publication.findByLanguage", query = "SELECT p FROM Publication p WHERE p.language = :language")})
 public class Publication implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -45,12 +46,16 @@ public class Publication implements Serializable {
     @Column(name = "date_revised")
     @Temporal(TemporalType.DATE)
     private Date dateRevised;
-    @ManyToMany(mappedBy = "publicationCollection")
-    private Collection<Gene> geneCollection;
-    @ManyToMany(mappedBy = "publicationCollection")
-    private Collection<Meshterm> meshtermCollection;
+    @Column(name = "title", length = 2147483647)
+    private String title;
+    @Column(name = "language", length = 20)
+    private String language;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "publication")
     private Collection<PublicationAuthor> publicationAuthorCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "publication")
+    private Collection<GenePublication> genePublicationCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "publication")
+    private Collection<PublicationMeshterm> publicationMeshtermCollection;
 
     public Publication() {
     }
@@ -83,20 +88,20 @@ public class Publication implements Serializable {
         this.dateRevised = dateRevised;
     }
 
-    public Collection<Gene> getGeneCollection() {
-        return geneCollection;
+    public String getTitle() {
+        return title;
     }
 
-    public void setGeneCollection(Collection<Gene> geneCollection) {
-        this.geneCollection = geneCollection;
+    public void setTitle(String title) {
+        this.title = title;
     }
 
-    public Collection<Meshterm> getMeshtermCollection() {
-        return meshtermCollection;
+    public String getLanguage() {
+        return language;
     }
 
-    public void setMeshtermCollection(Collection<Meshterm> meshtermCollection) {
-        this.meshtermCollection = meshtermCollection;
+    public void setLanguage(String language) {
+        this.language = language;
     }
 
     public Collection<PublicationAuthor> getPublicationAuthorCollection() {
@@ -105,6 +110,22 @@ public class Publication implements Serializable {
 
     public void setPublicationAuthorCollection(Collection<PublicationAuthor> publicationAuthorCollection) {
         this.publicationAuthorCollection = publicationAuthorCollection;
+    }
+
+    public Collection<GenePublication> getGenePublicationCollection() {
+        return genePublicationCollection;
+    }
+
+    public void setGenePublicationCollection(Collection<GenePublication> genePublicationCollection) {
+        this.genePublicationCollection = genePublicationCollection;
+    }
+
+    public Collection<PublicationMeshterm> getPublicationMeshtermCollection() {
+        return publicationMeshtermCollection;
+    }
+
+    public void setPublicationMeshtermCollection(Collection<PublicationMeshterm> publicationMeshtermCollection) {
+        this.publicationMeshtermCollection = publicationMeshtermCollection;
     }
 
     @Override

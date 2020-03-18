@@ -8,9 +8,9 @@ CREATE TABLE "author" (
 
 CREATE TABLE "goterm" (
   "go_id" char(20)  PRIMARY KEY,
-  "definition" varchar(50),
-  "xrefs" varchar(30),
-  "type" varchar(30)
+  "definition" text,
+  "xrefs" varchar(200),
+  "label" varchar(200)
 );
 
 CREATE TABLE "gene" (
@@ -47,7 +47,7 @@ CREATE TABLE "user" (
 );
 
 CREATE TABLE "gene_relationship" (
-  "relationship_id" char(20)  PRIMARY KEY,
+  "relationship_id" char(50)  PRIMARY KEY,
   "name" varchar(50)
 );
 
@@ -76,7 +76,9 @@ CREATE TABLE "search" (
 CREATE TABLE "publication" (
   "publication_id" char(20)  PRIMARY KEY,
   "completed_date" Date,
-  "date_revised" Date
+  "date_revised" Date,
+  "title" text,
+  "language" char(20)
 );
 
 CREATE TABLE "meshterm" (
@@ -90,10 +92,16 @@ CREATE TABLE "meshterm" (
   "name" char(30)
 );
 
+CREATE TABLE "meshterm_tree" (
+  "mesh_id" char(20) REFERENCES meshterm (mesh_id),
+  "tree_id" char(60),
+  PRIMARY KEY ("mesh_id", "tree_id")
+);
+
 CREATE TABLE "gene_gene" (
   "gene_id" char(20) REFERENCES gene (gene_id),
   "other_gene_id" char(20) REFERENCES gene (gene_id),
-  "relationship_id" char(20) REFERENCES gene_relationship (relationship_id),
+  "relationship_id" char(50) REFERENCES gene_relationship (relationship_id),
   PRIMARY KEY ("gene_id", "other_gene_id", "relationship_id")
 );
 
@@ -117,6 +125,8 @@ CREATE TABLE "publication_author" (
 CREATE TABLE "gene_publication" (
   "gene_id" char(20) REFERENCES gene (gene_id),
   "publication_id" char(20) REFERENCES publication (publication_id),
+  "created_date" timestamp,
+  "deleted_date" timestamp,
   PRIMARY KEY ("gene_id", "publication_id")
 
 );
@@ -124,6 +134,8 @@ CREATE TABLE "gene_publication" (
 CREATE TABLE "publication_meshterm" (
   "publication_id" char(20) REFERENCES publication (publication_id),
   "mesh_id" char(20) REFERENCES meshterm (mesh_id),
+  "created_date" timestamp,
+  "deleted_date" timestamp,
   PRIMARY KEY ("publication_id", "mesh_id")
 );
 
@@ -136,7 +148,7 @@ CREATE TABLE "user_team" (
 
 );
 
-CREATE TABLE "user_roles" (
+CREATE TABLE "user_role" (
   "role_id" char(20) REFERENCES role (role_id),
   "user_id" INTEGER REFERENCES "user" (user_id),
   "created_date" timestamp,
@@ -147,6 +159,8 @@ CREATE TABLE "user_roles" (
 CREATE TABLE "gene_goterm" (
   "gene_id" char(20) REFERENCES gene (gene_id),
   "go_id" char(20)  REFERENCES goterm (go_id),
+  "created_date" timestamp,
+  "deleted_date" timestamp,
   PRIMARY KEY ("gene_id", "go_id")  
 );
 

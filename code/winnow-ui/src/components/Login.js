@@ -8,41 +8,34 @@ class Login extends Component {
     constructor(props) {
         super(props);
         this.state = {
-            userEmail: '',
-            userPassword: '',
+            username: '',
+            password: '',
             message: '',
         };
-        this.login = this.login.bind(this);
+        this.login =this.login.bind(this);
     }
-
     componentDidMount() {
         localStorage.clear();
     }
 
     login = (e) => {
         localStorage.setItem("userInfo", JSON.stringify({"username": "esantora"}));
+        this.props.history.push('/');
+        return;
         e.preventDefault();
-        const credentials = {userEmail: this.state.userEmail, userPassword: this.state.userPassword};
+        const credentials = {username: this.state.username, password: this.state.password};
         AuthService.login(credentials).then(res => {
-            if (res.status === 200) {
-                let token = JSON.stringify(res.headers['authorization'].split(' ')[1]);
-                console.log("Return status from API: " + JSON.stringify(AuthService.parseToken(token)));
-                localStorage.setItem("userInfo", token);
+            if(res.data.status === 200){
+                localStorage.setItem("userInfo", JSON.stringify(res.data.result));
                 this.props.history.push('/');
-            } else if (res.status === 403) {
-                this.setState({message: "Invalid E-mail or password"});
-            } else {
-                console.log("Non-200 status from API: " + JSON.stringify(res));
-                this.setState({message: res.statusText});
+            }else {
+                this.setState({message: res.data.message});
             }
-        })
-            .catch(error => {
-                console.log("Login error: " + error);
-                this.setState({['message']: error.toString()});
-            });
+        });
     };
 
-    onChange = (e) => this.setState({[e.target.name]: e.target.value});
+    onChange = (e) =>
+        this.setState({ [e.target.name]: e.target.value });
 
     render() {
         return (
@@ -52,22 +45,20 @@ class Login extends Component {
                     <Form>
                         <Error>{this.state.message}</Error>
                         <Input
-                            type="email"
-                            name="userEmail"
+                            type="username"
                             value={this.state.username}
                             onChange={
                                 this.onChange
                             }
-                            placeholder="E-mail Address"
+                            placeholder="username"
                         />
                         <Input
                             type="password"
-                            name="userPassword"
                             value={this.state.password}
                             onChange={
                                 this.onChange
                             }
-                            placeholder="Password"
+                            placeholder="password"
                         />
                         <Button onClick={this.login}>Login</Button>
                     </Form>

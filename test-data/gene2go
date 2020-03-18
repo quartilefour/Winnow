@@ -1,0 +1,16 @@
+#tax_id	GeneID	GO_ID	Evidence	Qualifier	GO_term	PubMed	Category
+3702	814629	GO:0005634	ISM	-	nucleus	-	Component
+3702	814629	GO:0008150	ND	-	biological_process	-	Process
+3702	814630	GO:0003677	IEA	-	DNA binding	-	Function
+3702	814630	GO:0003700	ISS	-	DNA-binding transcription factor activity	11118137	Function
+3702	814630	GO:0005634	IEA	-	nucleus	-	Component
+3702	814630	GO:0005634	ISM	-	nucleus	-	Component
+3702	814636	GO:0003674	ND	-	molecular_function	-	Function
+3702	814636	GO:0005886	IBA	-	plasma membrane	21873635	Component
+3702	814636	GO:0005886	IDA	-	plasma membrane	17317660|17644812	Component
+3702	814636	GO:0008150	ND	-	biological_process	-	Process
+3702	814637	GO:0003674	ND	-	molecular_function	-	Function
+3702	814637	GO:0005794	IDA	-	Golgi apparatus	22430844	Component
+3702	814637	GO:0005794	ISM	-	Golgi apparatus	-	Component
+3702	814637	GO:0005886	ISM	-	plasma membrane	-	Component
+3702	814637	GO:0008150	ND	-	biological_process	-	Process

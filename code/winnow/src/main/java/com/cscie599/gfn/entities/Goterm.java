@@ -8,12 +8,13 @@ package com.cscie599.gfn.entities;
 import java.io.Serializable;
 import java.util.Collection;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
-import javax.persistence.ManyToMany;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 /**
@@ -27,7 +28,7 @@ import javax.persistence.Table;
     @NamedQuery(name = "Goterm.findByGoId", query = "SELECT g FROM Goterm g WHERE g.goId = :goId"),
     @NamedQuery(name = "Goterm.findByDefinition", query = "SELECT g FROM Goterm g WHERE g.definition = :definition"),
     @NamedQuery(name = "Goterm.findByXrefs", query = "SELECT g FROM Goterm g WHERE g.xrefs = :xrefs"),
-    @NamedQuery(name = "Goterm.findByType", query = "SELECT g FROM Goterm g WHERE g.type = :type")})
+    @NamedQuery(name = "Goterm.findByLabel", query = "SELECT g FROM Goterm g WHERE g.label = :label")})
 public class Goterm implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -35,14 +36,14 @@ public class Goterm implements Serializable {
     @Basic(optional = false)
     @Column(name = "go_id", nullable = false, length = 20)
     private String goId;
-    @Column(name = "definition", length = 50)
+    @Column(name = "definition", length = 2147483647)
     private String definition;
-    @Column(name = "xrefs", length = 30)
+    @Column(name = "xrefs", length = 200)
     private String xrefs;
-    @Column(name = "type", length = 30)
-    private String type;
-    @ManyToMany(mappedBy = "gotermCollection")
-    private Collection<Gene> geneCollection;
+    @Column(name = "label", length = 200)
+    private String label;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "goterm")
+    private Collection<GeneGoterm> geneGotermCollection;
 
     public Goterm() {
     }
@@ -75,20 +76,20 @@ public class Goterm implements Serializable {
         this.xrefs = xrefs;
     }
 
-    public String getType() {
-        return type;
+    public String getLabel() {
+        return label;
     }
 
-    public void setType(String type) {
-        this.type = type;
+    public void setLabel(String label) {
+        this.label = label;
     }
 
-    public Collection<Gene> getGeneCollection() {
-        return geneCollection;
+    public Collection<GeneGoterm> getGeneGotermCollection() {
+        return geneGotermCollection;
     }
 
-    public void setGeneCollection(Collection<Gene> geneCollection) {
-        this.geneCollection = geneCollection;
+    public void setGeneGotermCollection(Collection<GeneGoterm> geneGotermCollection) {
+        this.geneGotermCollection = geneGotermCollection;
     }
 
     @Override
