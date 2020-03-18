@@ -39,9 +39,9 @@ public class User implements Serializable {
     private String userPassword;
     @Transient
     private String passwordConfirm;
-    @Column(name = "first_name", length = 40)
+    @Column(name = "first_name", length = 300)
     private String firstName;
-    @Column(name = "last_name", length = 40)
+    @Column(name = "last_name", length = 300)
     private String lastName;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
@@ -209,7 +209,8 @@ public class User implements Serializable {
                 + userEmail + ":"
                 + firstName + ":"
                 + lastName + ":"
-                + userPassword + " ]";
+                + userPassword + ":"
+                + passwordConfirm + " ]";
     }
     
 }

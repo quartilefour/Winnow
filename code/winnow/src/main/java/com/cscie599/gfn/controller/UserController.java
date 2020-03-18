@@ -2,6 +2,7 @@
  * POST to /api/registration {
  * "userEmail": "john_harvard@harvard.edu",
  * "userPassword": "mysecret",
+ * "passwordConfirm": "mysecret",
  * "firstName": "John",
  * "lastName": "Harvard"
  * }
@@ -26,6 +27,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+import org.springframework.validation.BindingResult;
+import org.springframework.validation.Errors;
+import java.util.HashMap;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 
@@ -52,17 +56,23 @@ public class UserController {
 
     @ApiOperation(value = "Register new user")
     @PostMapping("/registration")
-    public ResponseEntity<?> registration(@RequestBody User user, UriComponentsBuilder uriComponentsBuilder) {
+    public ResponseEntity<?> registration(@RequestBody User user, UriComponentsBuilder uriComponentsBuilder,
+                                          BindingResult bindingResult) {
         logger.info("Hitting API registration route with User: " + user);
-        if (userService.isUserExist(user)) {
-        logger.error("Unable to create. A User with name {} already exist", user.getUserEmail());
-        return new ResponseEntity("Unable to register. A User with email " +
-                user.getUserEmail() + " already exists.",HttpStatus.CONFLICT);
-    }
-        userService.save(user);
-        HttpHeaders headers = new HttpHeaders();
-        headers.setLocation(uriComponentsBuilder.path("/api/user/{id}").buildAndExpand(user.getUserId()).toUri());
-        return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+
+        userValidator.validate(user, bindingResult);
+
+        if (bindingResult.hasErrors()) {
+            HashMap<String, String> error = new HashMap<>();
+            error.put("error", bindingResult.getFieldError().getCode());
+            return new ResponseEntity(error, HttpStatus.CONFLICT);
+        }
+        else {
+            userService.save(user);
+            HttpHeaders headers = new HttpHeaders();
+            headers.setLocation(uriComponentsBuilder.path("/api/user/{id}").buildAndExpand(user.getUserId()).toUri());
+            return new ResponseEntity<String>(headers, HttpStatus.CREATED);
+        }
     }
 
     @GetMapping("/login")
