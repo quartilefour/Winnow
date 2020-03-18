@@ -1,0 +1,3 @@
+ - Dependency checksum and signature verification
+ - Shareable read-only dependency cache
+ - Documentation links in deprecation messages
