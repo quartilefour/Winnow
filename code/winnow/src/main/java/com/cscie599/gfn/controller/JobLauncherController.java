@@ -36,17 +36,14 @@ public class JobLauncherController {
         JobParameters jobParameters =
                 new JobParametersBuilder().addString("date", "" + System.currentTimeMillis()).toJobParameters();
         jobs.forEach((job -> {
-            if( "MeshtermXMLIngestor".equals(job.getName())) {
-                try {
-                    logger.info("Starting the processing of job:- " + job.getName());
-                    long startTime = System.currentTimeMillis();
-                    jobLauncher.run(job, jobParameters);
-                    logger.info("Finished processing of job:- " + job.getName() + " timeTakenInMs:- " + (System.currentTimeMillis() - startTime));
-                } catch (Exception e) {
-                    logger.error("Unable to complete processing of all the jobs", e);
-                }
+            try {
+                logger.info("Starting the processing of job:- " + job.getName());
+                long startTime = System.currentTimeMillis();
+                jobLauncher.run(job, jobParameters);
+                logger.info("Finished processing of job:- " + job.getName() + " timeTakenInMs:- " + (System.currentTimeMillis() - startTime));
+            } catch (Exception e) {
+                logger.error("Unable to complete processing of all the jobs", e);
             }
-
         }));
         logger.info("Processing of all jobs finished");
         return new ResponseEntity<>("Job completed successfully!", HttpStatus.OK);

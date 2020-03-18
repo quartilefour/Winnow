@@ -1,10 +1,10 @@
 package com.cscie599.gfn.ingestor;
 
-import com.cscie599.gfn.entities.*;
+import com.cscie599.gfn.entities.Meshterm;
+import com.cscie599.gfn.entities.MeshtermTree;
+import com.cscie599.gfn.entities.MeshtermTreePK;
 import com.cscie599.gfn.importer.meshterm.DescriptorRecord;
 import com.cscie599.gfn.importer.meshterm.MeshConverter;
-import com.cscie599.gfn.importer.pubmed.converter.MeshHeadingConverter;
-import com.cscie599.gfn.importer.pubmed.converter.PMIDConverter;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -29,7 +29,6 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.oxm.xstream.XStreamMarshaller;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
-import sun.jvm.hotspot.debugger.cdbg.Sym;
 
 import javax.sql.DataSource;
 import java.text.DateFormat;

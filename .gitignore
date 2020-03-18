@@ -142,3 +142,7 @@ dmypy.json
 # Java
 code/winnow/build
 code/winnow/.gradle
+code/winnow/gradle/wrapper/dists/
+code/winnow/gradle/daemon/
+code/winnow/gradle/caches/
+code/winnow/gradle/native/
