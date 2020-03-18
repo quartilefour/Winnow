@@ -9,10 +9,11 @@ class Register extends Component {
             <Card>
                 <Logo src={logoImg} />
                 <Form>
-                    <Input type="username" placeholder="username" />
-                    <Input type="email" placeholder="email" />
-                    <Input type="password" placeholder="password" />
-                    <Input type="password" placeholder="password again" />
+                    <Input type="name" placeholder="First Name" />
+                    <Input type="name" placeholder="Last Name" />
+                    <Input type="email" placeholder="E-mail Address" />
+                    <Input type="password" placeholder="Password" />
+                    <Input type="password" placeholder="Confirm password" />
                     <Button>Register</Button>
                 </Form>
                 <Link to="/login">Already have an account?</Link>
