@@ -67,7 +67,6 @@ public class MeshtermIngestor {
 
     @Bean(name = "stepMeshterm")
     public Step stepMeshterm() {
-        System.out.println("in stepMeshterm");
         return stepBuilderFactory
                 .get("stepMeshterm")
                 .<DescriptorRecord, List<Object>>chunk(1)
@@ -85,7 +84,6 @@ public class MeshtermIngestor {
 
     @Bean
     public JdbcBatchItemWriter<Meshterm> writerForMeshterm() {
-        System.out.println("inside writerForMeshterm");
         JdbcBatchItemWriter<Meshterm> itemWriter = new UpsertableJdbcBatchItemWriter<Meshterm>();
         itemWriter.setDataSource(dataSource);
         itemWriter.setSql("INSERT INTO meshterm (mesh_id, date_created, date_revised, note, name) VALUES (:meshId, :dateCreated, :dateRevised, :note, :name) ON CONFLICT DO NOTHING");
@@ -95,7 +93,6 @@ public class MeshtermIngestor {
 
     @Bean
     public JdbcBatchItemWriter<MeshtermTree> writerForMeshtermTree() {
-        System.out.println("inside writerForMeshtermTree");
         JdbcBatchItemWriter<MeshtermTree> itemWriter = new UpsertableJdbcBatchItemWriter<>();
         itemWriter.setDataSource(dataSource);
         itemWriter.setSql("INSERT INTO meshterm_tree (mesh_id, tree_id) VALUES (:meshtermTreePK.meshId, :meshtermTreePK.treeId) ON CONFLICT DO NOTHING");
@@ -104,7 +101,6 @@ public class MeshtermIngestor {
     }
 
     private ItemProcessor<DescriptorRecord, List<Object>> processorForMesh() {
-        System.out.println("inside processorForMesh");
         return new DBMeshProcessor();
     }
 
@@ -117,29 +113,22 @@ public class MeshtermIngestor {
         public MultiOutputItemWriter(JdbcBatchItemWriter<Meshterm> delegateMeshterm, JdbcBatchItemWriter<MeshtermTree> delegateMeshtermTree) {
             this.delegateMeshterm = delegateMeshterm;
             this.delegateMeshtermTree = delegateMeshtermTree;
-            System.out.println("inside multioutputitemwriter constructor");
         }
 
         @Transactional(isolation = Isolation.SERIALIZABLE)
         public void write(List<? extends Object> items) throws Exception {
-            System.out.println("inside write");
             List<Meshterm> meshterms = new ArrayList<>();
             List<MeshtermTree> meshtermTrees = new ArrayList<>();
 
             ((List) items.get(0)).forEach(item -> {
-                System.out.println("There are items");
                 if (item.getClass().equals(Meshterm.class)) {
-                    System.out.println("meshterm is " + ((Meshterm) item).getMeshId());
                     meshterms.add((Meshterm) item);
                 } else if (item.getClass().equals(MeshtermTree.class)) {
-                    System.out.println("meshtermTree is " + ((MeshtermTree) item).getMeshtermTreePK().getTreeId());
                     meshtermTrees.add((MeshtermTree) item);
                 }
             });
             delegateMeshterm.write(meshterms);
             delegateMeshtermTree.write(meshtermTrees);
-            //TODO: uncomment once the MeshTerms are getting ingested.
-            //delegatePublicationMeshTerm.write(publicationMeshterms);
         }
     }
 
@@ -168,7 +157,6 @@ public class MeshtermIngestor {
         public List<Object> process(DescriptorRecord descriptorRecord) throws Exception {
             List<Object> returnList = new ArrayList<>();
             DescriptorRecord record = ((DescriptorRecord) descriptorRecord);
-            System.out.println("the current meshterm is " + record.getDescriptorUI());
             logger.info("the current meshterm is " + descriptorRecord.getDescriptorUI());
             if (record.getDescriptorUI() != null && record.getDescriptorName() != null && record.getDateCreated() != null
                     && record.getDateRevised() != null) {
@@ -204,7 +192,6 @@ public class MeshtermIngestor {
                     });
                 }
                 else {
-                    System.out.println("no treeNameList");
                     logger.warn("No treeNameList for meshterm " + record.getDescriptorUI());
                 }
             }
