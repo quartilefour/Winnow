@@ -36,14 +36,12 @@ dependencies {
 	compile 'org.springframework.boot:spring-boot-starter-web'
 	compile 'io.springfox:springfox-swagger2:2.9.2'
 	compile 'io.springfox:springfox-swagger-ui:2.9.2'
-	//compile('org.springframework.boot:spring-boot-starter-web') {
-	//	exclude group: 'org.springframework.boot', module: 'spring-boot-starter-logging'
-	//}
 	compile("com.auth0:java-jwt:3.4.0")
 	compile('org.springframework.boot:spring-boot-starter-log4j2')
 	compile('commons-validator:commons-validator:1.6')
 	testCompile('org.springframework.boot:spring-boot-starter-test')
 	compileOnly 'org.projectlombok:lombok'
+	compile("org.springframework.boot:spring-boot-starter-actuator")
 	//developmentOnly 'org.springframework.boot:spring-boot-devtools'
 	runtimeOnly 'org.postgresql:postgresql'
 	annotationProcessor 'org.projectlombok:lombok'
@@ -52,7 +50,6 @@ dependencies {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 	testImplementation 'org.springframework.batch:spring-batch-test'
-	testImplementation 'org.springframework.security:spring-security-test'
 }
 
 test {
