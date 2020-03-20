@@ -5,18 +5,9 @@
  */
 package com.cscie599.gfn.entities;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
-import javax.persistence.Column;
-import javax.persistence.EmbeddedId;
-import javax.persistence.Entity;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 /**
  *
@@ -46,10 +37,10 @@ public class UserSearchSharing implements Serializable {
     private Search search;
     @JoinColumn(name = "shared_by", referencedColumnName = "user_id")
     @ManyToOne
-    private Users sharedBy;
+    private User sharedBy;
     @JoinColumn(name = "user_id", referencedColumnName = "user_id", nullable = false, insertable = false, updatable = false)
     @ManyToOne(optional = false)
-    private Users users;
+    private User user;
 
     public UserSearchSharing() {
     }
@@ -94,20 +85,20 @@ public class UserSearchSharing implements Serializable {
         this.search = search;
     }
 
-    public Users getSharedBy() {
+    public User getSharedBy() {
         return sharedBy;
     }
 
-    public void setSharedBy(Users sharedBy) {
+    public void setSharedBy(User sharedBy) {
         this.sharedBy = sharedBy;
     }
 
-    public Users getUsers() {
-        return users;
+    public User getUser() {
+        return user;
     }
 
-    public void setUsers(Users users) {
-        this.users = users;
+    public void setUser(User user) {
+        this.user = user;
     }
 
     @Override

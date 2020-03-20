@@ -24,6 +24,11 @@ CREATE TABLE "gene" (
   "count_modification_time" timestamp
 );
 
+CREATE TABLE "role" (
+  "role_id" char(20)  PRIMARY KEY,
+  "role_name" varchar(40)
+);
+
 CREATE TABLE "team" (
   "team_id" char(20)  PRIMARY KEY,
   "team_lead_id" char(20),
@@ -31,9 +36,10 @@ CREATE TABLE "team" (
 );
 
 
-CREATE TABLE "users" (
+CREATE TABLE "user" (
   "user_id" SERIAL PRIMARY KEY,
-  "user_email" varchar(100),
+  "user_email" varchar(254),
+  "user_password" varchar(512),
   "first_name" varchar(40),
   "last_name" varchar(40),
   "created_at" timestamp,
@@ -46,7 +52,7 @@ CREATE TABLE "gene_relationship" (
 );
 
 CREATE TABLE "address" (
-  "user_id" INTEGER PRIMARY KEY REFERENCES users (user_id),
+  "user_id" INTEGER PRIMARY KEY REFERENCES "user" (user_id),
   "address1" varchar(100),
   "address2" varchar(100),
   "city" char(20),
@@ -57,7 +63,7 @@ CREATE TABLE "address" (
 
 CREATE TABLE "search" (
   "search_id" char(20)  PRIMARY KEY,
-  "created_by" INTEGER REFERENCES users (user_id),
+  "created_by" INTEGER REFERENCES "user" (user_id),
   "created_date" timestamp,
   "search_name" varchar(20),
   "search_query" JSON,
@@ -101,8 +107,8 @@ CREATE TABLE "gene_gene" (
 
 CREATE TABLE "user_search_sharing" (
   "search_id" char(20) REFERENCES search (search_id),
-  "user_id" INTEGER REFERENCES users (user_id),
-  "shared_by" INTEGER REFERENCES users (user_id),
+  "user_id" INTEGER REFERENCES "user" (user_id),
+  "shared_by" INTEGER REFERENCES "user" (user_id),
   "shared_date" timestamp,
   "deleted_date" timestamp,
   PRIMARY KEY ("search_id", "user_id")
@@ -135,11 +141,19 @@ CREATE TABLE "publication_meshterm" (
 
 CREATE TABLE "user_team" (
   "team_id" char(20) REFERENCES team (team_id),
-  "user_id" INTEGER REFERENCES users (user_id),
+  "user_id" INTEGER REFERENCES "user" (user_id),
   "created_date" timestamp,
   "deleted_date" timestamp,
   PRIMARY KEY ("team_id", "user_id")
 
+);
+
+CREATE TABLE "user_role" (
+  "role_id" char(20) REFERENCES role (role_id),
+  "user_id" INTEGER REFERENCES "user" (user_id),
+  "created_date" timestamp,
+  "deleted_date" timestamp,
+  PRIMARY KEY ("role_id", "user_id")
 );
 
 CREATE TABLE "gene_goterm" (

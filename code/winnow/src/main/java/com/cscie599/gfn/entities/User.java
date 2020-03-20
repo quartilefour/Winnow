@@ -5,39 +5,27 @@
  */
 package com.cscie599.gfn.entities;
 
+import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
+import java.util.Set;
 
 /**
  *
  * @author bhanotp
  */
 @Entity
-@Table(name = "users")
+@Table(name = "`user`")
 @NamedQueries({
-    @NamedQuery(name = "Users.findAll", query = "SELECT u FROM Users u"),
-    @NamedQuery(name = "Users.findByUserId", query = "SELECT u FROM Users u WHERE u.userId = :userId"),
-    @NamedQuery(name = "Users.findByUserEmail", query = "SELECT u FROM Users u WHERE u.userEmail = :userEmail"),
-    @NamedQuery(name = "Users.findByFirstName", query = "SELECT u FROM Users u WHERE u.firstName = :firstName"),
-    @NamedQuery(name = "Users.findByLastName", query = "SELECT u FROM Users u WHERE u.lastName = :lastName"),
-    @NamedQuery(name = "Users.findByCreatedAt", query = "SELECT u FROM Users u WHERE u.createdAt = :createdAt"),
-    @NamedQuery(name = "Users.findByUpdatedAt", query = "SELECT u FROM Users u WHERE u.updatedAt = :updatedAt")})
-public class Users implements Serializable {
+    @NamedQuery(name = "User.findAll", query = "SELECT u FROM User u"),
+    @NamedQuery(name = "User.findByUserId", query = "SELECT u FROM User u WHERE u.userId = :userId"),
+    @NamedQuery(name = "User.findByUserEmail", query = "SELECT u FROM User u WHERE u.userEmail = :userEmail"),
+    @NamedQuery(name = "User.findByFirstName", query = "SELECT u FROM User u WHERE u.firstName = :firstName"),
+    @NamedQuery(name = "User.findByLastName", query = "SELECT u FROM User u WHERE u.lastName = :lastName"),
+    @NamedQuery(name = "User.findByCreatedAt", query = "SELECT u FROM User u WHERE u.createdAt = :createdAt"),
+    @NamedQuery(name = "User.findByUpdatedAt", query = "SELECT u FROM User u WHERE u.updatedAt = :updatedAt")})
+public class User implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
@@ -45,11 +33,15 @@ public class Users implements Serializable {
     @Basic(optional = false)
     @Column(name = "user_id", nullable = false)
     private Integer userId;
-    @Column(name = "user_email", length = 100)
+    @Column(name = "user_email", length = 254)
     private String userEmail;
-    @Column(name = "first_name", length = 40)
+    @Column(name = "user_password", length = 512)
+    private String userPassword;
+    @Transient
+    private String passwordConfirm;
+    @Column(name = "first_name", length = 300)
     private String firstName;
-    @Column(name = "last_name", length = 40)
+    @Column(name = "last_name", length = 300)
     private String lastName;
     @Column(name = "created_at")
     @Temporal(TemporalType.TIMESTAMP)
@@ -59,19 +51,25 @@ public class Users implements Serializable {
     private Date updatedAt;
     @OneToMany(mappedBy = "sharedBy")
     private Collection<UserSearchSharing> userSearchSharingCollection;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Collection<UserSearchSharing> userSearchSharingCollection1;
-    @OneToOne(cascade = CascadeType.ALL, mappedBy = "users")
+    @OneToOne(cascade = CascadeType.ALL, mappedBy = "user")
     private Address address;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "users")
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "user")
     private Collection<UserTeam> userTeamCollection;
     @OneToMany(mappedBy = "createdBy")
     private Collection<Search> searchCollection;
+    @ManyToMany(cascade=CascadeType.ALL,fetch=FetchType.EAGER)
+    @JoinTable(name="user_role",
+            joinColumns = {@JoinColumn(name="user_id", referencedColumnName="user_id")},
+            inverseJoinColumns = {@JoinColumn(name="role_id", referencedColumnName="role_id")}
+    )
+    private Set<Role> roles;
 
-    public Users() {
+    public User() {
     }
 
-    public Users(Integer userId) {
+    public User(Integer userId) {
         this.userId = userId;
     }
 
@@ -89,6 +87,22 @@ public class Users implements Serializable {
 
     public void setUserEmail(String userEmail) {
         this.userEmail = userEmail;
+    }
+
+    public String getUserPassword() {
+        return userPassword;
+    }
+
+    public void setUserPassword(String password) {
+        this.userPassword = password;
+    }
+
+    public String getPasswordConfirm() {
+        return passwordConfirm;
+    }
+
+    public void setPasswordConfirm(String passwordConfirm) {
+        this.passwordConfirm = passwordConfirm;
     }
 
     public String getFirstName() {
@@ -163,6 +177,14 @@ public class Users implements Serializable {
         this.searchCollection = searchCollection;
     }
 
+    public Set<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(Set<Role> roles) {
+        this.roles = roles;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
@@ -173,10 +195,10 @@ public class Users implements Serializable {
     @Override
     public boolean equals(Object object) {
         // TODO: Warning - this method won't work in the case the id fields are not set
-        if (!(object instanceof Users)) {
+        if (!(object instanceof User)) {
             return false;
         }
-        Users other = (Users) object;
+        User other = (User) object;
         if ((this.userId == null && other.userId != null) || (this.userId != null && !this.userId.equals(other.userId))) {
             return false;
         }
@@ -185,7 +207,13 @@ public class Users implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cscie599.gfn.entities.Users[ userId=" + userId + " ]";
+        return "com.cscie599.gfn.entities.User[ userId="
+                + userId + ":"
+                + userEmail + ":"
+                + firstName + ":"
+                + lastName + ":"
+                + userPassword + ":"
+                + passwordConfirm + " ]";
     }
     
 }
