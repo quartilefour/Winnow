@@ -1,8 +1,7 @@
 package com.cscie599.gfn.ingestor;
 
-import com.cscie599.gfn.entities.GeneMeshterm;
-import com.cscie599.gfn.entities.GeneMeshtermPK;
-import com.cscie599.gfn.entities.GenePublicationPK;
+import com.cscie599.gfn.entities.*;
+import com.cscie599.gfn.importer.geneMeshterm.GeneMeshtermImporter;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,6 +11,7 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
 import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
@@ -25,15 +25,10 @@ import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
-import org.springframework.core.io.InputStreamResource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import javax.sql.DataSource;
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Function;
 
 @Configuration
 @EnableBatchProcessing
@@ -66,7 +61,7 @@ public class GeneMeshtermIngestor {
     public Step stepGeneMeshtermInfo() {
         return stepBuilderFactory
                 .get("stepGeneMeshtermInfo")
-                .<GeneMeshterm, GeneMeshterm>chunk(1)
+                .<GeneMeshtermImporter, GeneMeshtermImporter>chunk(1)
                 .reader(readerForGeneMeshterm())
                 .processor(processorForGeneMeshterm())
                 .writer(writerForGeneMeshterm())
@@ -80,12 +75,12 @@ public class GeneMeshtermIngestor {
     }
 
     @Bean
-    public ItemProcessor<GeneMeshterm, GeneMeshterm> processorForGeneMeshterm() {
+    public ItemProcessor<GeneMeshtermImporter, GeneMeshterm> processorForGeneMeshterm() {
         return new DBGeneMeshProcessor();
     }
 
     @Bean
-    public FlatFileItemReader<GeneMeshterm> readerForGeneMeshterm() {
+    public ItemReader readerForGeneMeshterm() {
         logger.info("Reading resource: " + inputResource.getFilename() + " for "+this.getClass().getName());
 
         try {
@@ -98,23 +93,23 @@ public class GeneMeshtermIngestor {
         catch (Exception e) {
             e.printStackTrace();
         }
-        FlatFileItemReader<GeneMeshterm> itemReader = new FlatFileItemReader<GeneMeshterm>();
+        FlatFileItemReader<GeneMeshtermImporter> itemReader = new FlatFileItemReader<GeneMeshtermImporter>();
         itemReader.setLineMapper(lineMapperForGeneMeshterm());
+        itemReader.setLinesToSkip(1);
         itemReader.setResource(inputResource);
         return itemReader;
     }
 
     @Bean
-    public LineMapper<GeneMeshterm> lineMapperForGeneMeshterm() {
-        DefaultLineMapper<GeneMeshterm> lineMapper = new DefaultLineMapper<GeneMeshterm>();
+    public LineMapper<GeneMeshtermImporter> lineMapperForGeneMeshterm(){
+        DefaultLineMapper<GeneMeshtermImporter> lineMapper = new DefaultLineMapper<GeneMeshtermImporter>();
         DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer(DelimitedLineTokenizer.DELIMITER_TAB);
-        lineTokenizer.setNames(new String[] { "gene", "meshterm", "pValue", "publicationCount"});
+        lineTokenizer.setNames(new String[] { "geneId", "meshId", "pValue", "publicationCount"});
         lineTokenizer.setIncludedFields(new int[] { 0, 1, 2, 3 });
-        BeanWrapperFieldSetMapper<GeneMeshterm> fieldSetMapper = new BeanWrapperFieldSetMapper<GeneMeshterm>();
+        BeanWrapperFieldSetMapper<GeneMeshtermImporter> fieldSetMapper = new BeanWrapperFieldSetMapper<GeneMeshtermImporter>();
         fieldSetMapper.setStrict(true);
         fieldSetMapper.setDistanceLimit(1);
-
-        fieldSetMapper.setTargetType(GeneMeshterm.class);
+        fieldSetMapper.setTargetType(GeneMeshtermImporter.class);
         lineMapper.setLineTokenizer(lineTokenizer);
         lineMapper.setFieldSetMapper(fieldSetMapper);
         return lineMapper;
@@ -124,18 +119,25 @@ public class GeneMeshtermIngestor {
     public JdbcBatchItemWriter<GeneMeshterm> writerForGeneMeshterm() {
         JdbcBatchItemWriter<GeneMeshterm> itemWriter = new UpsertableJdbcBatchItemWriter<GeneMeshterm>();
         itemWriter.setDataSource(dataSource);
-        itemWriter.setSql("INSERT INTO gene_meshterm (gene_id, mesh_id, p-value, publication_count) VALUES (:gene, :meshterm, :pValue, :publicationCount) ON CONFLICT DO NOTHING RETURNING gene_id");
+        itemWriter.setSql("INSERT INTO gene_meshterm (gene_id, mesh_id, p_value, publication_count) VALUES (:geneMeshtermPK.geneId, :geneMeshtermPK.meshId, :pValue, :publicationCount) ON CONFLICT DO NOTHING RETURNING gene_id");
         itemWriter.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<GeneMeshterm>());
         return itemWriter;
     }
 
-    class DBGeneMeshProcessor implements ItemProcessor<GeneMeshterm, GeneMeshterm>
+    class DBGeneMeshProcessor implements ItemProcessor<GeneMeshtermImporter, GeneMeshterm>
     {
-        public GeneMeshterm process(GeneMeshterm geneMeshterm) throws Exception
+        public GeneMeshterm process(GeneMeshtermImporter geneMeshtermImporter) throws Exception
         {
             if(logger.isDebugEnabled()){
-                logger.debug("Inserting GeneMeshterm : " + geneMeshterm);
+                logger.debug("Inserting GeneMeshterm : " + geneMeshtermImporter);
             }
+
+            String pval = geneMeshtermImporter.getpValue();
+            GeneMeshtermPK geneMeshtermPK= new GeneMeshtermPK(geneMeshtermImporter.getGeneId(), geneMeshtermImporter.getMeshId());
+            GeneMeshterm geneMeshterm = new GeneMeshterm(geneMeshtermPK);
+            geneMeshterm.setPValue(Double.parseDouble(geneMeshtermImporter.getpValue()));
+            geneMeshterm.setPublicationCount(Integer.parseInt(geneMeshtermImporter.getPublicationCount()));
+
             return geneMeshterm;
         }
     }
