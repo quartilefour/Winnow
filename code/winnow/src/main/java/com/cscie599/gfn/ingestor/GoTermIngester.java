@@ -63,7 +63,7 @@ public class GoTermIngester {
     private JobBuilderFactory jobBuilderFactory;
 
     @Bean
-    @Order(2)
+    @Order(3)
     public Job getGoTermIngester() {
         return jobBuilderFactory.get("GoTermIngester")
                 .start(stepGoTerm())

@@ -54,7 +54,7 @@ public class GeneGoTermIngester {
     private Resource inputResource;
 
     @Bean
-    @Order(3)
+    @Order(4)
     public Job getGeneGoTermIngester() {
         return jobBuilderFactory.get("GeneGoTermIngester")
                 .start(stepGene2Go())

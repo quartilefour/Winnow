@@ -33,7 +33,7 @@ public class GeneMeshterm implements Serializable {
     @EmbeddedId
     protected GeneMeshtermPK geneMeshtermPK;
     // @Max(value=?)  @Min(value=?)//if you know range of your decimal fields consider using these annotations to enforce field validation
-    @Column(name = "p-value", precision = 17, scale = 17)
+    @Column(name = "p_value", precision = 17, scale = 17)
     private Double pValue;
     @Column(name = "publication_count")
     private Integer publicationCount;

@@ -167,7 +167,7 @@ CREATE TABLE "gene_goterm" (
 CREATE TABLE "gene_meshterm" (
   "gene_id" char(20) REFERENCES gene (gene_id),
   "mesh_id" char(20) REFERENCES meshterm (mesh_id),
-  "p-value" float,
+  "p_value" float,
   "publication_count" Integer,
   PRIMARY KEY ("gene_id", "mesh_id")
 );

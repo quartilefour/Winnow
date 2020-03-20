@@ -1,0 +1,134 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE PubmedArticleSet PUBLIC "-//NLM//DTD PubMedArticle, 1st January 2019//EN" "http://dtd.nlm.nih.gov/ncbi/pubmed/out/pubmed_190101.dtd">
+<PubmedArticleSet>
+  <PubmedArticle>
+    <MedlineCitation Status="MEDLINE" Owner="NLM">
+      <PMID Version="1">5</PMID>
+      <DateCompleted>
+        <Year>1976</Year>
+        <Month>01</Month>
+        <Day>10</Day>
+      </DateCompleted>
+      <DateRevised>
+        <Year>2019</Year>
+        <Month>06</Month>
+        <Day>12</Day>
+      </DateRevised>
+      <Article PubModel="Print">
+        <Journal>
+          <ISSN IssnType="Electronic">1090-2104</ISSN>
+          <JournalIssue CitedMedium="Internet">
+            <Volume>66</Volume>
+            <Issue>4</Issue>
+            <PubDate>
+              <Year>1975</Year>
+              <Month>Oct</Month>
+              <Day>27</Day>
+            </PubDate>
+          </JournalIssue>
+          <Title>Biochemical and biophysical research communications</Title>
+          <ISOAbbreviation>Biochem. Biophys. Res. Commun.</ISOAbbreviation>
+        </Journal>
+        <ArticleTitle>Atomic models for the polypeptide backbones of myohemerythrin and hemerythrin.</ArticleTitle>
+        <Pagination>
+          <MedlinePgn>1349-56</MedlinePgn>
+        </Pagination>
+        <AuthorList CompleteYN="Y">
+          <Author ValidYN="Y">
+            <LastName>Hendrickson</LastName>
+            <ForeName>W A</ForeName>
+            <Initials>WA</Initials>
+          </Author>
+          <Author ValidYN="Y">
+            <LastName>Ward</LastName>
+            <ForeName>K B</ForeName>
+            <Initials>KB</Initials>
+          </Author>
+        </AuthorList>
+        <Language>eng</Language>
+        <PublicationTypeList>
+          <PublicationType UI="D016428">Journal Article</PublicationType>
+        </PublicationTypeList>
+      </Article>
+      <MedlineJournalInfo>
+        <Country>United States</Country>
+        <MedlineTA>Biochem Biophys Res Commun</MedlineTA>
+        <NlmUniqueID>0372516</NlmUniqueID>
+        <ISSNLinking>0006-291X</ISSNLinking>
+      </MedlineJournalInfo>
+      <ChemicalList>
+        <Chemical>
+          <RegistryNumber>0</RegistryNumber>
+          <NameOfSubstance UI="D006422">Hemerythrin</NameOfSubstance>
+        </Chemical>
+        <Chemical>
+          <RegistryNumber>0</RegistryNumber>
+          <NameOfSubstance UI="D008667">Metalloproteins</NameOfSubstance>
+        </Chemical>
+        <Chemical>
+          <RegistryNumber>0</RegistryNumber>
+          <NameOfSubstance UI="D009124">Muscle Proteins</NameOfSubstance>
+        </Chemical>
+      </ChemicalList>
+      <CitationSubset>IM</CitationSubset>
+      <MeshHeadingList>
+        <MeshHeading>
+          <DescriptorName UI="D000818" MajorTopicYN="N">Animals</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D003063" MajorTopicYN="N">Cnidaria</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D003201" MajorTopicYN="N">Computers</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D006422" MajorTopicYN="Y">Hemerythrin</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D008667" MajorTopicYN="Y">Metalloproteins</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D008958" MajorTopicYN="N">Models, Molecular</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D009124" MajorTopicYN="Y">Muscle Proteins</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D011487" MajorTopicYN="N">Protein Conformation</DescriptorName>
+        </MeshHeading>
+        <MeshHeading>
+          <DescriptorName UI="D013045" MajorTopicYN="N">Species Specificity</DescriptorName>
+        </MeshHeading>
+      </MeshHeadingList>
+    </MedlineCitation>
+    <PubmedData>
+      <History>
+        <PubMedPubDate PubStatus="pubmed">
+          <Year>1975</Year>
+          <Month>10</Month>
+          <Day>27</Day>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="medline">
+          <Year>1975</Year>
+          <Month>10</Month>
+          <Day>27</Day>
+          <Hour>0</Hour>
+          <Minute>1</Minute>
+        </PubMedPubDate>
+        <PubMedPubDate PubStatus="entrez">
+          <Year>1975</Year>
+          <Month>10</Month>
+          <Day>27</Day>
+          <Hour>0</Hour>
+          <Minute>0</Minute>
+        </PubMedPubDate>
+      </History>
+      <PublicationStatus>ppublish</PublicationStatus>
+      <ArticleIdList>
+        <ArticleId IdType="pubmed">5</ArticleId>
+        <ArticleId IdType="pii">0006-291X(75)90508-2</ArticleId>
+        <ArticleId IdType="doi">10.1016/0006-291x(75)90508-2</ArticleId>
+      </ArticleIdList>
+    </PubmedData>
+  </PubmedArticle>
+</PubmedArticleSet>
