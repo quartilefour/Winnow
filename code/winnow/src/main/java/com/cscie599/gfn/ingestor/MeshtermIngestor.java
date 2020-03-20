@@ -50,7 +50,8 @@ public class MeshtermIngestor {
     @Autowired
     DataSource dataSource;
 
-    @Value("file:${input.meshsub.file}")
+    // Lila: I changed this file for testing pubmed-mesh ingestion
+    @Value("file:${input.new_meshsub.file}")
     private Resource inputResource;
 
 
@@ -58,7 +59,7 @@ public class MeshtermIngestor {
     private JobBuilderFactory jobBuilderFactory;
 
     @Bean
-    @Order(10)
+    @Order(1)
     public Job getMeshtermXMLIngestor() {
         return jobBuilderFactory.get("MeshtermXMLIngestor")
                 .start(stepMeshterm())

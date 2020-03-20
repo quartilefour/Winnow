@@ -50,7 +50,7 @@ public class GeneMeshtermIngestor {
     private JobBuilderFactory jobBuilderFactory;
 
     @Bean
-    @Order(11)
+    @Order(6)
     public Job getGeneMeshtermIngester() {
         return jobBuilderFactory.get("GeneMeshtermIngester")
                 .start(stepGeneMeshtermInfo())

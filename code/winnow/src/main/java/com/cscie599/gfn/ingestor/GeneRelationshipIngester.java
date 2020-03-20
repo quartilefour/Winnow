@@ -55,7 +55,7 @@ public class GeneRelationshipIngester {
     private JobBuilderFactory jobBuilderFactory;
 
     @Bean
-    @Order(4)
+    @Order(5)
     public Job getGeneRelationshipIngester() {
         return jobBuilderFactory.get("GeneRelationshipIngester")
                 .start(stepGeneGroup())
