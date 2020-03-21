@@ -50,7 +50,8 @@ public class PubmedXMLIngester {
     @Autowired
     DataSource dataSource;
 
-    @Value("file:${input.pubmed.file}")
+    // Lila: I changed this filename for testing the pubmed-mesh ingestion
+    @Value("file:${input.short_pubmed.file}")
     private Resource inputResource;
 
 
@@ -58,7 +59,7 @@ public class PubmedXMLIngester {
     private JobBuilderFactory jobBuilderFactory;
 
     @Bean
-    @Order(5)
+    @Order(7)
     public Job getPubmedXMLIngester() {
         return jobBuilderFactory.get("PubmedXMLIngester")
                 .start(stepPubMedInfo())
@@ -127,7 +128,7 @@ public class PubmedXMLIngester {
     public JdbcBatchItemWriter<PublicationMeshterm> publicationMeshWriter4() {
         JdbcBatchItemWriter<PublicationMeshterm> itemWriter = new UpsertableJdbcBatchItemWriter<PublicationMeshterm>();
         itemWriter.setDataSource(dataSource);
-        itemWriter.setSql("INSERT INTO publication_meshterm (mesh_id, publication_id, created_date) VALUES (:publicationAuthorPK.meshId, :publicationAuthorPK.publicationId, :createdDate) ON CONFLICT DO NOTHING");
+        itemWriter.setSql("INSERT INTO publication_meshterm (mesh_id, publication_id, created_date) VALUES (:publicationMeshtermPK.meshId, :publicationMeshtermPK.publicationId, :createdDate) ON CONFLICT DO NOTHING");
         itemWriter.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<PublicationMeshterm>());
         return itemWriter;
     }
@@ -168,7 +169,7 @@ public class PubmedXMLIngester {
             delegatePublication.write(publications);
             delegatePublicationAuthor.write(publicationAuthors);
             //TODO: uncomment once the MeshTerms are getting ingested.
-            //delegatePublicationMeshTerm.write(publicationMeshterms);
+            delegatePublicationMeshTerm.write(publicationMeshterms);
         }
     }
 

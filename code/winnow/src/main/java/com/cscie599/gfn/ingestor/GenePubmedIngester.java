@@ -46,14 +46,15 @@ public class GenePubmedIngester {
     @Autowired
     DataSource dataSource;
 
-    @Value("file:${input.pubmed-gene.file}")
+    //Lila: I changed this file input to test pubmed-mesh ingestion
+    @Value("file:${input.short_gene2pubmed.file}")
     private Resource inputResource;
 
     @Autowired
     private JobBuilderFactory jobBuilderFactory;
 
     @Bean
-    @Order(6)
+    @Order(8)
     public Job getGenePubmedIngester() {
         return jobBuilderFactory.get("GenePubmedIngester")
                 .start(stepGenePubmedInfo())

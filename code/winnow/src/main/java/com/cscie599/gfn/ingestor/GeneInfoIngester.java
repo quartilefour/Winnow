@@ -53,7 +53,7 @@ public class GeneInfoIngester {
     private Resource inputResource;
 
     @Bean
-    @Order(1)
+    @Order(2)
     public Job getGeneInfoIngester() {
         return jobBuilderFactory.get("GeneInfoIngester")
                 .start(stepGeneInfo())

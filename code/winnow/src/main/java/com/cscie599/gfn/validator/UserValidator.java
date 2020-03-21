@@ -2,12 +2,12 @@ package com.cscie599.gfn.validator;
 
 import com.cscie599.gfn.entities.User;
 import com.cscie599.gfn.service.UserService;
+import org.apache.commons.validator.routines.EmailValidator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.validation.Errors;
 import org.springframework.validation.ValidationUtils;
 import org.springframework.validation.Validator;
-import org.apache.commons.validator.routines.EmailValidator;
 
 @Component
 public class UserValidator implements Validator {
@@ -45,9 +45,9 @@ public class UserValidator implements Validator {
             errors.rejectValue("userEmail", "Password is required.");
         }
         else {
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "userPassword", "Password is required.");
-            if (user.getUserPassword().length() < 8 || user.getUserPassword().length() > 512) {
-                errors.rejectValue("userPassword", "Password must be between 8 and 512 characters.");
+            ValidationUtils.rejectIfEmpty(errors, "userPassword", "Password is required.");
+            if (user.getUserPassword().length() < 8 || user.getUserPassword().length() > 64) {
+                errors.rejectValue("userPassword", "Password must be between 8 and 64 characters.");
             }
             if (user.getPasswordConfirm()==null || !user.getPasswordConfirm().equals(user.getUserPassword())) {
                 errors.rejectValue("passwordConfirm", "Password does not match.");

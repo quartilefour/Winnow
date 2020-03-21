@@ -39,7 +39,7 @@ CREATE TABLE "team" (
 CREATE TABLE "user" (
   "user_id" SERIAL PRIMARY KEY,
   "user_email" varchar(254),
-  "user_password" varchar(512),
+  "user_password" char(60),
   "first_name" varchar(40),
   "last_name" varchar(40),
   "created_at" timestamp,
@@ -167,7 +167,7 @@ CREATE TABLE "gene_goterm" (
 CREATE TABLE "gene_meshterm" (
   "gene_id" char(20) REFERENCES gene (gene_id),
   "mesh_id" char(20) REFERENCES meshterm (mesh_id),
-  "p-value" float,
+  "p_value" float,
   "publication_count" Integer,
   PRIMARY KEY ("gene_id", "mesh_id")
 );
