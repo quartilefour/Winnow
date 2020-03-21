@@ -1,8 +1,7 @@
-import React, {Component} from 'react';
+import React from 'react';
 import {Nav, Tab, Row, Col} from "react-bootstrap";
 
-class Home extends Component {
-    render() {
+function Home(props) {
         return (
             <div className="tab-container">
                 <Tab.Container id="left-tabs-example" defaultActiveKey="first" className="tab-container">
@@ -37,7 +36,6 @@ class Home extends Component {
                 </Tab.Container>
             </div>
         )
-    }
 }
 
 export default Home;

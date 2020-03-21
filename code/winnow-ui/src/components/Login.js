@@ -1,72 +1,81 @@
-import React, {Component} from "react";
-import {Link} from "react-router-dom";
+import React, {useState} from "react";
+import { Link, Redirect } from "react-router-dom";
 import {Card, Logo, Form, Input, Button, Error} from '../components/AuthForm';
 import AuthService from "../service/AuthService";
 import logoImg from "../img/logo.png";
+import {useAuth} from "../context/auth";
 
-class Login extends Component {
-    constructor(props) {
-        super(props);
-        this.state = {
-            username: '',
-            password: '',
-            message: '',
-        };
-        this.login =this.login.bind(this);
-    }
-    componentDidMount() {
-        localStorage.clear();
-    }
+function Login(props) {
+    const [isLoggedIn, setLoggedIn] = useState(false);
+    const [error, setError] = useState(null);
+    const [userEmail, setUserEmail] = useState("");
+    const [userPassword, setUserPassword] = useState("");
+    const { setAuthToken } = useAuth();
+    const referer = props.location.state.referer || '/';
 
-    login = (e) => {
-        localStorage.setItem("userInfo", JSON.stringify({"username": "esantora"}));
-        this.props.history.push('/');
-        return;
-        e.preventDefault();
-        const credentials = {username: this.state.username, password: this.state.password};
+
+    function postLogin() {
+
+        const credentials = {userEmail: userEmail, userPassword: userPassword};
         AuthService.login(credentials).then(res => {
-            if(res.data.status === 200){
-                localStorage.setItem("userInfo", JSON.stringify(res.data.result));
-                this.props.history.push('/');
-            }else {
-                this.setState({message: res.data.message});
+            if (res.status === 200) {
+                let token = JSON.stringify(res.headers['authorization'].split(' ')[1]);
+                console.log("Return status from API: " + JSON.stringify(AuthService.parseToken(token)));
+                setAuthToken(token);
+                setLoggedIn(true);
+
+            } else {
+                console.log("Non-200 status from API: " + JSON.stringify(res));
+                setError(res.statusText);
             }
-        });
-    };
+        })
+            .catch(error => {
+                if (error.response.status === 403) {
+                    console.log("Login error: " + error);
+                    setError("Invalid E-mail or password");
+                } else {
+                    console.log("Error: " + error.toString());
+                    setError(error.toString());
+                }
+            });
+    }
 
-    onChange = (e) =>
-        this.setState({ [e.target.name]: e.target.value });
+    if (isLoggedIn) {
+        console.info(`Login.js: Logging ${userEmail} in...`)
+        return  <Redirect to={referer} />;
+    }
 
-    render() {
+
         return (
             <div>
                 <Card>
                     <Logo src={logoImg}/>
                     <Form>
-                        <Error>{this.state.message}</Error>
+                        <Error>{error}</Error>
                         <Input
-                            type="username"
-                            value={this.state.username}
-                            onChange={
-                                this.onChange
-                            }
-                            placeholder="username"
+                            type="email"
+                            name="userEmail"
+                            value={userEmail}
+                            onChange={ e => {
+                                setUserEmail(e.target.value);
+                            }}
+                            placeholder="E-mail Address"
                         />
                         <Input
                             type="password"
-                            value={this.state.password}
-                            onChange={
-                                this.onChange
-                            }
-                            placeholder="password"
+                            name="userPassword"
+                            value={userPassword}
+                            onChange={ e => {
+                                setUserPassword(e.target.value);
+                            }}
+                            placeholder="Password"
                         />
-                        <Button onClick={this.login}>Login</Button>
+                        <Button onClick={postLogin}>Login</Button>
                     </Form>
                     <Link to="/register">Don't have an account?</Link>
                 </Card>
             </div>
         );
-    }
 }
 
 export default Login;

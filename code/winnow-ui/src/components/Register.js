@@ -1,24 +1,97 @@
-import React, { Component } from "react";
-import {Link} from "react-router-dom";
-import {Card, Logo, Form, Input, Button} from "./AuthForm";
-import logoImg  from "../img/logo.png";
+import React, {useState} from "react";
+import {Link, Redirect} from "react-router-dom";
+import {Card, Logo, Form, Input, Button, Error} from "./AuthForm";
+import AuthService from "../service/AuthService";
+import logoImg from "../img/logo.png";
 
-class Register extends Component {
-    render() {
-        return (
-            <Card>
-                <Logo src={logoImg} />
-                <Form>
-                    <Input type="username" placeholder="username" />
-                    <Input type="email" placeholder="email" />
-                    <Input type="password" placeholder="password" />
-                    <Input type="password" placeholder="password again" />
-                    <Button>Register</Button>
-                </Form>
-                <Link to="/login">Already have an account?</Link>
-            </Card>
-        );
+function Register(props) {
+
+    const [error, setError] = useState(null);
+    const [firstName, setFirstName] = useState("");
+    const [lastName, setLastName] = useState("");
+    const [userEmail, setUserEmail] = useState("");
+    const [userPassword, setUserPassword] = useState("");
+    const [passwordConfirm, setPasswordConfirm] = useState("");
+
+    function postRegistration() {
+        const credentials = {
+            firstName: firstName,
+            lastName: lastName,
+            userEmail: userEmail,
+            userPassword: userPassword,
+            passwordConfirm: passwordConfirm
+        };
+        AuthService.register(credentials).then(res => {
+            if (res.status === 201) {
+                //let token = JSON.stringify(res.headers['authorization'].split(' ')[1]);
+                console.log(`Successfully registered: ${userEmail}`);
+                return <Redirect to="/login"/>;
+            } else {
+                console.log("Non-200 status from API: " + JSON.stringify(res));
+                setError(res.statusText);
+            }
+        })
+            .catch(error => {
+                console.log("Registration: " + error.toString());
+                setError(error.toString());
+            });
     }
+
+    return (
+        <Card>
+            <Logo src={logoImg}/>
+            <Form>
+                <Error>{error}</Error>
+                <Input
+                    type="text"
+                    name="firstName"
+                    value={firstName}
+                    onChange={e => {
+                        setFirstName(e.target.value);
+                    }}
+                    placeholder="First Name"
+                />
+                <Input
+                    type="text"
+                    name="lastName"
+                    value={lastName}
+                    onChange={e => {
+                        setLastName(e.target.value);
+                    }}
+                    placeholder="Last Name"
+                />
+                <Input
+                    type="email"
+                    name="userEmail"
+                    value={userEmail}
+                    onChange={e => {
+                        setUserEmail(e.target.value);
+                    }}
+                    placeholder="E-mail Address"
+                />
+                <Input
+                    type="password"
+                    name="userPassword"
+                    value={userPassword}
+                    onChange={e => {
+                        setUserPassword(e.target.value);
+                    }}
+                    placeholder="Password"
+                />
+                <Input
+                    type="password"
+                    name="passwordConfirm"
+                    value={passwordConfirm}
+                    onChange={e => {
+                        setPasswordConfirm(e.target.value);
+                    }}
+                    placeholder="Password"
+                />
+                <Button onClick={postRegistration}>Register</Button>
+            </Form>
+            <Link to="/login">Already have an account?</Link>
+        </Card>
+    );
 }
 
 export default Register;
