@@ -14,7 +14,11 @@ function App(props) {
     const [authToken, setAuthToken] = useState(token);
 
     const setToken = (data) => {
-        Cookie.set("token", data);
+        if (data === null) {
+            Cookie.delete("token");
+        } else {
+            Cookie.set("token", data);
+        }
         setAuthToken(data);
     };
 
