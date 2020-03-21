@@ -140,6 +140,7 @@ dmypy.json
 .pyre/
 
 # Java
+application-dev.properties
 code/winnow/build
 code/winnow/.gradle
 code/winnow/gradle/wrapper/dists/
