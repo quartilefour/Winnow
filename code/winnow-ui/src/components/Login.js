@@ -11,7 +11,7 @@ function Login(props) {
     const [userEmail, setUserEmail] = useState("");
     const [userPassword, setUserPassword] = useState("");
     const { setAuthToken } = useAuth();
-    const referer = props.location.state.referer || '/';
+    const referer = "/"; //props.location.state.referer || '/';
 
 
     function postLogin() {

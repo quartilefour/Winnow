@@ -6,6 +6,7 @@ import logoImg from "../img/logo.png";
 
 function Register(props) {
 
+    const [isRegistered, setIsRegistered] = useState(false);
     const [error, setError] = useState(null);
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -23,9 +24,7 @@ function Register(props) {
         };
         AuthService.register(credentials).then(res => {
             if (res.status === 201) {
-                //let token = JSON.stringify(res.headers['authorization'].split(' ')[1]);
-                console.log(`Successfully registered: ${userEmail}`);
-                return <Redirect to="/login"/>;
+                setIsRegistered(true);
             } else {
                 console.log("Non-200 status from API: " + JSON.stringify(res));
                 setError(res.statusText);
@@ -35,6 +34,11 @@ function Register(props) {
                 console.log("Registration: " + error.toString());
                 setError(error.toString());
             });
+    }
+
+    if (isRegistered) {
+        console.log(`Successfully registered: ${userEmail}`);
+        return  <Redirect to="/login" />;
     }
 
     return (
@@ -85,7 +89,7 @@ function Register(props) {
                     onChange={e => {
                         setPasswordConfirm(e.target.value);
                     }}
-                    placeholder="Password"
+                    placeholder="Confirm Password"
                 />
                 <Button onClick={postRegistration}>Register</Button>
             </Form>
