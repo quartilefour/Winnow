@@ -35,7 +35,7 @@ public class User implements Serializable {
     private Integer userId;
     @Column(name = "user_email", length = 254)
     private String userEmail;
-    @Column(name = "user_password", length = 512)
+    @Column(name = "user_password", length = 60)
     private String userPassword;
     @Transient
     private String passwordConfirm;

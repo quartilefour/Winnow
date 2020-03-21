@@ -39,7 +39,7 @@ CREATE TABLE "team" (
 CREATE TABLE "user" (
   "user_id" SERIAL PRIMARY KEY,
   "user_email" varchar(254),
-  "user_password" varchar(512),
+  "user_password" char(60),
   "first_name" varchar(40),
   "last_name" varchar(40),
   "created_at" timestamp,
