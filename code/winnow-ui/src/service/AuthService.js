@@ -2,6 +2,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 const WINNOW_API_BASE_URL = 'http://localhost:8080/api/';
+const authHeader = {'Authorization': `Bearer ${Cookies.get("token")}`};
 
 /**
  * The AuthService calls handles all the authentication API calls
@@ -28,6 +29,54 @@ class AuthService {
      */
     register(credentials) {
         return axios.post(WINNOW_API_BASE_URL + "registration", credentials);
+    }
+
+    /**
+     * Retrieves user's profile information from API profile
+     * endpoint.
+     *
+     * @returns {await Promise<AxiosResponse<T>>}
+     */
+    getProfile() {
+        return axios.get(
+            `${WINNOW_API_BASE_URL}/profile`,
+            {
+                headers: authHeader,
+            }
+        );
+    }
+
+    /**
+     * Passes updated user profile information to API profile
+     * endpoint.
+     *
+     * @param userInfo
+     * @returns {await Promise<AxiosResponse<T>>}
+     */
+    updateProfile(userInfo) {
+        return axios.patch(
+            `${WINNOW_API_BASE_URL}/profile`,
+            userInfo,
+            {
+                headers: authHeader,
+            }
+        );
+    }
+
+    /**
+     * Passes new user password to API profile endpoint.
+     *
+     * @param credentials
+     * @returns {await Promise<AxiosResponse<T>>}
+     */
+    changePassword(credentials) {
+        return axios.put(
+            `${WINNOW_API_BASE_URL}/profile`,
+            credentials,
+            {
+                headers: authHeader,
+            }
+        );
     }
 
     /**

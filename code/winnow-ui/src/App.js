@@ -8,6 +8,7 @@ import './App.css';
 import {AuthContext} from "./context/auth";
 import PrivateRoute from "./PrivateRoute";
 import Cookies from 'js-cookie';
+import Profile from "./components/Profile";
 
 /**
  * Renders the User Interface to the Winnow application.
@@ -43,6 +44,7 @@ function App(props) {
                     <Switch>
                         <Route path="/login" component={Login}/>
                         <Route path="/register" component={Register}/>
+                        <PrivateRoute path="/profile" component={Profile}/>
                         <PrivateRoute exact path="/" component={Dashboard}/>
                     </Switch>
                 </div>
