@@ -1,17 +1,24 @@
 import React, {useState} from 'react';
 import {Nav, Tab, Row, Col} from "react-bootstrap";
-import {Button, Form, Input} from "./AuthForm";
+import {Form, Input} from "./AuthForm";
+import Gene2MeshTab from "./Gene2MeshTab";
 import ApiService from "../service/ApiService";
 
 function Home(props) {
-    const [geneData, setGeneData] = useState('');
-    function showGenes() {
+
+    const [geneData, setGeneData] = useState([]);
+
+    function getGenes() {
         ApiService.getAllGenes().then(res => {
             if (res.status === 200) {
-               setGeneData(`${res.data[0]['geneId']}: ${res.data[0]['symbol']}`);
+                let mappedData = res.data.map((gene, index) => {
+                    return {value: gene.geneId, label: gene.symbol};
+                });
+                console.info(`Mapped data: ${mappedData[12].value} (${mappedData[12].label})`);
+                setGeneData(mappedData);
             }
         }).catch(error => {
-            console.error(`showGenes Error: ${error}`)
+            console.error(`showGenes Error: ${error}`);
         })
     }
 
@@ -46,13 +53,9 @@ function Home(props) {
                                     <Input/>
                                 </Form>
                             </Tab.Pane>
-                            <Tab.Pane eventKey="third">
+                            <Tab.Pane eventKey="third" onClick={getGenes}>
                                 <p>Gene 2 MeSH Tab</p>
-                                <Form>
-                                    <Input type="text"/>
-                                    <Button onClick={showGenes}>Show Genes</Button>
-                                </Form>
-                                <div>{geneData}</div>
+                                <Gene2MeshTab geneData={geneData}/>
                             </Tab.Pane>
                         </Tab.Content>
                     </Col>

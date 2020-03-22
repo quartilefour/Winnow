@@ -2,6 +2,7 @@ import React from 'react';
 import {useAuth} from "../context/auth";
 import {Nav, Navbar} from "react-bootstrap";
 import logoImg from "../img/logo.png";
+import {Span} from "./AuthForm";
 
 const NavBar = (props) => {
 
@@ -28,6 +29,7 @@ const NavBar = (props) => {
                     <Nav.Link href="/">Home</Nav.Link>
                 </Nav>
                 <Nav>
+                    <Span>(me@example.com)</Span>
                     <Nav.Link href="#" onClick={logOut}>Log Out</Nav.Link>
                 </Nav>
             </Navbar.Collapse>
