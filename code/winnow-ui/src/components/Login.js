@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Link, Redirect} from "react-router-dom";
-import {Card, Logo, Form, Input, Button, Error} from '../components/AuthForm';
+import {Card, Logo, Form, Input, Button, Error} from './HTMLElements';
 import AuthService from "../service/AuthService";
 import logoImg from "../img/logo.png";
 import {useAuth} from "../context/auth";

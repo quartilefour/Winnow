@@ -1,6 +1,6 @@
 import React, {useState} from 'react';
 import {Nav, Tab, Row, Col} from "react-bootstrap";
-import {Form, Input} from "./AuthForm";
+import {Form, Input} from "./HTMLElements";
 import Gene2MeshTab from "./Gene2MeshTab";
 import ApiService from "../service/ApiService";
 

@@ -27,8 +27,8 @@ class AuthService {
     getUserInfo() {
         let token = Cookies.get("token") ? Cookies.get("token") : null;
         if (token !== null) {
-            console.log(this.parseToken(token));
-            return this.parseToken(token);
+            console.info(`getUserInfo: ${this.parseToken(token).sub}`);
+            return this.parseToken(token).sub;
         }
         return null;
     }

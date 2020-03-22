@@ -45,9 +45,6 @@ const Error = styled.div`
 `;
 
 const Span = styled.span`
-    
-    color: darkgray;
-    vertical-align: middle;
 `;
 
 export { Span, Form, Input, Button, Logo, Card, Error };

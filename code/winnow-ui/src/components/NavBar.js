@@ -1,12 +1,13 @@
 import React from 'react';
 import {useAuth} from "../context/auth";
+import AuthService from "../service/AuthService";
 import {Nav, Navbar} from "react-bootstrap";
 import logoImg from "../img/logo.png";
-import {Span} from "./AuthForm";
 
 const NavBar = (props) => {
 
     const {authToken, setAuthToken} = useAuth();
+    const user = AuthService.getUserInfo();
 
     function logOut() {
         setAuthToken(null);
@@ -28,8 +29,8 @@ const NavBar = (props) => {
                 <Nav className="mr-auto">
                     <Nav.Link href="/">Home</Nav.Link>
                 </Nav>
+                <Nav.Item>({user})</Nav.Item>
                 <Nav>
-                    <Span>(me@example.com)</Span>
                     <Nav.Link href="#" onClick={logOut}>Log Out</Nav.Link>
                 </Nav>
             </Navbar.Collapse>

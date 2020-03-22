@@ -1,4 +1,4 @@
-import {Button, Form} from "./AuthForm";
+import {Button, Form} from "./HTMLElements";
 import React, {Fragment} from "react";
 import Select from "react-select";
 
