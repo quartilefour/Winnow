@@ -23,7 +23,8 @@ import javax.persistence.Table;
 @NamedQueries({
     @NamedQuery(name = "MeshtermTree.findAll", query = "SELECT m FROM MeshtermTree m"),
     @NamedQuery(name = "MeshtermTree.findByMeshId", query = "SELECT m FROM MeshtermTree m WHERE m.meshtermTreePK.meshId = :meshId"),
-    @NamedQuery(name = "MeshtermTree.findByTreeId", query = "SELECT m FROM MeshtermTree m WHERE m.meshtermTreePK.treeId = :treeId")})
+    @NamedQuery(name = "MeshtermTree.findByTreeParentId", query = "SELECT m FROM MeshtermTree m WHERE m.meshtermTreePK.treeParentId = :treeParentId"),
+    @NamedQuery(name = "MeshtermTree.findByTreeNodeId", query = "SELECT m FROM MeshtermTree m WHERE m.meshtermTreePK.treeNodeId = :treeNodeId")})
 public class MeshtermTree implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -40,8 +41,8 @@ public class MeshtermTree implements Serializable {
         this.meshtermTreePK = meshtermTreePK;
     }
 
-    public MeshtermTree(String meshId, String treeId) {
-        this.meshtermTreePK = new MeshtermTreePK(meshId, treeId);
+    public MeshtermTree(String meshId, String treeParentId, String treeNodeId) {
+        this.meshtermTreePK = new MeshtermTreePK(meshId, treeParentId, treeNodeId);
     }
 
     public MeshtermTreePK getMeshtermTreePK() {

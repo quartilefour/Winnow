@@ -1,3 +1,7 @@
+/**
+ * Custom stylization of HTML elements, elevating them from primitive
+ * elements.
+ */
 import styled from 'styled-components';
 
 const Card = styled.div`
@@ -44,4 +48,7 @@ const Error = styled.div`
   background-color: red;
 `;
 
-export { Form, Input, Button, Logo, Card, Error };
+const Span = styled.span`
+`;
+
+export { Span, Form, Input, Button, Logo, Card, Error };

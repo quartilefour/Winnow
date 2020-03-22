@@ -1,9 +1,16 @@
 import React, {useState} from "react";
 import {Link, Redirect} from "react-router-dom";
-import {Card, Logo, Form, Input, Button, Error} from "./AuthForm";
+import {Card, Logo, Form, Input, Button, Error} from "./HTMLElements";
 import AuthService from "../service/AuthService";
 import logoImg from "../img/logo.png";
 
+/**
+ * Renders Registration form and handles responses from API.
+ *
+ * @param props
+ * @returns {*}
+ * @constructor
+ */
 function Register(props) {
 
     const [isRegistered, setIsRegistered] = useState(false);
@@ -14,6 +21,7 @@ function Register(props) {
     const [userPassword, setUserPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
 
+    /* Submits new user data to the API registration endpoint. */
     function postRegistration() {
         const credentials = {
             firstName: firstName,
@@ -36,6 +44,7 @@ function Register(props) {
             });
     }
 
+    /* Redirects to Login page after successful registration. */
     if (isRegistered) {
         console.log(`Successfully registered: ${userEmail}`);
         return  <Redirect to="/login" />;

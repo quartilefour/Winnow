@@ -3,16 +3,29 @@ import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 import NavBar from "./components/NavBar";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import Home from "./components/Home";
+import Dashboard from "./components/Dashboard";
 import './App.css';
 import {AuthContext} from "./context/auth";
 import PrivateRoute from "./PrivateRoute";
 import Cookies from 'js-cookie';
 
+/**
+ * Renders the User Interface to the Winnow application.
+ *
+ * @param props
+ * @returns {*}
+ * @constructor
+ */
 function App(props) {
+    /* Authentication stateful objects */
     const token = Cookies.get("token") ? Cookies.get("token") : null;
     const [authToken, setAuthToken] = useState(token);
 
+    /**
+     * Updates the user's JWT upon login/logout.
+     *
+     * @param data - JWT
+     */
     const setToken = (data) => {
         if (data === null) {
             Cookies.remove("token");
@@ -30,7 +43,7 @@ function App(props) {
                     <Switch>
                         <Route path="/login" component={Login}/>
                         <Route path="/register" component={Register}/>
-                        <PrivateRoute exact path="/" component={Home}/>
+                        <PrivateRoute exact path="/" component={Dashboard}/>
                     </Switch>
                 </div>
             </Router>
