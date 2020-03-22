@@ -29,7 +29,6 @@ import javax.persistence.TemporalType;
 @NamedQueries({
     @NamedQuery(name = "Meshterm.findAll", query = "SELECT m FROM Meshterm m"),
     @NamedQuery(name = "Meshterm.findByMeshId", query = "SELECT m FROM Meshterm m WHERE m.meshId = :meshId"),
-    @NamedQuery(name = "Meshterm.findByParentDescriptorId", query = "SELECT m FROM Meshterm m WHERE m.parentDescriptorId = :parentDescriptorId"),
     @NamedQuery(name = "Meshterm.findByPublicationCount", query = "SELECT m FROM Meshterm m WHERE m.publicationCount = :publicationCount"),
     @NamedQuery(name = "Meshterm.findByDateCreated", query = "SELECT m FROM Meshterm m WHERE m.dateCreated = :dateCreated"),
     @NamedQuery(name = "Meshterm.findByDateRevised", query = "SELECT m FROM Meshterm m WHERE m.dateRevised = :dateRevised"),
@@ -43,8 +42,6 @@ public class Meshterm implements Serializable {
     @Basic(optional = false)
     @Column(name = "mesh_id", nullable = false, length = 20)
     private String meshId;
-    @Column(name = "parent_descriptor_id", length = 20)
-    private String parentDescriptorId;
     @Column(name = "publication_count")
     private Integer publicationCount;
     @Column(name = "date_created")
@@ -77,14 +74,6 @@ public class Meshterm implements Serializable {
 
     public void setMeshId(String meshId) {
         this.meshId = meshId;
-    }
-
-    public String getParentDescriptorId() {
-        return parentDescriptorId;
-    }
-
-    public void setParentDescriptorId(String parentDescriptorId) {
-        this.parentDescriptorId = parentDescriptorId;
     }
 
     public Integer getPublicationCount() {

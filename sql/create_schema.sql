@@ -83,7 +83,6 @@ CREATE TABLE "publication" (
 
 CREATE TABLE "meshterm" (
   "mesh_id" char(20)  PRIMARY KEY,
-  "parent_descriptor_id" char(20),
   "publication_count" Integer,
   "date_created" Date,
   "date_revised" Date,
@@ -94,8 +93,9 @@ CREATE TABLE "meshterm" (
 
 CREATE TABLE "meshterm_tree" (
   "mesh_id" char(20) REFERENCES meshterm (mesh_id),
-  "tree_id" char(60),
-  PRIMARY KEY ("mesh_id", "tree_id")
+  "tree_parent_id" varchar(120),
+  "tree_node_id" varchar(6),
+  PRIMARY KEY ("mesh_id", "tree_parent_id", "tree_node_id")
 );
 
 CREATE TABLE "gene_gene" (
