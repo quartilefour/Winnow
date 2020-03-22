@@ -30,7 +30,7 @@ public class GeneController {
         List<Gene> genes = repository.findAll();
         List<GeneView> geneViews = new ArrayList<>();
         for (Gene gene : genes) {
-            geneViews.add(new GeneView(gene.getGeneId(),gene.getDescription()));
+            geneViews.add(new GeneView(gene.getGeneId(),gene.getDescription(), gene.getSymbol()));
         }
         return geneViews;
     }
@@ -40,6 +40,6 @@ public class GeneController {
     GeneView one(@PathVariable String id) {
         Gene gene = repository.findById(id)
                 .orElseThrow(() -> new GeneNotFoundException(id));
-        return new GeneView(gene.getGeneId(), gene.getDescription());
+        return new GeneView(gene.getGeneId(), gene.getDescription(), gene.getSymbol());
     }
 }

@@ -1,11 +1,16 @@
 import axios from 'axios';
+import Cookies from 'js-cookie';
 
 const USER_API_BASE_URL = 'http://localhost:8080/api';
+const authHeader = {'Authorization': `Bearer ${Cookies.get("token")}`};
 
 class ApiService {
 
-    fetchUsers() {
-        return axios.get(USER_API_BASE_URL);
+    getAllGenes() {
+        return axios.get(
+            `${USER_API_BASE_URL}/genes`, {
+                headers: authHeader,
+            });
     }
 
     fetchUserById(userId) {

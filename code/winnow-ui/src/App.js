@@ -7,33 +7,33 @@ import Home from "./components/Home";
 import './App.css';
 import {AuthContext} from "./context/auth";
 import PrivateRoute from "./PrivateRoute";
-import Cookie from 'js-cookie';
+import Cookies from 'js-cookie';
 
 function App(props) {
-    const token = Cookie.get("token") ? Cookie.get("token") : null;
+    const token = Cookies.get("token") ? Cookies.get("token") : null;
     const [authToken, setAuthToken] = useState(token);
 
     const setToken = (data) => {
         if (data === null) {
-            Cookie.delete("token");
+            Cookies.remove("token");
         } else {
-            Cookie.set("token", data);
+            Cookies.set("token", data);
         }
         setAuthToken(data);
     };
 
     return (
-        <AuthContext.Provider value={{ authToken, setAuthToken: setToken }}>
-        <Router>
-            <div>
-                <NavBar/>
-                <Switch>
-                    <Route path="/login" component={Login}/>
-                    <Route path="/register" component={Register}/>
-                    <PrivateRoute exact path="/" component={Home}/>
-                </Switch>
-            </div>
-        </Router>
+        <AuthContext.Provider value={{authToken, setAuthToken: setToken}}>
+            <Router>
+                <div>
+                    <NavBar/>
+                    <Switch>
+                        <Route path="/login" component={Login}/>
+                        <Route path="/register" component={Register}/>
+                        <PrivateRoute exact path="/" component={Home}/>
+                    </Switch>
+                </div>
+            </Router>
         </AuthContext.Provider>
     );
 }

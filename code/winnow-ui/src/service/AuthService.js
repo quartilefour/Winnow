@@ -1,6 +1,5 @@
 import axios from 'axios';
-import Cookie from 'js-cookie';
-import { useAuth} from "../context/auth";
+import Cookies from 'js-cookie';
 
 const USER_API_BASE_URL = 'http://localhost:8080/api/';
 
@@ -22,12 +21,11 @@ class AuthService {
                 // ignore
             }
         }
-
         return null;
     }
 
     getUserInfo() {
-        let token =  Cookie.get("token") ? Cookie.get("token") : null;
+        let token = Cookies.get("token") ? Cookies.get("token") : null;
         if (token !== null) {
             console.log(this.parseToken(token));
             return this.parseToken(token);
@@ -35,19 +33,9 @@ class AuthService {
         return null;
     }
 
-    authHeader() {
-        // return authorization header with jwt token
-        const { authToken } = useAuth();
-        if (authToken) {
-            return { Authorization: `Bearer ${authToken}` };
-        } else {
-            return {};
-        }
-    }
-
     logOut() {
-        localStorage.removeItem("userInfo");
-        return axios.post(USER_API_BASE_URL + 'logout', {}, this.getAuthHeader());
+        //localStorage.removeItem("userInfo");
+        //return axios.post(USER_API_BASE_URL + 'logout', {}, this.authHeader());
     }
 }
 

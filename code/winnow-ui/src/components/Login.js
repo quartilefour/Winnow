@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import { Link, Redirect } from "react-router-dom";
+import {Link, Redirect} from "react-router-dom";
 import {Card, Logo, Form, Input, Button, Error} from '../components/AuthForm';
 import AuthService from "../service/AuthService";
 import logoImg from "../img/logo.png";
@@ -10,7 +10,7 @@ function Login(props) {
     const [error, setError] = useState(null);
     const [userEmail, setUserEmail] = useState("");
     const [userPassword, setUserPassword] = useState("");
-    const { setAuthToken } = useAuth();
+    const {setAuthToken} = useAuth();
     const referer = "/"; //props.location.state.referer || '/';
 
 
@@ -19,8 +19,8 @@ function Login(props) {
         const credentials = {userEmail: userEmail, userPassword: userPassword};
         AuthService.login(credentials).then(res => {
             if (res.status === 200) {
-                let token = JSON.stringify(res.headers['authorization'].split(' ')[1]);
-                console.log("Return status from API: " + JSON.stringify(AuthService.parseToken(token)));
+                let token = res.headers['authorization'].split(' ')[1];
+                console.log("Return status from API: " + AuthService.parseToken(token));
                 setAuthToken(token);
                 setLoggedIn(true);
 
@@ -42,40 +42,40 @@ function Login(props) {
 
     if (isLoggedIn) {
         console.info(`Login.js: Logging ${userEmail} in...`)
-        return  <Redirect to={referer} />;
+        return <Redirect to={referer}/>;
     }
 
 
-        return (
-            <div>
-                <Card>
-                    <Logo src={logoImg}/>
-                    <Form>
-                        <Error>{error}</Error>
-                        <Input
-                            type="email"
-                            name="userEmail"
-                            value={userEmail}
-                            onChange={ e => {
-                                setUserEmail(e.target.value);
-                            }}
-                            placeholder="E-mail Address"
-                        />
-                        <Input
-                            type="password"
-                            name="userPassword"
-                            value={userPassword}
-                            onChange={ e => {
-                                setUserPassword(e.target.value);
-                            }}
-                            placeholder="Password"
-                        />
-                        <Button onClick={postLogin}>Login</Button>
-                    </Form>
-                    <Link to="/register">Don't have an account?</Link>
-                </Card>
-            </div>
-        );
+    return (
+        <div>
+            <Card>
+                <Logo src={logoImg}/>
+                <Form>
+                    <Error>{error}</Error>
+                    <Input
+                        type="email"
+                        name="userEmail"
+                        value={userEmail}
+                        onChange={e => {
+                            setUserEmail(e.target.value);
+                        }}
+                        placeholder="E-mail Address"
+                    />
+                    <Input
+                        type="password"
+                        name="userPassword"
+                        value={userPassword}
+                        onChange={e => {
+                            setUserPassword(e.target.value);
+                        }}
+                        placeholder="Password"
+                    />
+                    <Button onClick={postLogin}>Login</Button>
+                </Form>
+                <Link to="/register">Don't have an account?</Link>
+            </Card>
+        </div>
+    );
 }
 
 export default Login;

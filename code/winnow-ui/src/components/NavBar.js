@@ -3,15 +3,15 @@ import {useAuth} from "../context/auth";
 import {Nav, Navbar} from "react-bootstrap";
 import logoImg from "../img/logo.png";
 
-function NavBar(props) {
+const NavBar = (props) => {
 
-    const { setAuthToken } = useAuth();
+    const {authToken, setAuthToken} = useAuth();
 
     function logOut() {
-        setAuthToken();
+        setAuthToken(null);
     }
 
-    return (
+    return authToken ?
         <Navbar bg="light" expand="lg">
             <Navbar.Brand href="/">
                 <img
@@ -32,8 +32,8 @@ function NavBar(props) {
                 </Nav>
             </Navbar.Collapse>
         </Navbar>
+        : null
 
-    );
-}
+};
 
 export default NavBar;
