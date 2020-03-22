@@ -4,7 +4,7 @@ import {Form, Input} from "./HTMLElements";
 import Gene2MeshTab from "./Gene2MeshTab";
 import ApiService from "../service/ApiService";
 
-function Home(props) {
+function Dashboard(props) {
 
     const [geneData, setGeneData] = useState([]);
 
@@ -65,4 +65,4 @@ function Home(props) {
     )
 }
 
-export default Home;
+export default Dashboard;

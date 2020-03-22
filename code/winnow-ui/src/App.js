@@ -3,7 +3,7 @@ import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 import NavBar from "./components/NavBar";
 import Login from "./components/Login";
 import Register from "./components/Register";
-import Home from "./components/Home";
+import Dashboard from "./components/Dashboard";
 import './App.css';
 import {AuthContext} from "./context/auth";
 import PrivateRoute from "./PrivateRoute";
@@ -30,7 +30,7 @@ function App(props) {
                     <Switch>
                         <Route path="/login" component={Login}/>
                         <Route path="/register" component={Register}/>
-                        <PrivateRoute exact path="/" component={Home}/>
+                        <PrivateRoute exact path="/" component={Dashboard}/>
                     </Switch>
                 </div>
             </Router>
