@@ -21,15 +21,19 @@ public class MeshtermTreePK implements Serializable {
     @Column(name = "mesh_id", nullable = false, length = 20)
     private String meshId;
     @Basic(optional = false)
-    @Column(name = "tree_id", nullable = false, length = 100)
-    private String treeId;
+    @Column(name = "tree_parent_id", nullable = false, length = 100)
+    private String treeParentId;
+    @Basic(optional = false)
+    @Column(name = "tree_node_id", nullable = false, length = 100)
+    private String treeNodeId;
 
     public MeshtermTreePK() {
     }
 
-    public MeshtermTreePK(String meshId, String treeId) {
+    public MeshtermTreePK(String meshId, String treeParentId, String treeNodeId) {
         this.meshId = meshId;
-        this.treeId = treeId;
+        this.treeParentId = treeParentId;
+        this.treeNodeId = treeNodeId;
     }
 
     public String getMeshId() {
@@ -40,19 +44,28 @@ public class MeshtermTreePK implements Serializable {
         this.meshId = meshId;
     }
 
-    public String getTreeId() {
-        return treeId;
+    public String getTreeParentId() {
+        return treeParentId;
     }
 
-    public void setTreeId(String treeId) {
-        this.treeId = treeId;
+    public void setTreeParentId(String treeParentId) {
+        this.treeParentId = treeParentId;
+    }
+
+    public String getTreeNodeId() {
+        return treeNodeId;
+    }
+
+    public void setTreeNodeId(String treeNodeId) {
+        this.treeNodeId = treeNodeId;
     }
 
     @Override
     public int hashCode() {
         int hash = 0;
         hash += (meshId != null ? meshId.hashCode() : 0);
-        hash += (treeId != null ? treeId.hashCode() : 0);
+        hash += (treeParentId != null ? treeParentId.hashCode() : 0);
+        hash += (treeNodeId != null ? treeNodeId.hashCode() : 0);
         return hash;
     }
 
@@ -66,7 +79,10 @@ public class MeshtermTreePK implements Serializable {
         if ((this.meshId == null && other.meshId != null) || (this.meshId != null && !this.meshId.equals(other.meshId))) {
             return false;
         }
-        if ((this.treeId == null && other.treeId != null) || (this.treeId != null && !this.treeId.equals(other.treeId))) {
+        if ((this.treeParentId == null && other.treeParentId != null) || (this.treeParentId != null && !this.treeParentId.equals(other.treeParentId))) {
+            return false;
+        }
+        if ((this.treeNodeId == null && other.treeNodeId != null) || (this.treeNodeId != null && !this.treeNodeId.equals(other.treeNodeId))) {
             return false;
         }
         return true;
@@ -74,7 +90,7 @@ public class MeshtermTreePK implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cscie599.gfn.entities.MeshtermTreePK[ meshId=" + meshId + ", treeId=" + treeId + " ]";
+        return "com.cscie599.gfn.entities.MeshtermTreePK[ meshId=" + meshId + ", treeParentId=" + treeParentId + ", treeNodeId=" + treeNodeId + " ]";
     }
     
 }
