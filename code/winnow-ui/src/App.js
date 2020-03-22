@@ -9,10 +9,23 @@ import {AuthContext} from "./context/auth";
 import PrivateRoute from "./PrivateRoute";
 import Cookies from 'js-cookie';
 
+/**
+ * Renders the User Interface to the Winnow application.
+ *
+ * @param props
+ * @returns {*}
+ * @constructor
+ */
 function App(props) {
+    /* Authentication stateful objects */
     const token = Cookies.get("token") ? Cookies.get("token") : null;
     const [authToken, setAuthToken] = useState(token);
 
+    /**
+     * Updates the user's JWT upon login/logout.
+     *
+     * @param data - JWT
+     */
     const setToken = (data) => {
         if (data === null) {
             Cookies.remove("token");

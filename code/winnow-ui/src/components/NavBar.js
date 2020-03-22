@@ -4,6 +4,14 @@ import AuthService from "../service/AuthService";
 import {Nav, Navbar} from "react-bootstrap";
 import logoImg from "../img/logo.png";
 
+/**
+ * Renders the navigation bar for user interface, visible only to
+ * authenticated users.
+ *
+ * @param props
+ * @returns {*}
+ * @constructor
+ */
 const NavBar = (props) => {
 
     const {authToken, setAuthToken} = useAuth();

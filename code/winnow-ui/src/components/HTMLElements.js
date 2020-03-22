@@ -1,3 +1,7 @@
+/**
+ * Custom stylization of HTML elements, elevating them from primitive
+ * elements.
+ */
 import styled from 'styled-components';
 
 const Card = styled.div`
