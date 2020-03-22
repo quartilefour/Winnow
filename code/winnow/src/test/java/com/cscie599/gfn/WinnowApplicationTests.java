@@ -1,13 +1,19 @@
 package com.cscie599.gfn;
 
+import static org.assertj.core.api.Assertions.*;
+
 import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+import com.cscie599.gfn.controller.GeneController;
 
 @SpringBootTest
-class WinnowApplicationTests {
+public class WinnowApplicationTests {
 
-/*	@Test
-	void contextLoads() {
-	}*/
+    @Test
+    public void contextLoads() {
 
+    }
 }
