@@ -96,7 +96,7 @@ public class MeshtermIngestor {
     public JdbcBatchItemWriter<MeshtermTree> writerForMeshtermTree() {
         JdbcBatchItemWriter<MeshtermTree> itemWriter = new UpsertableJdbcBatchItemWriter<>();
         itemWriter.setDataSource(dataSource);
-        itemWriter.setSql("INSERT INTO meshterm_tree (mesh_id, tree_id) VALUES (:meshtermTreePK.meshId, :meshtermTreePK.treeId) ON CONFLICT DO NOTHING");
+        itemWriter.setSql("INSERT INTO meshterm_tree (mesh_id, tree_parent_id, tree_node_id) VALUES (:meshtermTreePK.meshId, :meshtermTreePK.treeParentId, :meshtermTreePK.treeNodeId) ON CONFLICT DO NOTHING");
         itemWriter.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<MeshtermTree>());
         return itemWriter;
     }
@@ -187,7 +187,22 @@ public class MeshtermIngestor {
 
                 if (record.getDescriptorUI() != null && record.getTreeNumberList().getTreeNumbers() != null) {
                     record.getTreeNumberList().getTreeNumbers().forEach(treeName -> {
-                        MeshtermTreePK treePK = new MeshtermTreePK(record.getDescriptorUI(), treeName.toString());
+                        // if there are definitely treeNumbers:
+                        String [] treeId = treeName.toString().split("\\.");
+                        String treeParentId = "";
+                        String treeNodeId = treeId[treeId.length - 1];
+                        // if the id is as least 3 groups long, do the first two and append the last
+                        if (treeId.length >= 2) {
+                            for (int i = 0; i < treeId.length - 2; i++) {
+                                treeParentId += treeId[i] + ".";
+                            }
+                            treeParentId += treeId[treeId.length - 2];
+                        }
+                        else {
+                            treeParentId = null;
+                        }
+
+                        MeshtermTreePK treePK = new MeshtermTreePK(record.getDescriptorUI(), treeParentId, treeNodeId);
                         MeshtermTree meshtermTree = new MeshtermTree(treePK);
                         returnList.add(meshtermTree);
                     });
