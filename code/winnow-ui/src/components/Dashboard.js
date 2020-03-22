@@ -4,6 +4,7 @@ import BookmarkTab from "./BookmarkTab";
 import Mesh2GeneTab from "./Mesh2GeneTab";
 import Gene2MeshTab from "./Gene2MeshTab";
 import ApiService from "../service/ApiService";
+import {Error} from "./HTMLElements";
 
 /**
  * Renders the Dashboard landing page for authenticated users.
@@ -14,6 +15,7 @@ import ApiService from "../service/ApiService";
  */
 function Dashboard(props) {
 
+    const [error, setError] = useState('');
     const [geneData, setGeneData] = useState([]);
 
     /**
@@ -31,11 +33,13 @@ function Dashboard(props) {
             }
         }).catch(error => {
             console.error(`showGenes Error: ${error}`);
+            setError(error);
         })
     }
 
     return (
         <div className="tab-container">
+            <Error>{error}</Error>
             <Tab.Container id="left-tabs-example" defaultActiveKey="first" className="tab-container">
                 <Row>
                     <Col sm={3}>
