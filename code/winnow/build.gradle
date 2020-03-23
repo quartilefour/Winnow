@@ -26,6 +26,9 @@ repositories {
 	mavenCentral()
 }
 
+bootWar {
+	mainClassName = 'com.cscie599.gfn.WinnowApplication'
+}
 dependencies {
 	compile group: 'commons-io', name: 'commons-io', version: '2.5'
 	compile group: 'commons-net', name: 'commons-net', version: '3.6'
