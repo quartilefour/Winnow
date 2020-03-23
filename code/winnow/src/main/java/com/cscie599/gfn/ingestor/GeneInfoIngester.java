@@ -33,6 +33,10 @@ import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 
 import javax.sql.DataSource;
 
+/**
+ *
+ * @author PulkitBhanot
+ */
 @Configuration
 @EnableBatchProcessing
 @EnableAutoConfiguration
@@ -49,7 +53,7 @@ public class GeneInfoIngester {
     @Autowired
     DataSource dataSource;
 
-    @Value("file:${input.gene-info.file}")
+    @Value("file:${input.directory}${input.gene-info.file}")
     private Resource inputResource;
 
     @Bean

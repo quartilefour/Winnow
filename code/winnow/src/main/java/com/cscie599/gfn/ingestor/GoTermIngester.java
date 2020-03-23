@@ -30,9 +30,6 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.InputStreamSource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 
 import javax.sql.DataSource;
 import java.io.*;
@@ -42,6 +39,10 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ *
+ * @author PulkitBhanot
+ */
 @Configuration
 @EnableBatchProcessing
 @EnableAutoConfiguration
@@ -55,7 +56,7 @@ public class GoTermIngester {
     @Autowired
     DataSource dataSource;
 
-    @Value("file:${input.gene-goslim.file}")
+    @Value("file:${input.directory}${input.gene-goslim.file}")
     private Resource inputResource;
 
 

@@ -1,6 +1,8 @@
 package com.cscie599.gfn.ingestor;
 
-import com.cscie599.gfn.entities.*;
+import com.cscie599.gfn.entities.GeneGene;
+import com.cscie599.gfn.entities.GeneGenePK;
+import com.cscie599.gfn.entities.GeneRelationship;
 import com.cscie599.gfn.importer.genegroup.GeneGroup;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import org.apache.commons.logging.Log;
@@ -27,14 +29,15 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ *
+ * @author PulkitBhanot
+ */
 @Configuration
 @EnableBatchProcessing
 @EnableAutoConfiguration
@@ -48,7 +51,7 @@ public class GeneRelationshipIngester {
     @Autowired
     DataSource dataSource;
 
-    @Value("file:${input.gene_group.file}")
+    @Value("file:${input.directory}${input.gene_group.file}")
     private Resource inputResource;
 
     @Autowired

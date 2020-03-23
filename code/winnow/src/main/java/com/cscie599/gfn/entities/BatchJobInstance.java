@@ -21,7 +21,7 @@ import javax.persistence.UniqueConstraint;
 
 /**
  *
- * @author bhanotp
+ * @author PulkitBhanot
  */
 @Entity
 @Table(name = "batch_job_instance", uniqueConstraints = {

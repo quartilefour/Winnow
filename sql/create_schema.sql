@@ -86,9 +86,9 @@ CREATE TABLE "meshterm" (
   "publication_count" Integer,
   "date_created" Date,
   "date_revised" Date,
-  "note" varchar(100),
+  "note" text,
   "supplemental_id" char(20),
-  "name" char(30)
+  "name" char(100)
 );
 
 CREATE TABLE "meshterm_tree" (

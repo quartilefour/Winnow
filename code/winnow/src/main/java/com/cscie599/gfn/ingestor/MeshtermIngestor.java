@@ -50,8 +50,7 @@ public class MeshtermIngestor {
     @Autowired
     DataSource dataSource;
 
-    // Lila: I changed this file for testing pubmed-mesh ingestion
-    @Value("file:${input.new_meshsub.file}")
+    @Value("file:${input.directory}${input.new_meshsub.file}")
     private Resource inputResource;
 
 
@@ -158,7 +157,9 @@ public class MeshtermIngestor {
         public List<Object> process(DescriptorRecord descriptorRecord) throws Exception {
             List<Object> returnList = new ArrayList<>();
             DescriptorRecord record = ((DescriptorRecord) descriptorRecord);
-            logger.info("the current meshterm is " + descriptorRecord.getDescriptorUI());
+            if(logger.isDebugEnabled()) {
+                logger.debug("the current meshterm is " + descriptorRecord.getDescriptorUI());
+            }
             if (record.getDescriptorUI() != null && record.getDescriptorName() != null && record.getDateCreated() != null
                     && record.getDateRevised() != null) {
                 Meshterm meshterm = new Meshterm();
@@ -185,7 +186,7 @@ public class MeshtermIngestor {
                 // add the meshterm to the return list
                 returnList.add(meshterm);
 
-                if (record.getDescriptorUI() != null && record.getTreeNumberList().getTreeNumbers() != null) {
+                if (record.getDescriptorUI() != null && record.getTreeNumberList() != null && record.getTreeNumberList().getTreeNumbers() != null) {
                     record.getTreeNumberList().getTreeNumbers().forEach(treeName -> {
                         // if there are definitely treeNumbers:
                         String [] treeId = treeName.toString().split("\\.");

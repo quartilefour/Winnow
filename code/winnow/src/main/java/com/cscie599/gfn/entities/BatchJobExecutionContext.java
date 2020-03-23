@@ -18,7 +18,7 @@ import javax.persistence.Table;
 
 /**
  *
- * @author bhanotp
+ * @author PulkitBhanot
  */
 @Entity
 @Table(name = "batch_job_execution_context")

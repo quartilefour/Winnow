@@ -11,7 +11,7 @@ import java.util.Date;
 
 /**
  *
- * @author bhanotp
+ * @author PulkitBhanot
  */
 @Entity
 @Table(name = "user_search_sharing")
