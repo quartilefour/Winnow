@@ -50,7 +50,7 @@ public class MeshtermIngestor {
     @Autowired
     DataSource dataSource;
 
-    @Value("file:${input.directory}${input.new_meshsub.file}")
+    @Value("file:${input.directory}${input.meshsub.file}")
     private Resource inputResource;
 
 

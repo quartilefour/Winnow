@@ -8,10 +8,6 @@ import lombok.NoArgsConstructor;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.ArrayList;
 
-/**
- *
- * @author PulkitBhanot
- */
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
