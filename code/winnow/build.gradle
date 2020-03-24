@@ -56,6 +56,7 @@ dependencies {
 		exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 	}
 	testImplementation 'org.springframework.batch:spring-batch-test'
+    testImplementation 'io.zonky.test:embedded-database-spring-test:1.5.3'
 }
 
 test {
