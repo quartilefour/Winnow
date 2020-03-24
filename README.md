@@ -10,6 +10,7 @@ Gene Function Navigation Tool
  * postgres container as db.cscie599.com running on port 5432.
  * adminer container to view the contents of the db. The container is running adminer UI at http://127.0.0.1:8090, make sure to change the Database type to postgres(defaults to mysql)
  * webapp container that runs the django app. The Django app can be accessed in UI at http://127.0.0.1:8000
+ * ftpfiledownloader container to download ftp files from various sources.
  
  To start all the containers we first need to build them. (All the docker-compose commands should be run from the directory which has docker-compose.yml file). The webapp container requires the java code to be compiled and packaged as a war file. You can either build the war file explicitly by running the following commands
  
@@ -34,6 +35,10 @@ Gene Function Navigation Tool
  The containers when started using the docker-compose script start in a bridge network gfn_default. To start a container outside of docker-compose but still connect to the gfn_default start the container with the following command
  
  `docker run --network gfn_default -p 8080:8080 -t cscie599/gs-spring-boot-docker`
+ 
+ To start the ftpdownloader container on your local machine run the following command, please do change the location of the source folder.
+ 
+ `docker run --network gfn_default --mount source=<src-folder>,target=/data gfn_ftpapp.cscie99.com:latest`
     
 ## Code Organization
 * code/winnow/ - springboot backend app
