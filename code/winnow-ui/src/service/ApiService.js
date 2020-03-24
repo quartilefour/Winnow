@@ -1,8 +1,5 @@
 import axios from 'axios';
-import Cookies from 'js-cookie';
-
-const WINNOW_API_BASE_URL = 'http://localhost:8080/api';
-const authHeader = {'Authorization': `Bearer ${Cookies.get("token")}`};
+import * as Constants from '../constants';
 
 /**
  * The ApiService class provides access to all the Winnow API calls except
@@ -17,8 +14,8 @@ class ApiService {
      */
     getAllGenes() {
         return axios.get(
-            `${WINNOW_API_BASE_URL}/genes`, {
-                headers: authHeader,
+            `${Constants.WINNOW_API_BASE_URL}/genes`, {
+                headers: Constants.authHeader,
             });
     }
 
@@ -30,8 +27,8 @@ class ApiService {
      */
     getGene(geneId) {
         return axios.get(
-            `${WINNOW_API_BASE_URL}/genes/${geneId}`, {
-                headers: authHeader,
+            `${Constants.WINNOW_API_BASE_URL}/genes/${geneId}`, {
+                headers: Constants.authHeader,
             });
     }
 }

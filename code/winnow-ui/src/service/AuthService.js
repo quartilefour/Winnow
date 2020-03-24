@@ -1,8 +1,6 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
-
-const WINNOW_API_BASE_URL = 'http://localhost:8080/api';
-const authHeader = {'Authorization': `Bearer ${Cookies.get("token")}`};
+import * as Constants from '../constants';
 
 /**
  * The AuthService calls handles all the authentication API calls
@@ -17,7 +15,7 @@ class AuthService {
      * @returns { await Promise<AxiosResponse<T>>}
      */
     login(credentials) {
-        return axios.post(`${WINNOW_API_BASE_URL}/login`,
+        return axios.post(`${Constants.WINNOW_API_BASE_URL}/login`,
             credentials);
     }
 
@@ -29,7 +27,7 @@ class AuthService {
      * @returns { await Promise<AxiosResponse<T>>}
      */
     register(credentials) {
-        return axios.post(`${WINNOW_API_BASE_URL}/registration`,
+        return axios.post(`${Constants.WINNOW_API_BASE_URL}/registration`,
             credentials);
     }
 
@@ -41,9 +39,9 @@ class AuthService {
      */
      getProfile() {
         axios.get(
-            `${WINNOW_API_BASE_URL}/profile`,
+            `${Constants.WINNOW_API_BASE_URL}/profile`,
             {
-                headers: authHeader,
+                headers: Constants.authHeader,
             }
         ).then (res => {
             if (res.status === 200) {
@@ -75,10 +73,10 @@ class AuthService {
      */
     updateProfile(userInfo) {
         return axios.patch(
-            `${WINNOW_API_BASE_URL}/profile`,
+            `${Constants.WINNOW_API_BASE_URL}/profile`,
             userInfo,
             {
-                headers: authHeader,
+                headers: Constants.authHeader,
             }
         );
     }
@@ -91,10 +89,10 @@ class AuthService {
      */
     changePassword(credentials) {
         return axios.put(
-            `${WINNOW_API_BASE_URL}/profile`,
+            `${Constants.WINNOW_API_BASE_URL}/profile`,
             credentials,
             {
-                headers: authHeader,
+                headers: Constants.authHeader,
             }
         );
     }
@@ -151,7 +149,7 @@ class AuthService {
      */
     logOut() {
         //localStorage.removeItem("userInfo");
-        //return axios.post(WINNOW_API_BASE_URL + 'logout', {}, this.authHeader());
+        //return axios.post(Constants.WINNOW_API_BASE_URL + 'logout', {}, Constants.authHeader());
     }
 }
 

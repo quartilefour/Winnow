@@ -5,7 +5,7 @@ import {useAuth} from "../context/auth";
 import AuthService from "../service/AuthService";
 import {Nav, Navbar} from "react-bootstrap";
 import logoImg from "../img/logo.png";
-import {Link, Redirect} from "react-router-dom";
+import {Link} from "react-router-dom";
 
 /**
  * Renders the navigation bar for user interface, visible only to
@@ -27,7 +27,7 @@ const NavBar = (props) => {
 
     if (tokenInvalid) {
         console.warn(`Navbar tokenValid: ${tokenInvalid}`);
-        this.logOut();
+        logOut();
     }
 
 

@@ -8,7 +8,7 @@ import AuthService from "../service/AuthService";
 function Profile(props) {
 
     const [ isLoading, setIsLoading ] = useState(false);
-    const [ data, setData ] = useState({});
+    const [ data, setData ] = useState(AuthService.getProfile());
     const [error, setError] = useState(null);
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
@@ -18,6 +18,7 @@ function Profile(props) {
     const user = AuthService.getProfile();
 
     console.info(`Profile props: ${JSON.stringify(user)}`);
+    console.info(`Profile data: ${JSON.stringify(data)}`);
 
     return (
         <Card id="cardUserProfile">
