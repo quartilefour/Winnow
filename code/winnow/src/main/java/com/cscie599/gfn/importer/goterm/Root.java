@@ -2,6 +2,11 @@ package com.cscie599.gfn.importer.goterm;
 
 import java.util.List;
 
+
+/**
+ *
+ * @author PulkitBhanot
+ */
 public class Root
 {
     private List<Graphs> graphs;

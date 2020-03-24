@@ -33,6 +33,7 @@ import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.sql.DataSource;
+import java.io.File;
 
 @Configuration
 @EnableBatchProcessing
@@ -50,7 +51,7 @@ public class GeneGoTermIngester {
     @Autowired
     DataSource dataSource;
 
-    @Value("file:${input.gene2go.file}")
+    @Value("file:${input.directory}${input.gene2go.file}")
     private Resource inputResource;
 
     @Bean

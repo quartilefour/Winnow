@@ -28,15 +28,17 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.oxm.xstream.XStreamMarshaller;
 import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 
 import javax.sql.DataSource;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+/**
+ *
+ * @author PulkitBhanot
+ */
 @Configuration
 @EnableBatchProcessing
 @EnableAutoConfiguration
@@ -50,8 +52,7 @@ public class PubmedXMLIngester {
     @Autowired
     DataSource dataSource;
 
-    // Lila: I changed this filename for testing the pubmed-mesh ingestion
-    @Value("file:${input.short_pubmed.file}")
+    @Value("file:${input.directory}${input.pubmed.file}")
     private Resource inputResource;
 
 
@@ -168,7 +169,6 @@ public class PubmedXMLIngester {
             delegateAuthor.write(authors);
             delegatePublication.write(publications);
             delegatePublicationAuthor.write(publicationAuthors);
-            //TODO: uncomment once the MeshTerms are getting ingested.
             delegatePublicationMeshTerm.write(publicationMeshterms);
         }
     }

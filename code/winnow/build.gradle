@@ -26,7 +26,12 @@ repositories {
 	mavenCentral()
 }
 
+bootWar {
+	mainClassName = 'com.cscie599.gfn.WinnowApplication'
+}
 dependencies {
+	compile group: 'commons-io', name: 'commons-io', version: '2.5'
+	compile group: 'commons-net', name: 'commons-net', version: '3.6'
 	compile 'org.springframework.boot:spring-boot-starter-batch'
 	compile 'org.springframework.boot:spring-boot-starter-data-jpa'
 	compile 'org.springframework.boot:spring-boot-starter-jersey'

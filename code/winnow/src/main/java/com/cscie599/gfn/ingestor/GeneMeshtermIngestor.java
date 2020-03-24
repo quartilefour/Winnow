@@ -43,7 +43,7 @@ public class GeneMeshtermIngestor {
     @Autowired
     DataSource dataSource;
 
-    @Value("file:${input.gene_meshterm.file}")
+    @Value("file:${input.directory}${input.gene_meshterm.file}")
     private Resource inputResource;
 
     @Autowired

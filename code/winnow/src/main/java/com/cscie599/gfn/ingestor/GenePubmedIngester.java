@@ -1,7 +1,5 @@
 package com.cscie599.gfn.ingestor;
 
-import com.cscie599.gfn.entities.Gene;
-import com.cscie599.gfn.entities.GenePublication;
 import com.cscie599.gfn.entities.GenePublicationPK;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import org.apache.commons.logging.Log;
@@ -27,12 +25,13 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Propagation;
-import org.springframework.transaction.interceptor.DefaultTransactionAttribute;
 
 import javax.sql.DataSource;
 
+/**
+ *
+ * @author PulkitBhanot
+ */
 @Configuration
 @EnableBatchProcessing
 @EnableAutoConfiguration
@@ -46,8 +45,7 @@ public class GenePubmedIngester {
     @Autowired
     DataSource dataSource;
 
-    //Lila: I changed this file input to test pubmed-mesh ingestion
-    @Value("file:${input.short_gene2pubmed.file}")
+    @Value("file:${input.directory}${input.gene2pubmed.file}")
     private Resource inputResource;
 
     @Autowired

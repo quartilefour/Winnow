@@ -10,7 +10,7 @@ import java.io.Serializable;
 
 /**
  *
- * @author bhanotp
+ * @author PulkitBhanot
  */
 @Entity
 @Table(name = "address")

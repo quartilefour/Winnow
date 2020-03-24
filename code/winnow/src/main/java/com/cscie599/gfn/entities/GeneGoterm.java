@@ -20,7 +20,7 @@ import javax.persistence.TemporalType;
 
 /**
  *
- * @author bhanotp
+ * @author PulkitBhanot
  */
 @Entity
 @Table(name = "gene_goterm")

@@ -400,19 +400,6 @@
         <MeshHeading>
           <DescriptorName UI="D009682" MajorTopicYN="N">Magnetic Resonance Spectroscopy</DescriptorName>
         </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D008628" MajorTopicYN="Y">Mercury</DescriptorName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D011485" MajorTopicYN="N">Protein Binding</DescriptorName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D011487" MajorTopicYN="N">Protein Conformation</DescriptorName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D015032" MajorTopicYN="Y">Zinc</DescriptorName>
-          <QualifierName UI="Q000494" MajorTopicYN="N">pharmacology</QualifierName>
-        </MeshHeading>
       </MeshHeadingList>
     </MedlineCitation>
     <PubmedData>
@@ -694,39 +681,6 @@
           <DescriptorName UI="D003911" MajorTopicYN="N">Dextrans</DescriptorName>
           <QualifierName UI="Q000378" MajorTopicYN="N">metabolism</QualifierName>
         </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D005347" MajorTopicYN="N">Fibroblasts</DescriptorName>
-          <QualifierName UI="Q000201" MajorTopicYN="N">enzymology</QualifierName>
-          <QualifierName UI="Q000378" MajorTopicYN="N">metabolism</QualifierName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D005966" MajorTopicYN="N">Glucuronidase</DescriptorName>
-          <QualifierName UI="Q000378" MajorTopicYN="Y">metabolism</QualifierName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D006801" MajorTopicYN="N">Humans</DescriptorName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D007966" MajorTopicYN="N">Leukodystrophy, Metachromatic</DescriptorName>
-          <QualifierName UI="Q000201" MajorTopicYN="N">enzymology</QualifierName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D008247" MajorTopicYN="N">Lysosomes</DescriptorName>
-          <QualifierName UI="Q000187" MajorTopicYN="N">drug effects</QualifierName>
-          <QualifierName UI="Q000201" MajorTopicYN="Y">enzymology</QualifierName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D010873" MajorTopicYN="N">Pinocytosis</DescriptorName>
-          <QualifierName UI="Q000187" MajorTopicYN="N">drug effects</QualifierName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D012867" MajorTopicYN="N">Skin</DescriptorName>
-          <QualifierName UI="Q000201" MajorTopicYN="N">enzymology</QualifierName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D013429" MajorTopicYN="N">Sulfatases</DescriptorName>
-          <QualifierName UI="Q000378" MajorTopicYN="Y">metabolism</QualifierName>
-        </MeshHeading>
       </MeshHeadingList>
     </MedlineCitation>
     <PubmedData>
@@ -877,15 +831,6 @@
         <MeshHeading>
           <DescriptorName UI="D010100" MajorTopicYN="N">Oxygen</DescriptorName>
           <QualifierName UI="Q000097" MajorTopicYN="Y">blood</QualifierName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D010108" MajorTopicYN="N">Oxyhemoglobins</DescriptorName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D011485" MajorTopicYN="N">Protein Binding</DescriptorName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D013057" MajorTopicYN="N">Spectrum Analysis</DescriptorName>
         </MeshHeading>
       </MeshHeadingList>
     </MedlineCitation>
@@ -1065,24 +1010,6 @@
         </MeshHeading>
         <MeshHeading>
           <DescriptorName UI="D008680" MajorTopicYN="N">Metaraminol</DescriptorName>
-          <QualifierName UI="Q000378" MajorTopicYN="N">metabolism</QualifierName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D009020" MajorTopicYN="N">Morphine</DescriptorName>
-          <QualifierName UI="Q000494" MajorTopicYN="Y">pharmacology</QualifierName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D009021" MajorTopicYN="N">Morphine Dependence</DescriptorName>
-          <QualifierName UI="Q000378" MajorTopicYN="N">metabolism</QualifierName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D011247" MajorTopicYN="N">Pregnancy</DescriptorName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D051381" MajorTopicYN="N">Rats</DescriptorName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D014446" MajorTopicYN="N">Tyrosine 3-Monooxygenase</DescriptorName>
           <QualifierName UI="Q000378" MajorTopicYN="N">metabolism</QualifierName>
         </MeshHeading>
       </MeshHeadingList>
@@ -1265,16 +1192,6 @@
         <MeshHeading>
           <DescriptorName UI="D011506" MajorTopicYN="N">Proteins</DescriptorName>
           <QualifierName UI="Q000378" MajorTopicYN="N">metabolism</QualifierName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D051381" MajorTopicYN="N">Rats</DescriptorName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D013347" MajorTopicYN="N">Subcellular Fractions</DescriptorName>
-          <QualifierName UI="Q000201" MajorTopicYN="N">enzymology</QualifierName>
-        </MeshHeading>
-        <MeshHeading>
-          <DescriptorName UI="D013696" MajorTopicYN="N">Temperature</DescriptorName>
         </MeshHeading>
       </MeshHeadingList>
     </MedlineCitation>

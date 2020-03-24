@@ -19,7 +19,7 @@ import javax.persistence.Table;
 
 /**
  *
- * @author bhanotp
+ * @author PulkitBhanot
  */
 @Entity
 @Table(name = "gene_relationship")

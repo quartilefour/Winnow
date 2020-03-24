@@ -12,7 +12,7 @@ import javax.persistence.Embeddable;
 
 /**
  *
- * @author bhanotp
+ * @author PulkitBhanot
  */
 @Embeddable
 public class GeneGenePK implements Serializable {

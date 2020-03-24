@@ -1,5 +1,9 @@
 package com.cscie599.gfn.importer.genegroup;
 
+/**
+ *
+ * @author PulkitBhanot
+ */
 public class GeneGroup {
     String geneId;
     String relationship;
