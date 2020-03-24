@@ -14,7 +14,7 @@ import java.util.concurrent.TimeUnit;
  *
  * @author PulkitBhanot
  */
-@SpringBootApplication
+//@SpringBootApplication
 public class FTPFileDownloaderApp implements CommandLineRunner {
 
 
