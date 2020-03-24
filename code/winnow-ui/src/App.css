@@ -36,3 +36,23 @@
     transform: rotate(360deg);
   }
 }
+
+#cardUserProfile, #cardUserProfile Form {
+  margin-top: 1em;
+}
+
+.form-row {
+  margin-bottom: 5px;
+}
+
+#formUserDetail {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.fgProfile {
+  border: darkseagreen solid 2px;
+  padding: 10px;
+  border-radius: 10px;
+}

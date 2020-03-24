@@ -15,15 +15,18 @@
 package com.cscie599.gfn.controller;
 
 import com.cscie599.gfn.entities.User;
+import com.cscie599.gfn.repository.UserRepository;
 import com.cscie599.gfn.service.SecurityService;
 import com.cscie599.gfn.service.UserService;
 import com.cscie599.gfn.validator.UserValidator;
+import com.cscie599.gfn.views.UserView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -47,11 +50,59 @@ public class UserController {
 
     public static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    @GetMapping("/registration")
-    public String registration(Model model) {
-        model.addAttribute("userForm", new User());
+    @ApiOperation(value = "Retrieve current user profile")
+    @GetMapping("/profile")
+    public UserView getProfile(Authentication authentication) {
+        String userEmail = authentication.getPrincipal().toString();
+        User user = userService.findByUserEmail(userEmail);
+        return new UserView(
+                user.getUserEmail(),
+                user.getFirstName(),
+                user.getLastName()
+        );
+    }
 
-        return "registration";
+    /**
+     * Update user profile (password not included - will be separate method (PATCH)
+     *
+     * This doesn't work yet, needs to retrieve fields from @RequestBody, validate
+     * data, set User properties, save User, then return new UserView with
+     * updated properties or error.
+     *
+     * @param authentication
+     * @return
+     */
+    @ApiOperation(value = "Update current user profile")
+    @PutMapping("/profile")
+    public UserView updateProfile(Authentication authentication) {
+        String userEmail = authentication.getPrincipal().toString();
+        User user = userService.findByUserEmail(userEmail);
+        return new UserView(
+                user.getUserEmail(),
+                user.getFirstName(),
+                user.getLastName()
+        );
+    }
+
+    /**
+     * Change user password
+     *
+     * This doesn't work yet, needs to retrieve fields from @RequestBody,
+     * validate data, set User password, save User, then return OK or error.
+     *
+     * @param authentication
+     * @return
+     */
+    @ApiOperation(value = "Change current user password")
+    @PatchMapping("/profile")
+    public UserView changePassword(Authentication authentication) {
+        String userEmail = authentication.getPrincipal().toString();
+        User user = userService.findByUserEmail(userEmail);
+        return new UserView(
+                user.getUserEmail(),
+                user.getFirstName(),
+                user.getLastName()
+        );
     }
 
     @ApiOperation(value = "Register new user")
@@ -73,21 +124,5 @@ public class UserController {
             headers.setLocation(uriComponentsBuilder.path("/api/user/{id}").buildAndExpand(user.getUserId()).toUri());
             return new ResponseEntity<String>(headers, HttpStatus.CREATED);
         }
-    }
-
-    @GetMapping("/login")
-    public String login(Model model, String error, String logout) {
-        if (error != null)
-            model.addAttribute("error", "Your username and password is invalid.");
-
-        if (logout != null)
-            model.addAttribute("message", "You have been logged out successfully.");
-
-        return "login";
-    }
-
-    @GetMapping({"/", "/welcome"})
-    public String welcome(Model model) {
-        return "welcome";
     }
 }

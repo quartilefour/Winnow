@@ -6,7 +6,7 @@ import styled from 'styled-components';
 
 const Card = styled.div`
   box-sizing: border-box;
-  max-width: 410px;
+  max-width: 510px;
   margin: 0 auto;
   padding: 0 2rem;
   display: flex;

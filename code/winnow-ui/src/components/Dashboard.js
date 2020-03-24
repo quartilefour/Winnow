@@ -40,32 +40,32 @@ function Dashboard(props) {
     return (
         <div className="tab-container">
             <Error>{error}</Error>
-            <Tab.Container id="left-tabs-example" defaultActiveKey="first" className="tab-container">
+            <Tab.Container id="left-tabs-example" defaultActiveKey="gene2mesh" className="tab-container">
                 <Row>
                     <Col sm={3}>
                         <Nav variant="pills" className="flex-column">
                             <Nav.Item>
-                                <Nav.Link eventKey="first">Bookmarks</Nav.Link>
+                                <Nav.Link eventKey="bookmarks">Bookmarks</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="second">MeSH 2 Gene</Nav.Link>
+                                <Nav.Link eventKey="mesh2gene">MeSH 2 Gene</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="third">Gene 2 MeSH</Nav.Link>
+                                <Nav.Link eventKey="gene2mesh">Gene 2 MeSH</Nav.Link>
                             </Nav.Item>
                         </Nav>
                     </Col>
                     <Col sm={9}>
                         <Tab.Content>
-                            <Tab.Pane eventKey="first">
+                            <Tab.Pane eventKey="bookmarks">
                                 <p>Bookmark Tab</p>
                                 <BookmarkTab bookmarkData={null}/>
                             </Tab.Pane>
-                            <Tab.Pane eventKey="second">
+                            <Tab.Pane eventKey="mesh2gene">
                                 <p>MeSH 2 Gene Tab</p>
                                 <Mesh2GeneTab meshData={null}/>
                             </Tab.Pane>
-                            <Tab.Pane eventKey="third" onClick={getGenes}>
+                            <Tab.Pane eventKey="gene2mesh" onClick={getGenes}>
                                 <p>Gene 2 MeSH Tab</p>
                                 <Gene2MeshTab geneData={geneData}/>
                             </Tab.Pane>

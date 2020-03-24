@@ -1,7 +1,7 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 
-const WINNOW_API_BASE_URL = 'http://localhost:8080/api/';
+const WINNOW_API_BASE_URL = 'http://localhost:8080/api';
 const authHeader = {'Authorization': `Bearer ${Cookies.get("token")}`};
 
 /**
@@ -17,7 +17,8 @@ class AuthService {
      * @returns { await Promise<AxiosResponse<T>>}
      */
     login(credentials) {
-        return axios.post(WINNOW_API_BASE_URL + "login", credentials);
+        return axios.post(`${WINNOW_API_BASE_URL}/login`,
+            credentials);
     }
 
     /**
@@ -28,7 +29,8 @@ class AuthService {
      * @returns { await Promise<AxiosResponse<T>>}
      */
     register(credentials) {
-        return axios.post(WINNOW_API_BASE_URL + "registration", credentials);
+        return axios.post(`${WINNOW_API_BASE_URL}/registration`,
+            credentials);
     }
 
     /**
@@ -37,13 +39,31 @@ class AuthService {
      *
      * @returns {await Promise<AxiosResponse<T>>}
      */
-    getProfile() {
-        return axios.get(
+     getProfile() {
+        axios.get(
             `${WINNOW_API_BASE_URL}/profile`,
             {
                 headers: authHeader,
             }
-        );
+        ).then (res => {
+            if (res.status === 200) {
+                res.data['statusCode'] = res.status;
+                console.log(`getProfile(): ${JSON.stringify(res.data)}`);
+                return res.data;
+            } else {
+                console.log(`getProfile(): Non-200 status from API: ${JSON.stringify(res)}`);
+                return {
+                    "statusCode": res.status,
+                    "statusText": res.statusText
+                }
+            }
+        }).catch(error => {
+            console.log(`getProfile(): error from API: ${JSON.stringify(error)}`);
+            return {
+                "statusCode": error.response.status,
+                "statusText": error.toString()
+            }
+        });
     }
 
     /**
@@ -109,6 +129,21 @@ class AuthService {
             return this.parseToken(token).sub;
         }
         return null;
+    }
+
+    /**
+     * Verify that user token is still valid
+     *
+     * @returns boolean
+     */
+    isTokenExpired() {
+        let token = Cookies.get("token") ? Cookies.get("token") : null;
+        if (token !== null) {
+            let dateNow = new Date();
+            console.info(`isTokenExpired: ${this.parseToken(token).exp*1000} : ${dateNow.getTime()}`);
+            return this.parseToken(token).exp*1000 < dateNow.getTime();
+        }
+        return true;
     }
 
     /**

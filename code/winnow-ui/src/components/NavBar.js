@@ -19,10 +19,17 @@ const NavBar = (props) => {
 
     const {authToken, setAuthToken} = useAuth();
     const user = AuthService.getUserInfo();
+    const tokenInvalid = AuthService.isTokenExpired();
 
     function logOut() {
         setAuthToken(null);
     }
+
+    if (tokenInvalid) {
+        console.warn(`Navbar tokenValid: ${tokenInvalid}`);
+        this.logOut();
+    }
+
 
     return authToken ?
         <Navbar bg="light" expand="lg">
@@ -40,13 +47,8 @@ const NavBar = (props) => {
                 <Nav className="mr-auto">
                     <Nav.Link as={Link} to="/">Dashboard</Nav.Link>
                 </Nav>
-                <Nav.Link as={Link} to={{
-                    pathname: '/profile',
-                    state: {
-                        userEmail: {user}
-                    }
-                }}>
-                    <FontAwesomeIcon icon={faUser} color="blue" />
+                <Nav.Link as={Link} to='/profile'>
+                    <FontAwesomeIcon icon={faUser} color="cornflowerblue" />
                 </Nav.Link>
                 <Nav.Item>
                     ({user})

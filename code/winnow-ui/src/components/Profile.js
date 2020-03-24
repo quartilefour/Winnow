@@ -1,74 +1,106 @@
-import React, {useState} from 'react';
-import {Button, Card, Error, Form, Input, Logo} from "./HTMLElements";
+import React, {useState, useEffect} from 'react';
+import {Form, Col, Button} from 'react-bootstrap';
+import {Card, Error } from "./HTMLElements";
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
 import { faUser } from "@fortawesome/free-solid-svg-icons";
+import AuthService from "../service/AuthService";
 
 function Profile(props) {
-    let state = props.location.state;
 
+    const [ isLoading, setIsLoading ] = useState(false);
+    const [ data, setData ] = useState({});
     const [error, setError] = useState(null);
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [userEmail, setUserEmail] = useState("");
     const [userPassword, setUserPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
+    const user = AuthService.getProfile();
 
-    console.info(`Profile props: ${state.userEmail}`);
+    console.info(`Profile props: ${JSON.stringify(user)}`);
 
     return (
-        <Card>
-            <FontAwesomeIcon icon={faUser} color="cornflowerblue" size="6x"/>
+        <Card id="cardUserProfile">
+            <FontAwesomeIcon id="profileImg" icon={faUser} color="cornflowerblue" size="6x"/>
             <Form>
+                <Form.Group
+                    className="fgProfile"
+                >
                 <Error>{error}</Error>
-                <Input
-                    type="text"
-                    name="firstName"
-                    value={firstName}
-                    onChange={e => {
-                        setFirstName(e.target.value);
-                    }}
-                    placeholder="First Name"
-                />
-                <Input
-                    type="text"
-                    name="lastName"
-                    value={lastName}
-                    onChange={e => {
-                        setLastName(e.target.value);
-                    }}
-                    placeholder="Last Name"
-                />
-                <Input
-                    type="email"
-                    name="userEmail"
-                    value={userEmail}
-                    onChange={e => {
-                        setUserEmail(e.target.value);
-                    }}
-                    placeholder="E-mail Address"
-                />
-                <Input
-                    type="password"
-                    name="userPassword"
-                    value={userPassword}
-                    onChange={e => {
-                        setUserPassword(e.target.value);
-                    }}
-                    placeholder="Password"
-                />
-                <Input
-                    type="password"
-                    name="passwordConfirm"
-                    value={passwordConfirm}
-                    onChange={e => {
-                        setPasswordConfirm(e.target.value);
-                    }}
-                    placeholder="Confirm Password"
-                />
-                <Button onClick={null}>Update</Button>
+                    <Form.Row>
+                        <Col>
+                            <Form.Control
+                                type="text"
+                                name="firstName"
+                                value={firstName}
+                                onChange={e => {
+                                    setFirstName(e.target.value);
+                                }}
+                                placeholder="First Name"
+                            />
+                        </Col>
+                        <Col>
+                            <Form.Control
+                                type="text"
+                                name="lastName"
+                                value={lastName}
+                                onChange={e => {
+                                    setLastName(e.target.value);
+                                }}
+                                placeholder="Last Name"
+                            />
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <Form.Control
+                                type="email"
+                                name="userEmail"
+                                value={userEmail ? userEmail : undefined}
+                                onChange={e => {
+                                    setUserEmail(e.target.value);
+                                }}
+                                placeholder="E-mail Address"
+                            />
+                        </Col>
+                    </Form.Row>
+                    <Button onClick={null} disabled={true}>Update</Button>
+                </Form.Group>
+                <Form.Group
+                    className="fgProfile"
+                    label="Change Password"
+                >
+                    <Form.Row>
+                        <Col>
+                            <Form.Control
+                                type="password"
+                                name="userPassword"
+                                value={userPassword}
+                                onChange={e => {
+                                    setUserPassword(e.target.value);
+                                }}
+                                placeholder="Password"
+                            />
+                        </Col>
+                    </Form.Row>
+                    <Form.Row>
+                        <Col>
+                            <Form.Control
+                                type="password"
+                                name="passwordConfirm"
+                                value={passwordConfirm}
+                                onChange={e => {
+                                    setPasswordConfirm(e.target.value);
+                                }}
+                                placeholder="Confirm Password"
+                            />
+                        </Col>
+                    </Form.Row>
+                <Button onClick={null} disabled={true}>Change</Button>
+                </Form.Group>
             </Form>
         </Card>
     )
-}
+};
 
 export default Profile;

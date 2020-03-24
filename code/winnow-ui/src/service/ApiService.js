@@ -34,23 +34,6 @@ class ApiService {
                 headers: authHeader,
             });
     }
-
-    fetchUserById(userId) {
-        return axios.get(WINNOW_API_BASE_URL + '/' + userId);
-    }
-
-    deleteUser(userId) {
-        return axios.delete(WINNOW_API_BASE_URL + '/' + userId);
-    }
-
-    addUser(user) {
-        return axios.post(""+WINNOW_API_BASE_URL, user);
-    }
-
-    editUser(user) {
-        return axios.put(WINNOW_API_BASE_URL + '/' + user.id, user);
-    }
-
 }
 
 export default new ApiService();
