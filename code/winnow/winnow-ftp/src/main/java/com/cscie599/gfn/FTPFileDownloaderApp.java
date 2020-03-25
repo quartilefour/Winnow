@@ -29,9 +29,10 @@ public class FTPFileDownloaderApp implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        CountDownLatch latch = new CountDownLatch(2);
+        CountDownLatch latch = new CountDownLatch(3);
         new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene_info", "/data/raw/gene_info", latch, "/data/extracted/")).start();
         new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene2go", "/data/raw/gene_info", latch, "/data/extracted/")).start();
+        new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene2pubmed", "/data/raw/gene_info", latch, "/data/extracted/")).start();
 
         latch.await(30, TimeUnit.HOURS);
         if (latch.getCount() == 0) {
