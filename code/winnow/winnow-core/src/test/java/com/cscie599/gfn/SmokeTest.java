@@ -29,7 +29,7 @@ public class SmokeTest {
     private StatusController statusController;
 
     @Test
-    public void testContexLoads() throws Exception {
+    public void testContextLoads() throws Exception {
         assertThat(geneController).isNotNull();
         assertThat(userController).isNotNull();
         assertThat(jobLauncherController).isNotNull();
