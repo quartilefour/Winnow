@@ -1,7 +1,9 @@
 package com.cscie599.gfn;
 
+import com.cscie599.gfn.ftp.downloader.BaselinePubmedDownloadRunnable;
 import com.cscie599.gfn.ftp.downloader.FTPFileDownloadRunnable;
 import com.cscie599.gfn.ftp.downloader.HTTPGeneOntologyDownloadRunnable;
+import com.cscie599.gfn.ftp.downloader.IncrementalPubmedDownloadRunnable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.boot.CommandLineRunner;
@@ -30,12 +32,14 @@ public class FTPFileDownloaderApp implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
-        CountDownLatch latch = new CountDownLatch(5);
-        new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene_info", "/data/raw/gene_info", latch, "/data/extracted/")).start();
-        new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene2go", "/data/raw/gene_info", latch, "/data/extracted/")).start();
-        new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene2pubmed", "/data/raw/gene_info", latch, "/data/extracted/")).start();
-        new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene_group", "/data/raw/gene_info", latch, "/data/extracted/")).start();
+        CountDownLatch latch = new CountDownLatch(7);
+        new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene_info", "/data/raw/gene_info", latch, "/data/extracted/gene_info/")).start();
+        new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene2go", "/data/raw/gene2go", latch, "/data/extracted/gene2go/")).start();
+        new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene2pubmed", "/data/raw/gene2pubmed", latch, "/data/extracted/gene2pubmed/")).start();
+        new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene_group", "/data/raw/gene_group", latch, "/data/extracted/gene_group/")).start();
         new Thread(new HTTPGeneOntologyDownloadRunnable("gene_ontology", latch, "/data/extracted/")).start();
+        new Thread(new BaselinePubmedDownloadRunnable(NCBI_FTP_SERVER_NAME,"/pubmed/baseline","pubmed", "/data/raw/pubmed", latch, "/data/extracted/")).start();
+        new Thread(new IncrementalPubmedDownloadRunnable(NCBI_FTP_SERVER_NAME,"/pubmed/updatefiles","pubmed", "/data/raw/pubmed", latch, "/data/extracted/")).start();
 
         latch.await(30, TimeUnit.HOURS);
         if (latch.getCount() == 0) {

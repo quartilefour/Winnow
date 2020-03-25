@@ -23,4 +23,4 @@ docker-compose build
 
 echo "Building the winnow-ftp docker image "
 
-docker build -f ./deploy/local/ftpapp/Dockerfile --label winnow-ftpapp -t gfn_ftpapp.cscie99.com .
+docker build -f ./deploy/local/ftpapp/Dockerfile --label winnow-ftpapp -t gfn_ftpapp.cscie99.com code/winnow/winnow-ftp

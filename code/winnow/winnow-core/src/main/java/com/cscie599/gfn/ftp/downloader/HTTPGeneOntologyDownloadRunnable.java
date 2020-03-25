@@ -39,10 +39,6 @@ public class HTTPGeneOntologyDownloadRunnable implements Runnable {
                 Files.createDirectories(newDirPath);
             }
 
-            newDirPath = Paths.get(extractedFolderLocation);
-            if (!Files.exists(newDirPath)) {
-                Files.createDirectories(newDirPath);
-            }
             FileUtils.copyURLToFile(
                     new URL("http://current.geneontology.org/ontology/subsets/goslim_agr.json"),
                     new File(extractedFolderLocation+"/goslim_agr.json"),

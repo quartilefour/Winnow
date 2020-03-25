@@ -63,6 +63,19 @@ public class FTPFileDownloadRunnable  implements Runnable {
     @Override
     public void run() {
         try {
+
+            String rawFolderLocation = this.localFilePath;
+            Path newDirPath = Paths.get(rawFolderLocation);
+            if (!Files.exists(newDirPath)) {
+                Files.createDirectories(newDirPath);
+            }
+
+            String extractedFolderLocation = this.extractedFileLocation;
+            newDirPath = Paths.get(extractedFolderLocation);
+            if (!Files.exists(newDirPath)) {
+                Files.createDirectories(newDirPath);
+            }
+
             FTPClient ftpClient = null;
             String time = null;
             String filePath = this.ftpFilePath + File.separator + this.fileName + FTP_FILEEXTENSION;
@@ -88,10 +101,6 @@ public class FTPFileDownloadRunnable  implements Runnable {
                 latch.countDown();
             }
             sdf.parse(time);
-            Path newDirPath = Paths.get(this.localFilePath);
-            if (!Files.exists(newDirPath)) {
-                Files.createDirectories(newDirPath);
-            }
             String localFilePath = this.localFilePath + File.separator + this.fileName + "_" + time + FTP_FILEEXTENSION;
             logger.info("Local File path on the local server " + localFilePath);
 
