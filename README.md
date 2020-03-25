@@ -36,9 +36,9 @@ Gene Function Navigation Tool
  
  `docker run --network gfn_default -p 8080:8080 -t cscie599/gs-spring-boot-docker`
  
- To start the ftpdownloader container on your local machine run the following command, please do change the location of the source folder.
+ To start the ftpdownloader container on your local machine, create the folder `tmp-docker`, `tmp-docker/extracted`, `tmp-docker/raw` on your local machine and run the following command, please do change the location of the source folder.
  
- `docker run --network gfn_default --mount source=<src-folder>,target=/data gfn_ftpapp.cscie99.com:latest`
+ `docker run --network gfn_default --mount type=bind,source=<path to the folder>/tmp-docker,target=/data gfn_ftpapp.cscie99.com:latest`
     
 ## Code Organization
 * code/winnow/ - springboot backend app

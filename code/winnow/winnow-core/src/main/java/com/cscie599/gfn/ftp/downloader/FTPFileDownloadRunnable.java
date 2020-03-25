@@ -22,25 +22,34 @@ import java.util.zip.GZIPInputStream;
 public class FTPFileDownloadRunnable  implements Runnable {
 
     protected static final Log logger = LogFactory.getLog(FTPFileDownloadRunnable.class);
-
+    // URL of the server from where the file has to be downloaded
     private final String ftpServerURL;
+    // Path on the ftp server for the location of the file
     private final String ftpFilePath;
-    private final String localFilePath;
+    // Exact filename to be downloaded
     private final String fileName;
+    // Path where the raw file from the server is going to be downloaded
+    private final String localFilePath;
+    // username for the FTP server
     private final String username;
+    // password to connect to the FTP server
     private final String password;
+    // Location where the unzipped file will be stored
+    private final String extractedFileLocation;
+    // latch to be marked as processed successfully
     private final CountDownLatch latch;
     private final static String FTP_USERNAME = "anonymous";
     private final static String FTP_USERPASS = "";
     private final static String FTP_FILEEXTENSION = ".gz";
+    //date format to be appended to the file
     private final static SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMDDhhmmss");
     byte[] buffer = new byte[1024];
 
-    public FTPFileDownloadRunnable(String ftpServerURL, String ftpFilePath, String fileName, String localFilePath, CountDownLatch latch) {
-        this(ftpServerURL, ftpFilePath, fileName, localFilePath, FTP_USERNAME, FTP_USERPASS, latch);
+    public FTPFileDownloadRunnable(String ftpServerURL, String ftpFilePath, String fileName, String localFilePath, CountDownLatch latch, String extractedFileLocation) {
+        this(ftpServerURL, ftpFilePath, fileName, localFilePath, FTP_USERNAME, FTP_USERPASS, latch, extractedFileLocation);
     }
 
-    public FTPFileDownloadRunnable(String ftpServerURL, String ftpFilePath, String fileName, String localFilePath, String username, String password, CountDownLatch latch) {
+    public FTPFileDownloadRunnable(String ftpServerURL, String ftpFilePath, String fileName, String localFilePath, String username, String password, CountDownLatch latch, String extractedFileLocation) {
         this.ftpServerURL = ftpServerURL;
         this.ftpFilePath = ftpFilePath;
         this.fileName = fileName;
@@ -48,6 +57,7 @@ public class FTPFileDownloadRunnable  implements Runnable {
         this.username = username;
         this.password = password;
         this.latch = latch;
+        this.extractedFileLocation = extractedFileLocation;
     }
 
     @Override
@@ -99,7 +109,7 @@ public class FTPFileDownloadRunnable  implements Runnable {
                         new GZIPInputStream(new FileInputStream(outputFile));
 
                 FileOutputStream out =
-                        new FileOutputStream("/data/data/" + fileName);
+                        new FileOutputStream(extractedFileLocation + fileName);
                 int len;
                 while ((len = gzis.read(buffer)) > 0) {
                     out.write(buffer, 0, len);
