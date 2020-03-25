@@ -43,10 +43,13 @@ public class FTPFileDownloaderApp implements CommandLineRunner {
         new Thread(new BaselinePubmedDownloadRunnable(NCBI_FTP_SERVER_NAME,"/pubmed/baseline","pubmed", "/data/raw/pubmed", latch, "/data/extracted/")).start();
         new Thread(new IncrementalPubmedDownloadRunnable(NCBI_FTP_SERVER_NAME,"/pubmed/updatefiles","pubmed", "/data/raw/pubmed", latch, "/data/extracted/")).start();
 
-        latch.await(60, TimeUnit.HOURS);
+        latch.await(30, TimeUnit.HOURS);
         if (latch.getCount() == 0) {
             logger.info("All files downloaded successfully, exiting now");
             System.exit(0);
+        }else{
+            logger.warn("All files not downloaded, exiting now");
+            System.exit(1);
         }
     }
 }

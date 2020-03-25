@@ -64,10 +64,11 @@ public class IncrementalPubmedDownloadRunnable extends BasePubmedDownloadRunnabl
                 else {
                     logger.warn("Not counting baseline files" + fileNameWithOutExt);
                 }
-                logger.info("File name" +fileNameWithOutExt);
+                logger.info("File name" + fileNameWithOutExt);
             }
             int index = filesProcessed.nextClearBit(FIRST_FILE_INDEX);
-            while (index <= LAST_FILE_INDEX) {
+            int retry_count = 0;
+            while (index <= LAST_FILE_INDEX && retry_count < 5) {
                 logger.info("Starting from index" + index);
                 FTPClient ftpClient = new FTPClient();
                 String filePath = this.ftpFilePath + File.separator + "pubmed20n" + String.format("%04d", index) + FTP_FILEEXTENSION;
@@ -89,8 +90,7 @@ public class IncrementalPubmedDownloadRunnable extends BasePubmedDownloadRunnabl
                     fos.flush();
                     fos.close();
                     logger.info("Local File path on the local server " + localFilePath);
-                    GZIPInputStream gzis =
-                            new GZIPInputStream(new FileInputStream(outputFile));
+                    GZIPInputStream gzis = new GZIPInputStream(new FileInputStream(outputFile));
 
                     FileOutputStream out =
                             new FileOutputStream(extractedFolderLocation + File.separator + "pubmed20n" + String.format("%04d", index) + EXTRACTED_FILEEXTENSION);
@@ -103,10 +103,13 @@ public class IncrementalPubmedDownloadRunnable extends BasePubmedDownloadRunnabl
                     logger.info("Unzipping of Downloaded file done " + fileName);
                     filesProcessed.flip(index);
                     index = filesProcessed.nextClearBit(FIRST_FILE_INDEX);
+                    retry_count = 0;
                 } catch (IOException e) {
-                    logger.warn("Unable to connect to ftpserver, will retry again.");
+                    retry_count++;
+                    logger.warn("Unable to connect to ftpserver, will retry again.", e);
                 }
             }
+            logger.info("Marking job as finished successfully");
         } catch (Exception ex) {
             logger.error("Unable to complete processing of files " + fileName);
         } finally {
