@@ -93,7 +93,7 @@ public class FTPFileDownloadRunnable  implements Runnable {
                 Files.createDirectories(newDirPath);
             }
             String localFilePath = this.localFilePath + File.separator + this.fileName + "_" + time + FTP_FILEEXTENSION;
-            logger.info("Local File path on the local server" + localFilePath);
+            logger.info("Local File path on the local server " + localFilePath);
 
             File outputFile = new File(localFilePath);
             if (outputFile.exists()) {
@@ -104,7 +104,7 @@ public class FTPFileDownloadRunnable  implements Runnable {
                 ftpClient.retrieveFile(filePath, fos);
                 fos.flush();
                 fos.close();
-                logger.info("File Download complete" + outputFile.getName() + " starting with extraction of the file now");
+                logger.info("File Download complete " + outputFile.getName() + " starting with extraction of the file now");
                 GZIPInputStream gzis =
                         new GZIPInputStream(new FileInputStream(outputFile));
 
@@ -116,7 +116,7 @@ public class FTPFileDownloadRunnable  implements Runnable {
                 }
                 gzis.close();
                 out.close();
-                logger.info("Unzipping of Downloaded file done" + fileName);
+                logger.info("Unzipping of Downloaded file done " + fileName);
             }
             latch.countDown();
             ftpClient.disconnect();
