@@ -129,3 +129,8 @@ npm start
 
       `docker push 228205745268.dkr.ecr.us-east-1.amazonaws.com/cscie590:latest`
 
+* AWS batch setup
+  - Compute Environment
+  - Job queue
+  - Job definition
+  - Launching a job
