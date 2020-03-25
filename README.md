@@ -75,3 +75,57 @@ npm start
 
 
 ### Production Setup ###
+* Create a S3 bucket `cscie599`. This bucket will be used to store raw and processed data. Keep all the default settings for the bucket.
+
+* Create a new VPC with a subnet having access to internet.
+  - Provide `10.0.0.0/16` as the IPv4 CIDR. Make sure `DNS resolution` and `DNS hostnames` is enabled.
+  - Create a subnet with IPv4 CIDR 10.0.0.0/24.
+  - Create a new internet gateway and attach it to the VPC created above.
+  - Setup route table association as follows
+    - 10.0.0.0/16 -> local
+    - 0.0.0.0/0   -> <internet-gateway>
+
+* Create a cento 7 VM with an EBS attached. Install postgres on the VM by following the following instructions.
+  - Add yum repository for postgres by running the command `sudo yum install https://download.postgresql.org/pub/repos/yum/11/redhat/rhel-7-x86_64/pgdg-centos11-11-2.noarch.rpm`
+  - Download and install the postgres11 by running the command `sudo yum -y install postgresql11-server postgresql11`
+  - Initialize postgre by running the command `sudo /usr/pgsql-11/bin/postgresql-11-setup initdb`
+  - Start the postgres service `sudo systemctl start postgresql-11`
+  - Configure the postgres service to start automatically at restart `sudo systemctl start postgresql-11`
+  - Edit postgresql.conf to change the listen address to all ip addresses. `sudo vi /var/lib/pgsql/11/data/postgresql.conf`
+  - Edit pg_hba.conf and use trust for authentication `sudo vi /var/lib/pgsql/11/data/pg_hba.conf`
+  - Restart postgres service `sudo systemctl restart postgresql-11`
+  - Change password for postgres user 
+    - By first logging in without password `sudo su - postgres`
+    - Setting up a password `psql -c "alter user postgres with password '<password to be set>'"`
+  - Create a new user admin
+    - Run the following command `createuser admin`
+    - Set password for admin user `psql -c "alter user admin with password '<password to be set>'"`
+  - Create DB gfn `createdb gfn -O admin`
+  - exit from shell
+  - Connect to postgres db using the superuser (postgres) credentials `psql -U postgres -h localhost -d gfn -W` when prompted for password enter the password.
+  - Give user admin access to all schemas `GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO admin;` and exit
+  - Create schema on postgres by running the command `psql -U admin gfn -W < create_schema.sql` enter the password when prompted.
+
+* IAM setup
+  - Create a new user cscie599 with 2 permissions `AmazonEC2ContainerRegistryFullAccess` and `AmazonS3FullAccess`
+  - Create a new role, cscie599ECSS3 to be used across different AWS services with the following policies
+    - AmazonEKSClusterPolicy
+    - AmazonS3FullAccess
+    - AmazonElasticMapReduceforEC2Role
+    - AWSCodeDeployRoleForECS
+    - AWSCodeDeployRoleForECSLimited
+    - AmazonECS_FullAccess
+    - AmazonEKSServicePolicy
+    - AmazonECSTaskExecutionRolePolicy
+    - AmazonEC2ContainerServiceforEC2Role
+     
+* Create a custom AMI and mounting S3 bucket.
+      
+* Uploading containers.
+  - FTPFileDownload container setup
+    -Setup a container repository on AWS for running the AWS job e.g `228205745268.dkr.ecr.us-east-1.amazonaws.com/cscie590`. To push the FTPdownloader image run the following 2 commands in sequence after succesfully running the `build-code-containers.sh` script.
+
+      `docker tag gfn_ftpapp.cscie99.com:latest 228205745268.dkr.ecr.us-east-1.amazonaws.com/cscie590:latest`
+
+      `docker push 228205745268.dkr.ecr.us-east-1.amazonaws.com/cscie590:latest`
+
