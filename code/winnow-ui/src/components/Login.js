@@ -18,7 +18,7 @@ function Login(props) {
     const [userEmail, setUserEmail] = useState("");
     const [userPassword, setUserPassword] = useState("");
     const {setAuthToken} = useAuth();
-    const referer = props.location.state.referer || '/';
+    const referer = (props.location.state !== undefined) ? props.location.state.referer : '/';
 
 
     /* Submits user credentials to API login endpoint. */
@@ -35,7 +35,7 @@ function Login(props) {
                 setError(res.statusText);
             }
         }).catch(error => {
-                if (error.response.status === 403) {
+                if (error.response.status === 403 || error.response.status === 401) {
                     console.log("Login error: " + error);
                     setError("Invalid E-mail or password");
                 } else {
