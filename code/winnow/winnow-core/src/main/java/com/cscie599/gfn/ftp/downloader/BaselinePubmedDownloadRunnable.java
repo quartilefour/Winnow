@@ -61,7 +61,7 @@ public class BaselinePubmedDownloadRunnable extends BasePubmedDownloadRunnable i
                 else {
                     logger.warn("Not counting incremental files" + fileNameWithOutExt);
                 }
-                System.out.println(fileNameWithOutExt);
+                logger.info("File name" +fileNameWithOutExt);
             }
             int index = filesProcessed.nextClearBit(0);
             while (index <= LAST_FILE_INDEX) {

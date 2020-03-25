@@ -62,9 +62,9 @@ public class IncrementalPubmedDownloadRunnable extends BasePubmedDownloadRunnabl
                 if (index > FIRST_FILE_INDEX && index <= LAST_FILE_INDEX)
                     filesProcessed.flip(index);
                 else {
-                    logger.warn("Not counting incremental files" + fileNameWithOutExt);
+                    logger.warn("Not counting baseline files" + fileNameWithOutExt);
                 }
-                System.out.println(fileNameWithOutExt);
+                logger.info("File name" +fileNameWithOutExt);
             }
             int index = filesProcessed.nextClearBit(FIRST_FILE_INDEX);
             while (index <= LAST_FILE_INDEX) {
