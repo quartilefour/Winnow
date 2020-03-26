@@ -5,12 +5,14 @@ public class MeshtermTreeView {
     private String treeParentId;
     private String treeNodeId;
     private String meshName;
+    private boolean hasChild;
 
-    public MeshtermTreeView(String meshId, String treeParentId, String treeNodeId, String meshName) {
+    public MeshtermTreeView(String meshId, String treeParentId, String treeNodeId, String meshName, boolean hasChild) {
         this.meshId = meshId;
         this.treeParentId = treeParentId;
         this.treeNodeId = treeNodeId;
         this.meshName = meshName;
+        this.hasChild = hasChild;
     }
 
     public String getMeshId() {
@@ -28,4 +30,6 @@ public class MeshtermTreeView {
     public String getMeshName() {
         return meshName;
     }
+
+    public boolean getHasChild() { return hasChild; }
 }

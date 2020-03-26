@@ -1,11 +1,15 @@
 package com.cscie599.gfn.controller;
 
 
+import com.cscie599.gfn.controller.exceptions.MeshtermCategoryNotFoundException;
 import com.cscie599.gfn.controller.exceptions.MeshtermNotFoundException;
 import com.cscie599.gfn.entities.Meshterm;
+import com.cscie599.gfn.entities.MeshtermCategory;
 import com.cscie599.gfn.entities.MeshtermTree;
+import com.cscie599.gfn.repository.MeshtermCategoryRepository;
 import com.cscie599.gfn.repository.MeshtermRepository;
 import com.cscie599.gfn.repository.MeshtermTreeRepository;
+import com.cscie599.gfn.views.MeshtermCategoryView;
 import com.cscie599.gfn.views.MeshtermTreeView;
 import com.cscie599.gfn.views.MeshtermView;
 import io.swagger.annotations.Api;
@@ -26,6 +30,9 @@ public class MeshtermController {
 
     @Autowired
     MeshtermRepository repository;
+
+    @Autowired
+    MeshtermCategoryRepository categoryRepository;
 
     @Autowired
     MeshtermTreeRepository treeRepository;
@@ -49,6 +56,25 @@ public class MeshtermController {
         return new MeshtermView(meshterm.getMeshId(), meshterm.getName());
     }
 
+    @ApiOperation(value = "View a list of mesh term categories", response = List.class)
+    @GetMapping("/meshterms/category")
+    public List<MeshtermCategoryView> findAllCategories(){
+        List<MeshtermCategory> meshtermCategories = categoryRepository.findAll();
+        List<MeshtermCategoryView> meshtermCategoryViews = new ArrayList<>();
+        for (MeshtermCategory meshtermCategory : meshtermCategories) {
+            meshtermCategoryViews.add(new MeshtermCategoryView(meshtermCategory.getCategoryId(), meshtermCategory.getName()));
+        }
+        return meshtermCategoryViews;
+    }
+
+    @ApiOperation(value = "View one mesh term category")
+    @GetMapping("/meshterms/category/{id}")
+    MeshtermCategoryView oneCategory(@PathVariable String id) {
+        MeshtermCategory meshtermCategory = categoryRepository.findById(id)
+                .orElseThrow(() -> new MeshtermCategoryNotFoundException(id));
+        return new MeshtermCategoryView(meshtermCategory.getCategoryId(), meshtermCategory.getName());
+    }
+
     @ApiOperation(value = "View a list of mesh term trees", response = List.class)
     @GetMapping("/meshterms/tree")
     public List<MeshtermTreeView> findAllTrees(){
@@ -58,7 +84,8 @@ public class MeshtermController {
             meshtermTreeViews.add(new MeshtermTreeView(meshtermTree.getMeshtermTreePK().getMeshId(),
                     meshtermTree.getMeshtermTreePK().getTreeParentId(),
                     meshtermTree.getMeshtermTreePK().getTreeNodeId(),
-                    meshtermTree.getMeshterm().getName()));
+                    meshtermTree.getMeshterm().getName(),
+                    meshtermTreehasChild(meshtermTree)));
         }
         return meshtermTreeViews;
     }
@@ -72,7 +99,8 @@ public class MeshtermController {
             meshtermTreeViews.add(new MeshtermTreeView(meshtermTree.getMeshtermTreePK().getMeshId(),
                     meshtermTree.getMeshtermTreePK().getTreeParentId(),
                     meshtermTree.getMeshtermTreePK().getTreeNodeId(),
-                    meshtermTree.getMeshterm().getName()));
+                    meshtermTree.getMeshterm().getName(),
+                    meshtermTreehasChild(meshtermTree)));
         }
         return meshtermTreeViews;
     }
@@ -89,7 +117,8 @@ public class MeshtermController {
             meshtermTreeViews.add(new MeshtermTreeView(meshtermTree.getMeshtermTreePK().getMeshId(),
                     meshtermTree.getMeshtermTreePK().getTreeParentId(),
                     meshtermTree.getMeshtermTreePK().getTreeNodeId(),
-                    meshtermTree.getMeshterm().getName()));
+                    meshtermTree.getMeshterm().getName(),
+                    meshtermTreehasChild(meshtermTree)));
         }
         return meshtermTreeViews;
     }
@@ -107,9 +136,26 @@ public class MeshtermController {
             meshtermTreeViews.add(new MeshtermTreeView(meshtermTree.getMeshtermTreePK().getMeshId(),
                     meshtermTree.getMeshtermTreePK().getTreeParentId(),
                     meshtermTree.getMeshtermTreePK().getTreeNodeId(),
-                    meshtermTree.getMeshterm().getName()));
+                    meshtermTree.getMeshterm().getName(),
+                    meshtermTreehasChild(meshtermTree)));
         }
         return meshtermTreeViews;
+    }
+
+    boolean meshtermTreehasChild(MeshtermTree meshtermTree) {
+        String meshtermTreeId;
+        if (meshtermTree.getMeshtermTreePK().getTreeParentId().isEmpty()) {
+            meshtermTreeId = meshtermTree.getMeshtermTreePK().getTreeNodeId();
+        }
+        else {
+            meshtermTreeId = meshtermTree.getMeshtermTreePK().getTreeParentId() + "." +
+                    meshtermTree.getMeshtermTreePK().getTreeNodeId();
+        }
+        MeshtermTree meshtermTreeObject = treeRepository.findOneByTreeParentId(meshtermTreeId);
+        if (meshtermTreeObject==null) {
+            return false;
+        }
+        return true;
     }
 
 }

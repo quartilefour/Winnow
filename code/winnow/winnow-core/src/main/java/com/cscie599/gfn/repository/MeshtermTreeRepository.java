@@ -17,4 +17,6 @@ public interface MeshtermTreeRepository extends JpaRepository<MeshtermTree, Stri
     List<MeshtermTree> findAll();
     @Query("SELECT m FROM MeshtermTree m WHERE m.meshtermTreePK.treeNodeId like %:treeNodeId%")
     List<MeshtermTree> findByTreeNodeIdStartingWith(@Param("treeNodeId") String treeNodeId);
+    @Query(nativeQuery = true, value = "SELECT * FROM meshterm_tree m WHERE m.tree_parent_id = :treeParentId LIMIT 1")
+    MeshtermTree findOneByTreeParentId(@Param("treeParentId") String treeParentId);
 }

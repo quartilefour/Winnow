@@ -91,6 +91,11 @@ CREATE TABLE "meshterm" (
   "name" char(100)
 );
 
+CREATE TABLE "meshterm_category" (
+  "category_id" char(20)  PRIMARY KEY,
+  "name" char(128)
+);
+
 CREATE TABLE "meshterm_tree" (
   "mesh_id" char(20) REFERENCES meshterm (mesh_id),
   "tree_parent_id" varchar(120),
