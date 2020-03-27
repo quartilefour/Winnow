@@ -2,6 +2,23 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import * as Constants from '../constants';
 
+
+export const fetchProfileData = () => {
+    console.info(`fetchProfileData: ${Constants.WINNOW_API_BASE_URL}/profile`);
+    return new Promise((resolve, reject) => {
+        axios.get(
+            `${Constants.WINNOW_API_BASE_URL}/profile`,
+            {
+                headers: Constants.authHeader,
+            }
+        )
+            .then(res => {
+                resolve(res.data);
+            })
+            .catch(err => reject(err));
+    });
+};
+
 /**
  * The AuthService calls handles all the authentication API calls
  * for the application.
@@ -37,13 +54,13 @@ class AuthService {
      *
      * @returns {await Promise<AxiosResponse<T>>}
      */
-     getProfile() {
-        axios.get(
+     async getProfile() {
+        return axios.get(
             `${Constants.WINNOW_API_BASE_URL}/profile`,
             {
                 headers: Constants.authHeader,
             }
-        ).then (res => {
+        ).then(res => {
             if (res.status === 200) {
                 res.data['statusCode'] = res.status;
                 console.log(`getProfile(): ${JSON.stringify(res.data)}`);
