@@ -1,0 +1,119 @@
+<?xml version="1.0"?>
+<!DOCTYPE DescriptorRecordSet SYSTEM "https://www.nlm.nih.gov/databases/dtd/nlmdescriptorrecordset_20200101.dtd">
+<DescriptorRecordSet>
+    <DescriptorRecord DescriptorClass="1">
+        <DescriptorUI>D009682</DescriptorUI>
+        <DescriptorName>
+            <String>Magnetic Resonance Spectroscopy</String>
+        </DescriptorName>
+        <DateCreated>
+            <Year>1999</Year>
+            <Month>01</Month>
+            <Day>01</Day>
+        </DateCreated>
+        <DateRevised>
+            <Year>2016</Year>
+            <Month>04</Month>
+            <Day>19</Day>
+        </DateRevised>
+        <DateEstablished>
+            <Year>1966</Year>
+            <Month>01</Month>
+            <Day>01</Day>
+        </DateEstablished>
+
+        <Annotation>index element or isotope used in performing the NMR spectroscopy only if discussed (probably NIM);
+            do not confuse with MAGNETIC RESONANCE IMAGING: check text; coordinate with disease, organ or tissue using
+            pertinent qualifiers; for diagnostic use coordinate with disease /diag
+        </Annotation>
+        <HistoryNote>66(65)
+        </HistoryNote>
+        <PublicMeSHNote>66
+        </PublicMeSHNote>
+        <SeeRelatedList>
+            <SeeRelatedDescriptor>
+                <DescriptorReferredTo>
+                    <DescriptorUI>D008279</DescriptorUI>
+                    <DescriptorName>
+                        <String>Magnetic Resonance Imaging</String>
+                    </DescriptorName>
+                </DescriptorReferredTo>
+            </SeeRelatedDescriptor>
+        </SeeRelatedList>
+        <TreeNumberList>
+            <TreeNumber>E05.196.867.519</TreeNumber>
+        </TreeNumberList>
+
+    </DescriptorRecord>
+    <DescriptorRecord DescriptorClass="1">
+        <DescriptorUI>D005583</DescriptorUI>
+        <DescriptorName>
+            <String>Fourier Analysis</String>
+        </DescriptorName>
+        <DateCreated>
+            <Year>1999</Year>
+            <Month>01</Month>
+            <Day>01</Day>
+        </DateCreated>
+        <DateRevised>
+            <Year>2017</Year>
+            <Month>07</Month>
+            <Day>03</Day>
+        </DateRevised>
+        <DateEstablished>
+            <Year>1973</Year>
+            <Month>01</Month>
+            <Day>01</Day>
+        </DateEstablished>
+        <HistoryNote>73
+        </HistoryNote>
+        <PublicMeSHNote>73
+        </PublicMeSHNote>
+        <SeeRelatedList>
+            <SeeRelatedDescriptor>
+                <DescriptorReferredTo>
+                    <DescriptorUI>D058067</DescriptorUI>
+                    <DescriptorName>
+                        <String>Wavelet Analysis</String>
+                    </DescriptorName>
+                </DescriptorReferredTo>
+            </SeeRelatedDescriptor>
+        </SeeRelatedList>
+        <TreeNumberList>
+            <TreeNumber>E05.377</TreeNumber>
+            <TreeNumber>G17.226</TreeNumber>
+            <TreeNumber>L01.224.800.625</TreeNumber>
+        </TreeNumberList>
+
+    </DescriptorRecord>
+    <DescriptorRecord DescriptorClass="1">
+        <DescriptorUI>D011549</DescriptorUI>
+        <DescriptorName>
+            <String>Pseudomonas</String>
+        </DescriptorName>
+        <DateCreated>
+            <Year>1999</Year>
+            <Month>01</Month>
+            <Day>01</Day>
+        </DateCreated>
+        <DateRevised>
+            <Year>2009</Year>
+            <Month>07</Month>
+            <Day>06</Day>
+        </DateRevised>
+        <DateEstablished>
+            <Year>1966</Year>
+            <Month>01</Month>
+            <Day>01</Day>
+        </DateEstablished>
+
+        <Annotation>infection = PSEUDOMONAS INFECTIONS
+        </Annotation>
+        <NLMClassificationNumber>QW 131</NLMClassificationNumber>
+        <TreeNumberList>
+            <TreeNumber>B03.440.400.425.625.625</TreeNumber>
+            <TreeNumber>B03.660.250.580.590</TreeNumber>
+        </TreeNumberList>
+
+    </DescriptorRecord>
+</DescriptorRecordSet>

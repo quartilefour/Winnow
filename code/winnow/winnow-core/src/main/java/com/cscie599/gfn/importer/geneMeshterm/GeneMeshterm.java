@@ -1,6 +1,6 @@
 package com.cscie599.gfn.importer.geneMeshterm;
 
-public class GeneMeshtermImporter {
+public class GeneMeshterm {
     String geneId;
     String meshId;
     String pValue;

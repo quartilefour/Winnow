@@ -1,6 +1,7 @@
 package com.cscie599.gfn.ingestor;
 
 import com.cscie599.gfn.entities.GenePublicationPK;
+import com.cscie599.gfn.importer.geneMeshterm.GeneMeshterm;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -8,10 +9,12 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.LineMapper;
+import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
@@ -34,7 +37,7 @@ public class GenePubmedIngester extends BaseIngester {
     protected static final Log logger = LogFactory.getLog(GenePubmedIngester.class);
 
     @Value("file:${input.directory}${input.gene2pubmed.file}")
-    private Resource inputResource;
+    private Resource[] inputResources;
 
     @Bean
     @Order(8)
@@ -67,12 +70,14 @@ public class GenePubmedIngester extends BaseIngester {
     }
 
     @Bean
-    public FlatFileItemReader<GenePublicationPK> readerForGenePubmed() {
-        logger.info("Reading resource: " + inputResource.getFilename() + " for " + this.getClass().getName());
+    public ItemReader<GenePublicationPK> readerForGenePubmed() {
+        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName());
+        MultiResourceItemReader<GenePublicationPK> multiResourceItemReader = new MultiResourceItemReader<GenePublicationPK>();
+        multiResourceItemReader.setResources(inputResources);
         FlatFileItemReader<GenePublicationPK> itemReader = new FlatFileItemReader<GenePublicationPK>();
         itemReader.setLineMapper(lineMapperForGenePubmed());
-        setResource(itemReader, inputResource);
-        return itemReader;
+        multiResourceItemReader.setDelegate(new GZResourceAwareItemReaderItemStream(itemReader, useZippedFormat));
+        return multiResourceItemReader;
     }
 
     @Bean

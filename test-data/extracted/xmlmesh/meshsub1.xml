@@ -1,0 +1,75 @@
+<?xml version="1.0"?>
+<!DOCTYPE DescriptorRecordSet SYSTEM "https://www.nlm.nih.gov/databases/dtd/nlmdescriptorrecordset_20200101.dtd">
+<DescriptorRecordSet LanguageCode="eng">
+    <DescriptorRecord DescriptorClass="1">
+        <DescriptorUI>D009243</DescriptorUI>
+        <DescriptorName>
+            <String>NAD</String>
+        </DescriptorName>
+        <DateCreated>
+            <Year>1999</Year>
+            <Month>01</Month>
+            <Day>01</Day>
+        </DateCreated>
+        <DateRevised>
+            <Year>2016</Year>
+            <Month>05</Month>
+            <Day>31</Day>
+        </DateRevised>
+        <DateEstablished>
+            <Year>1966</Year>
+            <Month>01</Month>
+            <Day>01</Day>
+        </DateEstablished>
+        <Annotation>a coenzyme; NAD or NADP probably correct for indexing of pyridine nucleotides
+        </Annotation>
+        <NLMClassificationNumber>QU 135</NLMClassificationNumber>
+        <TreeNumberList>
+            <TreeNumber>D03.633.100.759.646.138.694</TreeNumber>
+            <TreeNumber>D08.211.589</TreeNumber>
+            <TreeNumber>D13.695.667.138.694</TreeNumber>
+            <TreeNumber>D13.695.827.068.694</TreeNumber>
+        </TreeNumberList>
+    </DescriptorRecord>
+    <DescriptorRecord DescriptorClass="1">
+        <DescriptorUI>D008968</DescriptorUI>
+        <DescriptorName>
+            <String>Molecular Conformation</String>
+        </DescriptorName>
+        <DateCreated>
+            <Year>1999</Year>
+            <Month>01</Month>
+            <Day>01</Day>
+        </DateCreated>
+        <DateRevised>
+            <Year>2015</Year>
+            <Month>06</Month>
+            <Day>23</Day>
+        </DateRevised>
+        <DateEstablished>
+            <Year>1973</Year>
+            <Month>01</Month>
+            <Day>01</Day>
+        </DateEstablished>
+        <Annotation>general or unspecified; prefer specifics; do not confuse with MOLECULAR STRUCTURE
+        </Annotation>
+        <HistoryNote>73
+        </HistoryNote>
+        <NLMClassificationNumber>QU 34</NLMClassificationNumber>
+        <PublicMeSHNote>73
+        </PublicMeSHNote>
+        <SeeRelatedList>
+            <SeeRelatedDescriptor>
+                <DescriptorReferredTo>
+                    <DescriptorUI>D008958</DescriptorUI>
+                    <DescriptorName>
+                        <String>Models, Molecular</String>
+                    </DescriptorName>
+                </DescriptorReferredTo>
+            </SeeRelatedDescriptor>
+        </SeeRelatedList>
+        <TreeNumberList>
+            <TreeNumber>G02.111.570.820</TreeNumber>
+        </TreeNumberList>
+    </DescriptorRecord>
+</DescriptorRecordSet>

@@ -8,10 +8,12 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.LineMapper;
+import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
@@ -34,7 +36,7 @@ public class GeneInfoIngester extends BaseIngester {
     protected static final Log logger = LogFactory.getLog(GeneInfoIngester.class);
 
     @Value("file:${input.directory}${input.gene-info.file}")
-    private Resource inputResource;
+    private Resource[] inputResources;
 
     @Bean
     @Order(2)
@@ -68,12 +70,15 @@ public class GeneInfoIngester extends BaseIngester {
     }
 
     @Bean
-    public FlatFileItemReader<Gene> readerForGene() {
-        logger.info("Reading resource: " + inputResource.getFilename() + " for " + this.getClass().getName());
+    public ItemReader<Gene> readerForGene() {
+        logger.info("Reading resource: " + inputResources.toString() + " for " + this.getClass().getName());
+        MultiResourceItemReader<Gene> multiResourceItemReader = new MultiResourceItemReader<>();
+        multiResourceItemReader.setResources(inputResources);
+        multiResourceItemReader.setStrict(true);
         FlatFileItemReader<Gene> itemReader = new FlatFileItemReader<Gene>();
         itemReader.setLineMapper(lineMapperForGene());
-        setResource(itemReader, inputResource);
-        return itemReader;
+        multiResourceItemReader.setDelegate(new GZResourceAwareItemReaderItemStream(itemReader, useZippedFormat));
+        return multiResourceItemReader;
     }
 
     @Bean
@@ -103,9 +108,9 @@ public class GeneInfoIngester extends BaseIngester {
 
     class DBLogProcessor implements ItemProcessor<Gene, Gene> {
         public Gene process(Gene gene) throws Exception {
-            if (logger.isDebugEnabled()) {
-                logger.debug("Inserting Gene : " + gene);
-            }
+           // if (logger.isDebugEnabled()) {
+                logger.info("Inserting Gene : " + gene);
+            //}
             return gene;
         }
     }

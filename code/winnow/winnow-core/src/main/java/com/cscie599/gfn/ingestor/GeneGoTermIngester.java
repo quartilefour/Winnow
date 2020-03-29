@@ -1,5 +1,6 @@
 package com.cscie599.gfn.ingestor;
 
+import com.cscie599.gfn.entities.Gene;
 import com.cscie599.gfn.entities.GeneGotermPK;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import org.apache.commons.logging.Log;
@@ -8,10 +9,12 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.LineMapper;
+import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
@@ -31,7 +34,7 @@ public class GeneGoTermIngester extends BaseIngester {
     protected static final Log logger = LogFactory.getLog(GeneGoTermIngester.class);
 
     @Value("file:${input.directory}${input.gene2go.file}")
-    private Resource inputResource;
+    private Resource[] inputResources;
 
     @Bean
     @Order(4)
@@ -64,12 +67,15 @@ public class GeneGoTermIngester extends BaseIngester {
     }
 
     @Bean
-    public FlatFileItemReader<GeneGotermPK> readerForGeneGotermPK() {
-        logger.info("Reading resource: " + inputResource.getFilename() + " for " + this.getClass().getName());
+    public ItemReader<GeneGotermPK> readerForGeneGotermPK() {
+        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName());
+        MultiResourceItemReader<GeneGotermPK> multiResourceItemReader = new MultiResourceItemReader<GeneGotermPK>();
+        multiResourceItemReader.setResources(inputResources);
+        multiResourceItemReader.setStrict(true);
         FlatFileItemReader<GeneGotermPK> itemReader = new FlatFileItemReader<GeneGotermPK>();
         itemReader.setLineMapper(lineMapperForGeneGotermPK());
-        setResource(itemReader, inputResource);
-        return itemReader;
+        multiResourceItemReader.setDelegate(new GZResourceAwareItemReaderItemStream(itemReader, useZippedFormat));
+        return multiResourceItemReader;
     }
 
     @Bean

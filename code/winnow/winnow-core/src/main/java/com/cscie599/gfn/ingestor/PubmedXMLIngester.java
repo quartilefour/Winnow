@@ -1,6 +1,7 @@
 package com.cscie599.gfn.ingestor;
 
 import com.cscie599.gfn.entities.*;
+import com.cscie599.gfn.importer.genegroup.GeneGroup;
 import com.cscie599.gfn.importer.pubmed.PubmedArticle;
 import com.cscie599.gfn.importer.pubmed.converter.MeshHeadingConverter;
 import com.cscie599.gfn.importer.pubmed.converter.PMIDConverter;
@@ -11,9 +12,11 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.batch.item.support.CompositeItemWriter;
 import org.springframework.batch.item.xml.StaxEventItemReader;
 import org.springframework.beans.factory.annotation.Value;
@@ -42,7 +45,7 @@ public class PubmedXMLIngester extends BaseIngester {
     protected static final Log logger = LogFactory.getLog(PubmedXMLIngester.class);
 
     @Value("file:${input.directory}${input.pubmed.file}")
-    private Resource inputResource;
+    private Resource[] inputResources;
 
     @Bean
     @Order(7)
@@ -160,10 +163,13 @@ public class PubmedXMLIngester extends BaseIngester {
 
 
     @Bean
-    public StaxEventItemReader<PubmedArticle> readerForPubmed() {
-        logger.info("Reading resource: " + inputResource.getFilename() + " for " + this.getClass().getName());
+    public ItemReader<PubmedArticle> readerForPubmed() {
+        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName());
+        MultiResourceItemReader<PubmedArticle> multiResourceItemReader = new MultiResourceItemReader<PubmedArticle>();
+        multiResourceItemReader.setResources(inputResources);
+
         StaxEventItemReader<PubmedArticle> reader = new StaxEventItemReader<PubmedArticle>();
-        setResource(reader, inputResource);
+        multiResourceItemReader.setDelegate(new GZResourceAwareItemReaderItemStream(reader, useZippedFormat));
         reader.setFragmentRootElementName("PubmedArticle");
         XStreamMarshaller xStreamMarshaller = new XStreamMarshaller();
         xStreamMarshaller.getXStream().ignoreUnknownElements();
@@ -177,7 +183,7 @@ public class PubmedXMLIngester extends BaseIngester {
         xStreamMarshaller.getXStream().registerConverter(new MeshHeadingConverter());
         xStreamMarshaller.getXStream().registerConverter(new PMIDConverter());
         reader.setUnmarshaller(xStreamMarshaller);
-        return reader;
+        return multiResourceItemReader;
     }
 
     class DBLogProcessor implements ItemProcessor<PubmedArticle, List<Object>> {

@@ -5,6 +5,7 @@ import com.cscie599.gfn.entities.MeshtermTree;
 import com.cscie599.gfn.entities.MeshtermTreePK;
 import com.cscie599.gfn.importer.meshterm.DescriptorRecord;
 import com.cscie599.gfn.importer.meshterm.MeshConverter;
+import com.cscie599.gfn.importer.pubmed.PubmedArticle;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -12,9 +13,11 @@ import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
 import org.springframework.batch.item.ItemProcessor;
+import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.batch.item.xml.StaxEventItemReader;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
@@ -41,7 +44,7 @@ public class MeshtermIngestor extends BaseIngester {
     protected static final Log logger = LogFactory.getLog(MeshtermIngestor.class);
 
     @Value("file:${input.directory}${input.meshsub.file}")
-    private Resource inputResource;
+    private Resource[] inputResources;
 
     @Bean
     @Order(1)
@@ -119,10 +122,12 @@ public class MeshtermIngestor extends BaseIngester {
     }
 
     @Bean
-    public StaxEventItemReader<DescriptorRecord> readerForMeshterm() {
-        logger.info("Reading resource: " + inputResource.getFilename() + " for " + this.getClass().getName());
+    public ItemReader<DescriptorRecord> readerForMeshterm() {
+        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName());
+        MultiResourceItemReader<DescriptorRecord> multiResourceItemReader = new MultiResourceItemReader<DescriptorRecord>();
+        multiResourceItemReader.setResources(inputResources);
         StaxEventItemReader<DescriptorRecord> reader = new StaxEventItemReader<DescriptorRecord>();
-        setResource(reader, inputResource);
+        multiResourceItemReader.setDelegate(new GZResourceAwareItemReaderItemStream(reader, useZippedFormat));
         reader.setFragmentRootElementName("DescriptorRecord");
         XStreamMarshaller xStreamMarshaller = new XStreamMarshaller();
         xStreamMarshaller.getXStream().ignoreUnknownElements();
@@ -132,7 +137,7 @@ public class MeshtermIngestor extends BaseIngester {
         xStreamMarshaller.getXStream().alias("TreeNumberList", DescriptorRecord.TreeNumberList.class);
         xStreamMarshaller.getXStream().registerConverter(new MeshConverter());
         reader.setUnmarshaller(xStreamMarshaller);
-        return reader;
+        return multiResourceItemReader;
     }
 
     /**
