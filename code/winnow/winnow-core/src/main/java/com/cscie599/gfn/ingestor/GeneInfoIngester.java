@@ -25,28 +25,20 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
+import org.springframework.web.context.support.ServletContextResource;
 
 import javax.sql.DataSource;
+import java.io.IOException;
 
 /**
- *
  * @author PulkitBhanot
  */
 @Configuration
 @EnableBatchProcessing
 @EnableAutoConfiguration
-public class GeneInfoIngester {
+public class GeneInfoIngester extends BaseIngester {
 
     protected static final Log logger = LogFactory.getLog(GeneInfoIngester.class);
-
-    @Autowired
-    private JobBuilderFactory jobBuilderFactory;
-
-    @Autowired
-    private StepBuilderFactory stepBuilderFactory;
-
-    @Autowired
-    DataSource dataSource;
 
     @Value("file:${input.directory}${input.gene-info.file}")
     private Resource inputResource;
@@ -84,10 +76,10 @@ public class GeneInfoIngester {
 
     @Bean
     public FlatFileItemReader<Gene> readerForGene() {
-        logger.info("Reading resource: " + inputResource.getFilename() + " for "+this.getClass().getName());
+        logger.info("Reading resource: " + inputResource.getFilename() + " for " + this.getClass().getName());
         FlatFileItemReader<Gene> itemReader = new FlatFileItemReader<Gene>();
         itemReader.setLineMapper(lineMapperForGene());
-        itemReader.setResource(inputResource);
+        setResource(itemReader, inputResource);
         return itemReader;
     }
 
@@ -95,8 +87,8 @@ public class GeneInfoIngester {
     public LineMapper<Gene> lineMapperForGene() {
         DefaultLineMapper<Gene> lineMapper = new DefaultLineMapper<Gene>();
         DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer(DelimitedLineTokenizer.DELIMITER_TAB);
-        lineTokenizer.setNames(new String[] { "geneId", "symbol", "synonym","description","type", });
-        lineTokenizer.setIncludedFields(new int[] { 1, 2,4,8,9 });
+        lineTokenizer.setNames(new String[]{"geneId", "symbol", "synonym", "description", "type",});
+        lineTokenizer.setIncludedFields(new int[]{1, 2, 4, 8, 9});
         BeanWrapperFieldSetMapper<Gene> fieldSetMapper = new BeanWrapperFieldSetMapper<Gene>();
         fieldSetMapper.setStrict(true);
         fieldSetMapper.setDistanceLimit(1);
@@ -116,11 +108,9 @@ public class GeneInfoIngester {
         return itemWriter;
     }
 
-    class DBLogProcessor implements ItemProcessor<Gene, Gene>
-    {
-        public Gene process(Gene gene) throws Exception
-        {
-            if(logger.isDebugEnabled()){
+    class DBLogProcessor implements ItemProcessor<Gene, Gene> {
+        public Gene process(Gene gene) throws Exception {
+            if (logger.isDebugEnabled()) {
                 logger.debug("Inserting Gene : " + gene);
             }
             return gene;
