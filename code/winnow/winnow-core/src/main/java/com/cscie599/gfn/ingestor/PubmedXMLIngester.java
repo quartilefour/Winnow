@@ -36,28 +36,17 @@ import java.util.Date;
 import java.util.List;
 
 /**
- *
  * @author PulkitBhanot
  */
 @Configuration
 @EnableBatchProcessing
 @EnableAutoConfiguration
-public class PubmedXMLIngester {
+public class PubmedXMLIngester extends BaseIngester {
 
     protected static final Log logger = LogFactory.getLog(PubmedXMLIngester.class);
 
-    @Autowired
-    private StepBuilderFactory stepBuilderFactory;
-
-    @Autowired
-    DataSource dataSource;
-
     @Value("file:${input.directory}${input.pubmed.file}")
     private Resource inputResource;
-
-
-    @Autowired
-    private JobBuilderFactory jobBuilderFactory;
 
     @Bean
     @Order(7)
@@ -176,9 +165,9 @@ public class PubmedXMLIngester {
 
     @Bean
     public StaxEventItemReader<PubmedArticle> readerForPubmed() {
-        logger.info("Reading resource: " + inputResource.getFilename() + " for "+this.getClass().getName());
+        logger.info("Reading resource: " + inputResource.getFilename() + " for " + this.getClass().getName());
         StaxEventItemReader<PubmedArticle> reader = new StaxEventItemReader<PubmedArticle>();
-        reader.setResource(inputResource);
+        setResource(reader, inputResource);
         reader.setFragmentRootElementName("PubmedArticle");
         XStreamMarshaller xStreamMarshaller = new XStreamMarshaller();
         xStreamMarshaller.getXStream().ignoreUnknownElements();
