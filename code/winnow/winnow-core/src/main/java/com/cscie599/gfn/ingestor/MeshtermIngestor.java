@@ -199,9 +199,6 @@ public class MeshtermIngestor {
                             }
                             treeParentId += treeId[treeId.length - 2];
                         }
-                        else {
-                            treeParentId = null;
-                        }
 
                         MeshtermTreePK treePK = new MeshtermTreePK(record.getDescriptorUI(), treeParentId, treeNodeId);
                         MeshtermTree meshtermTree = new MeshtermTree(treePK);

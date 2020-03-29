@@ -8,10 +8,10 @@ public class MeshtermTreeView {
     private boolean hasChild;
 
     public MeshtermTreeView(String meshId, String treeParentId, String treeNodeId, String meshName, boolean hasChild) {
-        this.meshId = meshId;
-        this.treeParentId = treeParentId;
-        this.treeNodeId = treeNodeId;
-        this.meshName = meshName;
+        this.meshId = meshId.trim();
+        this.treeParentId = treeParentId.trim();
+        this.treeNodeId = treeNodeId.trim();
+        this.meshName = meshName.trim();
         this.hasChild = hasChild;
     }
 

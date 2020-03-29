@@ -1,5 +1,6 @@
 import React, {useState} from 'react';
 import {Nav, Tab, Row, Col} from "react-bootstrap";
+import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import BookmarkTab from "./BookmarkTab";
 import Mesh2GeneTab from "./Mesh2GeneTab";
 import Gene2MeshTab from "./Gene2MeshTab";
@@ -40,7 +41,7 @@ function Dashboard(props) {
     return (
         <div className="tab-container">
             <Error>{error}</Error>
-            <Tab.Container id="left-tabs-example" defaultActiveKey="gene2mesh" className="tab-container">
+            <Tab.Container id="left-tabs-example" defaultActiveKey="mesh2gene" className="tab-container">
                 <Row>
                     <Col sm={3}>
                         <Nav variant="pills" className="flex-column">

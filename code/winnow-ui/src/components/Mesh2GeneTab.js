@@ -1,7 +1,6 @@
-import {Button, Form, Input} from "./HTMLElements";
-import React, {Fragment} from "react";
-import Select from "react-select";
-import {Tab} from "react-bootstrap";
+import React, {Fragment, useState} from "react";
+import {Button, Form} from "react-bootstrap";
+import {MeshtermTree} from "../components/MeshtermTree";
 
 /**
  * Mesh2GeneTab builds the content for MeSH term Search.
@@ -11,22 +10,24 @@ import {Tab} from "react-bootstrap";
  * @constructor
  */
 function Mesh2GeneTab(props) {
+    const [checkedTerms,setCheckedTerms] = useState([]);
 
-    let meshData = props.meshData;
+    const getChecked = (checkedNodes) => {
+       setCheckedTerms(checkedNodes);
+        console.info(`Mesh2Gene checked(${checkedNodes.length}): ${JSON.stringify(checkedNodes)}`)
+    };
 
     return (
+        <div>
         <Form>
-            <Fragment>
-                <Form>
-                    <Input type="text"/>
-                </Form>
-                <Form>
-                    <Input/>
-                </Form>
-            </Fragment>
             <Button>Search</Button>
+            <Button>Save</Button>
         </Form>
-    );
+            <Fragment>
+                <MeshtermTree callback={getChecked}/>
+            </Fragment>
+        </div>
+    )
 }
 
 export default Mesh2GeneTab;

@@ -9,6 +9,7 @@ import {AuthContext} from "./context/auth";
 import PrivateRoute from "./PrivateRoute";
 import Cookies from 'js-cookie';
 import Profile from "./components/Profile";
+import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 
 /**
  * Renders the User Interface to the Winnow application.

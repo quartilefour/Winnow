@@ -6,9 +6,9 @@ public class GeneView {
     private String symbol;
 
     public GeneView(String geneId, String description, String symbol) {
-        this.geneId = geneId;
-        this.description = description;
-        this.symbol = symbol;
+        this.geneId = geneId.trim();
+        this.description = description.trim();
+        this.symbol = symbol.trim();
     }
 
     public String getGeneId() {

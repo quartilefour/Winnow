@@ -5,8 +5,8 @@ public class MeshtermCategoryView {
     private String name;
 
     public MeshtermCategoryView(String categoryId, String name) {
-        this.categoryId = categoryId;
-        this.name = name;
+        this.categoryId = categoryId.trim();
+        this.name = name.trim();
     }
 
     public String getCategoryId() {
