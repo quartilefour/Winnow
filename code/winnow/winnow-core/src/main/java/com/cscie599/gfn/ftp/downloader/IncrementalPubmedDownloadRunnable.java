@@ -90,17 +90,21 @@ public class IncrementalPubmedDownloadRunnable extends BasePubmedDownloadRunnabl
                     fos.flush();
                     fos.close();
                     logger.info("Local File path on the local server " + localFilePath);
-                    GZIPInputStream gzis = new GZIPInputStream(new FileInputStream(outputFile));
+                    if (extractContent) {
+                        logger.info("Unzipping of Downloaded file Started " + fileName);
 
-                    FileOutputStream out =
-                            new FileOutputStream(extractedFolderLocation + File.separator + "pubmed20n" + String.format("%04d", index) + EXTRACTED_FILEEXTENSION);
-                    int len;
-                    while ((len = gzis.read(buffer)) > 0) {
-                        out.write(buffer, 0, len);
+                        GZIPInputStream gzis = new GZIPInputStream(new FileInputStream(outputFile));
+
+                        FileOutputStream out =
+                                new FileOutputStream(extractedFolderLocation + File.separator + "pubmed20n" + String.format("%04d", index) + EXTRACTED_FILEEXTENSION);
+                        int len;
+                        while ((len = gzis.read(buffer)) > 0) {
+                            out.write(buffer, 0, len);
+                        }
+                        gzis.close();
+                        out.close();
+                        logger.info("Unzipping of Downloaded file done " + fileName);
                     }
-                    gzis.close();
-                    out.close();
-                    logger.info("Unzipping of Downloaded file done " + fileName);
                     filesProcessed.flip(index);
                     index = filesProcessed.nextClearBit(FIRST_FILE_INDEX);
                     retry_count = 0;
