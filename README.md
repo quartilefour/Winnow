@@ -49,7 +49,7 @@ Gene Function Navigation Tool
 * test-data/ - Contains an example file with a subset of data for each of the datasets to be ingested for the analysis.
 
 #### Java Local Environment 
-For local development, non-Docker in your editor set an additional vm option `-Dspring.profiles.active=dev` and also pass the program argument `--input.directory=<Path to test-data folder on your local machine (do have the file seperator at the end)>`. This would enable the server to pick up springboot application-dev.properties 
+For local development, non-Docker in your editor set an additional vm option `-Dspring.profiles.active=dev` and also pass the program argument `--input.directory=<Path to test-data/extracted folder on your local machine **(do have the file seperator at the end)**>`. This would enable the server to pick up springboot application-dev.properties 
 
 Recommendation is still to run the DB in the container. To connect to the DB running in the container, add the following entry in the `/etc/hosts` file
 
