@@ -31,18 +31,9 @@ import javax.sql.DataSource;
 @Configuration
 @EnableBatchProcessing
 @EnableAutoConfiguration
-public class GeneGoTermIngester {
+public class GeneGoTermIngester extends BaseIngester {
 
     protected static final Log logger = LogFactory.getLog(GeneGoTermIngester.class);
-
-    @Autowired
-    private StepBuilderFactory stepBuilderFactory;
-
-    @Autowired
-    private JobBuilderFactory jobBuilderFactory;
-
-    @Autowired
-    DataSource dataSource;
 
     @Value("file:${input.directory}${input.gene2go.file}")
     private Resource inputResource;
@@ -79,11 +70,10 @@ public class GeneGoTermIngester {
 
     @Bean
     public FlatFileItemReader<GeneGotermPK> readerForGeneGotermPK() {
-        logger.info("Reading resource: " + inputResource.getFilename() + " for "+this.getClass().getName());
+        logger.info("Reading resource: " + inputResource.getFilename() + " for " + this.getClass().getName());
         FlatFileItemReader<GeneGotermPK> itemReader = new FlatFileItemReader<GeneGotermPK>();
         itemReader.setLineMapper(lineMapperForGeneGotermPK());
-        //itemReader.setLinesToSkip(1);
-        itemReader.setResource(inputResource);
+        setResource(itemReader, inputResource);
         return itemReader;
     }
 
@@ -114,7 +104,7 @@ public class GeneGoTermIngester {
 
     class DBLogProcessor implements ItemProcessor<GeneGotermPK, GeneGotermPK> {
         public GeneGotermPK process(GeneGotermPK gene) throws Exception {
-            if(logger.isDebugEnabled()){
+            if (logger.isDebugEnabled()) {
                 logger.debug("Inserting GeneGotermPK : " + gene);
             }
             gene.setGoId(gene.getGoId().replaceAll(":", "_"));
