@@ -6,6 +6,7 @@ import com.cscie599.gfn.ftp.downloader.HTTPGeneOntologyDownloadRunnable;
 import com.cscie599.gfn.ftp.downloader.IncrementalPubmedDownloadRunnable;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
@@ -26,6 +27,9 @@ public class FTPFileDownloaderApp implements CommandLineRunner {
     private static String NCBI_FTP_SERVER_NAME = "ftp.ncbi.nlm.nih.gov";
     private static String NLMPUBS_FTP_SERVER_NAME = "nlmpubs.nlm.nih.gov";
 
+    @Value("${ftp.download.extractFiles}")
+    private boolean extractContent;
+
     public static void main(String[] args) {
         SpringApplication.run(FTPFileDownloaderApp.class, args);
     }
@@ -33,12 +37,13 @@ public class FTPFileDownloaderApp implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        System.out.println(extractContent);
         CountDownLatch latch = new CountDownLatch(8);
-        new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene_info", "/data/raw/gene_info", latch, "/data/extracted/gene_info/")).start();
-        new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene2go", "/data/raw/gene2go", latch, "/data/extracted/gene2go/")).start();
-        new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene2pubmed", "/data/raw/gene2pubmed", latch, "/data/extracted/gene2pubmed/")).start();
-        new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene_group", "/data/raw/gene_group", latch, "/data/extracted/gene_group/")).start();
-        new Thread(new FTPFileDownloadRunnable(NLMPUBS_FTP_SERVER_NAME, "/online/mesh/MESH_FILES/xmlmesh", "desc2020", "/data/raw/xmlmesh", latch, "/data/extracted/xmlmesh/")).start();
+        new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene_info", "/data/raw/gene_info", latch, "/data/extracted/gene_info/", extractContent)).start();
+        new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene2go", "/data/raw/gene2go", latch, "/data/extracted/gene2go/", extractContent)).start();
+        new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene2pubmed", "/data/raw/gene2pubmed", latch, "/data/extracted/gene2pubmed/", extractContent)).start();
+        new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene_group", "/data/raw/gene_group", latch, "/data/extracted/gene_group/", extractContent)).start();
+        new Thread(new FTPFileDownloadRunnable(NLMPUBS_FTP_SERVER_NAME, "/online/mesh/MESH_FILES/xmlmesh", "desc2020", "/data/raw/xmlmesh", latch, "/data/extracted/xmlmesh/", extractContent)).start();
         new Thread(new HTTPGeneOntologyDownloadRunnable("gene_ontology", latch, "/data/extracted/")).start();
         new Thread(new BaselinePubmedDownloadRunnable(NCBI_FTP_SERVER_NAME,"/pubmed/baseline","pubmed", "/data/raw/pubmed", latch, "/data/extracted/")).start();
         new Thread(new IncrementalPubmedDownloadRunnable(NCBI_FTP_SERVER_NAME,"/pubmed/updatefiles","pubmed", "/data/raw/pubmed", latch, "/data/extracted/")).start();

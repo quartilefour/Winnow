@@ -16,10 +16,9 @@ import java.util.concurrent.CountDownLatch;
 import java.util.zip.GZIPInputStream;
 
 /**
- *
  * @author PulkitBhanot
  */
-public class FTPFileDownloadRunnable  implements Runnable {
+public class FTPFileDownloadRunnable implements Runnable {
 
     protected static final Log logger = LogFactory.getLog(FTPFileDownloadRunnable.class);
     // URL of the server from where the file has to be downloaded
@@ -45,11 +44,13 @@ public class FTPFileDownloadRunnable  implements Runnable {
     private final static SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMDDhhmmss");
     byte[] buffer = new byte[1024];
 
-    public FTPFileDownloadRunnable(String ftpServerURL, String ftpFilePath, String fileName, String localFilePath, CountDownLatch latch, String extractedFileLocation) {
-        this(ftpServerURL, ftpFilePath, fileName, localFilePath, FTP_USERNAME, FTP_USERPASS, latch, extractedFileLocation);
+    private boolean extractContent;
+
+    public FTPFileDownloadRunnable(String ftpServerURL, String ftpFilePath, String fileName, String localFilePath, CountDownLatch latch, String extractedFileLocation, boolean extractFiles) {
+        this(ftpServerURL, ftpFilePath, fileName, localFilePath, FTP_USERNAME, FTP_USERPASS, latch, extractedFileLocation, extractFiles);
     }
 
-    public FTPFileDownloadRunnable(String ftpServerURL, String ftpFilePath, String fileName, String localFilePath, String username, String password, CountDownLatch latch, String extractedFileLocation) {
+    public FTPFileDownloadRunnable(String ftpServerURL, String ftpFilePath, String fileName, String localFilePath, String username, String password, CountDownLatch latch, String extractedFileLocation, boolean extractFiles) {
         this.ftpServerURL = ftpServerURL;
         this.ftpFilePath = ftpFilePath;
         this.fileName = fileName;
@@ -58,6 +59,7 @@ public class FTPFileDownloadRunnable  implements Runnable {
         this.password = password;
         this.latch = latch;
         this.extractedFileLocation = extractedFileLocation;
+        this.extractContent = extractFiles;
     }
 
     @Override
@@ -114,18 +116,21 @@ public class FTPFileDownloadRunnable  implements Runnable {
                 fos.flush();
                 fos.close();
                 logger.info("File Download complete " + outputFile.getName() + " starting with extraction of the file now");
-                GZIPInputStream gzis =
-                        new GZIPInputStream(new FileInputStream(outputFile));
+                if (extractContent) {
+                    logger.info("Starting Unzipping of Downloaded file " + fileName);
+                    GZIPInputStream gzis =
+                            new GZIPInputStream(new FileInputStream(outputFile));
 
-                FileOutputStream out =
-                        new FileOutputStream(extractedFileLocation + fileName);
-                int len;
-                while ((len = gzis.read(buffer)) > 0) {
-                    out.write(buffer, 0, len);
+                    FileOutputStream out =
+                            new FileOutputStream(extractedFileLocation + fileName);
+                    int len;
+                    while ((len = gzis.read(buffer)) > 0) {
+                        out.write(buffer, 0, len);
+                    }
+                    gzis.close();
+                    out.close();
+                    logger.info("Unzipping of Downloaded file done " + fileName);
                 }
-                gzis.close();
-                out.close();
-                logger.info("Unzipping of Downloaded file done " + fileName);
             }
             latch.countDown();
             ftpClient.disconnect();
