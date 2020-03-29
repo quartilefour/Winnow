@@ -16,7 +16,7 @@ CREATE TABLE "goterm" (
 CREATE TABLE "gene" (
   "gene_id" char(20)  PRIMARY KEY,
   "symbol" char(40),
-  "type" char(20),
+  "type" char(50),
   "description" text,
   "publication_count" Integer,
   "synonym" char(20),
@@ -88,7 +88,7 @@ CREATE TABLE "meshterm" (
   "date_revised" Date,
   "note" text,
   "supplemental_id" char(20),
-  "name" char(100)
+  "name" char(200)
 );
 
 CREATE TABLE "meshterm_category" (
