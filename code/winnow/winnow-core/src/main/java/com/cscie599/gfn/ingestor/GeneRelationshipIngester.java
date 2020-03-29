@@ -35,27 +35,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
  * @author PulkitBhanot
  */
 @Configuration
 @EnableBatchProcessing
 @EnableAutoConfiguration
-public class GeneRelationshipIngester {
+public class GeneRelationshipIngester extends BaseIngester {
 
     protected static final Log logger = LogFactory.getLog(GeneRelationshipIngester.class);
 
-    @Autowired
-    private StepBuilderFactory stepBuilderFactory;
-
-    @Autowired
-    DataSource dataSource;
-
     @Value("file:${input.directory}${input.gene_group.file}")
     private Resource inputResource;
-
-    @Autowired
-    private JobBuilderFactory jobBuilderFactory;
 
     @Bean
     @Order(5)
@@ -89,12 +79,10 @@ public class GeneRelationshipIngester {
 
     @Bean
     public FlatFileItemReader<GeneGroup> readerForGeneGroup() {
-        logger.info("Reading resource: " + inputResource.getFilename() + " for "+this.getClass().getName());
-
+        logger.info("Reading resource: " + inputResource.getFilename() + " for " + this.getClass().getName());
         FlatFileItemReader<GeneGroup> itemReader = new FlatFileItemReader<GeneGroup>();
         itemReader.setLineMapper(lineMapperForGeneGroup());
-        //itemReader.setLinesToSkip(1);
-        itemReader.setResource(inputResource);
+        setResource(itemReader, inputResource);
         return itemReader;
     }
 
@@ -135,8 +123,9 @@ public class GeneRelationshipIngester {
     class DBLogProcessor implements ItemProcessor<GeneGroup, List<Object>> {
         public List<Object> process(GeneGroup geneGroup) throws Exception {
             List<Object> returnList = new ArrayList<>();
-            if(logger.isDebugEnabled()){
-                logger.debug("Inserting GeneGroup : " + geneGroup);;
+            if (logger.isDebugEnabled()) {
+                logger.debug("Inserting GeneGroup : " + geneGroup);
+                ;
             }
             GeneRelationship geneRelationship = new GeneRelationship();
             geneRelationship.setRelationshipId(geneGroup.getRelationship().toLowerCase().replaceAll("\\s+", "").trim());
@@ -146,8 +135,9 @@ public class GeneRelationshipIngester {
             geneGenePK.setGeneId(geneGroup.getGeneId());
             geneGenePK.setOtherGeneId(geneGroup.getOtherGeneId());
             geneGenePK.setRelationshipId(geneRelationship.getRelationshipId());
-            if(logger.isDebugEnabled()){
-                logger.debug("Inserting geneGenePK : " + geneGenePK);;
+            if (logger.isDebugEnabled()) {
+                logger.debug("Inserting geneGenePK : " + geneGenePK);
+                ;
             }
             returnList.add(new GeneGene(geneGenePK));
             return returnList;
