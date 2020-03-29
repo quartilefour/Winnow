@@ -18,7 +18,8 @@ public abstract class BasePubmedDownloadRunnable implements Runnable {
     protected final static String FTP_FILEEXTENSION = ".xml.gz";
     protected final static String EXTRACTED_FILEEXTENSION = ".xml";
 
-    public BasePubmedDownloadRunnable(String ftpServerURL, String ftpFilePath, String fileName, String localFilePath, String username, String password, CountDownLatch latch, String extractedFileLocation) {
+    protected final boolean extractContent;
+    public BasePubmedDownloadRunnable(String ftpServerURL, String ftpFilePath, String fileName, String localFilePath, String username, String password, CountDownLatch latch, String extractedFileLocation, boolean extractFiles) {
         this.ftpServerURL = ftpServerURL;
         this.ftpFilePath = ftpFilePath;
         this.fileName = fileName;
@@ -27,5 +28,6 @@ public abstract class BasePubmedDownloadRunnable implements Runnable {
         this.password = password;
         this.latch = latch;
         this.extractedFileLocation = extractedFileLocation;
+        this.extractContent = extractFiles;
     }
 }

@@ -29,8 +29,8 @@ public class BaselinePubmedDownloadRunnable extends BasePubmedDownloadRunnable i
     byte[] buffer = new byte[1024];
     BitSet filesProcessed = new BitSet(LAST_FILE_INDEX + 1);
 
-    public BaselinePubmedDownloadRunnable(String ftpServerURL, String ftpFilePath, String fileName, String localFilePath, CountDownLatch latch, String extractedFileLocation) {
-        super(ftpServerURL, ftpFilePath, fileName, localFilePath, FTP_USERNAME, FTP_USERPASS, latch, extractedFileLocation);
+    public BaselinePubmedDownloadRunnable(String ftpServerURL, String ftpFilePath, String fileName, String localFilePath, CountDownLatch latch, String extractedFileLocation, boolean extractFiles) {
+        super(ftpServerURL, ftpFilePath, fileName, localFilePath, FTP_USERNAME, FTP_USERPASS, latch, extractedFileLocation, extractFiles);
         filesProcessed.flip(0);
     }
 
@@ -87,17 +87,21 @@ public class BaselinePubmedDownloadRunnable extends BasePubmedDownloadRunnable i
                     fos.flush();
                     fos.close();
                     logger.info("Local File path on the local server " + localFilePath);
-                    GZIPInputStream gzis = new GZIPInputStream(new FileInputStream(outputFile));
+                    if (extractContent) {
+                        logger.info("Unzipping of Downloaded file started " + fileName);
 
-                    FileOutputStream out =
-                            new FileOutputStream(extractedFolderLocation + File.separator + "pubmed20n" + String.format("%04d", index) + EXTRACTED_FILEEXTENSION);
-                    int len;
-                    while ((len = gzis.read(buffer)) > 0) {
-                        out.write(buffer, 0, len);
+                        GZIPInputStream gzis = new GZIPInputStream(new FileInputStream(outputFile));
+
+                        FileOutputStream out =
+                                new FileOutputStream(extractedFolderLocation + File.separator + "pubmed20n" + String.format("%04d", index) + EXTRACTED_FILEEXTENSION);
+                        int len;
+                        while ((len = gzis.read(buffer)) > 0) {
+                            out.write(buffer, 0, len);
+                        }
+                        gzis.close();
+                        out.close();
+                        logger.info("Unzipping of Downloaded file done " + fileName);
                     }
-                    gzis.close();
-                    out.close();
-                    logger.info("Unzipping of Downloaded file done " + fileName);
                     filesProcessed.flip(index);
                     index = filesProcessed.nextClearBit(0);
                     retry_count = 0;

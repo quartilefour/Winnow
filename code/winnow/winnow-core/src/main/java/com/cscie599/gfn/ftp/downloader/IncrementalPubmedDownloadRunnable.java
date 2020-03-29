@@ -31,8 +31,8 @@ public class IncrementalPubmedDownloadRunnable extends BasePubmedDownloadRunnabl
     byte[] buffer = new byte[1024];
     private final BitSet filesProcessed;
 
-    public IncrementalPubmedDownloadRunnable(String ftpServerURL, String ftpFilePath, String fileName, String localFilePath, CountDownLatch latch, String extractedFileLocation) {
-        super(ftpServerURL, ftpFilePath, fileName, localFilePath, FTP_USERNAME, FTP_USERPASS, latch, extractedFileLocation);
+    public IncrementalPubmedDownloadRunnable(String ftpServerURL, String ftpFilePath, String fileName, String localFilePath, CountDownLatch latch, String extractedFileLocation, boolean extractFiles) {
+        super(ftpServerURL, ftpFilePath, fileName, localFilePath, FTP_USERNAME, FTP_USERPASS, latch, extractedFileLocation, extractFiles);
         filesProcessed = new BitSet(LAST_FILE_INDEX + 1);
         filesProcessed.flip(0, FIRST_FILE_INDEX);
     }
