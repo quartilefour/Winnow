@@ -150,23 +150,23 @@ public class MeshtermIngestor extends BaseIngester {
             if (logger.isDebugEnabled()) {
                 logger.debug("the current meshterm is " + descriptorRecord.getDescriptorUI());
             }
-            if (record.getDescriptorUI() != null && record.getDescriptorName() != null && record.getDateCreated() != null
-                    && record.getDateRevised() != null) {
+            if (record.getDescriptorUI() != null && record.getDescriptorName() != null) {
                 Meshterm meshterm = new Meshterm();
-
                 // create new Meshterm with mesh_id == DescriptorUI
                 meshterm.setMeshId(record.getDescriptorUI());
+                if (record.getDateCreated() != null) {
+                    // set the date_created
+                    DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
+                    Date dateCreated = format.parse(record.getDateCreated().getYear() + "-" + record.getDateCreated().getMonth() + "-" + record.getDateCreated().getDay());
+                    meshterm.setDateCreated(dateCreated);
+                }
 
-                // set the date_created
-                DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                Date dateCreated = format.parse(record.getDateCreated().getYear() + "-" + record.getDateCreated().getMonth() + "-" + record.getDateCreated().getDay());
-                meshterm.setDateCreated(dateCreated);
-
-                // set the date_revised
-                DateFormat format2 = new SimpleDateFormat("yyyy-MM-dd");
-                Date dateRevised = format2.parse(record.getDateRevised().getYear() + "-" + record.getDateRevised().getMonth() + "-" + record.getDateRevised().getDay());
-                meshterm.setDateRevised(dateRevised);
-
+                if (record.getDateRevised() != null) {
+                    // set the date_revised
+                    DateFormat format2 = new SimpleDateFormat("yyyy-MM-dd");
+                    Date dateRevised = format2.parse(record.getDateRevised().getYear() + "-" + record.getDateRevised().getMonth() + "-" + record.getDateRevised().getDay());
+                    meshterm.setDateRevised(dateRevised);
+                }
                 // set note
                 meshterm.setNote(record.getPublicMeSHNote());
 
@@ -189,7 +189,6 @@ public class MeshtermIngestor extends BaseIngester {
                             }
                             treeParentId += treeId[treeId.length - 2];
                         }
-
                         MeshtermTreePK treePK = new MeshtermTreePK(record.getDescriptorUI(), treeParentId, treeNodeId);
                         MeshtermTree meshtermTree = new MeshtermTree(treePK);
                         returnList.add(meshtermTree);
@@ -198,7 +197,7 @@ public class MeshtermIngestor extends BaseIngester {
                     logger.warn("No treeNameList for meshterm " + record.getDescriptorUI());
                 }
             } else {
-                logger.warn("No information for input ");
+                logger.warn("No information for input " + record.getDescriptorUI());
             }
 
             return returnList;
