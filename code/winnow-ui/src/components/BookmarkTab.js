@@ -1,4 +1,4 @@
-import React, {Fragment} from "react";
+import React, {Fragment, useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faPlay, faPencilAlt, faShare, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {Form} from "./HTMLElements";
@@ -12,7 +12,11 @@ import {Form} from "./HTMLElements";
  */
 function BookmarkTab(props) {
 
-    let bookmarkData = props.bookmarkData;
+    const [isLoaded, setIsLoaded] = useState(false);
+    const [bookmarkData, setBookmarkData] = useState([]);
+
+
+
     const count = 5;
     const items = [];
 
@@ -24,7 +28,6 @@ function BookmarkTab(props) {
                 <span style={{display: 'inline-block'}}>
                 <FontAwesomeIcon icon={faPlay} color="darkgreen"/>
                 <FontAwesomeIcon icon={faShare} />
-                <FontAwesomeIcon icon={faPencilAlt} />
                 <FontAwesomeIcon icon={faTimes} color="maroon"/>
                 </span>
             </li>

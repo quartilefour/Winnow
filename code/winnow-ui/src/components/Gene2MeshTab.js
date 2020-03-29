@@ -1,7 +1,7 @@
 import React, {Fragment, useEffect, useState} from "react";
 import {Form, Button} from "react-bootstrap";
 import Select from "react-select";
-import {fetchGenes, fetchMeshtermCat} from "../service/ApiService";
+import {fetchGenes} from "../service/ApiService";
 
 /**
  * Gene2MeshTab builds the content for Gene Search.
@@ -15,22 +15,31 @@ function Gene2MeshTab(props) {
     const [geneDetail, setGeneDetail] = useState([]);
     const [isLoaded, setIsLoaded] = useState(false);
     const [geneData, setGeneData] = useState('');
+    const [haveResults, setHaveResults] = useState(false);
 
     useEffect(() => {
-        fetchGenes()
-            .then(res => {
-                let mappedData = res.map((gene, index) => {
-                    return {
-                        value: gene.geneId,
-                        label: gene.symbol
-                    };
-                });
-                setGeneData(mappedData);
+        if (!haveResults) {
+            fetchGenes()
+                .then(res => {
+                    let mappedData = res.map((gene, index) => {
+                        return {
+                            value: gene.geneId,
+                            label: gene.symbol
+                        };
+                    });
+                    setGeneData(mappedData);
+                    setIsLoaded(true);
+                }).catch(err => {
                 setIsLoaded(true);
-            }).catch(err => {
-            setIsLoaded(true);
-        });
-    }, []);
+            });
+        } else {
+            /* fetchSearchResults() */
+        }
+    }, [haveResults]);
+
+    function executeSearch() {
+       setIsLoaded(false);
+    }
 
     if (isLoaded) {
         console.info(`Gene2Mesh selected: ${JSON.stringify(geneDetail)}`);
@@ -44,12 +53,15 @@ function Gene2MeshTab(props) {
                             isClearable
                             isSearchable
                             isMulti
+                            hideSelectedOptions={true}
                             isLoading={!isLoaded}
                             autoFocus
                             name="gene"
                             onChange={e => {
-                                let value = (e !== null) ? e.value : [];
-                                setGeneDetail(value);
+                                console.info(`Gene2Mesh onChange: ${JSON.stringify(e)}`);
+                                e.forEach((val, index) => {
+                                    setGeneDetail([...geneDetail,val.value]);
+                                })
                             }}
                             options={geneData}
                         />

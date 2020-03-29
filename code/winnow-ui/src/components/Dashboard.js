@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {Nav, Tab, Row, Col} from "react-bootstrap";
-import 'react-checkbox-tree/lib/react-checkbox-tree.css';
 import BookmarkTab from "./BookmarkTab";
 import Mesh2GeneTab from "./Mesh2GeneTab";
 import Gene2MeshTab from "./Gene2MeshTab";
@@ -39,11 +38,11 @@ function Dashboard(props) {
                         <Tab.Content>
                             <Tab.Pane eventKey="bookmarks">
                                 <p>Bookmark Tab</p>
-                                <BookmarkTab bookmarkData={null}/>
+                                <BookmarkTab />
                             </Tab.Pane>
                             <Tab.Pane eventKey="mesh2gene">
                                 <p>MeSH 2 Gene Tab</p>
-                                <Mesh2GeneTab meshData={null}/>
+                                <Mesh2GeneTab />
                             </Tab.Pane>
                             <Tab.Pane eventKey="gene2mesh">
                                 <p>Gene 2 MeSH Tab</p>

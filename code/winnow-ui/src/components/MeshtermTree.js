@@ -72,17 +72,17 @@ export function MeshtermTree(props) {
                     function applyCheckStateTo(nodes){
                         nodes.forEach((node)=>{
                             node.isChecked = checkState;
-                            if (node.isChecked) {
+                            if (checkState) {
                                 console.info(`MeshtermTree2 node ${node.id} checked`);
                                setChecked([...checked, node.id]);
                             } else {
                                 console.info(`MeshtermTree2 node ${node.id} unchecked`);
                                 setChecked(checked.filter(term => term !== node.id));
                             }
-                            console.info(`MeshtermTree2 checked nodes: ${checked}`);
                             if(node.children){
                                 applyCheckStateTo(node.children);
                             }
+                            console.info(`MeshtermTree2 checked nodes: ${checked}`);
                         })
                     }
                 }}

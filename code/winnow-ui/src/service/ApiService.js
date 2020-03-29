@@ -5,6 +5,107 @@
 import axios from 'axios';
 import * as Constants from '../constants';
 
+export const fetchUserBookmarks = (data) => {
+    console.info(`fetchUserBookmarks: ${JSON.stringify(data)}`);
+    return {
+        searchQuery: data.searchQuery,
+        queryType: data.queryType,
+        queryFormat: data.queryFormat,
+        results: [
+            {
+                geneId: "geneId1",
+                description: "geneDescription1",
+                symbol: "geneSymbol1",
+                meshId: "meshId1",
+                meshTerm: "meshName1",
+                publicationCount: "publicationCount",
+                pValue: "pValue"
+            },
+            {
+                geneId: "geneId2",
+                description: "geneDescription2",
+                symbol: "geneSymbol2",
+                meshId: "meshId2",
+                meshTerm: "meshName2",
+                publicationCount: "publicationCount",
+                pValue: "pValue"
+            },
+            {
+                geneId: "geneId3",
+                description: "geneDescription3",
+                symbol: "geneSymbol3",
+                meshId: "meshId3",
+                meshTerm: "meshName3",
+                publicationCount: "publicationCount",
+                pValue: "pValue"
+            },
+        ]
+    };
+    return new Promise((resolve, reject) => {
+        axios.get(
+            `${Constants.WINNOW_API_BASE_URL}/bookmarks`,
+            {
+                headers: Constants.authHeader,
+            }
+        )
+            .then(res => {
+                resolve(res.data);
+            })
+            .catch(err => reject(err));
+    });
+};
+
+export const fetchSearchResults = (data) => {
+    console.info(`fetchSearchResults: ${JSON.stringify(data)}`);
+    return {
+        searchQuery: data.searchQuery,
+        queryType: data.queryType,
+        queryFormat: data.queryFormat,
+        results: [
+            {
+                geneId: "geneId1",
+                description: "geneDescription1",
+                symbol: "geneSymbol1",
+                meshId: "meshId1",
+                meshTerm: "meshName1",
+                publicationCount: "publicationCount",
+                pValue: "pValue"
+            },
+            {
+                geneId: "geneId2",
+                description: "geneDescription2",
+                symbol: "geneSymbol2",
+                meshId: "meshId2",
+                meshTerm: "meshName2",
+                publicationCount: "publicationCount",
+                pValue: "pValue"
+            },
+            {
+                geneId: "geneId3",
+                description: "geneDescription3",
+                symbol: "geneSymbol3",
+                meshId: "meshId3",
+                meshTerm: "meshName3",
+                publicationCount: "publicationCount",
+                pValue: "pValue"
+            },
+        ]
+    };
+    return new Promise((resolve, reject) => {
+        axios.post(
+            `${Constants.WINNOW_API_BASE_URL}/search`,
+            data,
+            {
+                headers: Constants.authHeader,
+            }
+        )
+            .then(res => {
+                resolve(res.data);
+            })
+            .catch(err => reject(err));
+    });
+};
+
 export const fetchGenes = (partial) => {
     return new Promise((resolve, reject) => {
         axios.get(
@@ -12,7 +113,7 @@ export const fetchGenes = (partial) => {
             {
                 headers: Constants.authHeader,
             }
-            )
+        )
             .then(res => {
                 resolve(res.data);
             })
