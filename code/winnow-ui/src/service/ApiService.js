@@ -1,5 +1,24 @@
+/**
+ * The ApiService provides access to all the Winnow API calls except
+ * those related to authentication/authorization.
+ */
 import axios from 'axios';
 import * as Constants from '../constants';
+
+export const fetchGenes = (partial) => {
+    return new Promise((resolve, reject) => {
+        axios.get(
+            `${Constants.WINNOW_API_BASE_URL}/genes`,
+            {
+                headers: Constants.authHeader,
+            }
+            )
+            .then(res => {
+                resolve(res.data);
+            })
+            .catch(err => reject(err));
+    });
+};
 
 export const fetchMeshtermCat = () => {
     console.debug(`fetchMeshtermCat: ${Constants.WINNOW_API_BASE_URL}/meshterms/category`);
@@ -48,36 +67,18 @@ export const fetchMeshtermNode = (node) => {
             .catch(err => reject(err));
     });
 };
-/**
- * The ApiService class provides access to all the Winnow API calls except
- * those related to authentication/authorization.
- */
-class ApiService {
 
-    /**
-     * Returns a list of all genes.
-     *
-     * @returns {await Promise<AxiosResponse<T>>}
-     */
-    getAllGenes() {
-        return axios.get(
-            `${Constants.WINNOW_API_BASE_URL}/genes`, {
-                headers: Constants.authHeader,
-            });
-    }
+export const mapMeshtermTreeData = (data, node, depth) => {
+    return data.map((mesh, index) => {
+        return {
+            children: [],
+            id: (depth > 0)
+                ? `${mesh.treeParentId.trim()}.${mesh.treeNodeId.trim()}`
+                : `${mesh.treeParentId.trim()}${mesh.treeNodeId.trim()}`,
+            meshIndex: `${node.meshIndex}:${index}`,
+            hasChild: mesh.hasChild,
+            name: mesh.meshName.trim(),
+        };
+    });
+};
 
-    /**
-     * Returns information about a gene identified by geneId.
-     *
-     * @param geneId
-     * @returns {await Promise<AxiosResponse<T>>}
-     */
-    getGene(geneId) {
-        return axios.get(
-            `${Constants.WINNOW_API_BASE_URL}/genes/${geneId}`, {
-                headers: Constants.authHeader,
-            });
-    }
-}
-
-export default new ApiService();

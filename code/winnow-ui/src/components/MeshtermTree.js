@@ -1,6 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import 'react-super-treeview/dist/style.css';
-import {fetchMeshtermCat, fetchMeshtermNode, fetchMeshtermTree} from "../service/ApiService";
+import {fetchMeshtermCat, fetchMeshtermNode, fetchMeshtermTree, mapMeshtermTreeData} from "../service/ApiService";
 import cloneDeep from "lodash/cloneDeep";
 import SuperTreeview from "react-super-treeview";
 
@@ -93,16 +93,7 @@ export function MeshtermTree(props) {
                         if (depth === 0) {
                             fetchMeshtermNode(node.id)
                                 .then(res => {
-                                    let mappedData = res.map((mesh, index) => {
-                                        return {
-                                            children: [],
-                                            id: `${mesh.treeParentId.trim()}${mesh.treeNodeId.trim()}`,
-                                            meshIndex: `${node.meshIndex}:${index}`,
-                                            name: mesh.meshName.trim(),
-                                            hasChild: mesh.hasChild,
-                                        };
-                                    });
-                                    insertChildNodes(node, depth, mappedData);
+                                    insertChildNodes(node, depth, mapMeshtermTreeData(res, node, depth));
                                 }).catch(err => {
                                 console.debug(`MeshtermTree2 Error: ${err}`);
                                 console.debug(`MeshtermTree2 Error: ${JSON.stringify(err)}`);
@@ -110,16 +101,7 @@ export function MeshtermTree(props) {
                         } else {
                             fetchMeshtermTree(node.id)
                                 .then(res => {
-                                    let mappedData = res.map((mesh, index) => {
-                                        return {
-                                            children: [],
-                                            id: `${mesh.treeParentId.trim()}.${mesh.treeNodeId.trim()}`,
-                                            meshIndex: `${node.meshIndex}:${index}`,
-                                            hasChild: mesh.hasChild,
-                                            name: mesh.meshName.trim(),
-                                        };
-                                    });
-                                    insertChildNodes(node, depth, mappedData);
+                                    insertChildNodes(node, depth, mapMeshtermTreeData(res, node, depth));
                                 }).catch(err => {
                                 console.debug(`MeshtermTree2 Error: ${err}`);
                                 console.debug(`MeshtermTree2 Error: ${JSON.stringify(err)}`);

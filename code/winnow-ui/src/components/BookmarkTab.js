@@ -1,7 +1,5 @@
 import React, {Fragment} from "react";
-import {Button} from "react-bootstrap";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faEdit, faCaretSquareRight, faShareSquare, faTimesCircle} from "@fortawesome/free-regular-svg-icons";
 import {faPlay, faPencilAlt, faShare, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {Form} from "./HTMLElements";
 
