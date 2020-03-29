@@ -29,27 +29,17 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import javax.sql.DataSource;
 
 /**
- *
  * @author PulkitBhanot
  */
 @Configuration
 @EnableBatchProcessing
 @EnableAutoConfiguration
-public class GenePubmedIngester {
+public class GenePubmedIngester extends BaseIngester {
 
     protected static final Log logger = LogFactory.getLog(GenePubmedIngester.class);
 
-    @Autowired
-    private StepBuilderFactory stepBuilderFactory;
-
-    @Autowired
-    DataSource dataSource;
-
     @Value("file:${input.directory}${input.gene2pubmed.file}")
     private Resource inputResource;
-
-    @Autowired
-    private JobBuilderFactory jobBuilderFactory;
 
     @Bean
     @Order(8)
@@ -83,10 +73,10 @@ public class GenePubmedIngester {
 
     @Bean
     public FlatFileItemReader<GenePublicationPK> readerForGenePubmed() {
-        logger.info("Reading resource: " + inputResource.getFilename() + " for "+this.getClass().getName());
+        logger.info("Reading resource: " + inputResource.getFilename() + " for " + this.getClass().getName());
         FlatFileItemReader<GenePublicationPK> itemReader = new FlatFileItemReader<GenePublicationPK>();
         itemReader.setLineMapper(lineMapperForGenePubmed());
-        itemReader.setResource(inputResource);
+        setResource(itemReader, inputResource);
         return itemReader;
     }
 
@@ -94,8 +84,8 @@ public class GenePubmedIngester {
     public LineMapper<GenePublicationPK> lineMapperForGenePubmed() {
         DefaultLineMapper<GenePublicationPK> lineMapper = new DefaultLineMapper<GenePublicationPK>();
         DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer(DelimitedLineTokenizer.DELIMITER_TAB);
-        lineTokenizer.setNames(new String[] { "geneId", "publicationId"});
-        lineTokenizer.setIncludedFields(new int[] { 1, 2 });
+        lineTokenizer.setNames(new String[]{"geneId", "publicationId"});
+        lineTokenizer.setIncludedFields(new int[]{1, 2});
         BeanWrapperFieldSetMapper<GenePublicationPK> fieldSetMapper = new BeanWrapperFieldSetMapper<GenePublicationPK>();
         fieldSetMapper.setStrict(true);
         fieldSetMapper.setDistanceLimit(1);
@@ -115,11 +105,9 @@ public class GenePubmedIngester {
         return itemWriter;
     }
 
-    class DBLogProcessor implements ItemProcessor<GenePublicationPK, GenePublicationPK>
-    {
-        public GenePublicationPK process(GenePublicationPK gene) throws Exception
-        {
-            if(logger.isDebugEnabled()){
+    class DBLogProcessor implements ItemProcessor<GenePublicationPK, GenePublicationPK> {
+        public GenePublicationPK process(GenePublicationPK gene) throws Exception {
+            if (logger.isDebugEnabled()) {
                 logger.debug("Inserting GenePublicationPK : " + gene);
             }
             return gene;
