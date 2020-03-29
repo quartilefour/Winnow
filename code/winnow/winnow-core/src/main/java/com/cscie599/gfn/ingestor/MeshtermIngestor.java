@@ -40,22 +40,12 @@ import java.util.List;
 @Configuration
 @EnableBatchProcessing
 @EnableAutoConfiguration
-public class MeshtermIngestor {
+public class MeshtermIngestor extends BaseIngester {
 
     protected static final Log logger = LogFactory.getLog(MeshtermIngestor.class);
 
-    @Autowired
-    private StepBuilderFactory stepBuilderFactory;
-
-    @Autowired
-    DataSource dataSource;
-
     @Value("file:${input.directory}${input.meshsub.file}")
     private Resource inputResource;
-
-
-    @Autowired
-    private JobBuilderFactory jobBuilderFactory;
 
     @Bean
     @Order(1)
@@ -134,9 +124,9 @@ public class MeshtermIngestor {
 
     @Bean
     public StaxEventItemReader<DescriptorRecord> readerForMeshterm() {
-        logger.info("Reading resource: " + inputResource.getFilename() + " for "+this.getClass().getName());
+        logger.info("Reading resource: " + inputResource.getFilename() + " for " + this.getClass().getName());
         StaxEventItemReader<DescriptorRecord> reader = new StaxEventItemReader<DescriptorRecord>();
-        reader.setResource(inputResource);
+        setResource(reader, inputResource);
         reader.setFragmentRootElementName("DescriptorRecord");
         XStreamMarshaller xStreamMarshaller = new XStreamMarshaller();
         xStreamMarshaller.getXStream().ignoreUnknownElements();
@@ -157,7 +147,7 @@ public class MeshtermIngestor {
         public List<Object> process(DescriptorRecord descriptorRecord) throws Exception {
             List<Object> returnList = new ArrayList<>();
             DescriptorRecord record = ((DescriptorRecord) descriptorRecord);
-            if(logger.isDebugEnabled()) {
+            if (logger.isDebugEnabled()) {
                 logger.debug("the current meshterm is " + descriptorRecord.getDescriptorUI());
             }
             if (record.getDescriptorUI() != null && record.getDescriptorName() != null && record.getDateCreated() != null
@@ -169,12 +159,12 @@ public class MeshtermIngestor {
 
                 // set the date_created
                 DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                Date dateCreated = format.parse(record.getDateCreated().getYear() + "-" + record.getDateCreated().getMonth()+ "-" + record.getDateCreated().getDay());
+                Date dateCreated = format.parse(record.getDateCreated().getYear() + "-" + record.getDateCreated().getMonth() + "-" + record.getDateCreated().getDay());
                 meshterm.setDateCreated(dateCreated);
 
                 // set the date_revised
                 DateFormat format2 = new SimpleDateFormat("yyyy-MM-dd");
-                Date dateRevised = format2.parse(record.getDateRevised().getYear() + "-" + record.getDateRevised().getMonth()+ "-" + record.getDateRevised().getDay());
+                Date dateRevised = format2.parse(record.getDateRevised().getYear() + "-" + record.getDateRevised().getMonth() + "-" + record.getDateRevised().getDay());
                 meshterm.setDateRevised(dateRevised);
 
                 // set note
@@ -189,7 +179,7 @@ public class MeshtermIngestor {
                 if (record.getDescriptorUI() != null && record.getTreeNumberList() != null && record.getTreeNumberList().getTreeNumbers() != null) {
                     record.getTreeNumberList().getTreeNumbers().forEach(treeName -> {
                         // if there are definitely treeNumbers:
-                        String [] treeId = treeName.toString().split("\\.");
+                        String[] treeId = treeName.toString().split("\\.");
                         String treeParentId = "";
                         String treeNodeId = treeId[treeId.length - 1];
                         // if the id is as least 3 groups long, do the first two and append the last
@@ -204,12 +194,10 @@ public class MeshtermIngestor {
                         MeshtermTree meshtermTree = new MeshtermTree(treePK);
                         returnList.add(meshtermTree);
                     });
-                }
-                else {
+                } else {
                     logger.warn("No treeNameList for meshterm " + record.getDescriptorUI());
                 }
-            }
-            else {
+            } else {
                 logger.warn("No information for input ");
             }
 
