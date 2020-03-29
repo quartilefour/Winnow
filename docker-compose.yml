@@ -26,4 +26,4 @@ services:
     ports:
       - 8080:8080
     volumes:
-      - ./test-data:/data
+      - ./test-data/extracted:/data
