@@ -45,6 +45,7 @@ public class GZResourceAwareItemReaderItemStream<T> implements ResourceAwareItem
 
     @Override
     public void setResource(Resource resource) {
+        logger.info("Opening resource "+resource.getFilename()+" in zipped format "+zippedFormat);
         if (zippedFormat) {
             try {
                 this.itemReader.setResource(new GzipLazyResource(((FileSystemResource) resource).getPath()));
