@@ -1,24 +1,21 @@
 package com.cscie599.gfn.ingestor;
 
-import com.cscie599.gfn.importer.meshterm.DescriptorRecord;
-import com.cscie599.gfn.importer.meshterm.MeshConverter;
-import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import com.cscie599.gfn.entities.Meshterm;
 import com.cscie599.gfn.entities.MeshtermTree;
 import com.cscie599.gfn.entities.MeshtermTreePK;
+import com.cscie599.gfn.importer.meshterm.DescriptorRecord;
+import com.cscie599.gfn.importer.meshterm.MeshConverter;
+import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.xml.StaxEventItemReader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -30,7 +27,6 @@ import org.springframework.oxm.xstream.XStreamMarshaller;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.sql.DataSource;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
