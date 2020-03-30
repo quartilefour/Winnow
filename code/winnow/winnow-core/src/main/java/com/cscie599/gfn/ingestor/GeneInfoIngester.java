@@ -50,7 +50,7 @@ public class GeneInfoIngester extends BaseIngester {
     public Step stepGeneInfo() {
         return stepBuilderFactory
                 .get("stepGeneInfo")
-                .<Gene, Gene>chunk(1)
+                .<Gene, Gene>chunk(500)
                 .reader(readerForGene())
                 .processor(processorForGene())
                 .writer(writerForGene())
