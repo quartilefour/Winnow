@@ -25,6 +25,12 @@ public abstract class BaseIngester {
     @Value("${input.zippedFormat}")
     protected Boolean useZippedFormat;
 
+    @Value("${ingestion.batch.size}")
+    protected int ingestionBatchSize;
+
+    @Value("${ingestion.skip.limit}")
+    protected int ingestionSkipLimit;
+
     @Autowired
     protected JobBuilderFactory jobBuilderFactory;
 

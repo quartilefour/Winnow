@@ -48,7 +48,7 @@ public class GeneMeshtermIngestor extends BaseIngester {
     public Step stepGeneMeshtermInfo() {
         return stepBuilderFactory
                 .get("stepGeneMeshtermInfo")
-                .<GeneMeshterm, GeneMeshterm>chunk(1)
+                .<GeneMeshterm, GeneMeshterm>chunk(ingestionBatchSize)
                 .reader(readerForGeneMeshterm())
                 .processor(processorForGeneMeshterm())
                 .writer(writerForGeneMeshterm())
@@ -56,7 +56,7 @@ public class GeneMeshtermIngestor extends BaseIngester {
                 .skip(EmptyResultDataAccessException.class)
                 .noRetry(EmptyResultDataAccessException.class)
                 .noRollback(EmptyResultDataAccessException.class)
-                .skipLimit(50000)
+                .skipLimit(ingestionSkipLimit)
                 .transactionAttribute(IngeterUtil.getDefaultTransactionAttribute())
                 .build();
     }

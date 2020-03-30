@@ -50,7 +50,7 @@ public class GeneInfoIngester extends BaseIngester {
     public Step stepGeneInfo() {
         return stepBuilderFactory
                 .get("stepGeneInfo")
-                .<Gene, Gene>chunk(500)
+                .<Gene, Gene>chunk(ingestionBatchSize)
                 .reader(readerForGene())
                 .processor(processorForGene())
                 .writer(writerForGene())
@@ -58,7 +58,7 @@ public class GeneInfoIngester extends BaseIngester {
                 .skip(EmptyResultDataAccessException.class)
                 .noRetry(EmptyResultDataAccessException.class)
                 .noRollback(EmptyResultDataAccessException.class)
-                .skipLimit(50000)
+                .skipLimit(ingestionSkipLimit)
                 .transactionAttribute(IngeterUtil.getDefaultTransactionAttribute())
                 //.retryPolicy(new NeverRetryPolicy())
                 .build();

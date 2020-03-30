@@ -59,7 +59,7 @@ public class PubmedXMLIngester extends BaseIngester {
     public Step stepPubMedInfo() {
         return stepBuilderFactory
                 .get("stepPubMedInfo")
-                .<PubmedArticle, List<Object>>chunk(1)
+                .<PubmedArticle, List<Object>>chunk(ingestionBatchSize)
                 .reader(readerForPubmed())
                 .processor(processorForAuthors())
                 .writer(new MultiOutputItemWriter(authorWriter1(), publicationWriter2(), authorPublicationWriter3(), publicationMeshWriter4()))
@@ -67,7 +67,7 @@ public class PubmedXMLIngester extends BaseIngester {
                 .skip(EmptyResultDataAccessException.class)
                 .noRetry(EmptyResultDataAccessException.class)
                 .noRollback(EmptyResultDataAccessException.class)
-                .skipLimit(50000)
+                .skipLimit(ingestionSkipLimit)
                 .transactionAttribute(IngeterUtil.getDefaultTransactionAttribute())
                 .build();
     }

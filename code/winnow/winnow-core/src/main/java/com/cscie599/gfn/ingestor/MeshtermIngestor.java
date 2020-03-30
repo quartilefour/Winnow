@@ -58,7 +58,7 @@ public class MeshtermIngestor extends BaseIngester {
     public Step stepMeshterm() {
         return stepBuilderFactory
                 .get("stepMeshterm")
-                .<DescriptorRecord, List<Object>>chunk(1)
+                .<DescriptorRecord, List<Object>>chunk(ingestionBatchSize)
                 .reader(readerForMeshterm())
                 .processor(processorForMesh())
                 .writer(new MultiOutputItemWriter(writerForMeshterm(), writerForMeshtermTree()))
@@ -66,7 +66,7 @@ public class MeshtermIngestor extends BaseIngester {
                 .skip(EmptyResultDataAccessException.class)
                 .noRetry(EmptyResultDataAccessException.class)
                 .noRollback(EmptyResultDataAccessException.class)
-                .skipLimit(50000)
+                .skipLimit(ingestionSkipLimit)
                 .transactionAttribute(IngeterUtil.getDefaultTransactionAttribute())
                 .build();
     }

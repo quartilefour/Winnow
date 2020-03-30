@@ -1,6 +1,5 @@
 package com.cscie599.gfn.ingestor;
 
-import com.cscie599.gfn.entities.Gene;
 import com.cscie599.gfn.entities.GeneGotermPK;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import org.apache.commons.logging.Log;
@@ -48,7 +47,7 @@ public class GeneGoTermIngester extends BaseIngester {
     public Step stepGene2Go() {
         return stepBuilderFactory
                 .get("stepGene2Go")
-                .<GeneGotermPK, GeneGotermPK>chunk(1)
+                .<GeneGotermPK, GeneGotermPK>chunk(ingestionBatchSize)
                 .reader(readerForGeneGotermPK())
                 .processor(processorForGeneGotermPK())
                 .writer(writerForGeneGotermPK())
@@ -56,7 +55,7 @@ public class GeneGoTermIngester extends BaseIngester {
                 .skip(EmptyResultDataAccessException.class)
                 .noRetry(EmptyResultDataAccessException.class)
                 .noRollback(EmptyResultDataAccessException.class)
-                .skipLimit(50000)
+                .skipLimit(ingestionSkipLimit)
                 .transactionAttribute(IngeterUtil.getDefaultTransactionAttribute())
                 .build();
     }

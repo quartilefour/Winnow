@@ -64,7 +64,7 @@ public class GoTermIngester extends BaseIngester {
     public Step stepGoTerm() {
         return stepBuilderFactory
                 .get("stepGoTerm")
-                .<Root, List<Object>>chunk(1)
+                .<Root, List<Object>>chunk(ingestionBatchSize)
                 .reader(readerForGoTerm())
                 .processor(processorForGoTerm())
                 .writer(new SingleOutputItemWriter(goTermWriter()))
@@ -72,7 +72,7 @@ public class GoTermIngester extends BaseIngester {
                 .skip(EmptyResultDataAccessException.class)
                 .noRetry(EmptyResultDataAccessException.class)
                 .noRollback(EmptyResultDataAccessException.class)
-                .skipLimit(50000)
+                .skipLimit(ingestionSkipLimit)
                 .transactionAttribute(IngeterUtil.getDefaultTransactionAttribute())
                 .build();
     }

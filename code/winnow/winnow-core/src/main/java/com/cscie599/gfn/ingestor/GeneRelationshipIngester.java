@@ -58,7 +58,7 @@ public class GeneRelationshipIngester extends BaseIngester {
     public Step stepGeneGroup() {
         return stepBuilderFactory
                 .get("stepGeneGroup")
-                .<GeneGroup, List<Object>>chunk(1)
+                .<GeneGroup, List<Object>>chunk(ingestionBatchSize)
                 .reader(readerForGeneGroup())
                 .processor(processorForGeneGroup())
                 .writer(new MultiOutputItemWriter(writerForGeneRelationship(), writerForGeneToGene()))
@@ -66,7 +66,7 @@ public class GeneRelationshipIngester extends BaseIngester {
                 .skip(EmptyResultDataAccessException.class)
                 .noRetry(EmptyResultDataAccessException.class)
                 .noRollback(EmptyResultDataAccessException.class)
-                .skipLimit(50000)
+                .skipLimit(ingestionSkipLimit)
                 .transactionAttribute(IngeterUtil.getDefaultTransactionAttribute())
                 .build();
     }

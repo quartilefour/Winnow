@@ -16,7 +16,7 @@ CREATE TABLE "goterm" (
 CREATE TABLE "gene" (
   "gene_id" char(20)  PRIMARY KEY,
   "symbol" char(40),
-  "type" varchar(300),
+  "type" varchar(600),
   "description" text,
   "publication_count" Integer,
   "synonym" varchar(300),

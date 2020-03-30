@@ -51,7 +51,7 @@ public class GenePubmedIngester extends BaseIngester {
     public Step stepGenePubmedInfo() {
         return stepBuilderFactory
                 .get("stepGenePubmedInfo")
-                .<GenePublicationPK, GenePublicationPK>chunk(1)
+                .<GenePublicationPK, GenePublicationPK>chunk(ingestionBatchSize)
                 .reader(readerForGenePubmed())
                 .processor(processorForGenePubmed())
                 .writer(writerForGenePubmed())
@@ -59,7 +59,7 @@ public class GenePubmedIngester extends BaseIngester {
                 .skip(EmptyResultDataAccessException.class)
                 .noRetry(EmptyResultDataAccessException.class)
                 .noRollback(EmptyResultDataAccessException.class)
-                .skipLimit(50000)
+                .skipLimit(ingestionSkipLimit)
                 .transactionAttribute(IngeterUtil.getDefaultTransactionAttribute())
                 .build();
     }
