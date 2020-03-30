@@ -16,10 +16,10 @@ CREATE TABLE "goterm" (
 CREATE TABLE "gene" (
   "gene_id" char(20)  PRIMARY KEY,
   "symbol" char(40),
-  "type" char(50),
+  "type" varchar(300),
   "description" text,
   "publication_count" Integer,
-  "synonym" char(20),
+  "synonym" varchar(300),
   "modification_date" Date,
   "count_modification_time" timestamp
 );
