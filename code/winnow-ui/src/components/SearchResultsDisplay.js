@@ -1,6 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Form, Button} from "react-bootstrap";
-import {fetchSearchResults} from "../service/ApiService";
+import {Form, Button, Table} from "react-bootstrap";
 
 /**
  * SearchResults displays the results of searches.
@@ -17,40 +16,48 @@ function SearchResultsDisplay(props) {
 
     useEffect(() => {
         if (!haveResults) {
-            fetchSearchResults()
-                .then(res => {
-                    setResData(res);
-                    setIsLoaded(true);
-                }).catch(err => {
-                setIsLoaded(true);
-            });
+            setResData(props.resData);
             setHaveResults(true);
+            setIsLoaded(true);
         } else {
             /* fetchSearchResults() */
         }
-    }, [haveResults]);
+    }, [haveResults, props]);
 
     if (isLoaded) {
         console.info(`SearchResultsDisplay selected: ${JSON.stringify(resData)}`);
         return (
             <div>
                 <Form>
-                    <table />
-                    <th /> Results
-                    {this.state.resData.results.map (( value, index ) => {
-                        return (
-                            <tr key={index}>
-                                <td>{value.geneId}</td>
-                                <td>{value.symbol}</td>
-                                <td>{value.meshId}</td>
-                                <td>{value.meshTerm}</td>
-                                <td>{value.publicationCount}</td>
-                                <td>{value.pValue}</td>
-                            </tr>
-                        );
-                    })}
-                <Button>Bookmark</Button>
-                <Button>Export</Button>
+                    <h3> Results</h3>
+                    <Table striped bordered hover>
+                        <thead>
+                        <tr>
+                            <th>Gene Id</th>
+                            <th>Symbol</th>
+                            <th>Meshterm Id</th>
+                            <th>Meshterms</th>
+                            <th>Publications</th>
+                            <th>P-value</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {resData.results.map((value, index) => {
+                            return (
+                                <tr key={index}>
+                                    <td>{value.geneId}</td>
+                                    <td>{value.symbol}</td>
+                                    <td>{value.meshId}</td>
+                                    <td>{value.meshTerm}</td>
+                                    <td>{value.publicationCount}</td>
+                                    <td>{value.pValue}</td>
+                                </tr>
+                            );
+                        })}
+                        </tbody>
+                    </Table>
+                    <Button>Bookmark</Button>
+                    <Button>Export</Button>
                 </Form>
             </div>
         );

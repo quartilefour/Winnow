@@ -4,6 +4,15 @@ import {fetchMeshtermCat, fetchMeshtermNode, fetchMeshtermTree, mapMeshtermTreeD
 import cloneDeep from "lodash/cloneDeep";
 import SuperTreeview from "react-super-treeview";
 
+/**
+ * Dynamically generates MeSH term tree
+ *
+ * Uses https://github.com/azizali/react-super-treeview
+ *
+ * @param props
+ * @returns {*}
+ * @constructor
+ */
 
 export function MeshtermTree(props) {
     const [isLoaded, setIsLoaded] = useState(false);
@@ -11,14 +20,15 @@ export function MeshtermTree(props) {
     const [checked, setChecked] = useState([]);
 
     useEffect(() => {
+        /* Fetch top level MeSH term categories */
         fetchMeshtermCat()
             .then(res => {
                 let mappedData = res.map((mesh, index) => {
                     return {
                         children: [],
-                        id: mesh.categoryId.trim(),
+                        id: mesh.categoryId,
                         meshIndex: index,
-                        name: mesh.name.trim(),
+                        name: `${mesh.name} [${mesh.categoryId}]`,
                         hasChild: true
                     };
                 });
@@ -73,16 +83,16 @@ export function MeshtermTree(props) {
                         nodes.forEach((node)=>{
                             node.isChecked = checkState;
                             if (checkState) {
-                                console.info(`MeshtermTree2 node ${node.id} checked`);
-                               setChecked([...checked, node.id]);
+                                console.info(`MeshtermTree node ${node.meshId} checked`);
+                               setChecked([...checked, node.meshId]);
                             } else {
-                                console.info(`MeshtermTree2 node ${node.id} unchecked`);
-                                setChecked(checked.filter(term => term !== node.id));
+                                console.info(`MeshtermTree node ${node.meshId} unchecked`);
+                                setChecked(checked.filter(term => term !== node.meshId));
                             }
                             if(node.children){
                                 applyCheckStateTo(node.children);
                             }
-                            console.info(`MeshtermTree2 checked nodes: ${checked}`);
+                            console.info(`MeshtermTree checked nodes: ${checked}`);
                         })
                     }
                 }}
@@ -95,16 +105,16 @@ export function MeshtermTree(props) {
                                 .then(res => {
                                     insertChildNodes(node, depth, mapMeshtermTreeData(res, node, depth));
                                 }).catch(err => {
-                                console.debug(`MeshtermTree2 Error: ${err}`);
-                                console.debug(`MeshtermTree2 Error: ${JSON.stringify(err)}`);
+                                console.debug(`MeshtermTree Error: ${err}`);
+                                console.debug(`MeshtermTree Error: ${JSON.stringify(err)}`);
                             })
                         } else {
                             fetchMeshtermTree(node.id)
                                 .then(res => {
                                     insertChildNodes(node, depth, mapMeshtermTreeData(res, node, depth));
                                 }).catch(err => {
-                                console.debug(`MeshtermTree2 Error: ${err}`);
-                                console.debug(`MeshtermTree2 Error: ${JSON.stringify(err)}`);
+                                console.debug(`MeshtermTree Error: ${err}`);
+                                console.debug(`MeshtermTree Error: ${JSON.stringify(err)}`);
                             })
                         }
                     }
