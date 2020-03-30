@@ -1,4 +1,9 @@
 package com.cscie599.gfn.service;
 
-public class IngestionService {
+/**
+ * @author PulkitBhanot
+ */
+public interface IngestionService {
+
+    boolean startIngestion();
 }
