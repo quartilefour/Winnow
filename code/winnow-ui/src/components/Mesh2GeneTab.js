@@ -3,6 +3,8 @@ import {Button, Form} from "react-bootstrap";
 import {MeshtermTree} from "../components/MeshtermTree";
 import {fetchSearchResults} from "../service/ApiService";
 import SearchResultsDisplay from "./SearchResultsDisplay";
+import SearchTermUploader from "./SearchTermUploader";
+import PageLoader from "./common/PageLoader";
 
 /**
  * Mesh2GeneTab builds the content for MeSH term Search.
@@ -13,6 +15,7 @@ import SearchResultsDisplay from "./SearchResultsDisplay";
  */
 function Mesh2GeneTab(props) {
     const [isLoaded, setIsLoaded] = useState(false);
+    const [useBatch, setUseBatch] = useState(false);
     const [checkedTerms, setCheckedTerms] = useState([]);
     const [haveResults, setHaveResults] = useState(false);
     const [resulData, setResultData] = useState('');
@@ -48,18 +51,33 @@ function Mesh2GeneTab(props) {
         setHaveResults(true);
     }
 
+    function toggleBatch() {
+        setUseBatch(!useBatch);
+    }
+
     if (isLoaded) {
         if (!haveResults) {
-            return (
-                <div>
-                    <Form>
-                        <Button onClick={executeSearch}>Search</Button>
-                    </Form>
-                    <Fragment>
-                        <MeshtermTree callback={getChecked}/>
-                    </Fragment>
-                </div>
-            )
+            if (!useBatch) {
+                return (
+                    <div>
+                        <Form>
+                            <Button onClick={toggleBatch}>Batch Import</Button>
+                            <Button onClick={executeSearch}>Search</Button>
+                        </Form>
+                        <Fragment>
+                            <MeshtermTree callback={getChecked}/>
+                        </Fragment>
+                    </div>
+                )
+            } else {
+                return (
+                    <div>
+                        <Button onClick={toggleBatch}>Selector</Button>
+                        <Button onClick={null}>Search</Button>
+                        <SearchTermUploader data={null}/>
+                    </div>
+                )
+            }
         } else {
             return (
                 <div>
@@ -69,7 +87,7 @@ function Mesh2GeneTab(props) {
         }
     } else {
         return (
-            <div>Loading...</div>
+            <div><PageLoader/></div>
         )
     }
 }

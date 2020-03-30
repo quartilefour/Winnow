@@ -9,7 +9,7 @@ import {AuthContext} from "./context/auth";
 import PrivateRoute from "./PrivateRoute";
 import Cookies from 'js-cookie';
 import Profile from "./components/Profile";
-import 'react-checkbox-tree/lib/react-checkbox-tree.css';
+import Admin from "./components/Admin";
 
 /**
  * Renders the User Interface to the Winnow application.
@@ -47,6 +47,7 @@ function App(props) {
                         <Route path="/register" component={Register}/>
                         <PrivateRoute path="/profile" component={Profile}/>
                         <PrivateRoute exact path="/" component={Dashboard}/>
+                        <PrivateRoute path="/admin" component={Admin}/>
                     </Switch>
                 </div>
             </Router>

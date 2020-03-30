@@ -68,9 +68,24 @@ function BookmarkTab(props) {
                                         <td>{value.searchQuery.join(', ')}</td>
                                         <td>{value.createdAt}</td>
                                         <td>
-                                            <FontAwesomeIcon className="searchActions" icon={faPlay} color="darkgreen"/>
-                                            <FontAwesomeIcon className="searchActions" icon={faShareAlt} color="cornflowerblue"/>
-                                            <FontAwesomeIcon className="searchActions" icon={faTimes} color="maroon"/>
+                                            <FontAwesomeIcon
+                                                className="searchActions"
+                                                icon={faPlay}
+                                                color="darkgreen"
+                                                title="Execute Search"
+                                            />
+                                            <FontAwesomeIcon
+                                                className="searchActions"
+                                                icon={faShareAlt}
+                                                color="cornflowerblue"
+                                                title="Share Search"
+                                            />
+                                            <FontAwesomeIcon
+                                                className="searchActions"
+                                                icon={faTimes}
+                                                color="maroon"
+                                                title="Delete Search"
+                                            />
                                         </td>
                                     </tr>
                                 );

@@ -46,6 +46,7 @@ const NavBar = (props) => {
             <Navbar.Collapse id="basic-navbar-nav">
                 <Nav className="mr-auto">
                     <Nav.Link as={Link} to="/">Dashboard</Nav.Link>
+                    <Nav.Link as={Link} to="/admin">Admin</Nav.Link>
                 </Nav>
                 <Nav.Link as={Link} to='/profile'>
                     <FontAwesomeIcon icon={faUser} color="cornflowerblue" />

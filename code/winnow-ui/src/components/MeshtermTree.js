@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from 'react';
+import {Spinner} from "react-bootstrap";
 import 'react-super-treeview/dist/style.css';
 import {fetchMeshtermCat, fetchMeshtermNode, fetchMeshtermTree, mapMeshtermTreeData} from "../service/ApiService";
 import cloneDeep from "lodash/cloneDeep";
 import SuperTreeview from "react-super-treeview";
+import PageLoader from "./common/PageLoader";
 
 /**
  * Dynamically generates MeSH term tree
@@ -63,6 +65,7 @@ export function MeshtermTree(props) {
     if (isLoaded) {
         return (
             <SuperTreeview
+                loadingElement={<Spinner animation="border" size="sm" variant="info"/>}
                 data={meshData}
                 onUpdateCb={(updatedData) => {
                     setMeshData(updatedData);
@@ -123,7 +126,7 @@ export function MeshtermTree(props) {
         )
     } else {
         return (
-            <div>Loading...</div>
+            <div><PageLoader/></div>
         )
     }
 }
