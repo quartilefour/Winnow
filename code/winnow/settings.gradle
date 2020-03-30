@@ -2,4 +2,5 @@ rootProject.name = 'winnow'
 include 'winnow-core'
 include 'winnow-war'
 include 'winnow-ftp'
+include 'winnow-ingest'
 
