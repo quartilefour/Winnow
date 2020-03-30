@@ -110,7 +110,7 @@ public class FTPFileDownloadRunnable implements Runnable {
             if (outputFile.exists()) {
                 logger.info("file already downloaded");
             } else {
-                logger.info("Downloading file" + outputFile.getName());
+                logger.info("Downloading file " + outputFile.getName());
                 FileOutputStream fos = new FileOutputStream(outputFile);
                 ftpClient.retrieveFile(filePath, fos);
                 fos.flush();

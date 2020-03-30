@@ -108,9 +108,9 @@ public class GeneInfoIngester extends BaseIngester {
 
     class DBLogProcessor implements ItemProcessor<Gene, Gene> {
         public Gene process(Gene gene) throws Exception {
-           // if (logger.isDebugEnabled()) {
-                logger.info("Inserting Gene : " + gene);
-            //}
+           if (logger.isDebugEnabled()) {
+                logger.debug("Inserting Gene : " + gene);
+            }
             return gene;
         }
     }

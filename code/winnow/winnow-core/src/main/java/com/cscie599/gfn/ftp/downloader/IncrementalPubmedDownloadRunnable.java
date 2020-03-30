@@ -84,7 +84,7 @@ public class IncrementalPubmedDownloadRunnable extends BasePubmedDownloadRunnabl
                     String localFilePath = this.localFilePath + File.separator + "pubmed20n" + String.format("%04d", index) + FTP_FILEEXTENSION;
                     File outputFile = new File(localFilePath);
 
-                    logger.info("Downloading file" + outputFile.getName());
+                    logger.info("Downloading file " + outputFile.getName());
                     FileOutputStream fos = new FileOutputStream(outputFile);
                     ftpClient.retrieveFile(filePath, fos);
                     fos.flush();
