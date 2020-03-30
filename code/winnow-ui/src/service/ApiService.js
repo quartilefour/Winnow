@@ -5,26 +5,25 @@
 import axios from 'axios';
 import * as Constants from '../constants';
 
-export const fetchUserBookmarks = (data) => {
-    console.info(`fetchUserBookmarks: ${JSON.stringify(data)}`);
+export const fetchUserBookmarks = () => {
     let mockResp = [
             {
                 searchName: "Saved Search 1",
                 queryType: "gene",
                 searchQuery: ["1246504","36111395","36110376"],
-                createAt: "2020-03-29 17:43:26",
+                createdAt: "2020-03-29 17:43:26",
             },
             {
                 searchName: "Saved Search 2",
                 queryType: "gene",
                 searchQuery: ["1246504","36111395","36110376"],
-                createAt: "2020-03-28 07:12:50",
+                createdAt: "2020-03-28 07:12:50",
             },
             {
                 searchName: "Saved Search 3",
                 queryType: "mesh",
                 searchQuery: ["C14.280.778","C14.280.763","C20.425"],
-                createAt: "2020-03-28 11:38:24",
+                createdAt: "2020-03-28 11:38:24",
             },
     ];
     return new Promise((resolve, reject) => {

@@ -19,7 +19,7 @@ function Dashboard(props) {
     return (
         <div className="tab-container">
             <Error>{error}</Error>
-            <Tab.Container id="left-tabs-example" defaultActiveKey="mesh2gene" className="tab-container">
+            <Tab.Container id="left-tabs-example" defaultActiveKey="bookmarks" className="tab-container">
                 <Row>
                     <Col sm={3}>
                         <Nav variant="pills" className="flex-column">
