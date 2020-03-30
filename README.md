@@ -11,6 +11,7 @@ Gene Function Navigation Tool
  * adminer container to view the contents of the db. The container is running adminer UI at http://127.0.0.1:8090, make sure to change the Database type to postgres(defaults to mysql)
  * webapp container that runs the django app. The Django app can be accessed in UI at http://127.0.0.1:8000
  * ftpfiledownloader container to download ftp files from various sources.
+ * bulkingestion container to insert into postgres from the compressed files downloaded to S3 by ftpfiledownloader container.
  
  To start all the containers we first need to build them. (All the docker-compose commands should be run from the directory which has docker-compose.yml file). The webapp container requires the java code to be compiled and packaged as a war file. You can either build the war file explicitly by running the following commands
  
@@ -128,6 +129,13 @@ npm start
       `docker tag gfn_ftpapp.cscie99.com:latest 228205745268.dkr.ecr.us-east-1.amazonaws.com/cscie590:latest`
 
       `docker push 228205745268.dkr.ecr.us-east-1.amazonaws.com/cscie590:latest`
+      
+  - Bulk Ingestion container
+    -Setup another container repository on AWS for running the AWS job e.g `228205745268.dkr.ecr.us-east-1.amazonaws.com/cscie599-ingester`. To push the Ingestionjob image run    
+      
+      `docker tag gfn_ingesterapp.cscie99.com:latest 228205745268.dkr.ecr.us-east-1.amazonaws.com/cscie599-ingester:latest`
+      
+      `docker push 228205745268.dkr.ecr.us-east-1.amazonaws.com/cscie599-ingester:latest`
 
 * AWS batch setup
   - Compute Environment
