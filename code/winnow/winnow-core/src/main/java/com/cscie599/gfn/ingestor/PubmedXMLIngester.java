@@ -5,6 +5,7 @@ import com.cscie599.gfn.importer.genegroup.GeneGroup;
 import com.cscie599.gfn.importer.pubmed.PubmedArticle;
 import com.cscie599.gfn.importer.pubmed.converter.MeshHeadingConverter;
 import com.cscie599.gfn.importer.pubmed.converter.PMIDConverter;
+import com.cscie599.gfn.ingestor.reader.SkipSupportedMultiResourceItemReader;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -47,6 +48,9 @@ public class PubmedXMLIngester extends BaseIngester {
     @Value("file:${input.directory}${input.pubmed.file}")
     private Resource[] inputResources;
 
+    @Value("${input.PubmedXMLIngester.skipLines:0}")
+    private int linesToSkip;
+
     @Bean
     @Order(7)
     public Job getPubmedXMLIngester() {
@@ -59,7 +63,7 @@ public class PubmedXMLIngester extends BaseIngester {
     public Step stepPubMedInfo() {
         return stepBuilderFactory
                 .get("stepPubMedInfo")
-                .<PubmedArticle, List<Object>>chunk(ingestionBatchSize)
+                .<PubmedArticle, List<Object>>chunk(1)
                 .reader(readerForPubmed())
                 .processor(processorForAuthors())
                 .writer(new MultiOutputItemWriter(authorWriter1(), publicationWriter2(), authorPublicationWriter3(), publicationMeshWriter4()))
@@ -165,7 +169,7 @@ public class PubmedXMLIngester extends BaseIngester {
     @Bean
     public ItemReader<PubmedArticle> readerForPubmed() {
         logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName());
-        MultiResourceItemReader<PubmedArticle> multiResourceItemReader = new MultiResourceItemReader<PubmedArticle>();
+        SkipSupportedMultiResourceItemReader<PubmedArticle> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<PubmedArticle>();
         multiResourceItemReader.setResources(inputResources);
 
         StaxEventItemReader<PubmedArticle> reader = new StaxEventItemReader<PubmedArticle>();
@@ -183,6 +187,7 @@ public class PubmedXMLIngester extends BaseIngester {
         xStreamMarshaller.getXStream().registerConverter(new MeshHeadingConverter());
         xStreamMarshaller.getXStream().registerConverter(new PMIDConverter());
         reader.setUnmarshaller(xStreamMarshaller);
+        multiResourceItemReader.setLinesToSkip(linesToSkip);
         return multiResourceItemReader;
     }
 

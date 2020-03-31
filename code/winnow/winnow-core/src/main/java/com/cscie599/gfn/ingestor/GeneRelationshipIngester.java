@@ -5,6 +5,7 @@ import com.cscie599.gfn.entities.GeneGenePK;
 import com.cscie599.gfn.entities.GeneRelationship;
 import com.cscie599.gfn.importer.geneMeshterm.GeneMeshterm;
 import com.cscie599.gfn.importer.genegroup.GeneGroup;
+import com.cscie599.gfn.ingestor.reader.SkipSupportedMultiResourceItemReader;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,6 +47,9 @@ public class GeneRelationshipIngester extends BaseIngester {
     @Value("file:${input.directory}${input.gene_group.file}")
     private Resource[] inputResources;
 
+    @Value("${input.GeneRelationshipIngester.skipLines:0}")
+    private int linesToSkip;
+
     @Bean
     @Order(5)
     public Job getGeneRelationshipIngester() {
@@ -58,7 +62,7 @@ public class GeneRelationshipIngester extends BaseIngester {
     public Step stepGeneGroup() {
         return stepBuilderFactory
                 .get("stepGeneGroup")
-                .<GeneGroup, List<Object>>chunk(ingestionBatchSize)
+                .<GeneGroup, List<Object>>chunk(1)
                 .reader(readerForGeneGroup())
                 .processor(processorForGeneGroup())
                 .writer(new MultiOutputItemWriter(writerForGeneRelationship(), writerForGeneToGene()))
@@ -79,11 +83,12 @@ public class GeneRelationshipIngester extends BaseIngester {
     @Bean
     public ItemReader<GeneGroup> readerForGeneGroup() {
         logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName());
-        MultiResourceItemReader<GeneGroup> multiResourceItemReader = new MultiResourceItemReader<GeneGroup>();
+        SkipSupportedMultiResourceItemReader<GeneGroup> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<GeneGroup>();
         multiResourceItemReader.setResources(inputResources);
         FlatFileItemReader<GeneGroup> itemReader = new FlatFileItemReader<GeneGroup>();
         itemReader.setLineMapper(lineMapperForGeneGroup());
         multiResourceItemReader.setDelegate(new GZResourceAwareItemReaderItemStream(itemReader, useZippedFormat));
+        multiResourceItemReader.setLinesToSkip(linesToSkip);
         return multiResourceItemReader;
     }
 

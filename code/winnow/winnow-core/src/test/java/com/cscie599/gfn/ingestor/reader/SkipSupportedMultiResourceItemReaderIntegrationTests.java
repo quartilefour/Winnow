@@ -24,6 +24,7 @@ import static org.junit.Assert.fail;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Comparator;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -126,11 +127,54 @@ public class SkipSupportedMultiResourceItemReaderIntegrationTests {
      * Read input from start to end.
      */
     @Test
+    public void testReadSkip5WithCallBackHandler() throws Exception {
+        tested.setLinesToSkip(5);
+        AtomicInteger counter = new AtomicInteger(0);
+        tested.setSkippedLinesCallback(new ObjectCallbackHandler<String>() {
+            @Override
+            public void handleObject(String Object) {
+                counter.incrementAndGet();
+            }
+        });
+        tested.open(ctx);
+
+        assertEquals("6", tested.read());
+        assertEquals("7", tested.read());
+        assertEquals("8", tested.read());
+        assertEquals(null, tested.read());
+        assertEquals(5, counter.get());
+
+        tested.close();
+    }
+
+    /**
+     * Read input from start to end.
+     */
+    @Test
     public void testReadSkip9() throws Exception {
         tested.setLinesToSkip(9);
         tested.open(ctx);
+        assertEquals(null, tested.read());
+        tested.close();
+    }
+
+    /**
+     * Read input from start to end.
+     */
+    @Test
+    public void testReadSkip9WithCallBackHandler() throws Exception {
+        tested.setLinesToSkip(9);
+        AtomicInteger counter = new AtomicInteger(0);
+        tested.setSkippedLinesCallback(new ObjectCallbackHandler<String>() {
+            @Override
+            public void handleObject(String Object) {
+                counter.incrementAndGet();
+            }
+        });
+        tested.open(ctx);
 
         assertEquals(null, tested.read());
+        assertEquals(9, counter.get());
 
         tested.close();
     }

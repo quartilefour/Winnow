@@ -2,6 +2,7 @@ package com.cscie599.gfn.ingestor;
 
 import com.cscie599.gfn.entities.GeneMeshtermPK;
 import com.cscie599.gfn.importer.geneMeshterm.GeneMeshterm;
+import com.cscie599.gfn.ingestor.reader.SkipSupportedMultiResourceItemReader;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -36,6 +37,9 @@ public class GeneMeshtermIngestor extends BaseIngester {
     @Value("file:${input.directory}${input.gene_meshterm.file}")
     private Resource[] inputResources;
 
+    @Value("${input.GeneMeshtermIngester.skipLines:0}")
+    private int linesToSkip;
+
     @Bean
     @Order(6)
     public Job getGeneMeshtermIngester() {
@@ -69,12 +73,13 @@ public class GeneMeshtermIngestor extends BaseIngester {
     @Bean
     public ItemReader readerForGeneMeshterm() {
         logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName());
-        MultiResourceItemReader<GeneMeshterm> multiResourceItemReader = new MultiResourceItemReader<GeneMeshterm>();
+        SkipSupportedMultiResourceItemReader<GeneMeshterm> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<GeneMeshterm>();
         multiResourceItemReader.setResources(inputResources);
         FlatFileItemReader<GeneMeshterm> itemReader = new FlatFileItemReader<GeneMeshterm>();
         itemReader.setLineMapper(lineMapperForGeneMeshterm());
         itemReader.setLinesToSkip(1);
         multiResourceItemReader.setDelegate(new GZResourceAwareItemReaderItemStream(itemReader, useZippedFormat));
+        multiResourceItemReader.setLinesToSkip(linesToSkip);
         return multiResourceItemReader;
     }
 

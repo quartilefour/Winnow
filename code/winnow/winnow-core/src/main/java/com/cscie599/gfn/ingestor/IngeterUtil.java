@@ -12,9 +12,7 @@ public class IngeterUtil {
 
     public static DefaultTransactionAttribute getDefaultTransactionAttribute(){
         DefaultTransactionAttribute attribute = new DefaultTransactionAttribute();
-        attribute.setPropagationBehavior(Propagation.REQUIRED.value());
-        attribute.setIsolationLevel(Isolation.SERIALIZABLE.value());
-        attribute.setTimeout(30);
+        attribute.setIsolationLevel(Isolation.READ_COMMITTED.value());
         return attribute;
     }
 }

@@ -52,6 +52,9 @@ public class GoTermIngester extends BaseIngester {
     @Value("file:${input.directory}${input.gene-goslim.file}")
     private Resource[] inputResources;
 
+    @Value("${input.GoTermIngester.skipLines:0}")
+    private int linesToSkip;
+
     @Bean
     @Order(3)
     public Job getGoTermIngester() {

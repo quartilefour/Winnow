@@ -1,4 +1,4 @@
-package com.cscie599.gfn.ingestor;
+package com.cscie599.gfn.ingestor.reader;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -6,6 +6,7 @@ import org.springframework.batch.item.*;
 import org.springframework.batch.item.file.LineCallbackHandler;
 import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.batch.item.file.ResourceAwareItemReaderItemStream;
+import org.springframework.batch.item.support.AbstractItemStreamItemReader;
 import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
@@ -14,9 +15,13 @@ import org.springframework.util.ClassUtils;
 import java.util.Arrays;
 import java.util.Comparator;
 
-public class SkipSupportedMultiResourceItemReader<T> extends MultiResourceItemReader<T> {
+/**
+ * This is a copy of {@link org.springframework.batch.item.file.MultiResourceItemReader} with added support for skipping lines across multiple files.
+ * @author PulkitBhanot
+ */
+public class SkipSupportedMultiResourceItemReader<T> extends AbstractItemStreamItemReader<T> {
 
-    private static final Log logger = LogFactory.getLog(MultiResourceItemReader.class);
+    private static final Log logger = LogFactory.getLog(SkipSupportedMultiResourceItemReader.class);
 
     private static final String RESOURCE_KEY = "resourceIndex";
 
@@ -35,12 +40,12 @@ public class SkipSupportedMultiResourceItemReader<T> extends MultiResourceItemRe
 
     private int linesToSkip = 0;
 
-    private LineCallbackHandler skippedLinesCallback;
+    private ObjectCallbackHandler<T> skippedLinesCallback;
 
     /**
-     * @param skippedLinesCallback will be called for each one of the initial skipped lines before any items are read.
+     * @param skippedLinesCallback will be called for each one of the initial skipped objects before any items are read.
      */
-    public void setSkippedLinesCallback(LineCallbackHandler skippedLinesCallback) {
+    public void setSkippedLinesCallback(ObjectCallbackHandler<T> skippedLinesCallback) {
         this.skippedLinesCallback = skippedLinesCallback;
     }
 
@@ -146,7 +151,7 @@ public class SkipSupportedMultiResourceItemReader<T> extends MultiResourceItemRe
      * the resource.
      */
     @Override
-    public void open(ExecutionContext executionContext) throws Exception {
+    public void open(ExecutionContext executionContext) throws ItemStreamException {
         super.open(executionContext);
         Assert.notNull(resources, "Resources must be set");
 
@@ -180,10 +185,15 @@ public class SkipSupportedMultiResourceItemReader<T> extends MultiResourceItemRe
             currentResource = -1;
 
             for (int i = 0; i < linesToSkip; i++) {
-                T line = read();
-                if (skippedLinesCallback != null) {
-                    skippedLinesCallback.handleLine(line);
+                try {
+                    T object = read();
+                    if (skippedLinesCallback != null) {
+                        skippedLinesCallback.handleObject(object);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
+
             }
         }
     }

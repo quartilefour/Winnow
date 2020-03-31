@@ -6,6 +6,7 @@ import com.cscie599.gfn.entities.MeshtermTreePK;
 import com.cscie599.gfn.importer.meshterm.DescriptorRecord;
 import com.cscie599.gfn.importer.meshterm.MeshConverter;
 import com.cscie599.gfn.importer.pubmed.PubmedArticle;
+import com.cscie599.gfn.ingestor.reader.SkipSupportedMultiResourceItemReader;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -46,6 +47,9 @@ public class MeshtermIngestor extends BaseIngester {
     @Value("file:${input.directory}${input.meshsub.file}")
     private Resource[] inputResources;
 
+    @Value("${input.MeshtermXMLIngestor.skipLines:0}")
+    private int linesToSkip;
+
     @Bean
     @Order(1)
     public Job getMeshtermXMLIngestor() {
@@ -58,7 +62,7 @@ public class MeshtermIngestor extends BaseIngester {
     public Step stepMeshterm() {
         return stepBuilderFactory
                 .get("stepMeshterm")
-                .<DescriptorRecord, List<Object>>chunk(ingestionBatchSize)
+                .<DescriptorRecord, List<Object>>chunk(1)
                 .reader(readerForMeshterm())
                 .processor(processorForMesh())
                 .writer(new MultiOutputItemWriter(writerForMeshterm(), writerForMeshtermTree()))
@@ -124,7 +128,7 @@ public class MeshtermIngestor extends BaseIngester {
     @Bean
     public ItemReader<DescriptorRecord> readerForMeshterm() {
         logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName());
-        MultiResourceItemReader<DescriptorRecord> multiResourceItemReader = new MultiResourceItemReader<DescriptorRecord>();
+        SkipSupportedMultiResourceItemReader<DescriptorRecord> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<DescriptorRecord>();
         multiResourceItemReader.setResources(inputResources);
         StaxEventItemReader<DescriptorRecord> reader = new StaxEventItemReader<DescriptorRecord>();
         multiResourceItemReader.setDelegate(new GZResourceAwareItemReaderItemStream(reader, useZippedFormat));
@@ -137,6 +141,7 @@ public class MeshtermIngestor extends BaseIngester {
         xStreamMarshaller.getXStream().alias("TreeNumberList", DescriptorRecord.TreeNumberList.class);
         xStreamMarshaller.getXStream().registerConverter(new MeshConverter());
         reader.setUnmarshaller(xStreamMarshaller);
+        multiResourceItemReader.setLinesToSkip(linesToSkip);
         return multiResourceItemReader;
     }
 

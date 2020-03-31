@@ -2,6 +2,7 @@ package com.cscie599.gfn.ingestor;
 
 import com.cscie599.gfn.entities.GenePublicationPK;
 import com.cscie599.gfn.importer.geneMeshterm.GeneMeshterm;
+import com.cscie599.gfn.ingestor.reader.SkipSupportedMultiResourceItemReader;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -39,6 +40,9 @@ public class GenePubmedIngester extends BaseIngester {
     @Value("file:${input.directory}${input.gene2pubmed.file}")
     private Resource[] inputResources;
 
+    @Value("${input.GenePubmedIngester.skipLines:0}")
+    private int linesToSkip;
+
     @Bean
     @Order(8)
     public Job getGenePubmedIngester() {
@@ -72,11 +76,12 @@ public class GenePubmedIngester extends BaseIngester {
     @Bean
     public ItemReader<GenePublicationPK> readerForGenePubmed() {
         logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName());
-        MultiResourceItemReader<GenePublicationPK> multiResourceItemReader = new MultiResourceItemReader<GenePublicationPK>();
+        SkipSupportedMultiResourceItemReader<GenePublicationPK> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<GenePublicationPK>();
         multiResourceItemReader.setResources(inputResources);
         FlatFileItemReader<GenePublicationPK> itemReader = new FlatFileItemReader<GenePublicationPK>();
         itemReader.setLineMapper(lineMapperForGenePubmed());
         multiResourceItemReader.setDelegate(new GZResourceAwareItemReaderItemStream(itemReader, useZippedFormat));
+        multiResourceItemReader.setLinesToSkip(linesToSkip);
         return multiResourceItemReader;
     }
 
@@ -84,8 +89,8 @@ public class GenePubmedIngester extends BaseIngester {
     public LineMapper<GenePublicationPK> lineMapperForGenePubmed() {
         DefaultLineMapper<GenePublicationPK> lineMapper = new DefaultLineMapper<GenePublicationPK>();
         DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer(DelimitedLineTokenizer.DELIMITER_TAB);
-        lineTokenizer.setNames(new String[]{"geneId", "publicationId"});
-        lineTokenizer.setIncludedFields(new int[]{1, 2});
+        lineTokenizer.setNames(new String[]{"taxId", "geneId", "publicationId"});
+        lineTokenizer.setIncludedFields(new int[]{0, 1, 2});
         BeanWrapperFieldSetMapper<GenePublicationPK> fieldSetMapper = new BeanWrapperFieldSetMapper<GenePublicationPK>();
         fieldSetMapper.setStrict(true);
         fieldSetMapper.setDistanceLimit(1);
@@ -100,7 +105,7 @@ public class GenePubmedIngester extends BaseIngester {
     public JdbcBatchItemWriter<GenePublicationPK> writerForGenePubmed() {
         JdbcBatchItemWriter<GenePublicationPK> itemWriter = new UpsertableJdbcBatchItemWriter<>();
         itemWriter.setDataSource(dataSource);
-        itemWriter.setSql("INSERT INTO gene_publication (gene_id, publication_id) VALUES (:geneId, :publicationId) ON CONFLICT DO NOTHING RETURNING gene_id");
+        itemWriter.setSql("INSERT INTO gene_publication (gene_id, publication_id, tax_id) VALUES (:geneId, :publicationId, :taxId) ON CONFLICT DO NOTHING RETURNING gene_id");
         itemWriter.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<GenePublicationPK>());
         return itemWriter;
     }
