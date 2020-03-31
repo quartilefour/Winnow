@@ -111,7 +111,7 @@ public class MeshtermController {
     @ApiOperation(value = "View mesh term trees by tree node id starting with category letter")
     @GetMapping("/meshterms/tree/nodeid/{nodeid}")
     List<MeshtermTreeView> findAllTreesByTreeNodeIdStartingWith(@PathVariable String nodeid) {
-        List<MeshtermTree> meshtermTrees = treeRepository.findByTreeNodeIdStartingWith(nodeid);
+        List<MeshtermTree> meshtermTrees = treeRepository.findByTreeNodeIdStartingWithOrderByMeshtermTreePK(nodeid);
         List<MeshtermTreeView> meshtermTreeViews = new ArrayList<>();
         for (MeshtermTree meshtermTree : meshtermTrees) {
             meshtermTreeViews.add(new MeshtermTreeView(meshtermTree.getMeshtermTreePK().getMeshId(),
@@ -130,7 +130,7 @@ public class MeshtermController {
     @ApiOperation(value = "View mesh term trees by tree parent id")
     @GetMapping("/meshterms/tree/parentid/{parentid}")
     List<MeshtermTreeView> findAllTreesByParentNodeId(@PathVariable String parentid) {
-        List<MeshtermTree> meshtermTrees = treeRepository.findByTreeParentId(parentid);
+        List<MeshtermTree> meshtermTrees = treeRepository.findByTreeParentIdOrderByMeshtermTreePK(parentid);
         List<MeshtermTreeView> meshtermTreeViews = new ArrayList<>();
         for (MeshtermTree meshtermTree : meshtermTrees) {
             meshtermTreeViews.add(new MeshtermTreeView(meshtermTree.getMeshtermTreePK().getMeshId(),

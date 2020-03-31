@@ -42,4 +42,15 @@ public class GeneController {
                 .orElseThrow(() -> new GeneNotFoundException(id));
         return new GeneView(gene.getGeneId(), gene.getDescription(), gene.getSymbol());
     }
+
+    @ApiOperation(value = "Get genes whose id, symbol or description contain 'pattern'")
+    @GetMapping("/genes/search/{pattern}")
+    public List<GeneView> findAllContaining(@PathVariable String pattern) {
+        List<Gene> genes = repository.findAllContaining(pattern.toLowerCase());
+        List<GeneView> geneViews = new ArrayList<>();
+        for (Gene gene : genes) {
+            geneViews.add(new GeneView(gene.getGeneId(),gene.getDescription(), gene.getSymbol()));
+        }
+        return geneViews;
+    }
 }
