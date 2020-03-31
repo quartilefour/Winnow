@@ -52,11 +52,13 @@ subprojects {
 		runtimeOnly 'org.postgresql:postgresql'
 		annotationProcessor 'org.projectlombok:lombok'
 		compile 'org.springframework.boot:spring-boot-starter-tomcat'
+		compile 'com.google.code.findbugs:annotations:3.0.1'
 		testImplementation('org.springframework.boot:spring-boot-starter-test') {
 			exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 		}
 		testImplementation 'org.springframework.batch:spring-batch-test'
 		testImplementation 'io.zonky.test:embedded-database-spring-test:1.5.3'
+		testCompile "junit:junit:4.12"
 	}
 
 	test {
