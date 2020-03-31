@@ -23,13 +23,17 @@ public class GeneGotermPK implements Serializable {
     @Basic(optional = false)
     @Column(name = "go_id", nullable = false, length = 20)
     private String goId;
+    @Basic(optional = false)
+    @Column(name = "tax_id", nullable = false)
+    private int taxId;
 
     public GeneGotermPK() {
     }
 
-    public GeneGotermPK(String geneId, String goId) {
+    public GeneGotermPK(String geneId, String goId, int taxId) {
         this.geneId = geneId;
         this.goId = goId;
+        this.taxId = taxId;
     }
 
     public String getGeneId() {
@@ -48,11 +52,20 @@ public class GeneGotermPK implements Serializable {
         this.goId = goId;
     }
 
+    public int getTaxId() {
+        return taxId;
+    }
+
+    public void setTaxId(int taxId) {
+        this.taxId = taxId;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
         hash += (geneId != null ? geneId.hashCode() : 0);
         hash += (goId != null ? goId.hashCode() : 0);
+        hash += (int) taxId;
         return hash;
     }
 
@@ -69,12 +82,15 @@ public class GeneGotermPK implements Serializable {
         if ((this.goId == null && other.goId != null) || (this.goId != null && !this.goId.equals(other.goId))) {
             return false;
         }
+        if (this.taxId != other.taxId) {
+            return false;
+        }
         return true;
     }
 
     @Override
     public String toString() {
-        return "com.cscie599.gfn.entities.GeneGotermPK[ geneId=" + geneId + ", goId=" + goId + " ]";
+        return "com.cscie599.gfn.entities.GeneGotermPK[ geneId=" + geneId + ", goId=" + goId + ", taxId=" + taxId + " ]";
     }
     
 }

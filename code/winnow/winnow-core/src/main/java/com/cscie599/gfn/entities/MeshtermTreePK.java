@@ -21,10 +21,10 @@ public class MeshtermTreePK implements Serializable {
     @Column(name = "mesh_id", nullable = false, length = 20)
     private String meshId;
     @Basic(optional = false)
-    @Column(name = "tree_parent_id", nullable = false, length = 100)
+    @Column(name = "tree_parent_id", nullable = false, length = 120)
     private String treeParentId;
     @Basic(optional = false)
-    @Column(name = "tree_node_id", nullable = false, length = 100)
+    @Column(name = "tree_node_id", nullable = false, length = 6)
     private String treeNodeId;
 
     public MeshtermTreePK() {

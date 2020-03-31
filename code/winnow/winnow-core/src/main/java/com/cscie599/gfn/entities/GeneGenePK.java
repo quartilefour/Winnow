@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.cscie599.gfn.entities;
 
 import java.io.Serializable;
@@ -24,7 +19,7 @@ public class GeneGenePK implements Serializable {
     @Column(name = "other_gene_id", nullable = false, length = 20)
     private String otherGeneId;
     @Basic(optional = false)
-    @Column(name = "relationship_id", nullable = false, length = 20)
+    @Column(name = "relationship_id", nullable = false, length = 50)
     private String relationshipId;
 
     public GeneGenePK() {

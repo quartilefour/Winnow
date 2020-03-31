@@ -28,6 +28,7 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "GenePublication.findAll", query = "SELECT g FROM GenePublication g"),
     @NamedQuery(name = "GenePublication.findByGeneId", query = "SELECT g FROM GenePublication g WHERE g.genePublicationPK.geneId = :geneId"),
     @NamedQuery(name = "GenePublication.findByPublicationId", query = "SELECT g FROM GenePublication g WHERE g.genePublicationPK.publicationId = :publicationId"),
+    @NamedQuery(name = "GenePublication.findByTaxId", query = "SELECT g FROM GenePublication g WHERE g.genePublicationPK.taxId = :taxId"),
     @NamedQuery(name = "GenePublication.findByCreatedDate", query = "SELECT g FROM GenePublication g WHERE g.createdDate = :createdDate"),
     @NamedQuery(name = "GenePublication.findByDeletedDate", query = "SELECT g FROM GenePublication g WHERE g.deletedDate = :deletedDate")})
 public class GenePublication implements Serializable {
@@ -55,8 +56,8 @@ public class GenePublication implements Serializable {
         this.genePublicationPK = genePublicationPK;
     }
 
-    public GenePublication(String geneId, String publicationId) {
-        this.genePublicationPK = new GenePublicationPK(geneId, publicationId);
+    public GenePublication(String geneId, String publicationId, int taxId) {
+        this.genePublicationPK = new GenePublicationPK(geneId, publicationId, taxId);
     }
 
     public GenePublicationPK getGenePublicationPK() {

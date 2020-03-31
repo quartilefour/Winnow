@@ -50,16 +50,18 @@ public class Meshterm implements Serializable {
     @Column(name = "date_revised")
     @Temporal(TemporalType.DATE)
     private Date dateRevised;
-    @Column(name = "note", length = 100)
+    @Column(name = "note", length = 2147483647)
     private String note;
     @Column(name = "supplemental_id", length = 20)
     private String supplementalId;
-    @Column(name = "name", length = 30)
+    @Column(name = "name", length = 200)
     private String name;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "meshterm")
-    private Collection<PublicationMeshterm> publicationMeshtermCollection;
+    private Collection<MeshtermTree> meshtermTreeCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "meshterm")
     private Collection<GeneMeshterm> geneMeshtermCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "meshterm")
+    private Collection<PublicationMeshterm> publicationMeshtermCollection;
 
     public Meshterm() {
     }
@@ -124,12 +126,12 @@ public class Meshterm implements Serializable {
         this.name = name;
     }
 
-    public Collection<PublicationMeshterm> getPublicationMeshtermCollection() {
-        return publicationMeshtermCollection;
+    public Collection<MeshtermTree> getMeshtermTreeCollection() {
+        return meshtermTreeCollection;
     }
 
-    public void setPublicationMeshtermCollection(Collection<PublicationMeshterm> publicationMeshtermCollection) {
-        this.publicationMeshtermCollection = publicationMeshtermCollection;
+    public void setMeshtermTreeCollection(Collection<MeshtermTree> meshtermTreeCollection) {
+        this.meshtermTreeCollection = meshtermTreeCollection;
     }
 
     public Collection<GeneMeshterm> getGeneMeshtermCollection() {
@@ -138,6 +140,14 @@ public class Meshterm implements Serializable {
 
     public void setGeneMeshtermCollection(Collection<GeneMeshterm> geneMeshtermCollection) {
         this.geneMeshtermCollection = geneMeshtermCollection;
+    }
+
+    public Collection<PublicationMeshterm> getPublicationMeshtermCollection() {
+        return publicationMeshtermCollection;
+    }
+
+    public void setPublicationMeshtermCollection(Collection<PublicationMeshterm> publicationMeshtermCollection) {
+        this.publicationMeshtermCollection = publicationMeshtermCollection;
     }
 
     @Override

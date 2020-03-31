@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.cscie599.gfn.entities;
 
 import java.io.Serializable;
@@ -34,6 +29,7 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "Gene.findByDescription", query = "SELECT g FROM Gene g WHERE g.description = :description"),
     @NamedQuery(name = "Gene.findByPublicationCount", query = "SELECT g FROM Gene g WHERE g.publicationCount = :publicationCount"),
     @NamedQuery(name = "Gene.findBySynonym", query = "SELECT g FROM Gene g WHERE g.synonym = :synonym"),
+    @NamedQuery(name = "Gene.findByTaxId", query = "SELECT g FROM Gene g WHERE g.taxId = :taxId"),
     @NamedQuery(name = "Gene.findByModificationDate", query = "SELECT g FROM Gene g WHERE g.modificationDate = :modificationDate"),
     @NamedQuery(name = "Gene.findByCountModificationTime", query = "SELECT g FROM Gene g WHERE g.countModificationTime = :countModificationTime")})
 public class Gene implements Serializable {
@@ -43,16 +39,18 @@ public class Gene implements Serializable {
     @Basic(optional = false)
     @Column(name = "gene_id", nullable = false, length = 20)
     private String geneId;
-    @Column(name = "symbol", length = 40)
+    @Column(name = "symbol", length = 1024)
     private String symbol;
-    @Column(name = "type", length = 20)
+    @Column(name = "type", length = 1024)
     private String type;
     @Column(name = "description", length = 2147483647)
     private String description;
     @Column(name = "publication_count")
     private Integer publicationCount;
-    @Column(name = "synonym", length = 20)
+    @Column(name = "synonym", length = 1024)
     private String synonym;
+    @Column(name = "tax_id")
+    private Integer taxId;
     @Column(name = "modification_date")
     @Temporal(TemporalType.DATE)
     private Date modificationDate;
@@ -60,13 +58,13 @@ public class Gene implements Serializable {
     @Temporal(TemporalType.TIMESTAMP)
     private Date countModificationTime;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "gene")
+    private Collection<GeneMeshterm> geneMeshtermCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "gene")
     private Collection<GenePublication> genePublicationCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "gene")
     private Collection<GeneGene> geneGeneCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "gene1")
     private Collection<GeneGene> geneGeneCollection1;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "gene")
-    private Collection<GeneMeshterm> geneMeshtermCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "gene")
     private Collection<GeneGoterm> geneGotermCollection;
 
@@ -125,6 +123,14 @@ public class Gene implements Serializable {
         this.synonym = synonym;
     }
 
+    public Integer getTaxId() {
+        return taxId;
+    }
+
+    public void setTaxId(Integer taxId) {
+        this.taxId = taxId;
+    }
+
     public Date getModificationDate() {
         return modificationDate;
     }
@@ -139,6 +145,14 @@ public class Gene implements Serializable {
 
     public void setCountModificationTime(Date countModificationTime) {
         this.countModificationTime = countModificationTime;
+    }
+
+    public Collection<GeneMeshterm> getGeneMeshtermCollection() {
+        return geneMeshtermCollection;
+    }
+
+    public void setGeneMeshtermCollection(Collection<GeneMeshterm> geneMeshtermCollection) {
+        this.geneMeshtermCollection = geneMeshtermCollection;
     }
 
     public Collection<GenePublication> getGenePublicationCollection() {
@@ -163,14 +177,6 @@ public class Gene implements Serializable {
 
     public void setGeneGeneCollection1(Collection<GeneGene> geneGeneCollection1) {
         this.geneGeneCollection1 = geneGeneCollection1;
-    }
-
-    public Collection<GeneMeshterm> getGeneMeshtermCollection() {
-        return geneMeshtermCollection;
-    }
-
-    public void setGeneMeshtermCollection(Collection<GeneMeshterm> geneMeshtermCollection) {
-        this.geneMeshtermCollection = geneMeshtermCollection;
     }
 
     public Collection<GeneGoterm> getGeneGotermCollection() {

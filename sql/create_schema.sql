@@ -15,11 +15,12 @@ CREATE TABLE "goterm" (
 
 CREATE TABLE "gene" (
   "gene_id" char(20)  PRIMARY KEY,
-  "symbol" char(40),
-  "type" varchar(600),
+  "symbol" varchar(1024),
+  "type" varchar(1024),
   "description" text,
   "publication_count" Integer,
-  "synonym" varchar(300),
+  "synonym" varchar(1024),
+  "tax_id" Integer,
   "modification_date" Date,
   "count_modification_time" timestamp
 );
@@ -130,9 +131,10 @@ CREATE TABLE "publication_author" (
 CREATE TABLE "gene_publication" (
   "gene_id" char(20) REFERENCES gene (gene_id),
   "publication_id" char(20) REFERENCES publication (publication_id),
+  "tax_id" Integer,
   "created_date" timestamp,
   "deleted_date" timestamp,
-  PRIMARY KEY ("gene_id", "publication_id")
+  PRIMARY KEY ("tax_id","gene_id", "publication_id")
 
 );
 
@@ -164,9 +166,10 @@ CREATE TABLE "user_role" (
 CREATE TABLE "gene_goterm" (
   "gene_id" char(20) REFERENCES gene (gene_id),
   "go_id" char(20)  REFERENCES goterm (go_id),
+  "tax_id" Integer,
   "created_date" timestamp,
   "deleted_date" timestamp,
-  PRIMARY KEY ("gene_id", "go_id")  
+  PRIMARY KEY ("tax_id", "gene_id", "go_id")
 );
 
 CREATE TABLE "gene_meshterm" (

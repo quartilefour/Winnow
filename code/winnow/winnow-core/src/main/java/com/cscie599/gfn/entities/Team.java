@@ -39,10 +39,10 @@ public class Team implements Serializable {
     private String teamLeadId;
     @Column(name = "description", length = 100)
     private String description;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "team")
-    private Collection<UserTeam> userTeamCollection;
     @OneToMany(mappedBy = "teamId")
     private Collection<Search> searchCollection;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "team")
+    private Collection<UserTeam> userTeamCollection;
 
     public Team() {
     }
@@ -75,20 +75,20 @@ public class Team implements Serializable {
         this.description = description;
     }
 
-    public Collection<UserTeam> getUserTeamCollection() {
-        return userTeamCollection;
-    }
-
-    public void setUserTeamCollection(Collection<UserTeam> userTeamCollection) {
-        this.userTeamCollection = userTeamCollection;
-    }
-
     public Collection<Search> getSearchCollection() {
         return searchCollection;
     }
 
     public void setSearchCollection(Collection<Search> searchCollection) {
         this.searchCollection = searchCollection;
+    }
+
+    public Collection<UserTeam> getUserTeamCollection() {
+        return userTeamCollection;
+    }
+
+    public void setUserTeamCollection(Collection<UserTeam> userTeamCollection) {
+        this.userTeamCollection = userTeamCollection;
     }
 
     @Override

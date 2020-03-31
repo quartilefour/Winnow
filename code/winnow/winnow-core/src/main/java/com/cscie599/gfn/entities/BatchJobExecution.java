@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package com.cscie599.gfn.entities;
 
 import java.io.Serializable;
@@ -72,13 +67,13 @@ public class BatchJobExecution implements Serializable {
     private Date lastUpdated;
     @Column(name = "job_configuration_location", length = 2500)
     private String jobConfigurationLocation;
+    @OneToMany(cascade = CascadeType.ALL, mappedBy = "jobExecutionId")
+    private Collection<BatchStepExecution> batchStepExecutionCollection;
     @OneToOne(cascade = CascadeType.ALL, mappedBy = "batchJobExecution")
     private BatchJobExecutionContext batchJobExecutionContext;
     @JoinColumn(name = "job_instance_id", referencedColumnName = "job_instance_id", nullable = false)
     @ManyToOne(optional = false)
     private BatchJobInstance jobInstanceId;
-    @OneToMany(cascade = CascadeType.ALL, mappedBy = "jobExecutionId")
-    private Collection<BatchStepExecution> batchStepExecutionCollection;
 
     public BatchJobExecution() {
     }
@@ -172,6 +167,14 @@ public class BatchJobExecution implements Serializable {
         this.jobConfigurationLocation = jobConfigurationLocation;
     }
 
+    public Collection<BatchStepExecution> getBatchStepExecutionCollection() {
+        return batchStepExecutionCollection;
+    }
+
+    public void setBatchStepExecutionCollection(Collection<BatchStepExecution> batchStepExecutionCollection) {
+        this.batchStepExecutionCollection = batchStepExecutionCollection;
+    }
+
     public BatchJobExecutionContext getBatchJobExecutionContext() {
         return batchJobExecutionContext;
     }
@@ -186,14 +189,6 @@ public class BatchJobExecution implements Serializable {
 
     public void setJobInstanceId(BatchJobInstance jobInstanceId) {
         this.jobInstanceId = jobInstanceId;
-    }
-
-    public Collection<BatchStepExecution> getBatchStepExecutionCollection() {
-        return batchStepExecutionCollection;
-    }
-
-    public void setBatchStepExecutionCollection(Collection<BatchStepExecution> batchStepExecutionCollection) {
-        this.batchStepExecutionCollection = batchStepExecutionCollection;
     }
 
     @Override

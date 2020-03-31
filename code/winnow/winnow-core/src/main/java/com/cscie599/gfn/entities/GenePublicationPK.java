@@ -23,13 +23,17 @@ public class GenePublicationPK implements Serializable {
     @Basic(optional = false)
     @Column(name = "publication_id", nullable = false, length = 20)
     private String publicationId;
+    @Basic(optional = false)
+    @Column(name = "tax_id", nullable = false)
+    private int taxId;
 
     public GenePublicationPK() {
     }
 
-    public GenePublicationPK(String geneId, String publicationId) {
+    public GenePublicationPK(String geneId, String publicationId, int taxId) {
         this.geneId = geneId;
         this.publicationId = publicationId;
+        this.taxId = taxId;
     }
 
     public String getGeneId() {
@@ -48,11 +52,20 @@ public class GenePublicationPK implements Serializable {
         this.publicationId = publicationId;
     }
 
+    public int getTaxId() {
+        return taxId;
+    }
+
+    public void setTaxId(int taxId) {
+        this.taxId = taxId;
+    }
+
     @Override
     public int hashCode() {
         int hash = 0;
         hash += (geneId != null ? geneId.hashCode() : 0);
         hash += (publicationId != null ? publicationId.hashCode() : 0);
+        hash += (int) taxId;
         return hash;
     }
 
@@ -69,12 +82,15 @@ public class GenePublicationPK implements Serializable {
         if ((this.publicationId == null && other.publicationId != null) || (this.publicationId != null && !this.publicationId.equals(other.publicationId))) {
             return false;
         }
+        if (this.taxId != other.taxId) {
+            return false;
+        }
         return true;
     }
 
     @Override
     public String toString() {
-        return "com.cscie599.gfn.entities.GenePublicationPK[ geneId=" + geneId + ", publicationId=" + publicationId + " ]";
+        return "com.cscie599.gfn.entities.GenePublicationPK[ geneId=" + geneId + ", publicationId=" + publicationId + ", taxId=" + taxId + " ]";
     }
     
 }
