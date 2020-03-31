@@ -1,6 +1,7 @@
 import React, {Fragment, useEffect, useState} from "react";
 import {Form, Button, Spinner} from "react-bootstrap";
 import Select from "react-select";
+import AsyncSelect from "react-select/async";
 import {fetchGenes, fetchSearchResults} from "../service/ApiService";
 import SearchResultsDisplay from "./SearchResultsDisplay";
 import SearchTermUploader from "./SearchTermUploader";
@@ -18,25 +19,15 @@ function Gene2MeshTab(props) {
     const [geneDetail, setGeneDetail] = useState([]);
     const [useBatch, setUseBatch] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [geneData, setGeneData] = useState('');
+    const [isMenuLoaded, setIsMenuLoaded] = useState(false);
+    const [geneData, setGeneData] = useState([]);
     const [haveResults, setHaveResults] = useState(false);
     const [resultData, setResultData] = useState('');
 
     useEffect(() => {
         if (!haveResults) {
-            fetchGenes()
-                .then(res => {
-                    let mappedData = res.map((gene, index) => {
-                        return {
-                            value: gene.geneId,
-                            label: `(${gene.symbol}) ${gene.description}`
-                        };
-                    });
-                    setGeneData(mappedData);
-                    setIsLoaded(true);
-                }).catch(err => {
                 setIsLoaded(true);
-            });
+                setIsMenuLoaded(true);
         } else {
             /* fetchSearchResults() */
             fetchSearchResults({
@@ -52,6 +43,21 @@ function Gene2MeshTab(props) {
             });
         }
     }, [haveResults, geneDetail]);
+
+    function partialSearch(pattern) {
+        fetchGenes(pattern)
+            .then(res => {
+                let mappedData = res.map((gene, index) => {
+                    return {
+                        value: gene.geneId,
+                        label: `(${gene.symbol}) ${gene.description}`
+                    };
+                });
+                setGeneData(mappedData);
+            }).catch(err => {
+            setGeneData([]);
+        });
+    }
 
     function executeSearch() {
         setIsLoaded(false);
@@ -77,16 +83,24 @@ function Gene2MeshTab(props) {
                                     isSearchable
                                     isMulti
                                     hideSelectedOptions={true}
-                                    isLoading={!isLoaded}
-                                    loadingMessage={<Spinner animation="border" size="sm" variant="info"/>}
-                                    autoFocus
-                                    //filterOption={}
+                                    isLoading={!isMenuLoaded}
+                                    loadingMessage="Loading..."
+                                    autoFocus={true}
                                     name="gene"
+                                    onInputChange={e => {
+                                        console.info(`Gene2Mesh onInputChange: ${JSON.stringify(e)}`);
+                                        if (e.length >= 2) {
+                                            partialSearch(e);
+                                        }
+                                    }}
                                     onChange={e => {
                                         console.info(`Gene2Mesh onChange: ${JSON.stringify(e)}`);
-                                        e.forEach((val, index) => {
-                                            setGeneDetail([...geneDetail, val.value]);
-                                        })
+                                        if (e !== null) {
+                                            e.forEach((val, index) => {
+                                                setGeneDetail([...geneDetail, val.value]);
+                                            })
+                                        }
+                                        setGeneData([]);
                                     }}
                                     options={geneData}
                                 />

@@ -100,7 +100,7 @@ export const fetchSearchResults = (data) => {
 export const fetchGenes = (partial) => {
     return new Promise((resolve, reject) => {
         axios.get(
-            `${Constants.WINNOW_API_BASE_URL}/genes`,
+            `${Constants.WINNOW_API_BASE_URL}/genes/search/${partial}`,
             {
                 headers: Constants.authHeader,
             }

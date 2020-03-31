@@ -35,12 +35,10 @@ public class GeneController {
         return geneViews;
     }
 
-    @ApiOperation(value = "View one gene")
-    @GetMapping("/genes/{id}")
-    GeneView one(@PathVariable String id) {
-        Gene gene = repository.findById(id)
-                .orElseThrow(() -> new GeneNotFoundException(id));
-        return new GeneView(gene.getGeneId(), gene.getDescription(), gene.getSymbol());
+    @ApiOperation(value = "Catch empty search")
+    @GetMapping("/genes/search/")
+    public List<GeneView> findNone() {
+        return new ArrayList<>();
     }
 
     @ApiOperation(value = "Get genes whose id, symbol or description contain 'pattern'")
@@ -52,5 +50,13 @@ public class GeneController {
             geneViews.add(new GeneView(gene.getGeneId(),gene.getDescription(), gene.getSymbol()));
         }
         return geneViews;
+    }
+
+    @ApiOperation(value = "View one gene")
+    @GetMapping("/genes/{id:[0-9]+}")
+    GeneView one(@PathVariable String id) {
+        Gene gene = repository.findById(id)
+                .orElseThrow(() -> new GeneNotFoundException(id));
+        return new GeneView(gene.getGeneId(), gene.getDescription(), gene.getSymbol());
     }
 }
