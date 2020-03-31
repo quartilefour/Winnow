@@ -106,7 +106,7 @@ public class GeneInfoIngester extends BaseIngester {
     public JdbcBatchItemWriter<Gene> writerForGene() {
         JdbcBatchItemWriter<Gene> itemWriter = new UpsertableJdbcBatchItemWriter<>();
         itemWriter.setDataSource(dataSource);
-        itemWriter.setSql("INSERT INTO gene (gene_id, tax_id, symbol,type, description, synonym) VALUES (:geneId, :taxId, :symbol,:type,:description,:synonym) ON CONFLICT DO NOTHING RETURNING gene_id");
+        itemWriter.setSql("INSERT INTO gene (gene_id, tax_id, symbol,type, description) VALUES (:geneId, :taxId, :symbol,:type,:description) ON CONFLICT DO NOTHING RETURNING gene_id");
         itemWriter.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<Gene>());
         return itemWriter;
     }
