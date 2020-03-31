@@ -3,6 +3,10 @@ package com.cscie599.gfn.ftp.downloader;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.select.Elements;
+import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
@@ -22,6 +26,7 @@ public class HTTPGeneOntologyDownloadRunnable implements Runnable {
     private final String extractedFileLocation;
     private final String rawFileLocation;
     private final boolean extractContent;
+    private static final String GO_URL = "http://current.geneontology.org/ontology/subsets/";
 
     private final CountDownLatch latch;
 
@@ -49,42 +54,34 @@ public class HTTPGeneOntologyDownloadRunnable implements Runnable {
                 Files.createDirectories(newDirPath);
             }
 
-            FileUtils.copyURLToFile(
-                    new URL("http://current.geneontology.org/ontology/subsets/goslim_agr.json"),
-                    new File(rawFolderLocation + "/goslim_agr.json"),
-                    1000,
-                    60000);
+            Document doc = Jsoup.connect(GO_URL).get();
+            Elements links = doc.select("a");
+            links.stream().forEach(element -> {
+                String href = element.attr("href");
+                if (href.endsWith(".json") && href.contains("goslim")) {
+                    String fileName = FilenameUtils.getName(href);
+                    logger.info("Processing file " + fileName + " from path " + href);
+                    try {
+                        FileUtils.copyURLToFile(
+                                new URL(href),
+                                new File(rawFolderLocation + File.separator + fileName),
+                                1000,
+                                60000);
+                        if (extractContent) {
+                            FileUtils.copyFile(new File(rawFolderLocation + File.separator + fileName), new File(extractedFolderLocation + File.separator + fileName));
 
-            FileUtils.copyURLToFile(
-                    new URL("http://current.geneontology.org/ontology/subsets/goslim_generic.json"),
-                    new File(rawFolderLocation + "/goslim_generic.json"),
-                    1000,
-                    60000);
+                        }
+                    } catch (IOException e) {
+                        logger.error("Unable to successfully download file");
+                    }
+                }
+            });
 
-            FileUtils.copyURLToFile(
-                    new URL("http://current.geneontology.org/ontology/subsets/goslim_mouse.json"),
-                    new File(rawFolderLocation + "/goslim_mouse.json"),
-                    1000,
-                    60000);
-
-            FileUtils.copyURLToFile(
-                    new URL("http://current.geneontology.org/ontology/subsets/goslim_plant.json"),
-                    new File(rawFolderLocation + "/goslim_plant.json"),
-                    1000,
-                    60000);
-
-            if (extractContent) {
-                FileUtils.copyFile(new File(rawFolderLocation + "/goslim_agr.json"), new File(extractedFolderLocation + "/goslim_agr.json"));
-                FileUtils.copyFile(new File(rawFolderLocation + "/goslim_generic.json"), new File(extractedFolderLocation + "/goslim_generic.json"));
-                FileUtils.copyFile(new File(rawFolderLocation + "/goslim_mouse.json"), new File(extractedFolderLocation + "/goslim_mouse.json"));
-                FileUtils.copyFile(new File(rawFolderLocation + "/goslim_plant.json"), new File(extractedFolderLocation + "/goslim_plant.json"));
-            }
-            latch.countDown();
         } catch (IOException e) {
             logger.error("Unable to successfully complete the processing of file " + this.folderName, e);
-
+        } finally {
+            latch.countDown();
         }
-
     }
 }
 

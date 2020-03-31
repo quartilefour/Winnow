@@ -1,7 +1,6 @@
 package com.cscie599.gfn.ingestor;
 
 import com.cscie599.gfn.entities.*;
-import com.cscie599.gfn.importer.genegroup.GeneGroup;
 import com.cscie599.gfn.importer.pubmed.PubmedArticle;
 import com.cscie599.gfn.importer.pubmed.converter.MeshHeadingConverter;
 import com.cscie599.gfn.importer.pubmed.converter.PMIDConverter;
@@ -17,7 +16,6 @@ import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
-import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.batch.item.support.CompositeItemWriter;
 import org.springframework.batch.item.xml.StaxEventItemReader;
 import org.springframework.beans.factory.annotation.Value;

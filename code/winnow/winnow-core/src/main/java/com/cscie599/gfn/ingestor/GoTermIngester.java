@@ -1,8 +1,8 @@
 package com.cscie599.gfn.ingestor;
 
+import com.cscie599.gfn.entities.Goterm;
 import com.cscie599.gfn.importer.goterm.Root;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
-import com.cscie599.gfn.entities.Goterm;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
 import org.apache.commons.logging.Log;
@@ -10,8 +10,6 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.core.configuration.annotation.JobBuilderFactory;
-import org.springframework.batch.core.configuration.annotation.StepBuilderFactory;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
@@ -19,9 +17,6 @@ import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourc
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.batch.item.json.JacksonJsonObjectReader;
-import org.springframework.batch.item.json.JsonItemReader;
-import org.springframework.batch.item.json.builder.JsonItemReaderBuilder;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -31,7 +26,6 @@ import org.springframework.core.io.InputStreamSource;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
 
-import javax.sql.DataSource;
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;

@@ -59,7 +59,8 @@ subprojects {
 		testImplementation 'org.springframework.batch:spring-batch-test'
 		testImplementation 'io.zonky.test:embedded-database-spring-test:1.5.3'
 		testCompile "junit:junit:4.12"
-	}
+        compile "org.jsoup:jsoup:1.12.1"
+    }
 
 	test {
 		useJUnitPlatform()
