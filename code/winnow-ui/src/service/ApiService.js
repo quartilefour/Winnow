@@ -4,6 +4,7 @@
  */
 import axios from 'axios';
 import * as Constants from '../constants';
+import AuthService from "./AuthService";
 
 export const fetchUserBookmarks = () => {
     let mockResp = [
@@ -33,7 +34,7 @@ export const fetchUserBookmarks = () => {
         axios.get(
             `${Constants.WINNOW_API_BASE_URL}/bookmarks`,
             {
-                headers: Constants.authHeader,
+                headers: AuthService.getAuthHeader(),
             }
         )
             .then(res => {
@@ -87,7 +88,7 @@ export const fetchSearchResults = (data) => {
             `${Constants.WINNOW_API_BASE_URL}/search`,
             data,
             {
-                headers: Constants.authHeader,
+                headers: AuthService.getAuthHeader(),
             }
         )
             .then(res => {
@@ -102,7 +103,7 @@ export const fetchGenes = (partial) => {
         axios.get(
             `${Constants.WINNOW_API_BASE_URL}/genes/search/${partial}`,
             {
-                headers: Constants.authHeader,
+                headers: AuthService.getAuthHeader(),
             }
         )
             .then(res => {
@@ -118,7 +119,7 @@ export const fetchMeshtermCat = () => {
         axios.get(
             `${Constants.WINNOW_API_BASE_URL}/meshterms/category`,
             {
-                headers: Constants.authHeader,
+                headers: AuthService.getAuthHeader(),
             }
         )
             .then(res => {
@@ -134,7 +135,7 @@ export const fetchMeshtermTree = (node) => {
         axios.get(
             `${Constants.WINNOW_API_BASE_URL}/meshterms/tree/parentid/${node}`,
             {
-                headers: Constants.authHeader,
+                headers: AuthService.getAuthHeader(),
             }
         )
             .then(res => {
@@ -150,7 +151,7 @@ export const fetchMeshtermNode = (node) => {
         axios.get(
             `${Constants.WINNOW_API_BASE_URL}/meshterms/tree/nodeid/${node}`,
             {
-                headers: Constants.authHeader,
+                headers: AuthService.getAuthHeader(),
             }
         )
             .then(res => {

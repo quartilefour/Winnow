@@ -1,7 +1,8 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Link, Redirect} from "react-router-dom";
-import {Card, Logo, Form, Input, Button, Error} from './HTMLElements';
-import AuthService from "../service/AuthService";
+import {Card, Form, Button} from "react-bootstrap";
+import {Error} from './HTMLElements';
+import {sendLoginCredentials} from "../service/AuthService";
 import logoImg from "../img/logo.png";
 import {useAuth} from "../context/auth";
 
@@ -17,71 +18,89 @@ function Login(props) {
     const [error, setError] = useState(null);
     const [userEmail, setUserEmail] = useState("");
     const [userPassword, setUserPassword] = useState("");
-    const {setAuthToken} = useAuth();
+    const {authToken, setAuthToken} = useAuth();
     const referer = (props.location.state !== undefined) ? props.location.state.referer : '/';
 
+    useEffect(() => {
+        if (authToken) {
+            console.info(`Login: Have ${authToken}, setting isLoggedIn to 'true'`);
+            setLoggedIn(true);
+        }
+    }, [authToken, isLoggedIn]);
 
     /* Submits user credentials to API login endpoint. */
     function postLogin() {
         const credentials = {userEmail: userEmail, userPassword: userPassword};
-        AuthService.login(credentials).then(res => {
-            if (res.status === 200) {
-                let token = res.headers['authorization'].split(' ')[1];
-                console.log("Return status from API: " + AuthService.parseToken(token));
-                setAuthToken(token);
+        sendLoginCredentials(credentials).then(res => {
+                console.log(`Return status from API: ${res}`);
+                setAuthToken(res);
                 setLoggedIn(true);
-            } else {
-                console.log("Non-200 status from API: " + JSON.stringify(res));
-                setError(res.statusText);
-            }
         }).catch(error => {
-                if (error.response.status === 403 || error.response.status === 401) {
-                    console.log("Login error: " + error);
-                    setError("Invalid E-mail or password");
-                } else {
-                    console.log("Error: " + error.toString());
-                    setError(error.toString());
-                }
-            });
+                console.log(`Login error: ${error}`);
+                setError("Invalid E-mail or password");
+        });
     }
 
-    /* Redirects successfully authenticated user to requested page */
-    if (isLoggedIn) {
-        console.info(`Login.js: Logging ${userEmail} in...`)
-        return <Redirect to={referer}/>;
+    if (!isLoggedIn) {
+        return (
+            <div>
+                <Card
+                    border="info"
+                    className="text-center"
+                    style={{
+                        flexDirection: 'column',
+                        maxWidth: '410px',
+                        display: 'flex',
+                        margin: '10% auto',
+                        width: '50%'
+                    }}>
+                    <Card.Title>Winnow</Card.Title>
+                    <Card.Subtitle>Gene Function Navigator</Card.Subtitle>
+                    <Card.Img variant="top" src={logoImg} style={{margin: 'auto', width: '50%'}}/>
+                    <Card.Body>
+                        <Form>
+                            <Error>{error}</Error>
+                            <Form.Group>
+                                <Form.Control
+                                    type="email"
+                                    autoComplete="username"
+                                    name="userEmail"
+                                    value={userEmail}
+                                    onChange={e => {
+                                        setUserEmail(e.target.value);
+                                    }}
+                                    placeholder="E-mail Address"
+                                />
+                            </Form.Group>
+                            <Form.Group>
+                                <Form.Control
+                                    type="password"
+                                    autoComplete="current-password"
+                                    name="userPassword"
+                                    value={userPassword}
+                                    onChange={e => {
+                                        setUserPassword(e.target.value);
+                                    }}
+                                    placeholder="Password"
+                                />
+                            </Form.Group>
+                            <Button
+                                block
+                                variant="info"
+                                onClick={postLogin}>Login</Button>
+                        </Form>
+                    </Card.Body>
+                    <Card.Footer>
+                        <Link to="/register">Don't have an account?</Link>
+                    </Card.Footer>
+                </Card>
+            </div>
+        )
+    } else {
+        return (
+            <Redirect to={referer}/>
+        )
     }
-
-
-    return (
-        <div>
-            <Card>
-                <Logo src={logoImg}/>
-                <Form>
-                    <Error>{error}</Error>
-                    <Input
-                        type="email"
-                        name="userEmail"
-                        value={userEmail}
-                        onChange={e => {
-                            setUserEmail(e.target.value);
-                        }}
-                        placeholder="E-mail Address"
-                    />
-                    <Input
-                        type="password"
-                        name="userPassword"
-                        value={userPassword}
-                        onChange={e => {
-                            setUserPassword(e.target.value);
-                        }}
-                        placeholder="Password"
-                    />
-                    <Button onClick={postLogin}>Login</Button>
-                </Form>
-                <Link to="/register">Don't have an account?</Link>
-            </Card>
-        </div>
-    );
 }
 
 export default Login;

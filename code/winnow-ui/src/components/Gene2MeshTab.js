@@ -1,7 +1,6 @@
 import React, {Fragment, useEffect, useState} from "react";
-import {Form, Button, Spinner} from "react-bootstrap";
+import {Form, Button} from "react-bootstrap";
 import Select from "react-select";
-import AsyncSelect from "react-select/async";
 import {fetchGenes, fetchSearchResults} from "../service/ApiService";
 import SearchResultsDisplay from "./SearchResultsDisplay";
 import SearchTermUploader from "./SearchTermUploader";
@@ -16,7 +15,7 @@ import PageLoader from "./common/PageLoader";
  */
 function Gene2MeshTab(props) {
 
-    const [geneDetail, setGeneDetail] = useState([]);
+    const [selectedGenes, setSelectedGenes] = useState([]);
     const [useBatch, setUseBatch] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     const [isMenuLoaded, setIsMenuLoaded] = useState(false);
@@ -31,7 +30,7 @@ function Gene2MeshTab(props) {
         } else {
             /* fetchSearchResults() */
             fetchSearchResults({
-                searchQuery: geneDetail,
+                searchQuery: selectedGenes,
                 queryType: "gene",
                 queryFormat: "geneid"
             })
@@ -42,7 +41,7 @@ function Gene2MeshTab(props) {
                 setIsLoaded(true);
             });
         }
-    }, [haveResults, geneDetail]);
+    }, [haveResults, selectedGenes]);
 
     function partialSearch(pattern) {
         fetchGenes(pattern)
@@ -71,7 +70,7 @@ function Gene2MeshTab(props) {
     if (isLoaded) {
         if (!haveResults) {
             if (!useBatch) {
-                console.info(`Gene2Mesh selected: ${JSON.stringify(geneDetail)}`);
+                console.info(`Gene2Mesh selected: ${JSON.stringify(selectedGenes)}`);
                 return (
                     <div>
                         <Button onClick={toggleBatch}>Batch Import</Button>
@@ -97,7 +96,7 @@ function Gene2MeshTab(props) {
                                         console.info(`Gene2Mesh onChange: ${JSON.stringify(e)}`);
                                         if (e !== null) {
                                             e.forEach((val, index) => {
-                                                setGeneDetail([...geneDetail, val.value]);
+                                                setSelectedGenes([...selectedGenes, val.value]);
                                             })
                                         }
                                         setGeneData([]);

@@ -1,7 +1,8 @@
-import React, {useState} from "react";
+import React, {useEffect, useState} from "react";
 import {Link, Redirect} from "react-router-dom";
-import {Card, Logo, Form, Input, Button, Error} from "./HTMLElements";
-import AuthService from "../service/AuthService";
+import {Card, Form, Button, Row, Col} from "react-bootstrap";
+import {Logo, Input, Error} from "./HTMLElements";
+import AuthService, {sendRegistration} from "../service/AuthService";
 import logoImg from "../img/logo.png";
 
 /**
@@ -21,6 +22,10 @@ function Register(props) {
     const [userPassword, setUserPassword] = useState("");
     const [passwordConfirm, setPasswordConfirm] = useState("");
 
+    useEffect(() => {
+
+    });
+
     /* Submits new user data to the API registration endpoint. */
     function postRegistration() {
         const credentials = {
@@ -30,13 +35,9 @@ function Register(props) {
             userPassword: userPassword,
             passwordConfirm: passwordConfirm
         };
-        AuthService.register(credentials).then(res => {
-            if (res.status === 201) {
-                setIsRegistered(true);
-            } else {
-                console.log("Non-200 status from API: " + JSON.stringify(res));
-                setError(res.statusText);
-            }
+        sendRegistration(credentials).then(res => {
+            setIsRegistered(true);
+            console.log("Non-200 status from API: " + JSON.stringify(res));
         })
             .catch(error => {
                 console.log("Registration: " + error.toString());
@@ -44,67 +45,105 @@ function Register(props) {
             });
     }
 
-    /* Redirects to Login page after successful registration. */
-    if (isRegistered) {
+    if (!isRegistered) {
+        return (
+            <Card
+                border="info"
+                className="text-center"
+                style={{
+                    flexDirection: 'column',
+                    maxWidth: '410px',
+                    display: 'flex',
+                    margin: '10% auto',
+                    width: '50%'
+                }}>
+                <Card.Title>Winnow</Card.Title>
+                <Card.Subtitle>Gene Function Navigator</Card.Subtitle>
+                <Card.Img variant="top" src={logoImg} style={{margin: 'auto', width: '50%'}}/>
+                <Card.Body>
+                    <Form>
+                        <Error>{error}</Error>
+                        <Form.Row>
+                            <Form.Group as={Col}>
+                                <Form.Control
+                                    type="text"
+                                    name="firstName"
+                                    autoComplete="given-name"
+                                    value={firstName}
+                                    onChange={e => {
+                                        setFirstName(e.target.value);
+                                    }}
+                                    placeholder="First Name"
+                                />
+                            </Form.Group>
+                            <Form.Group as={Col}>
+                                <Form.Control
+                                    type="text"
+                                    name="lastName"
+                                    autoComplete="family-name"
+                                    value={lastName}
+                                    onChange={e => {
+                                        setLastName(e.target.value);
+                                    }}
+                                    placeholder="Last Name"
+                                />
+                            </Form.Group>
+                        </Form.Row>
+                        <Form.Group>
+                            <Form.Control
+                                type="email"
+                                name="userEmail"
+                                autoComplete="username"
+                                value={userEmail}
+                                onChange={e => {
+                                    setUserEmail(e.target.value);
+                                }}
+                                placeholder="E-mail Address"
+                            />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Control
+                                type="password"
+                                name="userPassword"
+                                autoComplete="new-password"
+                                value={userPassword}
+                                onChange={e => {
+                                    setUserPassword(e.target.value);
+                                }}
+                                placeholder="Password"
+                            />
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Control
+                                type="password"
+                                autoComplete="new-password"
+                                name="passwordConfirm"
+                                value={passwordConfirm}
+                                onChange={e => {
+                                    setPasswordConfirm(e.target.value);
+                                }}
+                                placeholder="Confirm Password"
+                            />
+                        </Form.Group>
+                        <Button
+                            block
+                            variant="info"
+                            onClick={postRegistration}>Register
+                        </Button>
+                    </Form>
+                </Card.Body>
+                <Card.Footer>
+                    <Link to="/login">Already have an account?</Link>
+                </Card.Footer>
+            </Card>
+        )
+    } else {
         console.log(`Successfully registered: ${userEmail}`);
-        return  <Redirect to="/login" />;
-    }
+        return (
+            <Redirect to="/login"/>
+        )
 
-    return (
-        <Card>
-            <Logo src={logoImg}/>
-            <Form>
-                <Error>{error}</Error>
-                <Input
-                    type="text"
-                    name="firstName"
-                    value={firstName}
-                    onChange={e => {
-                        setFirstName(e.target.value);
-                    }}
-                    placeholder="First Name"
-                />
-                <Input
-                    type="text"
-                    name="lastName"
-                    value={lastName}
-                    onChange={e => {
-                        setLastName(e.target.value);
-                    }}
-                    placeholder="Last Name"
-                />
-                <Input
-                    type="email"
-                    name="userEmail"
-                    value={userEmail}
-                    onChange={e => {
-                        setUserEmail(e.target.value);
-                    }}
-                    placeholder="E-mail Address"
-                />
-                <Input
-                    type="password"
-                    name="userPassword"
-                    value={userPassword}
-                    onChange={e => {
-                        setUserPassword(e.target.value);
-                    }}
-                    placeholder="Password"
-                />
-                <Input
-                    type="password"
-                    name="passwordConfirm"
-                    value={passwordConfirm}
-                    onChange={e => {
-                        setPasswordConfirm(e.target.value);
-                    }}
-                    placeholder="Confirm Password"
-                />
-                <Button onClick={postRegistration}>Register</Button>
-            </Form>
-            <Link to="/login">Already have an account?</Link>
-        </Card>
-    );
+    }
 }
 
 export default Register;

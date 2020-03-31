@@ -9,11 +9,39 @@ export const fetchProfileData = () => {
         axios.get(
             `${Constants.WINNOW_API_BASE_URL}/profile`,
             {
-                headers: Constants.authHeader,
+                headers: this.getAuthHeader(),
             }
         )
             .then(res => {
                 resolve(res.data);
+            })
+            .catch(err => reject(err));
+    });
+};
+
+export const sendRegistration = (credentials) => {
+    console.info(`sendRegistration: ${Constants.WINNOW_API_BASE_URL}/registration`);
+    return new Promise((resolve, reject) => {
+        axios.post(
+            `${Constants.WINNOW_API_BASE_URL}/registration`,
+            credentials,
+        )
+            .then(res => {
+                resolve(res.headers['authorization'].split(' ')[1]);
+            })
+            .catch(err => reject(err));
+    });
+};
+
+export const sendLoginCredentials = (credentials) => {
+    console.info(`sendLoginCredentials: ${Constants.WINNOW_API_BASE_URL}/login`);
+    return new Promise((resolve, reject) => {
+        axios.post(
+            `${Constants.WINNOW_API_BASE_URL}/login`,
+            credentials,
+        )
+            .then(res => {
+                resolve(res.headers['authorization'].split(' ')[1]);
             })
             .catch(err => reject(err));
     });
@@ -24,17 +52,6 @@ export const fetchProfileData = () => {
  * for the application.
  */
 class AuthService {
-
-    /**
-     * Passes user credentials to API login endpoint.
-     *
-     * @param credentials
-     * @returns { await Promise<AxiosResponse<T>>}
-     */
-    login(credentials) {
-        return axios.post(`${Constants.WINNOW_API_BASE_URL}/login`,
-            credentials);
-    }
 
     /**
      * Passes user information and credentials to API registration
@@ -54,11 +71,11 @@ class AuthService {
      *
      * @returns {await Promise<AxiosResponse<T>>}
      */
-     async getProfile() {
+    async getProfile() {
         return axios.get(
             `${Constants.WINNOW_API_BASE_URL}/profile`,
             {
-                headers: Constants.authHeader,
+                headers: this.getAuthHeader(),
             }
         ).then(res => {
             if (res.status === 200) {
@@ -93,7 +110,7 @@ class AuthService {
             `${Constants.WINNOW_API_BASE_URL}/profile`,
             userInfo,
             {
-                headers: Constants.authHeader,
+                headers: this.getAuthHeader(),
             }
         );
     }
@@ -109,7 +126,7 @@ class AuthService {
             `${Constants.WINNOW_API_BASE_URL}/profile`,
             credentials,
             {
-                headers: Constants.authHeader,
+                headers: this.getAuthHeader(),
             }
         );
     }
@@ -126,7 +143,7 @@ class AuthService {
             try {
                 return JSON.parse(atob(token.split('.')[1]));
             } catch (error) {
-                // ignore
+                return null
             }
         }
         return null;
@@ -155,10 +172,16 @@ class AuthService {
         let token = Cookies.get("token") ? Cookies.get("token") : null;
         if (token !== null) {
             let dateNow = new Date();
-            console.info(`isTokenExpired: ${this.parseToken(token).exp*1000} : ${dateNow.getTime()}`);
-            return this.parseToken(token).exp*1000 < dateNow.getTime();
+            let tokenExpiry = new Date(this.parseToken(token).exp * 1000);
+            console.info(`isTokenExpired: Now ${dateNow}; Token ${tokenExpiry}`);
+            return dateNow > tokenExpiry;
         }
         return true;
+    }
+
+    getAuthHeader() {
+        let token = Cookies.get("token") ? Cookies.get("token") : null;
+        return {'Authorization': `Bearer ${token}`};
     }
 
     /**

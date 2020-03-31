@@ -1,6 +1,6 @@
-import React from 'react';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome'
-import { faUser } from "@fortawesome/free-solid-svg-icons";
+import React, {useEffect, useState} from 'react';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faUser} from "@fortawesome/free-solid-svg-icons";
 import {useAuth} from "../context/auth";
 import AuthService from "../service/AuthService";
 import {Nav, Navbar} from "react-bootstrap";
@@ -15,51 +15,65 @@ import {Link} from "react-router-dom";
  * @returns {*}
  * @constructor
  */
-const NavBar = (props) => {
+const NavBar = () => {
 
     const {authToken, setAuthToken} = useAuth();
-    const user = AuthService.getUserInfo();
-    const tokenInvalid = AuthService.isTokenExpired();
+    const [isLoggingOut, setIsLoggingOut] = useState(false);
+    const [user, setUser] = useState(null);
+    const [isTokenValid, setIsTokenValid] = useState(false);
+
+    useEffect(() => {
+        if (isLoggingOut) {
+            console.info(`NavBar: Clearing authToken: ${authToken}`);
+            setAuthToken(null);
+            console.info(`NavBar: Clearing authToken: ${authToken}`);
+
+        }
+        if (!AuthService.isTokenExpired()) {
+            setIsTokenValid(true);
+            setUser(AuthService.getUserInfo());
+            console.info(`NavBar: Valid token: ${isTokenValid}`);
+        }
+    }, [isTokenValid, isLoggingOut, authToken, setAuthToken]);
 
     function logOut() {
-        setAuthToken(null);
+        setIsLoggingOut(true);
+        console.info(`NavBar: Logging out: ${isLoggingOut}`);
     }
 
-    if (tokenInvalid) {
-        console.warn(`Navbar tokenValid: ${tokenInvalid}`);
-        logOut();
+    if (authToken) {
+        return (
+            <Navbar bg="light" expand="lg">
+                <Navbar.Brand as={Link} to="/">
+                    <img
+                        alt={"Winnow Logo"}
+                        src={logoImg}
+                        width="30"
+                        height="30"
+                        className="d-inline-block align-top"
+                    />{' '}
+                    Winnow</Navbar.Brand>
+                <Navbar.Toggle aria-controls="basic-navbar-nav"/>
+                <Navbar.Collapse id="basic-navbar-nav">
+                    <Nav className="mr-auto">
+                        <Nav.Link as={Link} to="/">Dashboard</Nav.Link>
+                        <Nav.Link as={Link} to="/admin">Admin</Nav.Link>
+                    </Nav>
+                    <Nav.Link as={Link} to='/profile'>
+                        <FontAwesomeIcon icon={faUser} color="cornflowerblue"/>
+                    </Nav.Link>
+                    <Nav.Item>
+                        ({user})
+                    </Nav.Item>
+                    <Nav>
+                        <Nav.Link href="#" onClick={logOut}>Log Out</Nav.Link>
+                    </Nav>
+                </Navbar.Collapse>
+            </Navbar>
+        )
+    } else {
+        return null
     }
-
-
-    return authToken ?
-        <Navbar bg="light" expand="lg">
-            <Navbar.Brand as={Link} to="/">
-                <img
-                    alt={"Winnow Logo"}
-                    src={logoImg}
-                    width="30"
-                    height="30"
-                    className="d-inline-block align-top"
-                />{' '}
-                Winnow</Navbar.Brand>
-            <Navbar.Toggle aria-controls="basic-navbar-nav"/>
-            <Navbar.Collapse id="basic-navbar-nav">
-                <Nav className="mr-auto">
-                    <Nav.Link as={Link} to="/">Dashboard</Nav.Link>
-                    <Nav.Link as={Link} to="/admin">Admin</Nav.Link>
-                </Nav>
-                <Nav.Link as={Link} to='/profile'>
-                    <FontAwesomeIcon icon={faUser} color="cornflowerblue" />
-                </Nav.Link>
-                <Nav.Item>
-                    ({user})
-                </Nav.Item>
-                <Nav>
-                    <Nav.Link href="#" onClick={logOut}>Log Out</Nav.Link>
-                </Nav>
-            </Navbar.Collapse>
-        </Navbar>
-        : null
 
 };
 
