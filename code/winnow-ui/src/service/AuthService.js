@@ -3,13 +3,17 @@ import Cookies from 'js-cookie';
 import * as Constants from '../constants';
 
 
+/**
+ *
+ * @return {Promise<T>}
+ */
 export const fetchProfileData = () => {
     console.info(`fetchProfileData: ${Constants.WINNOW_API_BASE_URL}/profile`);
     return new Promise((resolve, reject) => {
         axios.get(
             `${Constants.WINNOW_API_BASE_URL}/profile`,
             {
-                headers: this.getAuthHeader(),
+                headers: new AuthService().getAuthHeader()
             }
         )
             .then(res => {
@@ -19,6 +23,11 @@ export const fetchProfileData = () => {
     });
 };
 
+/**
+ *
+ * @param credentials
+ * @return {Promise<T>}
+ */
 export const sendRegistration = (credentials) => {
     console.info(`sendRegistration: ${Constants.WINNOW_API_BASE_URL}/registration`);
     return new Promise((resolve, reject) => {
@@ -27,12 +36,22 @@ export const sendRegistration = (credentials) => {
             credentials,
         )
             .then(res => {
-                resolve(res.headers['authorization'].split(' ')[1]);
+                resolve("Registration Successful")
             })
-            .catch(err => reject(err));
+            .catch(err => {
+                if (err.response.status === 409) {
+                    reject(err.response.data.error)
+                }
+                reject(err)
+            });
     });
 };
 
+/**
+ *
+ * @param credentials
+ * @return {Promise<T>}
+ */
 export const sendLoginCredentials = (credentials) => {
     console.info(`sendLoginCredentials: ${Constants.WINNOW_API_BASE_URL}/login`);
     return new Promise((resolve, reject) => {
@@ -42,6 +61,51 @@ export const sendLoginCredentials = (credentials) => {
         )
             .then(res => {
                 resolve(res.headers['authorization'].split(' ')[1]);
+            })
+            .catch(err => reject(err));
+    });
+};
+
+/**
+ * Passes updated user profile information to API profile
+ * endpoint.
+ *
+ * @param userInfo
+ * @returns {Promise<T>}
+ */
+export const sendProfileUpdate = (userInfo) => {
+    return new Promise((resolve, reject) => {
+        axios.patch(
+            `${Constants.WINNOW_API_BASE_URL}/profile`,
+            userInfo,
+            {
+                headers: this.getAuthHeader(),
+            }
+        )
+            .then(res => {
+                resolve(res.data)
+            })
+            .catch(err => reject(err));
+    });
+};
+
+/**
+ * Passes new user password to API profile endpoint.
+ *
+ * @param credentials
+ * @return {Promise<T>}
+ */
+export const sendChangePassword = (credentials) => {
+    return new Promise((resolve, reject) => {
+        axios.put(
+            `${Constants.WINNOW_API_BASE_URL}/profile`,
+            credentials,
+            {
+                headers: this.getAuthHeader(),
+            }
+        )
+            .then(res => {
+                resolve(res.data)
             })
             .catch(err => reject(err));
     });
@@ -98,38 +162,7 @@ class AuthService {
         });
     }
 
-    /**
-     * Passes updated user profile information to API profile
-     * endpoint.
-     *
-     * @param userInfo
-     * @returns {await Promise<AxiosResponse<T>>}
-     */
-    updateProfile(userInfo) {
-        return axios.patch(
-            `${Constants.WINNOW_API_BASE_URL}/profile`,
-            userInfo,
-            {
-                headers: this.getAuthHeader(),
-            }
-        );
-    }
 
-    /**
-     * Passes new user password to API profile endpoint.
-     *
-     * @param credentials
-     * @returns {await Promise<AxiosResponse<T>>}
-     */
-    changePassword(credentials) {
-        return axios.put(
-            `${Constants.WINNOW_API_BASE_URL}/profile`,
-            credentials,
-            {
-                headers: this.getAuthHeader(),
-            }
-        );
-    }
 
     /**
      * Parses and decodes the payload portion of the JWT received from the

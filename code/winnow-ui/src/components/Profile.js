@@ -1,21 +1,27 @@
 import React, {useState, useEffect} from 'react';
-import {Form, Col, Button} from 'react-bootstrap';
-import {Card, Error} from "./HTMLElements";
+import {Card, Form, Col, Button, Nav, Tab, Alert} from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faUser} from "@fortawesome/free-solid-svg-icons";
 import {fetchProfileData} from "../service/AuthService";
 
-function Profile(props) {
+function Profile() {
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [error, setError] = useState(null);
+    const [alertType, setAlertType] = useState('');
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [userEmail, setUserEmail] = useState("");
-    const [userPassword, setUserPassword] = useState("");
-    const [passwordConfirm, setPasswordConfirm] = useState("");
+    const [userCurrentPassword, setCurrentUserPassword] = useState("");
+    const [userNewPassword, setNewUserPassword] = useState("");
+    const [newPasswordConfirm, setNewPasswordConfirm] = useState("");
 
     useEffect(() => {
+        if (error) {
+            (error === "Success")
+                ? setAlertType("success")
+                : setAlertType("danger")
+        }
         fetchProfileData()
             .then(res => {
                 setFirstName(res.firstName);
@@ -26,91 +32,168 @@ function Profile(props) {
             setError(err);
             setIsLoaded(true);
         });
-    }, []);
+    }, [error, alertType]);
 
-    //console.info(`Profile props: ${JSON.stringify(user)}`);
+    function updateProfile() {
+        /* Call sendProfileUpdate(profileData) */
+        const userInfo = {
+            firstName: firstName,
+            lastName: lastName,
+            userEmail: userEmail
+        };
+        setError("Failed");
+        console.info(`Profile update: ${error}`);
+    }
+
+    function changePassword() {
+        /* Call sendChangePassword(credentials)*/
+        const credentials = {
+            userPassword: userNewPassword,
+            passwordConfirm: newPasswordConfirm
+        };
+        setError("Success");
+    }
+
+
+    function resetError() {
+        setError(null);
+        setAlertType('');
+    }
+
     //console.info(`Profile data: ${JSON.stringify(data)}`);
     if (isLoaded) {
         return (
-            <Card id="cardUserProfile">
-                <FontAwesomeIcon id="profileImg" icon={faUser} color="cornflowerblue" size="6x"/>
-                <Form>
-                    <Form.Group
-                        className="fgProfile"
-                    >
-                        <Error>{error}</Error>
-                        <Form.Row>
-                            <Col>
-                                <Form.Control
-                                    type="text"
-                                    name="firstName"
-                                    value={firstName}
-                                    onChange={e => {
-                                        setFirstName(e.target.value);
-                                    }}
-                                    placeholder="First Name"
-                                />
-                            </Col>
-                            <Col>
-                                <Form.Control
-                                    type="text"
-                                    name="lastName"
-                                    value={lastName}
-                                    onChange={e => {
-                                        setLastName(e.target.value);
-                                    }}
-                                    placeholder="Last Name"
-                                />
-                            </Col>
-                        </Form.Row>
-                        <Form.Row>
-                            <Col>
-                                <Form.Control
-                                    type="email"
-                                    name="userEmail"
-                                    value={userEmail ? userEmail : undefined}
-                                    onChange={e => {
-                                        setUserEmail(e.target.value);
-                                    }}
-                                    placeholder="E-mail Address"
-                                />
-                            </Col>
-                        </Form.Row>
-                        <Button onClick={null} disabled={true}>Update</Button>
-                    </Form.Group>
-                    <Form.Group
-                        className="fgProfile"
-                        label="Change Password"
-                    >
-                        <Form.Row>
-                            <Col>
-                                <Form.Control
-                                    type="password"
-                                    name="userPassword"
-                                    value={userPassword}
-                                    onChange={e => {
-                                        setUserPassword(e.target.value);
-                                    }}
-                                    placeholder="Password"
-                                />
-                            </Col>
-                        </Form.Row>
-                        <Form.Row>
-                            <Col>
-                                <Form.Control
-                                    type="password"
-                                    name="passwordConfirm"
-                                    value={passwordConfirm}
-                                    onChange={e => {
-                                        setPasswordConfirm(e.target.value);
-                                    }}
-                                    placeholder="Confirm Password"
-                                />
-                            </Col>
-                        </Form.Row>
-                        <Button onClick={null} disabled={true}>Change</Button>
-                    </Form.Group>
-                </Form>
+            <Card
+                border="info"
+                className="text-center tab"
+                defaultActiveKey="profile"
+                style={{
+                    flexDirection: 'column',
+                    maxWidth: '410px',
+                    display: 'flex',
+                    margin: '10% auto',
+                    width: '50%'
+                }}>
+                <Card.Title>User Profile</Card.Title>
+                <FontAwesomeIcon
+                    icon={faUser}
+                    color="cornflowerblue"
+                    size="6x"
+                    style={{margin: '10px auto', width: '50%'}}
+                />
+                <Tab.Container defaultActiveKey="profile" onSelect={resetError}>
+                    <Card.Header>
+                        <Nav variant="tabs" fill>
+                            <Nav.Item>
+                                <Nav.Link eventKey="profile">Profile</Nav.Link>
+                            </Nav.Item>
+                            <Nav.Item>
+                                <Nav.Link eventKey="password">Password</Nav.Link>
+                            </Nav.Item>
+                        </Nav>
+                    </Card.Header>
+                    <Card.Body>
+                        <Form>
+                            <Tab.Content>
+                                <Tab.Pane eventKey="profile" id="profile">
+                                    <Form.Group>
+                                        <Form.Row>
+                                            <Col>
+                                                <Form.Control
+                                                    type="text"
+                                                    name="firstName"
+                                                    autoComplete="given-name"
+                                                    value={firstName}
+                                                    onChange={e => {
+                                                        setFirstName(e.target.value);
+                                                    }}
+                                                    placeholder="First Name"
+                                                />
+                                            </Col>
+                                            <Col>
+                                                <Form.Control
+                                                    type="text"
+                                                    autoComplete="family-name"
+                                                    name="lastName"
+                                                    value={lastName}
+                                                    onChange={e => {
+                                                        setLastName(e.target.value);
+                                                    }}
+                                                    placeholder="Last Name"
+                                                />
+                                            </Col>
+                                        </Form.Row>
+                                        <Form.Row>
+                                            <Col>
+                                                <Form.Control
+                                                    type="email"
+                                                    autoComplete="username"
+                                                    name="userEmail"
+                                                    value={userEmail ? userEmail : undefined}
+                                                    onChange={e => {
+                                                        setUserEmail(e.target.value);
+                                                    }}
+                                                    placeholder="E-mail Address"
+                                                />
+                                            </Col>
+                                        </Form.Row>
+                                        <Button block onClick={updateProfile} disabled={false}>Update Profile</Button>
+                                    </Form.Group>
+                                </Tab.Pane>
+                                <Tab.Pane eventKey="password" id="password">
+                                    <Form.Group>
+                                        <Form.Row>
+                                            <Col>
+                                                <Form.Control
+                                                    type="password"
+                                                    autoComplete="current-password"
+                                                    name="userPasswordOld"
+                                                    value={userCurrentPassword}
+                                                    onChange={e => {
+                                                        setCurrentUserPassword(e.target.value);
+                                                    }}
+                                                    placeholder="Current Password"
+                                                />
+                                            </Col>
+                                        </Form.Row>
+                                        <Form.Row>
+                                            <Col>
+                                                <Form.Control
+                                                    type="password"
+                                                    autoComplete="new-password"
+                                                    name="userPassword"
+                                                    value={userNewPassword}
+                                                    onChange={e => {
+                                                        setNewUserPassword(e.target.value);
+                                                    }}
+                                                    placeholder="New Password"
+                                                />
+                                            </Col>
+                                        </Form.Row>
+                                        <Form.Row>
+                                            <Col>
+                                                <Form.Control
+                                                    type="password"
+                                                    autoComplete="new-password"
+                                                    name="passwordConfirm"
+                                                    value={newPasswordConfirm}
+                                                    onChange={e => {
+                                                        setNewPasswordConfirm(e.target.value);
+                                                    }}
+                                                    placeholder="Confirm New Password"
+                                                />
+                                            </Col>
+                                        </Form.Row>
+                                        <Button block onClick={changePassword} disabled={false}>Change Password</Button>
+                                    </Form.Group>
+                                </Tab.Pane>
+                            </Tab.Content>
+                        </Form>
+                    </Card.Body>
+                    <Card.Footer>
+                        <Alert variant={alertType}>{error}</Alert>
+                    </Card.Footer>
+                </Tab.Container>
             </Card>
         )
     } else {

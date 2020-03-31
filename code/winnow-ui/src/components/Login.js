@@ -1,7 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Link, Redirect} from "react-router-dom";
-import {Card, Form, Button} from "react-bootstrap";
-import {Error} from './HTMLElements';
+import {Card, Form, Button, Alert} from "react-bootstrap";
 import {sendLoginCredentials} from "../service/AuthService";
 import logoImg from "../img/logo.png";
 import {useAuth} from "../context/auth";
@@ -16,6 +15,7 @@ import {useAuth} from "../context/auth";
 function Login(props) {
     const [isLoggedIn, setLoggedIn] = useState(false);
     const [error, setError] = useState(null);
+    const [alertType, setAlertType] = useState('');
     const [userEmail, setUserEmail] = useState("");
     const [userPassword, setUserPassword] = useState("");
     const {authToken, setAuthToken} = useAuth();
@@ -37,6 +37,7 @@ function Login(props) {
                 setLoggedIn(true);
         }).catch(error => {
                 console.log(`Login error: ${error}`);
+                setAlertType("danger");
                 setError("Invalid E-mail or password");
         });
     }
@@ -59,7 +60,6 @@ function Login(props) {
                     <Card.Img variant="top" src={logoImg} style={{margin: 'auto', width: '50%'}}/>
                     <Card.Body>
                         <Form>
-                            <Error>{error}</Error>
                             <Form.Group>
                                 <Form.Control
                                     type="email"
@@ -91,6 +91,7 @@ function Login(props) {
                         </Form>
                     </Card.Body>
                     <Card.Footer>
+                        <Alert variant={alertType}>{error}</Alert>
                         <Link to="/register">Don't have an account?</Link>
                     </Card.Footer>
                 </Card>

@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {faQuestionCircle} from "@fortawesome/free-regular-svg-icons";
 import {faUser} from "@fortawesome/free-solid-svg-icons";
 import {useAuth} from "../context/auth";
 import AuthService from "../service/AuthService";
@@ -11,7 +12,6 @@ import {Link} from "react-router-dom";
  * Renders the navigation bar for user interface, visible only to
  * authenticated users.
  *
- * @param props
  * @returns {*}
  * @constructor
  */
@@ -43,7 +43,7 @@ const NavBar = () => {
 
     if (authToken) {
         return (
-            <Navbar bg="light" expand="lg">
+            <Navbar bg="light" expand="md">
                 <Navbar.Brand as={Link} to="/">
                     <img
                         alt={"Winnow Logo"}
@@ -59,8 +59,11 @@ const NavBar = () => {
                         <Nav.Link as={Link} to="/">Dashboard</Nav.Link>
                         <Nav.Link as={Link} to="/admin">Admin</Nav.Link>
                     </Nav>
+                    <Nav.Link as={Link} to='/support'>
+                        <FontAwesomeIcon icon={faQuestionCircle} color="cornflowerblue" title="Help" />
+                    </Nav.Link>
                     <Nav.Link as={Link} to='/profile'>
-                        <FontAwesomeIcon icon={faUser} color="cornflowerblue"/>
+                        <FontAwesomeIcon icon={faUser} color="cornflowerblue" title="Profile" />
                     </Nav.Link>
                     <Nav.Item>
                         ({user})

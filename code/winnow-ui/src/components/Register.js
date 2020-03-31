@@ -1,8 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Link, Redirect} from "react-router-dom";
-import {Card, Form, Button, Row, Col} from "react-bootstrap";
-import {Logo, Input, Error} from "./HTMLElements";
-import AuthService, {sendRegistration} from "../service/AuthService";
+import {Card, Form, Button, Col, Alert} from "react-bootstrap";
+import {sendRegistration} from "../service/AuthService";
 import logoImg from "../img/logo.png";
 
 /**
@@ -16,6 +15,7 @@ function Register(props) {
 
     const [isRegistered, setIsRegistered] = useState(false);
     const [error, setError] = useState(null);
+    const [alertType, setAlertType] = useState('');
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [userEmail, setUserEmail] = useState("");
@@ -41,6 +41,7 @@ function Register(props) {
         })
             .catch(error => {
                 console.log("Registration: " + error.toString());
+                setAlertType("danger");
                 setError(error.toString());
             });
     }
@@ -62,7 +63,6 @@ function Register(props) {
                 <Card.Img variant="top" src={logoImg} style={{margin: 'auto', width: '50%'}}/>
                 <Card.Body>
                     <Form>
-                        <Error>{error}</Error>
                         <Form.Row>
                             <Form.Group as={Col}>
                                 <Form.Control
@@ -133,6 +133,7 @@ function Register(props) {
                     </Form>
                 </Card.Body>
                 <Card.Footer>
+                    <Alert variant={alertType}>{error}</Alert>
                     <Link to="/login">Already have an account?</Link>
                 </Card.Footer>
             </Card>
