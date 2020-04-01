@@ -51,7 +51,7 @@ function SearchResultsDisplay(props) {
                                     <td>{value.symbol}</td>
                                     <td>{value.meshId}</td>
                                     <td>{value.meshTerm}</td>
-                                    <td>{value.publicationCount}<PubMedArticleListDisplay listData={fetchPubMedArticleList()}/></td>
+                                    <td>{value.publicationCount}</td>
                                     <td>{value.pValue}</td>
                                 </tr>
                             );
