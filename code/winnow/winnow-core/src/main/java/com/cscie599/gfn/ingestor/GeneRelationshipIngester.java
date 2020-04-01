@@ -3,7 +3,6 @@ package com.cscie599.gfn.ingestor;
 import com.cscie599.gfn.entities.GeneGene;
 import com.cscie599.gfn.entities.GeneGenePK;
 import com.cscie599.gfn.entities.GeneRelationship;
-import com.cscie599.gfn.importer.geneMeshterm.GeneMeshterm;
 import com.cscie599.gfn.importer.genegroup.GeneGroup;
 import com.cscie599.gfn.ingestor.reader.SkipSupportedMultiResourceItemReader;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
@@ -19,7 +18,6 @@ import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourc
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.LineMapper;
-import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
