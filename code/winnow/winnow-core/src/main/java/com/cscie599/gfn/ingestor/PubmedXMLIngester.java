@@ -61,7 +61,7 @@ public class PubmedXMLIngester extends BaseIngester {
     public Step stepPubMedInfo() {
         return stepBuilderFactory
                 .get("stepPubMedInfo")
-                .<PubmedArticle, List<Object>>chunk(1)
+                .<PubmedArticle, List<Object>>chunk(ingestionBatchSize)
                 .reader(readerForPubmed())
                 .processor(processorForAuthors())
                 .writer(new MultiOutputItemWriter(authorWriter1(), publicationWriter2(), authorPublicationWriter3(), publicationMeshWriter4()))
@@ -145,16 +145,19 @@ public class PubmedXMLIngester extends BaseIngester {
             List<PublicationAuthor> publicationAuthors = new ArrayList<>();
             List<PublicationMeshterm> publicationMeshterms = new ArrayList<>();
 
-            ((List) items.get(0)).forEach(item -> {
-                if (item.getClass().equals(Author.class)) {
-                    authors.add((Author) item);
-                } else if (item.getClass().equals(Publication.class)) {
-                    publications.add((Publication) item);
-                } else if (item.getClass().equals(PublicationAuthor.class)) {
-                    publicationAuthors.add((PublicationAuthor) item);
-                } else if (item.getClass().equals(PublicationMeshterm.class)) {
-                    publicationMeshterms.add((PublicationMeshterm) item);
-                }
+
+            items.forEach(sublist -> {
+                ((List) sublist).forEach(item -> {
+                    if (item.getClass().equals(Author.class)) {
+                        authors.add((Author) item);
+                    } else if (item.getClass().equals(Publication.class)) {
+                        publications.add((Publication) item);
+                    } else if (item.getClass().equals(PublicationAuthor.class)) {
+                        publicationAuthors.add((PublicationAuthor) item);
+                    } else if (item.getClass().equals(PublicationMeshterm.class)) {
+                        publicationMeshterms.add((PublicationMeshterm) item);
+                    }
+                });
             });
             delegateAuthor.write(authors);
             delegatePublication.write(publications);
@@ -166,7 +169,7 @@ public class PubmedXMLIngester extends BaseIngester {
 
     @Bean
     public ItemReader<PubmedArticle> readerForPubmed() {
-        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName());
+        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
         SkipSupportedMultiResourceItemReader<PubmedArticle> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<PubmedArticle>();
         multiResourceItemReader.setResources(inputResources);
 
@@ -195,14 +198,27 @@ public class PubmedXMLIngester extends BaseIngester {
             PubmedArticle article = ((PubmedArticle) pubmedArticle);
             if (article.getMedlineCitation() != null && article.getMedlineCitation().getArticle() != null && article.getMedlineCitation().getArticle().getAuthorList() != null) {
                 article.getMedlineCitation().getArticle().getAuthorList().forEach((author -> {
-                    Author author1 = new Author();
-                    author1.setAuthorId(author.getLastName() == null ? "" : author.getLastName().toLowerCase() + "-" + author.getForeName().toLowerCase());
-                    author1.setForeName(author.getForeName());
-                    author1.setLastName(author.getLastName());
-                    returnList.add(author1);
-                    PublicationAuthorPK publicationAuthorPK = new PublicationAuthorPK(pubmedArticle.getMedlineCitation().getPMID().getID(), author1.getAuthorId());
-                    PublicationAuthor publicationAuthor = new PublicationAuthor(publicationAuthorPK);
-                    returnList.add(publicationAuthor);
+                    if (author != null) {
+                        Author author1 = new Author();
+                        author1.setAuthorId(author.getLastName() == null ? "" : author.getLastName().toLowerCase() + "-" + author.getForeName() == null ? "" : author.getForeName().toLowerCase());
+                        if(author1.getAuthorId() != null && author1.getAuthorId().length()>100){
+                            author1.setAuthorId(author1.getAuthorId().substring(0,100));
+                        }
+                        if(author.getForeName()!= null && author.getForeName().length()>50){
+                            author1.setForeName(author.getForeName().substring(0,50));
+                        }else{
+                            author1.setForeName(author.getForeName());
+                        }
+                        if(author.getLastName()!= null && author.getLastName().length()>50){
+                            author1.setLastName(author.getLastName().substring(0,50));
+                        }else{
+                            author1.setLastName(author.getLastName());
+                        }
+                        returnList.add(author1);
+                        PublicationAuthorPK publicationAuthorPK = new PublicationAuthorPK(pubmedArticle.getMedlineCitation().getPMID().getID(), author1.getAuthorId());
+                        PublicationAuthor publicationAuthor = new PublicationAuthor(publicationAuthorPK);
+                        returnList.add(publicationAuthor);
+                    }
                 }));
             } else {
                 logger.warn("No author list for article " + article.getMedlineCitation().getPMID().getID());
@@ -221,7 +237,7 @@ public class PubmedXMLIngester extends BaseIngester {
             Publication publication = new Publication();
             publication.setPublicationId(pubmedArticle.getMedlineCitation().getPMID().getID());
             publication.setTitle(pubmedArticle.getMedlineCitation().getArticle().getArticleTitle());
-            publication.setLanguage(pubmedArticle.getMedlineCitation().getArticle().getLanguage());
+            //publication.setLanguage(pubmedArticle.getMedlineCitation().getArticle().getLanguage());
             updateDates(publication, pubmedArticle);
             returnList.add(publication);
             return returnList;

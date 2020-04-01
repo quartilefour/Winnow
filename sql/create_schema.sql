@@ -1,8 +1,8 @@
 
 CREATE TABLE "author" (
-  "author_id" char(50)  PRIMARY KEY,
-  "fore_name" char(30),
-  "last_name" char(30)
+  "author_id" char(100)  PRIMARY KEY,
+  "fore_name" char(50),
+  "last_name" char(50)
 );
 
 
