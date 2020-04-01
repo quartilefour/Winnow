@@ -74,7 +74,7 @@ public class GeneInfoIngester extends BaseIngester {
 
     @Bean
     public ItemReader<Gene> readerForGene() {
-        logger.info("Reading resource: " + inputResources.toString() + " for " + this.getClass().getName());
+        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
         SkipSupportedMultiResourceItemReader<Gene> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<>();
         multiResourceItemReader.setResources(inputResources);
         multiResourceItemReader.setStrict(true);

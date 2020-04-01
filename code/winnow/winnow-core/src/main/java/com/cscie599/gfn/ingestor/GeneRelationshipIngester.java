@@ -1,8 +1,6 @@
 package com.cscie599.gfn.ingestor;
 
-import com.cscie599.gfn.entities.GeneGene;
-import com.cscie599.gfn.entities.GeneGenePK;
-import com.cscie599.gfn.entities.GeneRelationship;
+import com.cscie599.gfn.entities.*;
 import com.cscie599.gfn.importer.genegroup.GeneGroup;
 import com.cscie599.gfn.ingestor.reader.SkipSupportedMultiResourceItemReader;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
@@ -60,7 +58,7 @@ public class GeneRelationshipIngester extends BaseIngester {
     public Step stepGeneGroup() {
         return stepBuilderFactory
                 .get("stepGeneGroup")
-                .<GeneGroup, List<Object>>chunk(1)
+                .<GeneGroup, List<Object>>chunk(ingestionBatchSize)
                 .reader(readerForGeneGroup())
                 .processor(processorForGeneGroup())
                 .writer(new MultiOutputItemWriter(writerForGeneRelationship(), writerForGeneToGene()))
@@ -129,7 +127,6 @@ public class GeneRelationshipIngester extends BaseIngester {
             List<Object> returnList = new ArrayList<>();
             if (logger.isDebugEnabled()) {
                 logger.debug("Inserting GeneGroup : " + geneGroup);
-                ;
             }
             GeneRelationship geneRelationship = new GeneRelationship();
             geneRelationship.setRelationshipId(geneGroup.getRelationship().toLowerCase().replaceAll("\\s+", "").trim());
@@ -161,13 +158,14 @@ public class GeneRelationshipIngester extends BaseIngester {
         public void write(List<? extends Object> items) throws Exception {
             List<GeneRelationship> geneRelationships = new ArrayList<>();
             List<GeneGene> geneToGene = new ArrayList<>();
-
-            ((List) items.get(0)).forEach(item -> {
-                if (item.getClass().equals(GeneRelationship.class)) {
-                    geneRelationships.add((GeneRelationship) item);
-                } else if (item.getClass().equals(GeneGene.class)) {
-                    geneToGene.add((GeneGene) item);
-                }
+            items.forEach(sublist -> {
+                ((List)sublist).forEach(item -> {
+                    if (item.getClass().equals(GeneRelationship.class)) {
+                        geneRelationships.add((GeneRelationship) item);
+                    } else if (item.getClass().equals(GeneGene.class)) {
+                        geneToGene.add((GeneGene) item);
+                    }
+                });
             });
             delegateGeneRelationship.write(geneRelationships);
             delegateGeneGene.write(geneToGene);

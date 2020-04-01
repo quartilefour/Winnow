@@ -23,6 +23,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 @Configuration
@@ -46,6 +47,14 @@ public class GeneGoTermIngester extends BaseIngester {
                 .build();
     }
 
+    /**
+     * For this ingestion we are going to skip all the records for which we do not have gen_ontology format available as JSON.
+     * Example Record
+     * 559292	856933	GO:0006355	IEA	-	regulation of transcription, DNA-templated	-	Process
+     * As we only have limited number of GO available as JSON, we are going to skip creating the relations for which we
+     * do not have Gene ontology definition.
+     * @return
+     */
     @Bean(name = "stepGene2Go")
     public Step stepGene2Go() {
         return stepBuilderFactory
@@ -56,8 +65,11 @@ public class GeneGoTermIngester extends BaseIngester {
                 .writer(writerForGeneGotermPK())
                 .faultTolerant()
                 .skip(EmptyResultDataAccessException.class)
+                .skip(DataIntegrityViolationException.class)
                 .noRetry(EmptyResultDataAccessException.class)
+                .noRetry(DataIntegrityViolationException.class)
                 .noRollback(EmptyResultDataAccessException.class)
+                .noRollback(DataIntegrityViolationException.class)
                 .skipLimit(ingestionSkipLimit)
                 .transactionAttribute(IngeterUtil.getDefaultTransactionAttribute())
                 .build();
@@ -70,7 +82,7 @@ public class GeneGoTermIngester extends BaseIngester {
 
     @Bean
     public ItemReader<GeneGotermPK> readerForGeneGotermPK() {
-        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName());
+        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
         SkipSupportedMultiResourceItemReader<GeneGotermPK> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<GeneGotermPK>();
         multiResourceItemReader.setResources(inputResources);
         multiResourceItemReader.setStrict(true);
@@ -111,7 +123,7 @@ public class GeneGoTermIngester extends BaseIngester {
             if (logger.isDebugEnabled()) {
                 logger.debug("Inserting GeneGotermPK : " + gene);
             }
-            gene.setGoId(gene.getGoId().replaceAll(":", "_"));
+            gene.setGoId(gene.getGoId().replaceAll(":", "_").trim());
             return gene;
         }
     }

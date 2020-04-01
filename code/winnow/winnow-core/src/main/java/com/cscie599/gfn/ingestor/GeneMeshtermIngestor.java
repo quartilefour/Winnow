@@ -71,7 +71,7 @@ public class GeneMeshtermIngestor extends BaseIngester {
 
     @Bean
     public ItemReader readerForGeneMeshterm() {
-        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName());
+        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
         SkipSupportedMultiResourceItemReader<GeneMeshterm> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<GeneMeshterm>();
         multiResourceItemReader.setResources(inputResources);
         FlatFileItemReader<GeneMeshterm> itemReader = new FlatFileItemReader<GeneMeshterm>();

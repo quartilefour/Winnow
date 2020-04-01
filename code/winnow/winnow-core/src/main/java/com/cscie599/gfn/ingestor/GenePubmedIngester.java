@@ -73,7 +73,7 @@ public class GenePubmedIngester extends BaseIngester {
 
     @Bean
     public ItemReader<GenePublicationPK> readerForGenePubmed() {
-        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName());
+        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
         SkipSupportedMultiResourceItemReader<GenePublicationPK> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<GenePublicationPK>();
         multiResourceItemReader.setResources(inputResources);
         FlatFileItemReader<GenePublicationPK> itemReader = new FlatFileItemReader<GenePublicationPK>();

@@ -12,12 +12,12 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.*;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.batch.item.support.CompositeItemWriter;
 import org.springframework.batch.item.xml.StaxEventItemReader;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -26,9 +26,11 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.oxm.xstream.XStreamMarshaller;
-import org.springframework.transaction.annotation.Isolation;
-import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.sql.DataSource;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -48,6 +50,9 @@ public class MeshtermIngestor extends BaseIngester {
     @Value("${input.MeshtermXMLIngestor.skipLines:0}")
     private int linesToSkip;
 
+    @PersistenceContext
+    private EntityManager em;
+
     @Bean
     @Order(1)
     public Job getMeshtermXMLIngestor() {
@@ -60,7 +65,7 @@ public class MeshtermIngestor extends BaseIngester {
     public Step stepMeshterm() {
         return stepBuilderFactory
                 .get("stepMeshterm")
-                .<DescriptorRecord, List<Object>>chunk(1)
+                .<DescriptorRecord, List<Object>>chunk(ingestionBatchSize)
                 .reader(readerForMeshterm())
                 .processor(processorForMesh())
                 .writer(new MultiOutputItemWriter(writerForMeshterm(), writerForMeshtermTree()))
@@ -79,6 +84,7 @@ public class MeshtermIngestor extends BaseIngester {
         itemWriter.setDataSource(dataSource);
         itemWriter.setSql("INSERT INTO meshterm (mesh_id, date_created, date_revised, note, name) VALUES (:meshId, :dateCreated, :dateRevised, :note, :name) ON CONFLICT DO NOTHING");
         itemWriter.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<Meshterm>());
+        itemWriter.afterPropertiesSet();
         return itemWriter;
     }
 
@@ -88,6 +94,7 @@ public class MeshtermIngestor extends BaseIngester {
         itemWriter.setDataSource(dataSource);
         itemWriter.setSql("INSERT INTO meshterm_tree (mesh_id, tree_parent_id, tree_node_id) VALUES (:meshtermTreePK.meshId, :meshtermTreePK.treeParentId, :meshtermTreePK.treeNodeId) ON CONFLICT DO NOTHING");
         itemWriter.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<MeshtermTree>());
+        itemWriter.afterPropertiesSet();
         return itemWriter;
     }
 
@@ -106,17 +113,18 @@ public class MeshtermIngestor extends BaseIngester {
             this.delegateMeshtermTree = delegateMeshtermTree;
         }
 
-        @Transactional(isolation = Isolation.SERIALIZABLE)
         public void write(List<? extends Object> items) throws Exception {
             List<Meshterm> meshterms = new ArrayList<>();
             List<MeshtermTree> meshtermTrees = new ArrayList<>();
 
-            ((List) items.get(0)).forEach(item -> {
-                if (item.getClass().equals(Meshterm.class)) {
-                    meshterms.add((Meshterm) item);
-                } else if (item.getClass().equals(MeshtermTree.class)) {
-                    meshtermTrees.add((MeshtermTree) item);
-                }
+            items.forEach(sublist -> {
+                ((List)sublist).forEach(item -> {
+                    if (item.getClass().equals(Meshterm.class)) {
+                        meshterms.add((Meshterm) item);
+                    } else if (item.getClass().equals(MeshtermTree.class)) {
+                        meshtermTrees.add((MeshtermTree) item);
+                    }
+                });
             });
             delegateMeshterm.write(meshterms);
             delegateMeshtermTree.write(meshtermTrees);
@@ -125,7 +133,7 @@ public class MeshtermIngestor extends BaseIngester {
 
     @Bean
     public ItemReader<DescriptorRecord> readerForMeshterm() {
-        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName());
+        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
         SkipSupportedMultiResourceItemReader<DescriptorRecord> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<DescriptorRecord>();
         multiResourceItemReader.setResources(inputResources);
         StaxEventItemReader<DescriptorRecord> reader = new StaxEventItemReader<DescriptorRecord>();

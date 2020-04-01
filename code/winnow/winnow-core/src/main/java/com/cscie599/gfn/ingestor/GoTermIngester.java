@@ -3,6 +3,8 @@ package com.cscie599.gfn.ingestor;
 import com.cscie599.gfn.entities.Goterm;
 import com.cscie599.gfn.importer.goterm.Root;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
+import com.fasterxml.jackson.databind.DeserializationFeature;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.experimental.Delegate;
 import org.apache.commons.logging.Log;
@@ -95,17 +97,27 @@ public class GoTermIngester extends BaseIngester {
             this.goTermWriter = goTermWriter;
         }
 
-        public void write(List<? extends Object> items) throws Exception {
-            goTermWriter.write((List<? extends Goterm>) items.get(0));
+        public void write(List<? extends Object> items) {
+            items.forEach(sublist -> {
+                try {
+                    goTermWriter.write((List<? extends Goterm>) sublist);
+                } catch (Exception e) {
+                    logger.error("Error writing GoTerms to DB", e);
+                }
+            });
         }
     }
 
     @Bean
     public ItemReader<Root> readerForGoTerm() {
         //https://stackoverflow.com/questions/55791452/unmarshalling-with-jackson-the-json-input-stream-must-start-with-an-array-of-js
-        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName());
+        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
         CustomJsonItemReader<Root> delegate = new CustomJsonItemReader<>();
-        delegate.setJsonObjectReader(new JacksonJsonObjectReader<>(Root.class));
+        JacksonJsonObjectReader<Root> objectReader = new JacksonJsonObjectReader<>(Root.class);
+        ObjectMapper objectMapper = new ObjectMapper();
+        objectMapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false);
+        objectReader.setMapper(objectMapper);
+        delegate.setJsonObjectReader(objectReader);
         delegate.setSaveState(false);
         delegate.setStrict(true);
         MultiResourceItemReader<Root> reader = new MultiResourceItemReader<>();
@@ -144,8 +156,7 @@ public class GoTermIngester extends BaseIngester {
                     if (goID.startsWith("GO") || goID.startsWith("RO")) {
                         goterm.setGoId(node.getId().substring(node.getId().lastIndexOf('/') + 1));
                         if (logger.isDebugEnabled()) {
-                            logger.debug("Inserting goterm" + goterm.getGoId());
-
+                            logger.debug("Inserting goterm " + goterm.getGoId());
                         }
                         if (node.getMeta() != null && node.getMeta().getDefinition() != null) {
                             if (node.getMeta().getDefinition().getVal() != null) {
