@@ -340,8 +340,6 @@ public class PubmedArticle {
         private String ArticleTitle;
         Pagination Pagination;
         List<Author> AuthorList;
-        private String Language;
-        private String _PubModel;
 
         public Article() {
             AuthorList = new ArrayList<>();
@@ -365,16 +363,6 @@ public class PubmedArticle {
             return AuthorList;
         }
 
-        public String getLanguage() {
-            return Language;
-        }
-
-        public String get_PubModel() {
-            return _PubModel;
-        }
-
-        // Setter Methods
-
         public void setJournal(Journal JournalObject) {
             this.Journal = JournalObject;
         }
@@ -391,13 +379,6 @@ public class PubmedArticle {
             this.AuthorList = AuthorListObject;
         }
 
-        public void setLanguage(String Language) {
-            this.Language = Language;
-        }
-
-        public void set_PubModel(String _PubModel) {
-            this._PubModel = _PubModel;
-        }
     }
 
     public static class Grant {
