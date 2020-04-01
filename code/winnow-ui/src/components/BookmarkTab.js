@@ -1,9 +1,8 @@
 import React, {Fragment, useEffect, useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faPlay, faShareAlt, faShare, faTimes} from "@fortawesome/free-solid-svg-icons";
-import {Form} from "./HTMLElements";
+import {faPlay, faShareAlt, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {fetchUserBookmarks} from "../service/ApiService";
-import {Table} from "react-bootstrap";
+import {Form, Table} from "react-bootstrap";
 
 /**
  * BookmarkTab builds the content for user's saved search lists.
@@ -18,7 +17,6 @@ function BookmarkTab(props) {
     const [bookmarkData, setBookmarkData] = useState([]);
 
     useEffect(() => {
-        /* fetchUserBookmarks() */
         //console.info(`BookmarkTab: ${JSON.stringify(checkedTerms)}`);
         fetchUserBookmarks()
             .then(res => {
@@ -30,23 +28,9 @@ function BookmarkTab(props) {
         });
     }, []);
 
-    const count = 5;
-    const items = [];
-
-    for (let i = 0; i < count; i++) {
-        let stype = (i % 2) ? "Gene" : "MeSH";
-        items.push(
-            <li>
-                Search {i + 1} ({stype})
-                <span style={{display: 'inline-block'}}>
-                </span>
-            </li>
-        )
-    }
-
     if (isLoaded) {
         return (
-            <Form>
+            <div>
                 <Fragment>
                     <Form>
                         <Table striped bordered hover>
@@ -94,7 +78,7 @@ function BookmarkTab(props) {
                         </Table>
                     </Form>
                 </Fragment>
-            </Form>
+            </div>
         );
     } else {
         return (

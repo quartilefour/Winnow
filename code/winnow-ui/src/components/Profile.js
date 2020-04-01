@@ -3,6 +3,7 @@ import {Card, Form, Col, Button, Nav, Tab, Alert} from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faUser} from "@fortawesome/free-solid-svg-icons";
 import {fetchProfileData} from "../service/AuthService";
+import PageLoader from "./common/PageLoader";
 
 function Profile() {
 
@@ -198,7 +199,7 @@ function Profile() {
         )
     } else {
         return (
-            <div>Loading...</div>
+            <div><PageLoader/></div>
         )
     }
 }

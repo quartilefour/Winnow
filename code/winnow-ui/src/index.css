@@ -1,33 +1,81 @@
 body {
-  margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    margin: 0;
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
     'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
     sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+    font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
 }
 
-.tab-container {
-  margin: 5em 5em 0 5em;
+.tab-heading {
+    display: block;
+    text-align: center;
 }
 
-.tab-pane {
+#dashboard, .main-tab-holder {
+    border-radius: 4px;
+    margin: 5em 5em 0 5em;
+    padding: 1px 1px 1px 1px;
+    height: 80vh;
 }
 
-.tab-content {
-  border-radius: 0 4px 4px 0;
-  border-top: 1px solid #ddd;
-  border-right: 1px solid #ddd;
-  border-bottom: 1px solid #ddd;
-  padding: 10px;
+#dashboard .row {
 }
 
-.nav-tabs {
-  margin-right: 0;
+
+#dashboard-tabs, .nav-tab-collection {
+    padding-top: 2em;
+    border: 0;
+}
+
+#dashboard-tabs .nav-item .nav-link.active, .nav-tab-collection .nav-item .nav-link.active {
+    margin-right: -2px;
+    border: 2px solid #1c7430;
     border-right: 0;
+    border-radius: 4px 0 0 4px;
+    position: relative;
+    z-index: 98;
+    background-color: white;
 }
+/*
+#dashboard-tabs .nav-item .nav-link.active::before {
+    content: "";
+    position: absolute;
+    z-index: 99;
+    right: 1px;
+    top: -6px;
+    height: 4px;
+    width: 3px;
+    border-bottom-right-radius: 4px;
+    background-color: transparent;
+    box-shadow: 2px 2px 0 #1c7430;
+}
+*/
+#dashboard-tabs .nav-item .nav-link, .nav-tab-collection .nav-item .nav-link {
+    margin-right: 0;
+    border-right: 0;
+    border-color: #1c7430;
+    border-radius: 4px 0 0 4px;
+    padding: 2em;
+    margin-bottom: 1em;
+    background-color: #eee;
+}
+
+#dashboard-outer-tabs, .outer-tabs {
+    padding-right: 0;
+}
+
+#dashboard-outer-tab-content, .outer-tab-content {
+    background-color: white;
+    border: 2px solid #1c7430;
+    position: relative;
+    z-index: 1;
+    border-radius: 4px;
+    height: 70vh;
+}
+

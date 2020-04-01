@@ -1,9 +1,8 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Nav, Tab, Row, Col} from "react-bootstrap";
 import BookmarkTab from "./BookmarkTab";
 import Mesh2GeneTab from "./Mesh2GeneTab";
 import Gene2MeshTab from "./Gene2MeshTab";
-import {Error} from "./HTMLElements";
 
 /**
  * Renders the Dashboard landing page for authenticated users.
@@ -14,15 +13,12 @@ import {Error} from "./HTMLElements";
  */
 function Dashboard(props) {
 
-    const [error, setError] = useState('');
-
     return (
-        <div className="tab-container">
-            <Error>{error}</Error>
+        <div id="dashboard">
             <Tab.Container id="left-tabs" defaultActiveKey="bookmarks" className="tab-container">
                 <Row>
-                    <Col sm={3}>
-                        <Nav variant="pills" className="flex-column">
+                    <Col sm={3} id="dashboard-outer-tabs">
+                        <Nav id="dashboard-tabs" variant="tabs" className="flex-column">
                             <Nav.Item>
                                 <Nav.Link eventKey="bookmarks">Bookmarks</Nav.Link>
                             </Nav.Item>
@@ -34,18 +30,18 @@ function Dashboard(props) {
                             </Nav.Item>
                         </Nav>
                     </Col>
-                    <Col sm={9}>
-                        <Tab.Content>
+                    <Col sm={9} id="dashboard-outer-tab-content">
+                        <Tab.Content id="dashboard-tab-content">
                             <Tab.Pane eventKey="bookmarks">
-                                <p>Bookmark Tab</p>
+                                <p className="tab-heading">User Bookmarks</p>
                                 <BookmarkTab />
                             </Tab.Pane>
                             <Tab.Pane eventKey="mesh2gene">
-                                <p>MeSH 2 Gene Tab</p>
+                                <p className="tab-heading">MeSH 2 Gene Search</p>
                                 <Mesh2GeneTab />
                             </Tab.Pane>
                             <Tab.Pane eventKey="gene2mesh">
-                                <p>Gene 2 MeSH Tab</p>
+                                <p className="tab-heading">Gene 2 MeSH Search</p>
                                 <Gene2MeshTab />
                             </Tab.Pane>
                         </Tab.Content>

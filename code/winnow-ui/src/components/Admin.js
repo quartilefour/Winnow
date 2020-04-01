@@ -1,6 +1,5 @@
-import React, {useState} from 'react';
+import React from 'react';
 import {Nav, Tab, Row, Col} from "react-bootstrap";
-import {Error} from "./HTMLElements";
 
 /**
  * Renders the Dashboard landing page for authenticated users.
@@ -10,16 +9,12 @@ import {Error} from "./HTMLElements";
  * @constructor
  */
 function Admin(props) {
-
-    const [error, setError] = useState('');
-
     return (
-        <div className="tab-container">
-            <Error>{error}</Error>
-            <Tab.Container id="left-tabs-example" defaultActiveKey="teams" className="tab-container">
+        <div className="main-tab-holder">
+            <Tab.Container defaultActiveKey="teams" className="tab-container">
                 <Row>
-                    <Col sm={3}>
-                        <Nav variant="pills" className="flex-column">
+                    <Col sm={3} className="outer-tabs">
+                        <Nav variant="tabs" className="flex-column nav-tab-collection">
                             <Nav.Item>
                                 <Nav.Link eventKey="roles">Roles</Nav.Link>
                             </Nav.Item>
@@ -31,16 +26,16 @@ function Admin(props) {
                             </Nav.Item>
                         </Nav>
                     </Col>
-                    <Col sm={9}>
+                    <Col sm={9} className="outer-tab-content">
                         <Tab.Content>
                             <Tab.Pane eventKey="roles">
-                                <p>User Role Management</p>
+                                <p className="tab-heading">User Role Management</p>
                             </Tab.Pane>
                             <Tab.Pane eventKey="teams">
-                                <p>Team Management</p>
+                                <p className="tab-heading">Team Management</p>
                             </Tab.Pane>
                             <Tab.Pane eventKey="meshcat">
-                                <p>MesH Category Management</p>
+                                <p className="tab-heading">MesH Category Management</p>
                             </Tab.Pane>
                         </Tab.Content>
                     </Col>

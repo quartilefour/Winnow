@@ -9,6 +9,7 @@ import {AuthContext} from "./context/auth";
 import PrivateRoute from "./PrivateRoute";
 import Cookies from 'js-cookie';
 import Profile from "./components/Profile";
+import Support from "./components/user/Support";
 import Admin from "./components/Admin";
 
 /**
@@ -46,6 +47,7 @@ function App(props) {
                         <Route path="/login" component={Login}/>
                         <Route path="/register" component={Register}/>
                         <PrivateRoute path="/profile" component={Profile}/>
+                        <PrivateRoute path="/support" component={Support}/>
                         <PrivateRoute exact path="/" component={Dashboard}/>
                         <PrivateRoute path="/admin" component={Admin}/>
                     </Switch>
