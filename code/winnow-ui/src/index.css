@@ -17,6 +17,14 @@ code {
     text-align: center;
 }
 
+.button-bar {
+    padding: 5px 0;
+}
+
+.button-bar button {
+    margin-right: 1em;
+}
+
 #dashboard, .main-tab-holder {
     border-radius: 4px;
     margin: 5em 5em 0 5em;
@@ -81,7 +89,7 @@ code {
 
 .super-treeview {
     max-height: 60vh;
-    overflow-y: scroll;
+    overflow-y: auto;
 }
 .super-treeview div > * {
     max-height: initial;

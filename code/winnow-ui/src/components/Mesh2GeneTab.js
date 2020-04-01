@@ -18,7 +18,7 @@ function Mesh2GeneTab(props) {
     const [useBatch, setUseBatch] = useState(false);
     const [checkedTerms, setCheckedTerms] = useState([]);
     const [haveResults, setHaveResults] = useState(false);
-    const [resulData, setResultData] = useState('');
+    const [resultData, setResultData] = useState('');
 
     const getChecked = (checkedNodes) => {
         setCheckedTerms(checkedNodes);
@@ -61,8 +61,10 @@ function Mesh2GeneTab(props) {
                 return (
                     <div>
                         <Form>
-                            <Button onClick={toggleBatch}>Batch Import</Button>
-                            <Button onClick={executeSearch}>Search</Button>
+                            <div className="button-bar">
+                                <Button onClick={toggleBatch} variant="info" size="sm">Batch Import</Button>
+                                <Button onClick={executeSearch} variant="info" size="sm">Search</Button>
+                            </div>
                         </Form>
                         <Fragment>
                             <MeshtermTree callback={getChecked}/>
@@ -72,8 +74,10 @@ function Mesh2GeneTab(props) {
             } else {
                 return (
                     <div>
-                        <Button onClick={toggleBatch}>Selector</Button>
-                        <Button onClick={null}>Search</Button>
+                        <div className="button-bar">
+                            <Button onClick={toggleBatch} variant="info" size="sm">Selector</Button>
+                            <Button onClick={null} variant="info" size="sm">Search</Button>
+                        </div>
                         <SearchTermUploader data={null}/>
                     </div>
                 )
@@ -81,7 +85,7 @@ function Mesh2GeneTab(props) {
         } else {
             return (
                 <div>
-                    <SearchResultsDisplay resData={resulData}/>
+                    <SearchResultsDisplay resData={resultData}/>
                 </div>
             )
         }

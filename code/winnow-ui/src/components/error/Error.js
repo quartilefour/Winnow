@@ -14,7 +14,15 @@ function Error(props) {
 
     return (
         <div>
-            <Card>
+            <Card
+                className="text-center tab"
+                style={{
+                    flexDirection: 'column',
+                    maxWidth: '720px',
+                    display: 'flex',
+                    margin: '5% auto',
+                    width: '75%'
+                }}>
                 <Card.Header>
                     <Card.Title>
                         Page Not Found

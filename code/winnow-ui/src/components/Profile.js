@@ -138,7 +138,7 @@ function Profile() {
                                                 />
                                             </Col>
                                         </Form.Row>
-                                        <Button block onClick={updateProfile} disabled={false}>Update Profile</Button>
+                                        <Button block onClick={updateProfile} disabled={false} variant="info" size="sm">Update Profile</Button>
                                     </Form.Group>
                                 </Tab.Pane>
                                 <Tab.Pane eventKey="password" id="password">
@@ -185,7 +185,7 @@ function Profile() {
                                                 />
                                             </Col>
                                         </Form.Row>
-                                        <Button block onClick={changePassword} disabled={false}>Change Password</Button>
+                                        <Button block onClick={changePassword} disabled={false} variant="info" size="sm">Change Password</Button>
                                     </Form.Group>
                                 </Tab.Pane>
                             </Tab.Content>

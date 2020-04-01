@@ -56,8 +56,10 @@ function SearchResultsDisplay(props) {
                         })}
                         </tbody>
                     </Table>
-                    <Button>Bookmark</Button>
-                    <Button>Export</Button>
+                    <div className="button-bar">
+                        <Button variant="info" size="sm">Bookmark</Button>
+                        <Button variant="info" size="sm">Export</Button>
+                    </div>
                 </Form>
             </div>
         );

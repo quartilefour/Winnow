@@ -25,8 +25,8 @@ function Gene2MeshTab(props) {
 
     useEffect(() => {
         if (!haveResults) {
-                setIsLoaded(true);
-                setIsMenuLoaded(true);
+            setIsLoaded(true);
+            setIsMenuLoaded(true);
         } else {
             /* fetchSearchResults() */
             fetchSearchResults({
@@ -73,8 +73,10 @@ function Gene2MeshTab(props) {
                 console.info(`Gene2Mesh selected: ${JSON.stringify(selectedGenes)}`);
                 return (
                     <div>
-                        <Button onClick={toggleBatch}>Batch Import</Button>
-                        <Button onClick={executeSearch}>Search</Button>
+                        <div className="button-bar">
+                            <Button onClick={toggleBatch} variant="info" size="sm">Batch Import</Button>
+                            <Button onClick={executeSearch} variant="info" size="sm">Search</Button>
+                        </div>
                         <Form>
                             <Fragment>
                                 <Select
@@ -110,8 +112,10 @@ function Gene2MeshTab(props) {
             } else {
                 return (
                     <div>
-                        <Button onClick={toggleBatch}>Selector</Button>
-                        <Button onClick={null}>Search</Button>
+                        <div className="button-bar">
+                            <Button onClick={toggleBatch} variant="info" size="sm">Selector</Button>
+                            <Button onClick={null} variant="info" size="sm">Search</Button>
+                        </div>
                         <SearchTermUploader data={null}/>
                     </div>
                 )

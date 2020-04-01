@@ -50,7 +50,7 @@ function SearchTermUploader(props) {
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Manual Entry</Form.Label>
-                            <Form.Control as={"textarea"} rows={"20"}/>
+                            <Form.Control as={"textarea"} rows={"15"}/>
                         </Form.Group>
                     </Form>
                 </div>
