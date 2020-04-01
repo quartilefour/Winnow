@@ -1,6 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Form, Button, Table} from "react-bootstrap";
 import {fetchPubMedArticleList} from "../service/ApiService";
+import PubMedArticleListDisplay from "./PubMedArticleListDisplay";
 
 /**
  * SearchResults displays the results of searches.
