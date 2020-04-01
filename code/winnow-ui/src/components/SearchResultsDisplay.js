@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from "react";
 import {Form, Button, Table} from "react-bootstrap";
+import {fetchPubMedArticleList} from "../service/ApiService";
 
 /**
  * SearchResults displays the results of searches.
@@ -49,7 +50,7 @@ function SearchResultsDisplay(props) {
                                     <td>{value.symbol}</td>
                                     <td>{value.meshId}</td>
                                     <td>{value.meshTerm}</td>
-                                    <td>{value.publicationCount}</td>
+                                    <td>{value.publicationCount}<PubMedArticleListDisplay listData={fetchPubMedArticleList()}/></td>
                                     <td>{value.pValue}</td>
                                 </tr>
                             );

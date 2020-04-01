@@ -177,3 +177,54 @@ export const mapMeshtermTreeData = (data, node, depth) => {
     });
 };
 
+export const fetchPubMedArticleList = (data) => {
+    console.info(`fetchPubMedArticleList: ${JSON.stringify(data)}`);
+    let mockResp = {
+        searchQuery: data.searchQuery,
+        queryType: data.queryType,
+        queryFormat: data.queryFormat,
+        geneId: data.geneId,
+        symbol: data.symbol,
+        meshId: data.meshId,
+        meshTerm: data.meshTerm,
+        results: [
+            {
+                publicationID: "32052514",
+                publicationTitle: "COVID-19 Stuff",
+                publicationAuthor: "publicationAuthor",
+                publicationDate: "31 March 2020",
+                publicationURLBase: "https://pubmed.ncbi.nlm.nih.gov/"
+            },
+            {
+                publicationID: "32052514",
+                publicationTitle: "COVID-19 Stuff",
+                publicationAuthor: "publicationAuthor",
+                publicationDate: "31 March 2020",
+                publicationURLBase: "https://pubmed.ncbi.nlm.nih.gov/"
+            },
+            {
+                publicationID: "32052514",
+                publicationTitle: "COVID-19 Stuff",
+                publicationAuthor: "publicationAuthor",
+                publicationDate: "31 March 2020",
+                publicationURLBase: "https://pubmed.ncbi.nlm.nih.gov/"
+            },
+        ]
+    };
+    return new Promise((resolve, reject) => {
+        resolve(mockResp);
+    });
+    return new Promise((resolve, reject) => {
+        axios.post(
+            `${Constants.WINNOW_API_BASE_URL}/pubmedarticlelist`,
+            data,
+            {
+                headers: AuthService.getAuthHeader(),
+            }
+        )
+            .then(res => {
+                resolve(res.data);
+            })
+            .catch(err => reject(err));
+    });
+};
