@@ -11,6 +11,7 @@ import Cookies from 'js-cookie';
 import Profile from "./components/Profile";
 import Support from "./components/user/Support";
 import Admin from "./components/Admin";
+import Error from "./components/error/Error";
 
 /**
  * Renders the User Interface to the Winnow application.
@@ -50,6 +51,7 @@ function App(props) {
                         <PrivateRoute path="/support" component={Support}/>
                         <PrivateRoute exact path="/" component={Dashboard}/>
                         <PrivateRoute path="/admin" component={Admin}/>
+                        <PrivateRoute component={Error} />
                     </Switch>
                 </div>
             </Router>

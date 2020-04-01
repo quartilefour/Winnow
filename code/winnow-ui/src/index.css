@@ -79,3 +79,11 @@ code {
     height: 70vh;
 }
 
+.super-treeview {
+    max-height: 60vh;
+    overflow-y: scroll;
+}
+.super-treeview div > * {
+    max-height: initial;
+    overflow-y: initial;
+}

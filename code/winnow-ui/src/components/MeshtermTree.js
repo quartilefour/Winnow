@@ -62,11 +62,25 @@ export function MeshtermTree(props) {
         setIsLoaded(true);
     }
 
+    function updatesCheckedNodes(node) {
+        if (node.isChecked) {
+            console.info(`MeshtermTree node ${node.meshId} checked`);
+            setChecked([...checked, node.meshId]);
+        } else {
+            console.info(`MeshtermTree node ${node.meshId} unchecked`);
+            setChecked(checked.filter(term => term !== node.meshId));
+        }
+        console.info(`MeshtermTree checked nodes: ${checked}`);
+    }
+
     if (isLoaded) {
         return (
             <SuperTreeview
                 loadingElement={<Spinner animation="border" size="sm" variant="info"/>}
                 data={meshData}
+                onChange={(e) => {
+                    console.info(`MeshtermTree onChange fired`);
+                }}
                 onUpdateCb={(updatedData) => {
                     setMeshData(updatedData);
                     props.callback(checked)
@@ -85,17 +99,10 @@ export function MeshtermTree(props) {
                     function applyCheckStateTo(nodes){
                         nodes.forEach((node)=>{
                             node.isChecked = checkState;
-                            if (checkState) {
-                                console.info(`MeshtermTree node ${node.meshId} checked`);
-                               setChecked([...checked, node.meshId]);
-                            } else {
-                                console.info(`MeshtermTree node ${node.meshId} unchecked`);
-                                setChecked(checked.filter(term => term !== node.meshId));
-                            }
+                             updatesCheckedNodes(node);
                             if(node.children){
                                 applyCheckStateTo(node.children);
                             }
-                            console.info(`MeshtermTree checked nodes: ${checked}`);
                         })
                     }
                 }}
