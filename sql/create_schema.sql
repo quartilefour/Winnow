@@ -124,7 +124,7 @@ CREATE TABLE "user_search_sharing"
 
 CREATE TABLE "publication_author" (
   "publication_id" char(20) REFERENCES publication (publication_id),
-  "author_id" char(50) REFERENCES author (author_id),
+  "author_id" char(100) REFERENCES author (author_id),
   "creation_date" date,
   PRIMARY KEY ("publication_id", "author_id")
 );
