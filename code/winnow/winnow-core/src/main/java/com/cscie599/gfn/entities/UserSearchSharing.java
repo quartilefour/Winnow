@@ -49,7 +49,7 @@ public class UserSearchSharing implements Serializable {
         this.userSearchSharingPK = userSearchSharingPK;
     }
 
-    public UserSearchSharing(String searchId, int userId) {
+    public UserSearchSharing(long searchId, int userId) {
         this.userSearchSharingPK = new UserSearchSharingPK(searchId, userId);
     }
 

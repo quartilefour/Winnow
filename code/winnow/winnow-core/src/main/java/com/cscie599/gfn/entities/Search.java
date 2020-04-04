@@ -5,10 +5,15 @@
  */
 package com.cscie599.gfn.entities;
 
+import com.vladmihalcea.hibernate.type.array.ListArrayType;
+import org.hibernate.annotations.Type;
+import org.hibernate.annotations.TypeDef;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
+import java.util.List;
 
 /**
  *
@@ -16,37 +21,43 @@ import java.util.Date;
  */
 @Entity
 @Table(name = "search")
+@TypeDef(
+        name = "list-array",
+        typeClass = ListArrayType.class
+)
 @NamedQueries({
     @NamedQuery(name = "Search.findAll", query = "SELECT s FROM Search s"),
     @NamedQuery(name = "Search.findBySearchId", query = "SELECT s FROM Search s WHERE s.searchId = :searchId"),
     @NamedQuery(name = "Search.findByCreatedDate", query = "SELECT s FROM Search s WHERE s.createdDate = :createdDate"),
     @NamedQuery(name = "Search.findBySearchName", query = "SELECT s FROM Search s WHERE s.searchName = :searchName"),
-    @NamedQuery(name = "Search.findByDeletedDate", query = "SELECT s FROM Search s WHERE s.deletedDate = :deletedDate"),
     @NamedQuery(name = "Search.findByUpdatedAt", query = "SELECT s FROM Search s WHERE s.updatedAt = :updatedAt"),
     @NamedQuery(name = "Search.findByQueryType", query = "SELECT s FROM Search s WHERE s.queryType = :queryType")})
 public class Search implements Serializable {
 
     private static final long serialVersionUID = 1L;
     @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Basic(optional = false)
-    @Column(name = "search_id", nullable = false, length = 20)
-    private String searchId;
+    @Column(name = "search_id", nullable = false)
+    private Long searchId;
     @Column(name = "created_date")
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate;
     @Column(name = "search_name", length = 20)
     private String searchName;
-    @Lob
-    @Column(name = "search_query")
-    private Object searchQuery;
-    @Column(name = "deleted_date")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date deletedDate;
+    @Type(type = "list-array")
+    @Column(
+            name = "search_query",
+            columnDefinition = "text[]"
+    )
+    private List<String> searchQuery;
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
     @Column(name = "query_type", length = 20)
     private String queryType;
+    @Column(name = "query_format", length = 20)
+    private String queryFormat;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "search")
     private Collection<UserSearchSharing> userSearchSharingCollection;
     @JoinColumn(name = "team_id", referencedColumnName = "team_id")
@@ -59,15 +70,15 @@ public class Search implements Serializable {
     public Search() {
     }
 
-    public Search(String searchId) {
+    public Search(Long searchId) {
         this.searchId = searchId;
     }
 
-    public String getSearchId() {
+    public Long getSearchId() {
         return searchId;
     }
 
-    public void setSearchId(String searchId) {
+    public void setSearchId(Long searchId) {
         this.searchId = searchId;
     }
 
@@ -87,20 +98,12 @@ public class Search implements Serializable {
         this.searchName = searchName;
     }
 
-    public Object getSearchQuery() {
+    public List<String> getSearchQuery() {
         return searchQuery;
     }
 
-    public void setSearchQuery(Object searchQuery) {
+    public void setSearchQuery(List<String> searchQuery) {
         this.searchQuery = searchQuery;
-    }
-
-    public Date getDeletedDate() {
-        return deletedDate;
-    }
-
-    public void setDeletedDate(Date deletedDate) {
-        this.deletedDate = deletedDate;
     }
 
     public Date getUpdatedAt() {
@@ -117,6 +120,14 @@ public class Search implements Serializable {
 
     public void setQueryType(String queryType) {
         this.queryType = queryType;
+    }
+
+    public String getQueryFormat() {
+        return queryFormat;
+    }
+
+    public void setQueryFormat(String queryFormat) {
+        this.queryFormat = queryFormat;
     }
 
     public Collection<UserSearchSharing> getUserSearchSharingCollection() {

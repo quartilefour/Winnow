@@ -62,16 +62,16 @@ CREATE TABLE "address" (
   "country" char(20)
 );
 
-CREATE TABLE "search" (
-  "search_id" char(20)  PRIMARY KEY,
-  "created_by" INTEGER REFERENCES "user" (user_id),
-  "created_date" timestamp,
-  "search_name" varchar(20),
-  "search_query" JSON,
-  "deleted_date" timestamp,
-  "updated_at" timestamp,
-  "team_id" char(20) REFERENCES team (team_id),
-  "query_type" char(20)
+CREATE TABLE "search"(
+                         "search_id"    BIGSERIAL PRIMARY KEY,
+                         "created_by"   INTEGER REFERENCES "user" (user_id),
+                         "created_date" timestamp,
+                         "search_name"  varchar(20),
+                         "search_query" TEXT[],
+                         "updated_at"   timestamp,
+                         "team_id"      char(20) REFERENCES team (team_id),
+                         "query_type"   char(20),
+                         "query_format" char(20)
 );
 
 CREATE TABLE "publication" (
@@ -111,13 +111,14 @@ CREATE TABLE "gene_gene" (
   PRIMARY KEY ("gene_id", "other_gene_id", "relationship_id")
 );
 
-CREATE TABLE "user_search_sharing" (
-  "search_id" char(20) REFERENCES search (search_id),
-  "user_id" INTEGER REFERENCES "user" (user_id),
-  "shared_by" INTEGER REFERENCES "user" (user_id),
-  "shared_date" timestamp,
-  "deleted_date" timestamp,
-  PRIMARY KEY ("search_id", "user_id")
+CREATE TABLE "user_search_sharing"
+(
+    "search_id"    BIGINT REFERENCES "search" (search_id),
+    "user_id"      INTEGER REFERENCES "user" (user_id),
+    "shared_by"    INTEGER REFERENCES "user" (user_id),
+    "shared_date"  timestamp,
+    "deleted_date" timestamp,
+    PRIMARY KEY ("search_id", "user_id")
 
 );
 

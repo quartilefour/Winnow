@@ -18,8 +18,8 @@ import javax.persistence.Embeddable;
 public class UserSearchSharingPK implements Serializable {
 
     @Basic(optional = false)
-    @Column(name = "search_id", nullable = false, length = 20)
-    private String searchId;
+    @Column(name = "search_id", nullable = false)
+    private long searchId;
     @Basic(optional = false)
     @Column(name = "user_id", nullable = false)
     private int userId;
@@ -27,16 +27,16 @@ public class UserSearchSharingPK implements Serializable {
     public UserSearchSharingPK() {
     }
 
-    public UserSearchSharingPK(String searchId, int userId) {
+    public UserSearchSharingPK(long searchId, int userId) {
         this.searchId = searchId;
         this.userId = userId;
     }
 
-    public String getSearchId() {
+    public long getSearchId() {
         return searchId;
     }
 
-    public void setSearchId(String searchId) {
+    public void setSearchId(long searchId) {
         this.searchId = searchId;
     }
 
@@ -51,7 +51,7 @@ public class UserSearchSharingPK implements Serializable {
     @Override
     public int hashCode() {
         int hash = 0;
-        hash += (searchId != null ? searchId.hashCode() : 0);
+        hash += (long) searchId;
         hash += (int) userId;
         return hash;
     }
@@ -63,7 +63,7 @@ public class UserSearchSharingPK implements Serializable {
             return false;
         }
         UserSearchSharingPK other = (UserSearchSharingPK) object;
-        if ((this.searchId == null && other.searchId != null) || (this.searchId != null && !this.searchId.equals(other.searchId))) {
+        if (this.searchId != other.searchId) {
             return false;
         }
         if (this.userId != other.userId) {
