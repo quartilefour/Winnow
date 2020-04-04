@@ -5,10 +5,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTPClient;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -81,29 +78,32 @@ public class IncrementalPubmedDownloadRunnable extends BasePubmedDownloadRunnabl
                     ftpClient.setBufferSize(1671168); // 16mb
                     logger.info("File path on the ftp server " + filePath);
 
-                    String localFilePath = this.localFilePath + File.separator + "pubmed20n" + String.format("%04d", index) + FTP_FILEEXTENSION;
-                    File outputFile = new File(localFilePath);
+                    if (checkFileExists(filePath, ftpClient)) {
+                        String localFilePath = this.localFilePath + File.separator + "pubmed20n" + String.format("%04d", index) + FTP_FILEEXTENSION;
+                        File outputFile = new File(localFilePath);
 
-                    logger.info("Downloading file " + outputFile.getName());
-                    FileOutputStream fos = new FileOutputStream(outputFile);
-                    ftpClient.retrieveFile(filePath, fos);
-                    fos.flush();
-                    fos.close();
-                    logger.info("Local File path on the local server " + localFilePath);
-                    if (extractContent) {
-                        logger.info("Unzipping of Downloaded file Started " + fileName);
+                        logger.info("Downloading file " + outputFile.getName());
+                        FileOutputStream fos = new FileOutputStream(outputFile);
+                        ftpClient.retrieveFile(filePath, fos);
+                        fos.flush();
+                        fos.close();
+                        logger.info("Local File path on the local server " + localFilePath);
+                        // For the incremental download if the files do not exist
+                        if (extractContent) {
+                            logger.info("Unzipping of Downloaded file Started " + fileName);
 
-                        GZIPInputStream gzis = new GZIPInputStream(new FileInputStream(outputFile));
+                            GZIPInputStream gzis = new GZIPInputStream(new FileInputStream(outputFile));
 
-                        FileOutputStream out =
-                                new FileOutputStream(extractedFolderLocation + File.separator + "pubmed20n" + String.format("%04d", index) + EXTRACTED_FILEEXTENSION);
-                        int len;
-                        while ((len = gzis.read(buffer)) > 0) {
-                            out.write(buffer, 0, len);
+                            FileOutputStream out =
+                                    new FileOutputStream(extractedFolderLocation + File.separator + "pubmed20n" + String.format("%04d", index) + EXTRACTED_FILEEXTENSION);
+                            int len;
+                            while ((len = gzis.read(buffer)) > 0) {
+                                out.write(buffer, 0, len);
+                            }
+                            gzis.close();
+                            out.close();
+                            logger.info("Unzipping of Downloaded file done " + fileName);
                         }
-                        gzis.close();
-                        out.close();
-                        logger.info("Unzipping of Downloaded file done " + fileName);
                     }
                     filesProcessed.flip(index);
                     index = filesProcessed.nextClearBit(FIRST_FILE_INDEX);
@@ -119,6 +119,16 @@ public class IncrementalPubmedDownloadRunnable extends BasePubmedDownloadRunnabl
         } finally {
             latch.countDown();
         }
+    }
+
+    boolean checkFileExists(String filePath, FTPClient ftpClient) throws IOException {
+        InputStream inputStream = ftpClient.retrieveFileStream(filePath);
+        int returnCode = ftpClient.getReplyCode();
+        if (inputStream == null || returnCode == 550) {
+            return false;
+        }
+        inputStream.close();
+        return true;
     }
 }
 
