@@ -24,14 +24,15 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
+import org.springframework.core.task.SimpleAsyncTaskExecutor;
+import org.springframework.core.task.TaskExecutor;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.oxm.xstream.XStreamMarshaller;
 import org.springframework.transaction.annotation.Isolation;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
+import java.util.*;
 
 /**
  * @author PulkitBhanot
@@ -48,6 +49,9 @@ public class PubmedXMLIngester extends BaseIngester {
 
     @Value("${input.PubmedXMLIngester.skipLines:0}")
     private int linesToSkip;
+
+    @Value("${input.blacklisted.meshterms}")
+    private List<String> meshTermToSkip;
 
     @Bean
     @Order(7)
@@ -67,8 +71,11 @@ public class PubmedXMLIngester extends BaseIngester {
                 .writer(new MultiOutputItemWriter(authorWriter1(), publicationWriter2(), authorPublicationWriter3(), publicationMeshWriter4()))
                 .faultTolerant()
                 .skip(EmptyResultDataAccessException.class)
+                .skip(DataIntegrityViolationException.class)
                 .noRetry(EmptyResultDataAccessException.class)
+                .noRetry(DataIntegrityViolationException.class)
                 .noRollback(EmptyResultDataAccessException.class)
+                .noRollback(DataIntegrityViolationException.class)
                 .skipLimit(ingestionSkipLimit)
                 .transactionAttribute(IngeterUtil.getDefaultTransactionAttribute())
                 .build();
@@ -194,13 +201,14 @@ public class PubmedXMLIngester extends BaseIngester {
 
     class DBLogProcessor implements ItemProcessor<PubmedArticle, List<Object>> {
         public List<Object> process(PubmedArticle pubmedArticle) throws Exception {
+            Set<String> blackListSet = new HashSet<>(meshTermToSkip);
             List<Object> returnList = new ArrayList<>();
             PubmedArticle article = ((PubmedArticle) pubmedArticle);
             if (article.getMedlineCitation() != null && article.getMedlineCitation().getArticle() != null && article.getMedlineCitation().getArticle().getAuthorList() != null) {
                 article.getMedlineCitation().getArticle().getAuthorList().forEach((author -> {
                     if (author != null) {
                         Author author1 = new Author();
-                        author1.setAuthorId(author.getLastName() == null ? "" : author.getLastName().toLowerCase() + "-" + author.getForeName() == null ? "" : author.getForeName().toLowerCase());
+                        author1.setAuthorId((author.getLastName() == null ? "" : author.getLastName().toLowerCase()) + "-" + (author.getForeName() == null ? "" : author.getForeName().toLowerCase()));
                         if(author1.getAuthorId() != null && author1.getAuthorId().length()>100){
                             author1.setAuthorId(author1.getAuthorId().substring(0,100));
                         }
@@ -227,17 +235,18 @@ public class PubmedXMLIngester extends BaseIngester {
             if (article.getMedlineCitation() != null && article.getMedlineCitation().getMeshHeadingList() != null) {
                 article.getMedlineCitation().getMeshHeadingList().forEach(meshHeading -> {
                     meshHeading.getDescriptorName().forEach(descriptor -> {
-                        PublicationMeshtermPK publicationMeshtermPK = new PublicationMeshtermPK(pubmedArticle.getMedlineCitation().getPMID().getID(), descriptor.getUI());
-                        PublicationMeshterm publicationMeshterm = new PublicationMeshterm(publicationMeshtermPK);
-                        publicationMeshterm.setCreatedDate(new Date());
-                        returnList.add(publicationMeshterm);
+                        if(meshTermToSkip != null && !blackListSet.contains(descriptor.getUI())){
+                            PublicationMeshtermPK publicationMeshtermPK = new PublicationMeshtermPK(pubmedArticle.getMedlineCitation().getPMID().getID(), descriptor.getUI());
+                            PublicationMeshterm publicationMeshterm = new PublicationMeshterm(publicationMeshtermPK);
+                            publicationMeshterm.setCreatedDate(new Date());
+                            returnList.add(publicationMeshterm);
+                        }
                     });
                 });
             }
             Publication publication = new Publication();
             publication.setPublicationId(pubmedArticle.getMedlineCitation().getPMID().getID());
             publication.setTitle(pubmedArticle.getMedlineCitation().getArticle().getArticleTitle());
-            //publication.setLanguage(pubmedArticle.getMedlineCitation().getArticle().getLanguage());
             updateDates(publication, pubmedArticle);
             returnList.add(publication);
             return returnList;
