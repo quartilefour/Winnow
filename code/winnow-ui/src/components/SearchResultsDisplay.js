@@ -2,6 +2,8 @@ import React, {useEffect, useState} from "react";
 import {Form, Button, Table} from "react-bootstrap";
 import {fetchPubMedArticleList} from "../service/ApiService";
 import PubMedArticleListDisplay from "./PubMedArticleListDisplay";
+import {Link} from "react-router-dom";
+import {number} from "echarts/src/export";
 
 /**
  * SearchResults displays the results of searches.
@@ -15,6 +17,14 @@ function SearchResultsDisplay(props) {
     const [isLoaded, setIsLoaded] = useState(false);
     const [resData, setResData] = useState('');
     const [haveResults, setHaveResults] = useState(false);
+    const [selectedIndex, setSelectedIndex] = useState(0);
+
+
+    function executePubMedArticleListDisplay(index) {
+        setSelectedIndex(index);
+        setIsLoaded(false);
+        setHaveResults(true);
+    }
 
     useEffect(() => {
         if (!haveResults) {
@@ -51,7 +61,7 @@ function SearchResultsDisplay(props) {
                                     <td>{value.symbol}</td>
                                     <td>{value.meshId}</td>
                                     <td>{value.meshTerm}</td>
-                                    <td>{value.publicationCount}</td>
+                                    <td><Button onClick={executePubMedArticleListDisplay}>{value.publicationCount}</Button></td>
                                     <td>{value.pValue}</td>
                                 </tr>
                             );
@@ -66,8 +76,9 @@ function SearchResultsDisplay(props) {
             </div>
         );
     } else {
+        console.info(`PubMedArticleDisplay Selected: ${JSON.stringify(resData)}`);
         return (
-            <div>Loading...</div>
+            <div><PubMedArticleListDisplay listData={resData} selectedIndex={selectedIndex}/></div>
         )
     }
 }
