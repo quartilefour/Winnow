@@ -1,5 +1,5 @@
 import React, {Fragment, useEffect, useState} from "react";
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlay, faShareAlt, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {fetchUserBookmarks, removeUserBookmark} from "../service/ApiService";
 import {Form, Table} from "react-bootstrap";
@@ -31,9 +31,10 @@ function BookmarkTab(props) {
         }
         fetchUserBookmarks()
             .then(res => {
-                console.info(`Mesh2Gene executed search: ${JSON.stringify(res)}`);
+                console.info(`Fetching user bookmarks: ${JSON.stringify(res)}`);
                 setBookmarkData(res);
                 setIsLoaded(true);
+                //console.info(`Bookmark count: ${bookmarkData.length}`)
             }).catch(err => {
             setIsLoaded(true);
         });
@@ -55,13 +56,23 @@ function BookmarkTab(props) {
                             </tr>
                             </thead>
                             <tbody>
-                            {bookmarkData.map((value, index) => {
+                            {bookmarkData.map((bookmark) => {
+                                console.info(`Looping through bookmarks: ${JSON.stringify(bookmark)}`);
                                 return (
-                                    <tr key={index}>
-                                        <td>{value.searchName}</td>
-                                        <td>{value.queryType.toUpperCase()}</td>
-                                        <td>{value.searchQuery.join(', ')}</td>
-                                        <td>{value.createdDate}</td>
+                                    <tr key={bookmark.searchId}>
+                                        <td>{bookmark.searchName}</td>
+                                        <td>{bookmark.queryType.toUpperCase()}</td>
+                                        <td>{bookmark.searchQuery.join(', ')}</td>
+                                        <td>{new Intl.DateTimeFormat("en-US", {
+                                            year: "numeric",
+                                            month: "long",
+                                            day: "numeric",
+                                            hour12: false,
+                                            hour: "numeric",
+                                            minute: "numeric",
+                                            second: "numeric",
+                                            timeZoneName: "short"
+                                        }).format(new Date(Date.parse(bookmark.createdDate)))}</td>
                                         <td>
                                             <FontAwesomeIcon
                                                 className="searchActions"
@@ -81,8 +92,8 @@ function BookmarkTab(props) {
                                                 color="maroon"
                                                 title="Delete Search"
                                                 onClick={(e) => {
-                                                    console.info(`Clicked delete on bookmark #${value.searchId} `);
-                                                    setDeleteBookmark(value.searchId)
+                                                    console.info(`Clicked delete on bookmark #${bookmark.searchId} `);
+                                                    setDeleteBookmark(bookmark.searchId)
                                                 }}
                                             />
                                         </td>

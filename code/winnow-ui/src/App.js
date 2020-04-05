@@ -33,6 +33,7 @@ function App(props) {
     const setToken = (data) => {
         if (data === null) {
             Cookies.remove("token");
+            sessionStorage.clear();
         } else {
             Cookies.set("token", data);
         }

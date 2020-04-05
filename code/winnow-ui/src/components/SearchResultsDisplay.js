@@ -1,9 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Form, Button, Table} from "react-bootstrap";
-import {fetchPubMedArticleList} from "../service/ApiService";
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {faChevronLeft} from "@fortawesome/free-solid-svg-icons";
 import PubMedArticleListDisplay from "./PubMedArticleListDisplay";
-import {Link} from "react-router-dom";
-import {number} from "echarts/src/export";
 import SaveSearchModal from "./common/SaveSearchModal";
 import PageLoader from "./common/PageLoader";
 
@@ -48,7 +47,14 @@ function SearchResultsDisplay(props) {
             return (
                 <div>
                     <Form>
-                        <h3> Results</h3>
+                        <span
+                            className="exit-results"
+                            onClick={props.history}
+                        >
+                            <FontAwesomeIcon icon={faChevronLeft} color="cornflowerblue"/>
+                            Back
+                        </span>
+                        <h3>Results</h3>
                         <Table striped bordered hover>
                             <thead>
                             <tr>

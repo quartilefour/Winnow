@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import {Nav, Tab, Row, Col} from "react-bootstrap";
 
 /**
@@ -9,9 +9,24 @@ import {Nav, Tab, Row, Col} from "react-bootstrap";
  * @constructor
  */
 function Admin(props) {
+    const [currentTab, setCurrentTab] = useState('teams');
+
+    useEffect(() => {
+        let storedTab = sessionStorage.getItem('adminTab');
+        if (storedTab) {
+            console.info(`Admin: setting tab to: ${JSON.stringify(storedTab)}`);
+            setCurrentTab(storedTab);
+        }
+    }, [currentTab]);
     return (
         <div className="main-tab-holder">
-            <Tab.Container defaultActiveKey="teams" className="tab-container">
+            <Tab.Container activeKey={currentTab} className="tab-container" onSelect={
+                (e) => {
+                    console.info(`Selecting Admin tab: ${e}`);
+                    sessionStorage.setItem('adminTab', e);
+                    setCurrentTab(e)
+                }
+            }>
                 <Row>
                     <Col sm={3} className="outer-tabs">
                         <Nav variant="tabs" className="flex-column nav-tab-collection">

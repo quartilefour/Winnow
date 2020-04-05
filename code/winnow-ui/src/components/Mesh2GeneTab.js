@@ -55,6 +55,10 @@ function Mesh2GeneTab(props) {
         setUseBatch(!useBatch);
     }
 
+    function returnToSelection() {
+        setHaveResults(false);
+    }
+
     if (isLoaded) {
         if (!haveResults) {
             if (!useBatch) {
@@ -85,7 +89,7 @@ function Mesh2GeneTab(props) {
         } else {
             return (
                 <div>
-                    <SearchResultsDisplay resData={resultData}/>
+                    <SearchResultsDisplay resData={resultData} history={returnToSelection}/>
                 </div>
             )
         }

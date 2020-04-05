@@ -103,3 +103,12 @@ code {
     max-height: initial;
     overflow-y: initial;
 }
+
+.exit-results {
+    display: inline-block;
+    float: right;
+}
+
+.exit-results :hover {
+    cursor: pointer;
+}

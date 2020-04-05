@@ -5,6 +5,8 @@ import {fetchGenes, fetchSearchResults} from "../service/ApiService";
 import SearchResultsDisplay from "./SearchResultsDisplay";
 import SearchTermUploader from "./SearchTermUploader";
 import PageLoader from "./common/PageLoader";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faBan} from "@fortawesome/free-solid-svg-icons";
 
 /**
  * Gene2MeshTab builds the content for Gene Search.
@@ -67,6 +69,11 @@ function Gene2MeshTab(props) {
         setUseBatch(!useBatch);
     }
 
+    function returnToSelection() {
+        setSelectedGenes([]);
+        setHaveResults(false);
+    }
+
     if (isLoaded) {
         if (!haveResults) {
             if (!useBatch) {
@@ -75,7 +82,12 @@ function Gene2MeshTab(props) {
                     <div>
                         <div className="button-bar">
                             <Button onClick={toggleBatch} variant="info" size="sm">Batch Import</Button>
-                            <Button onClick={executeSearch} variant="info" size="sm">Search</Button>
+                            <Button
+                                onClick={executeSearch}
+                                variant="info"
+                                size="sm"
+                                disabled={selectedGenes.length === 0}
+                            >Search</Button>
                         </div>
                         <Form>
                             <Fragment>
@@ -88,6 +100,12 @@ function Gene2MeshTab(props) {
                                     loadingMessage="Loading..."
                                     autoFocus={true}
                                     name="gene"
+                                    onKeyDown={e => {
+                                        console.info(`GeneSelect onKeyDown: ${e.keyCode}`);
+                                        /*if (e.keyCode === 13) {
+                                            executeSearch();
+                                        }*/
+                                    }}
                                     onInputChange={e => {
                                         console.info(`Gene2Mesh onInputChange: ${JSON.stringify(e)}`);
                                         if (e.length >= 2) {
@@ -100,6 +118,8 @@ function Gene2MeshTab(props) {
                                             e.forEach((val, index) => {
                                                 setSelectedGenes([...selectedGenes, val.value]);
                                             })
+                                        } else {
+                                            setSelectedGenes([])
                                         }
                                         setGeneData([]);
                                     }}
@@ -122,7 +142,7 @@ function Gene2MeshTab(props) {
             }
         } else {
             return (
-                <SearchResultsDisplay resData={resultData}/>
+                <SearchResultsDisplay resData={resultData} history={returnToSelection}/>
             )
         }
     } else {
