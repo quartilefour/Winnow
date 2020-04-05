@@ -91,9 +91,7 @@ public class IncrementalPubmedDownloadRunnable extends BasePubmedDownloadRunnabl
                         // For the incremental download if the files do not exist
                         if (extractContent) {
                             logger.info("Unzipping of Downloaded file Started " + fileName);
-
                             GZIPInputStream gzis = new GZIPInputStream(new FileInputStream(outputFile));
-
                             FileOutputStream out =
                                     new FileOutputStream(extractedFolderLocation + File.separator + "pubmed20n" + String.format("%04d", index) + EXTRACTED_FILEEXTENSION);
                             int len;
@@ -128,6 +126,7 @@ public class IncrementalPubmedDownloadRunnable extends BasePubmedDownloadRunnabl
             return false;
         }
         inputStream.close();
+        ftpClient.completePendingCommand();
         return true;
     }
 }

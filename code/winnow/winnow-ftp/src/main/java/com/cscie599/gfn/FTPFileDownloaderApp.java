@@ -43,7 +43,7 @@ public class FTPFileDownloaderApp implements CommandLineRunner {
         new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene2pubmed", "/data/raw/gene2pubmed", latch, "/data/extracted/gene2pubmed/", extractContent)).start();
         new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene_group", "/data/raw/gene_group", latch, "/data/extracted/gene_group/", extractContent)).start();
         // File structure for gene_orthologs is exactly same to to that of gene_group. Also given that we support ingestion of all files in a given directory. We just need to download this file in that directory.
-        new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene_orthologs", "/data/raw/gene_orthologs", latch, "/data/extracted/gene_group/", extractContent)).start();
+        new Thread(new FTPFileDownloadRunnable(NCBI_FTP_SERVER_NAME, "/gene/DATA", "gene_orthologs", "/data/raw/gene_group", latch, "/data/extracted/gene_group/", extractContent)).start();
         new Thread(new FTPFileDownloadRunnable(NLMPUBS_FTP_SERVER_NAME, "/online/mesh/MESH_FILES/xmlmesh", "desc2020", "/data/raw/xmlmesh", latch, "/data/extracted/xmlmesh/", extractContent)).start();
         new Thread(new HTTPGeneOntologyDownloadRunnable("gene_ontology", latch, "/data/extracted/", "/data/raw/", extractContent)).start();
         new Thread(new BaselinePubmedDownloadRunnable(NCBI_FTP_SERVER_NAME, "/pubmed/baseline", "pubmed", "/data/raw/pubmed", latch, "/data/extracted/", extractContent)).start();

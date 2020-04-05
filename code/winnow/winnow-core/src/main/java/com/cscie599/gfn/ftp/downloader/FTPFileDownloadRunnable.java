@@ -115,7 +115,7 @@ public class FTPFileDownloadRunnable implements Runnable {
                 ftpClient.retrieveFile(filePath, fos);
                 fos.flush();
                 fos.close();
-                logger.info("File Download complete " + outputFile.getName() + " starting with extraction of the file now");
+                logger.info("File Download complete " + outputFile.getName() );
                 if (extractContent) {
                     logger.info("Starting Unzipping of Downloaded file " + fileName);
                     GZIPInputStream gzis =
