@@ -1,7 +1,6 @@
-import SearchResultsDisplay from "./SearchResultsDisplay";
 import React, {useEffect, useState} from "react";
-import {Form, Button, Table, Alert} from "react-bootstrap";
-import {fetchPubMedArticleList, fetchSearchResults} from "../service/ApiService";
+import {Form, Table, Alert} from "react-bootstrap";
+import {fetchPubMedArticleList} from "../service/ApiService";
 import PageLoader from "./common/PageLoader";
 import {PUBMED_BASE_URL} from "../constants";
 
@@ -78,6 +77,7 @@ function PubMedArticleListDisplay(props) {
                                     }</td>
                                     <td>{value.completedDate}</td>
                                     <td><a target="_blank"
+                                           rel="noopener noreferrer"
                                            href={`${PUBMED_BASE_URL}/${value.publicationId}`}>{value.publicationId}</a>
                                     </td>
                                 </tr>

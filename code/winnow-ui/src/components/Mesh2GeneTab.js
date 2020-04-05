@@ -22,10 +22,11 @@ function Mesh2GeneTab(props) {
 
     const getChecked = (checkedNodes) => {
         setCheckedTerms(checkedNodes);
-        console.info(`Mesh2Gene checked(${checkedNodes.length}): ${JSON.stringify(checkedNodes)}`)
+        console.info(`Mesh2Gene checked from MeshtermTree(${checkedNodes.length}): ${JSON.stringify(checkedNodes)}`)
     };
 
     useEffect(() => {
+        console.info(`Mesh2Gene checked(${checkedTerms.length}): ${JSON.stringify(checkedTerms)}`)
         if (!haveResults) {
             setIsLoaded(true);
         } else {
@@ -67,11 +68,14 @@ function Mesh2GeneTab(props) {
                         <Form>
                             <div className="button-bar">
                                 <Button onClick={toggleBatch} variant="info" size="sm">Batch Import</Button>
-                                <Button onClick={executeSearch} variant="info" size="sm">Search</Button>
+                                <Button onClick={executeSearch} variant="info" size="sm"
+                                        disabled={checkedTerms.length === 0}>Search</Button>
                             </div>
                         </Form>
                         <Fragment>
-                            <MeshtermTree callback={getChecked}/>
+                            <div id="meshterm-tree">
+                                <MeshtermTree callback={getChecked}/>
+                            </div>
                         </Fragment>
                     </div>
                 )

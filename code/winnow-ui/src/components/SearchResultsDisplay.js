@@ -30,7 +30,7 @@ function SearchResultsDisplay(props) {
 
     useEffect(() => {
         if (resData.results !== undefined && resData.results.length > 0) {
-           setBookmarkEnabled(true);
+            setBookmarkEnabled(true);
         }
         if (!haveResults) {
             setResData(props.resData);
@@ -75,9 +75,12 @@ function SearchResultsDisplay(props) {
                                         <td>{value.symbol}</td>
                                         <td>{value.meshId}</td>
                                         <td>{value.name}</td>
-                                        <td><Button onClick={() => {
-                                            executePubMedArticleListDisplay(index)
-                                        }}>{value.publicationCount}</Button></td>
+                                        <td><Button
+                                            variant="info"
+                                            onClick={() => {
+                                                executePubMedArticleListDisplay(index)
+                                            }}
+                                        >{value.publicationCount}</Button></td>
                                         <td>{value.pvalue}</td>
                                     </tr>
                                 );

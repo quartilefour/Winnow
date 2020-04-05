@@ -145,6 +145,7 @@ export const mapMeshtermTreeData = (data, node, depth) => {
         return {
             children: [],
             id: id,
+            isChecked: node.isChecked,
             meshIndex: `${node.meshIndex}:${index}`,
             meshId: mesh.meshId,
             hasChild: mesh.hasChild,
@@ -155,7 +156,7 @@ export const mapMeshtermTreeData = (data, node, depth) => {
 
 export const fetchPubMedArticleList = (data) => {
     console.info(`fetchPubMedArticleList: ${JSON.stringify(data)}`);
-    let mockResp = {
+    /*let mockResp = {
         geneId: data.geneId,
         meshId: data.meshId,
         symbol: data.symbol,
@@ -193,10 +194,10 @@ export const fetchPubMedArticleList = (data) => {
     };
     return new Promise((resolve, reject) => {
         resolve(mockResp);
-    });
+    });*/
     return new Promise((resolve, reject) => {
         axios.post(
-            `${Constants.WINNOW_API_BASE_URL}/pubmedarticlelist`,
+            `${Constants.WINNOW_API_BASE_URL}/publications`,
             data,
             {
                 headers: AuthService.getAuthHeader(),

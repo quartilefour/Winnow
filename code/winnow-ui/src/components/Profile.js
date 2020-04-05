@@ -2,7 +2,7 @@ import React, {useState, useEffect} from 'react';
 import {Card, Form, Col, Button, Nav, Tab, Alert} from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faUser} from "@fortawesome/free-solid-svg-icons";
-import {fetchProfileData} from "../service/AuthService";
+import {fetchProfileData, sendChangePassword, sendProfileUpdate} from "../service/AuthService";
 import PageLoader from "./common/PageLoader";
 
 function Profile() {
@@ -42,7 +42,15 @@ function Profile() {
             lastName: lastName,
             userEmail: userEmail
         };
-        setError("Failed");
+        sendProfileUpdate(userInfo)
+            .then(res => {
+                setAlertType("success");
+                setError("Profile successfully updated.")
+            })
+            .catch(err => {
+                setAlertType("danger");
+                setError(err);
+            });
         console.info(`Profile update: ${error}`);
     }
 
@@ -52,7 +60,16 @@ function Profile() {
             userPassword: userNewPassword,
             passwordConfirm: newPasswordConfirm
         };
-        setError("Success");
+        sendChangePassword(credentials)
+            .then(res => {
+                setAlertType("success");
+                setError("Password successfully changed.")
+            })
+            .catch(err => {
+                setAlertType("danger");
+                setError(err)
+            });
+        console.info(`Password change: ${error}`);
     }
 
 
@@ -138,7 +155,8 @@ function Profile() {
                                                 />
                                             </Col>
                                         </Form.Row>
-                                        <Button block onClick={updateProfile} disabled={false} variant="info" size="sm">Update Profile</Button>
+                                        <Button block onClick={updateProfile} disabled={false} variant="info" size="sm">Update
+                                            Profile</Button>
                                     </Form.Group>
                                 </Tab.Pane>
                                 <Tab.Pane eventKey="password" id="password">
@@ -185,7 +203,8 @@ function Profile() {
                                                 />
                                             </Col>
                                         </Form.Row>
-                                        <Button block onClick={changePassword} disabled={false} variant="info" size="sm">Change Password</Button>
+                                        <Button block onClick={changePassword} disabled={false} variant="info"
+                                                size="sm">Change Password</Button>
                                     </Form.Group>
                                 </Tab.Pane>
                             </Tab.Content>

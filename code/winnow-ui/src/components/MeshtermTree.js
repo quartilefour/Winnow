@@ -73,6 +73,17 @@ export function MeshtermTree(props) {
         console.info(`MeshtermTree checked nodes: ${checked}`);
     }
 
+    function collectCheckedTerms() {
+        let elem = document.getElementById("meshterm-tree");
+        let checkedBoxes = elem.querySelectorAll('input[type=checkbox]:checked');
+        console.info(`MeshtermTree number of checked terms: ${checkedBoxes.length}`);
+        if (checkedBoxes.length > 0) {
+            checkedBoxes.forEach((node) => {
+                console.info(`Checked node: ${node.id}`)
+            })
+        }
+    }
+
     if (isLoaded) {
         return (
             <SuperTreeview
@@ -83,7 +94,8 @@ export function MeshtermTree(props) {
                 }}
                 onUpdateCb={(updatedData) => {
                     setMeshData(updatedData);
-                    props.callback(checked)
+                    props.callback(checked);
+                    collectCheckedTerms()
                 }}
                 isDeletable={(node, depth) => {
                     return false;
@@ -91,7 +103,8 @@ export function MeshtermTree(props) {
                 isExpandable={(node, depth) => {
                     return node.hasChild;
                 }}
-                onCheckToggleCb={(nodes)=>{
+                onCheckToggleCb={(nodes, depth)=>{
+                    console.info(`MeshtermTree checkToggle: ${JSON.stringify(nodes)}`);
                     const checkState = nodes[0].isChecked;
 
                     applyCheckStateTo(nodes);
@@ -99,15 +112,39 @@ export function MeshtermTree(props) {
                     function applyCheckStateTo(nodes){
                         nodes.forEach((node)=>{
                             node.isChecked = checkState;
+                            if (checkState) {
+                                /*node.isExpanded = true;
+                                node.isChildrenLoading = true;
+
+                                if (depth === 0) {
+                                    fetchMeshtermNode(node.id)
+                                        .then(res => {
+                                            insertChildNodes(node, depth, mapMeshtermTreeData(res, node, depth));
+                                        }).catch(err => {
+                                        console.debug(`MeshtermTree Error: ${err}`);
+                                        console.debug(`MeshtermTree Error: ${JSON.stringify(err)}`);
+                                    })
+                                } else {
+                                    fetchMeshtermTree(node.id)
+                                        .then(res => {
+                                            insertChildNodes(node, depth, mapMeshtermTreeData(res, node, depth));
+                                        }).catch(err => {
+                                        console.debug(`MeshtermTree Error: ${err}`);
+                                        console.debug(`MeshtermTree Error: ${JSON.stringify(err)}`);
+                                    })
+                                }*/
+                            }
                              updatesCheckedNodes(node);
                             if(node.children){
                                 applyCheckStateTo(node.children);
                             }
                         })
                     }
+                    collectCheckedTerms()
                 }}
                 onExpandToggleCb={(node, depth) => {
                     if (node.isExpanded === true) {
+                        console.info(`MeshtermTree expanding: ${node.name}`);
                         node.isChildrenLoading = true;
 
                         if (depth === 0) {
@@ -128,6 +165,7 @@ export function MeshtermTree(props) {
                             })
                         }
                     }
+                    collectCheckedTerms()
                 }}
             />
         )

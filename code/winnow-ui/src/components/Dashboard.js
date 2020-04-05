@@ -3,7 +3,6 @@ import {Nav, Tab, Row, Col} from "react-bootstrap";
 import BookmarkTab from "./BookmarkTab";
 import Mesh2GeneTab from "./Mesh2GeneTab";
 import Gene2MeshTab from "./Gene2MeshTab";
-import Cookies from "js-cookie";
 
 /**
  * Renders the Dashboard landing page for authenticated users.
