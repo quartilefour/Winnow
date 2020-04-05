@@ -62,24 +62,25 @@ CREATE TABLE "address" (
   "country" char(20)
 );
 
-CREATE TABLE "search"(
-                         "search_id"    BIGSERIAL PRIMARY KEY,
-                         "created_by"   INTEGER REFERENCES "user" (user_id),
-                         "created_date" timestamp,
-                         "search_name"  varchar(20),
-                         "search_query" TEXT[],
-                         "updated_at"   timestamp,
-                         "team_id"      char(20) REFERENCES team (team_id),
-                         "query_type"   char(20),
-                         "query_format" char(20)
+CREATE TABLE "search"
+(
+    "search_id"    BIGSERIAL PRIMARY KEY,
+    "created_by"   INTEGER REFERENCES "user" (user_id),
+    "created_date" timestamp,
+    "search_name"  varchar(20),
+    "search_query" TEXT[],
+    "updated_at"   timestamp,
+    "team_id"      char(20) REFERENCES team (team_id),
+    "query_type"   char(20),
+    "query_format" char(20)
 );
 
-CREATE TABLE "publication" (
-  "publication_id" char(20)  PRIMARY KEY,
-  "completed_date" Date,
-  "date_revised" Date,
-  "title" text,
-  "language" char(20)
+CREATE TABLE "publication"
+(
+    "publication_id" char(20) PRIMARY KEY,
+    "completed_date" Date,
+    "date_revised"   Date,
+    "title"          text
 );
 
 CREATE TABLE "meshterm" (
@@ -119,7 +120,6 @@ CREATE TABLE "user_search_sharing"
     "shared_date"  timestamp,
     "deleted_date" timestamp,
     PRIMARY KEY ("search_id", "user_id")
-
 );
 
 CREATE TABLE "publication_author" (

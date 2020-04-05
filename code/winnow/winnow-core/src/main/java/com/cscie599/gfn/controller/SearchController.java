@@ -74,8 +74,11 @@ public class SearchController {
         if (response.containsKey("error")) {
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
-        if (body.get("searchName") == null) {
+        if (!(body.containsKey("searchName"))) {
             response.put("error", "Missing search name.");
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        } else if (body.get("searchName").toString().isBlank()) {
+            response.put("error", "Search name cannot be blank.");
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
         String userEmail = authentication.getPrincipal().toString();
@@ -138,18 +141,18 @@ public class SearchController {
      *              "description": "geneDescription1",
      *              "symbol": "geneSymbol1",
      *              "meshId": "meshId1",
-     *              "ame": "meshName1",
+     *              "name": "meshName1",
      *              "publicationCount": "publicationCount",
-     *              "pValue": "pValue"
+     *              "pvalue": "pValue"
      *          },
      *          {
      *              "geneId": "geneId2",
      *              "description": "geneDescription2",
      *              "symbol": "geneSymbol2",
      *              "meshId": "meshId2",
-     *              "meshTerm": "meshName2",
+     *              "name": "meshName2",
      *              "publicationCount": "publicationCount",
-     *              "pValue": "pValue"
+     *              "pvalue": "pValue"
      *          },
      *      ]
      * }
@@ -170,7 +173,7 @@ public class SearchController {
         List<GeneMeshterm> geneMeshterms = new ArrayList<>();
         switch (queryFormat) {
             case "meshid":
-                geneMeshterms = geneMeshtermRepository.findByMeshIds(searchQueryList);
+                geneMeshterms = geneMeshtermRepository.findByMeshIdsOrderByPValue(searchQueryList);
                 break;
             case "meshtreeid":
                 // Update the search query list so that the mesh tree records with empty parent ids have "." before it
@@ -191,16 +194,16 @@ public class SearchController {
                     }
                     updatedSearchQueryList.add(treeParentId + "." + treeNodeId);
                 }
-                geneMeshterms = geneMeshtermRepository.findByMeshTreeIds(updatedSearchQueryList);
+                geneMeshterms = geneMeshtermRepository.findByMeshTreeIdsOrderByPValue(updatedSearchQueryList);
                 break;
             case "meshname":
-                geneMeshterms = geneMeshtermRepository.findByMeshNames(searchQueryList);
+                geneMeshterms = geneMeshtermRepository.findByMeshNamesOrderByPValue(searchQueryList);
                 break;
             case "geneid":
-                geneMeshterms = geneMeshtermRepository.findByGeneIds(searchQueryList);
+                geneMeshterms = geneMeshtermRepository.findByGeneIdsOrderByPValue(searchQueryList);
                 break;
             case "genesymbol":
-                geneMeshterms = geneMeshtermRepository.findByGeneSymbols(searchQueryList);
+                geneMeshterms = geneMeshtermRepository.findByGeneSymbolsOrderByPValue(searchQueryList);
                 break;
             default:
         }
@@ -226,14 +229,20 @@ public class SearchController {
      */
     LinkedHashMap<String, Object> validate(Map<String, Object> body) {
         LinkedHashMap<String, Object> response = new LinkedHashMap<>();
-        if (body.get("searchQuery") == null) {
+        if (!(body.containsKey("searchQuery"))) {
             response.put("error", "Missing search query.");
-        } else if (body.get("queryType") == null) {
+        } else if (!(body.containsKey("queryType"))) {
             response.put("error", "Missing query type.");
-        } else if (body.get("queryFormat") == null) {
+        } else if (!(body.containsKey("queryFormat"))) {
             response.put("error", "Missing query format.");
+        } else if (body.get("queryType").toString().isBlank()) {
+            response.put("error", "Query type cannot be blank.");
+        } else if (body.get("queryFormat").toString().isBlank()) {
+            response.put("error", "Query format cannot be blank.");
         } else if (!(body.get("searchQuery") instanceof List<?>)) {
             response.put("error", "Invalid search query.");
+        } else if (body.get("searchQuery").toString() == "[]") {
+            response.put("error", "Search query cannot be empty.");
         } else if (!body.get("queryType").equals("gene") && !body.get("queryType").equals("mesh")) {
             response.put("error", "Invalid query type.");
         } else if (!body.get("queryFormat").equals("meshid") && !body.get("queryFormat").equals("meshtreeid")

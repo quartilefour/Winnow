@@ -10,22 +10,22 @@ import java.util.List;
 @Repository
 public interface GeneMeshtermRepository extends JpaRepository<GeneMeshterm, String> {
 
-    @Query("SELECT gm FROM GeneMeshterm gm WHERE gm.geneMeshtermPK.meshId in (:meshIds)")
-    List<GeneMeshterm> findByMeshIds(List<String> meshIds);
+    @Query("SELECT gm FROM GeneMeshterm gm WHERE gm.geneMeshtermPK.meshId IN (:meshIds) ORDER BY gm.pValue")
+    List<GeneMeshterm> findByMeshIdsOrderByPValue(List<String> meshIds);
 
-    @Query("SELECT gm FROM GeneMeshterm gm inner join gm.meshterm m WHERE m.name in (:meshNames)")
-    List<GeneMeshterm> findByMeshNames(List<String> meshNames);
+    @Query("SELECT gm FROM GeneMeshterm gm INNER JOIN gm.meshterm m WHERE m.name IN (:meshNames) ORDER BY gm.pValue")
+    List<GeneMeshterm> findByMeshNamesOrderByPValue(List<String> meshNames);
 
-    @Query(nativeQuery = true, value = "SELECT * FROM gene_meshterm gm inner join meshterm_tree mt on " +
-            "gm.mesh_id=mt.mesh_id WHERE (CONCAT(tree_parent_id, '.', tree_node_id)) in (:meshTreeIds)")
-    List<GeneMeshterm> findByMeshTreeIds(List<String> meshTreeIds);
+    @Query(nativeQuery = true, value = "SELECT * FROM gene_meshterm gm " +
+            "INNER JOIN meshterm_tree mt ON gm.mesh_id = mt.mesh_id " +
+            "WHERE (CONCAT(tree_parent_id, '.', tree_node_id)) IN (:meshTreeIds) " +
+            "ORDER BY gm.p_value")
+    List<GeneMeshterm> findByMeshTreeIdsOrderByPValue(List<String> meshTreeIds);
 
-    @Query("SELECT gm FROM GeneMeshterm gm WHERE gm.geneMeshtermPK.geneId in (:geneIds)")
-    List<GeneMeshterm> findByGeneIds(List<String> geneIds);
+    @Query("SELECT gm FROM GeneMeshterm gm WHERE gm.geneMeshtermPK.geneId IN (:geneIds) ORDER BY gm.pValue")
+    List<GeneMeshterm> findByGeneIdsOrderByPValue(List<String> geneIds);
 
-    @Query("SELECT gm FROM GeneMeshterm gm inner join gm.gene g WHERE g.symbol in (:geneSymbols)")
-    List<GeneMeshterm> findByGeneSymbols(List<String> geneSymbols);
+    @Query("SELECT gm FROM GeneMeshterm gm INNER JOIN gm.gene g WHERE g.symbol IN (:geneSymbols) ORDER BY gm.pValue")
+    List<GeneMeshterm> findByGeneSymbolsOrderByPValue(List<String> geneSymbols);
 
-
-    List<GeneMeshterm> findAll();
 }

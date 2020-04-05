@@ -31,8 +31,7 @@ import javax.persistence.TemporalType;
     @NamedQuery(name = "Publication.findByPublicationId", query = "SELECT p FROM Publication p WHERE p.publicationId = :publicationId"),
     @NamedQuery(name = "Publication.findByCompletedDate", query = "SELECT p FROM Publication p WHERE p.completedDate = :completedDate"),
     @NamedQuery(name = "Publication.findByDateRevised", query = "SELECT p FROM Publication p WHERE p.dateRevised = :dateRevised"),
-    @NamedQuery(name = "Publication.findByTitle", query = "SELECT p FROM Publication p WHERE p.title = :title"),
-    @NamedQuery(name = "Publication.findByLanguage", query = "SELECT p FROM Publication p WHERE p.language = :language")})
+    @NamedQuery(name = "Publication.findByTitle", query = "SELECT p FROM Publication p WHERE p.title = :title")})
 public class Publication implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -48,8 +47,6 @@ public class Publication implements Serializable {
     private Date dateRevised;
     @Column(name = "title", length = 2147483647)
     private String title;
-    @Column(name = "language", length = 20)
-    private String language;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "publication")
     private Collection<PublicationAuthor> publicationAuthorCollection;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "publication")
@@ -94,14 +91,6 @@ public class Publication implements Serializable {
 
     public void setTitle(String title) {
         this.title = title;
-    }
-
-    public String getLanguage() {
-        return language;
-    }
-
-    public void setLanguage(String language) {
-        this.language = language;
     }
 
     public Collection<PublicationAuthor> getPublicationAuthorCollection() {
