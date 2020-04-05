@@ -7,29 +7,6 @@ import * as Constants from '../constants';
 import AuthService from "./AuthService";
 
 export const fetchUserBookmarks = () => {
-    let mockResp = [
-            {
-                searchName: "Saved Search 1",
-                queryType: "gene",
-                searchQuery: ["1246504","36111395","36110376"],
-                createdAt: "2020-03-29 17:43:26",
-            },
-            {
-                searchName: "Saved Search 2",
-                queryType: "gene",
-                searchQuery: ["1246504","36111395","36110376"],
-                createdAt: "2020-03-28 07:12:50",
-            },
-            {
-                searchName: "Saved Search 3",
-                queryType: "mesh",
-                searchQuery: ["C14.280.778","C14.280.763","C20.425"],
-                createdAt: "2020-03-28 11:38:24",
-            },
-    ];
-    return new Promise((resolve, reject) => {
-        resolve(mockResp);
-    });
     return new Promise((resolve, reject) => {
         axios.get(
             `${Constants.WINNOW_API_BASE_URL}/bookmarks`,
@@ -44,9 +21,45 @@ export const fetchUserBookmarks = () => {
     });
 };
 
+export const saveUserBookmark = (data) => {
+    console.info(`saveUserBookmark: ${JSON.stringify(data)}`);
+    return new Promise((resolve, reject) => {
+        if (data.length < 1) {
+            reject("Bookmark name can not be blank!")
+        }
+        axios.post(
+            `${Constants.WINNOW_API_BASE_URL}/bookmarks`,
+            data,
+            {
+                headers: AuthService.getAuthHeader(),
+            }
+        )
+            .then(res => {
+                resolve(res.data);
+            })
+            .catch(err => reject(err));
+    });
+};
+
+export const removeUserBookmark = (bookmarkId) => {
+    console.info(`removeUserBookmark: ${JSON.stringify(bookmarkId)}`);
+    return new Promise((resolve, reject) => {
+        axios.delete(
+            `${Constants.WINNOW_API_BASE_URL}/bookmarks/${bookmarkId}`,
+            {
+                headers: AuthService.getAuthHeader(),
+            }
+        )
+            .then(res => {
+                resolve(res.data);
+            })
+            .catch(err => reject(err));
+    });
+};
+
 export const fetchSearchResults = (data) => {
     console.info(`fetchSearchResults: ${JSON.stringify(data)}`);
-    let mockResp = {
+ /*   let mockResp = {
         searchQuery: data.searchQuery,
         queryType: data.queryType,
         queryFormat: data.queryFormat,
@@ -82,7 +95,7 @@ export const fetchSearchResults = (data) => {
     };
     return new Promise((resolve, reject) => {
         resolve(mockResp);
-    });
+    });*/
     return new Promise((resolve, reject) => {
         axios.post(
             `${Constants.WINNOW_API_BASE_URL}/search`,
@@ -184,9 +197,7 @@ export const fetchPubMedArticleList = (data) => {
         queryType: data.queryType,
         queryFormat: data.queryFormat,
         geneId: data.geneId,
-        symbol: data.symbol,
         meshId: data.meshId,
-        meshTerm: data.meshTerm,
         results: [
             {
                 publicationID: "32052514",

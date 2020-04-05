@@ -1,8 +1,9 @@
 import React, {Fragment, useEffect, useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faPlay, faShareAlt, faTimes} from "@fortawesome/free-solid-svg-icons";
-import {fetchUserBookmarks} from "../service/ApiService";
+import {fetchUserBookmarks, removeUserBookmark} from "../service/ApiService";
 import {Form, Table} from "react-bootstrap";
+import PageLoader from "./common/PageLoader";
 
 /**
  * BookmarkTab builds the content for user's saved search lists.
@@ -15,9 +16,19 @@ function BookmarkTab(props) {
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [bookmarkData, setBookmarkData] = useState([]);
+    const [deleteBookmark, setDeleteBookmark] = useState(null);
 
     useEffect(() => {
-        //console.info(`BookmarkTab: ${JSON.stringify(checkedTerms)}`);
+        if (deleteBookmark) {
+            removeUserBookmark(deleteBookmark)
+                .then(res => {
+
+                    setDeleteBookmark(null);
+                })
+                .catch(err => {
+
+                });
+        }
         fetchUserBookmarks()
             .then(res => {
                 console.info(`Mesh2Gene executed search: ${JSON.stringify(res)}`);
@@ -26,7 +37,7 @@ function BookmarkTab(props) {
             }).catch(err => {
             setIsLoaded(true);
         });
-    }, []);
+    }, [deleteBookmark]);
 
     if (isLoaded) {
         return (
@@ -50,7 +61,7 @@ function BookmarkTab(props) {
                                         <td>{value.searchName}</td>
                                         <td>{value.queryType.toUpperCase()}</td>
                                         <td>{value.searchQuery.join(', ')}</td>
-                                        <td>{value.createdAt}</td>
+                                        <td>{value.createdDate}</td>
                                         <td>
                                             <FontAwesomeIcon
                                                 className="searchActions"
@@ -69,6 +80,10 @@ function BookmarkTab(props) {
                                                 icon={faTimes}
                                                 color="maroon"
                                                 title="Delete Search"
+                                                onClick={(e) => {
+                                                    console.info(`Clicked delete on bookmark #${value.searchId} `);
+                                                    setDeleteBookmark(value.searchId)
+                                                }}
                                             />
                                         </td>
                                     </tr>
@@ -82,7 +97,7 @@ function BookmarkTab(props) {
         );
     } else {
         return (
-            <div>Loading...</div>
+            <div><PageLoader/></div>
         )
     }
 }

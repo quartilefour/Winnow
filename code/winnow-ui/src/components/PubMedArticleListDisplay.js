@@ -2,6 +2,7 @@ import SearchResultsDisplay from "./SearchResultsDisplay";
 import React, {useEffect, useState} from "react";
 import {Form, Button, Table} from "react-bootstrap";
 import {fetchPubMedArticleList, fetchSearchResults} from "../service/ApiService";
+import PageLoader from "./common/PageLoader";
 
 /**
  * PubMedArticleListDisplay displays a list of PubMed articles found in a previous search.
@@ -22,12 +23,14 @@ function PubMedArticleListDisplay(props) {
             setListData(props.listData);
             setSelectedIndex(props.selectedIndex);
             setHaveResults(true);
+            //console.error("Looks like I made it!");
             setIsLoaded(true);
         } else {
+            console.info(`PubMedArticleListDisplay fetching for: ${JSON.stringify(listData)}`);
             fetchPubMedArticleList(
-                {searchQuery:"12345",
-                queryType: "gene",
-                queryFormat: "geneID",
+                {searchQuery: "listData.searchQuery",
+                queryType: "listData.queryType",
+                queryFormat: "listData.queryFormat",
                 geneId: "gene1",
                 symbol: "awesomegene",
                 meshId: "mesh1",
@@ -39,7 +42,7 @@ function PubMedArticleListDisplay(props) {
                 setIsLoaded(true);
             });
         }
-    }, [haveResults, props, selectedIndex]);
+    }, [haveResults, props, selectedIndex, listData]);
 
     if (isLoaded) {
         console.info(`PubMedArticleListDisplay selected: ${JSON.stringify(listData)}`);
@@ -76,7 +79,7 @@ function PubMedArticleListDisplay(props) {
         );
     } else {
         return (
-            <div>Loading...</div>
+            <div><PageLoader/></div>
         )
     }
 }

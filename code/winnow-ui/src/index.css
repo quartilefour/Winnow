@@ -12,6 +12,14 @@ code {
     monospace;
 }
 
+.form-row {
+    margin-bottom: 5px;
+}
+
+.searchActions {
+    margin: 0 10px;
+}
+
 .tab-heading {
     display: block;
     text-align: center;
