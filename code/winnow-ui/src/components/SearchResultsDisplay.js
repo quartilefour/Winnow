@@ -99,12 +99,12 @@ function SearchResultsDisplay(props) {
                     </Form>
                 </div>
             );
-        } else {/*
+        } else {
             console.info(`PubMedArticleDisplay Selected: ${JSON.stringify(resData)}`);
             return (
-                <div><PubMedArticleListDisplay listData={resData} selectedIndex={selectedIndex}/></div>
+                <div><PubMedArticleListDisplay listData={resData.results[selectedIndex]}/></div>
             )
-        */}
+        }
     } else {
         return (
             <div><PageLoader/></div>

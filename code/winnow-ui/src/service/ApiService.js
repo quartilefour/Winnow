@@ -59,43 +59,6 @@ export const removeUserBookmark = (bookmarkId) => {
 
 export const fetchSearchResults = (data) => {
     console.info(`fetchSearchResults: ${JSON.stringify(data)}`);
- /*   let mockResp = {
-        searchQuery: data.searchQuery,
-        queryType: data.queryType,
-        queryFormat: data.queryFormat,
-        results: [
-            {
-                geneId: "geneId1",
-                description: "geneDescription1",
-                symbol: "geneSymbol1",
-                meshId: "meshId1",
-                meshTerm: "meshName1",
-                publicationCount: "publicationCount",
-                pValue: "pValue"
-            },
-            {
-                geneId: "geneId2",
-                description: "geneDescription2",
-                symbol: "geneSymbol2",
-                meshId: "meshId2",
-                meshTerm: "meshName2",
-                publicationCount: "publicationCount",
-                pValue: "pValue"
-            },
-            {
-                geneId: "geneId3",
-                description: "geneDescription3",
-                symbol: "geneSymbol3",
-                meshId: "meshId3",
-                meshTerm: "meshName3",
-                publicationCount: "publicationCount",
-                pValue: "pValue"
-            },
-        ]
-    };
-    return new Promise((resolve, reject) => {
-        resolve(mockResp);
-    });*/
     return new Promise((resolve, reject) => {
         axios.post(
             `${Constants.WINNOW_API_BASE_URL}/search`,
@@ -193,32 +156,38 @@ export const mapMeshtermTreeData = (data, node, depth) => {
 export const fetchPubMedArticleList = (data) => {
     console.info(`fetchPubMedArticleList: ${JSON.stringify(data)}`);
     let mockResp = {
-        searchQuery: data.searchQuery,
-        queryType: data.queryType,
-        queryFormat: data.queryFormat,
         geneId: data.geneId,
         meshId: data.meshId,
+        symbol: data.symbol,
+        name: data.name,
         results: [
             {
-                publicationID: "32052514",
-                publicationTitle: "COVID-19 Stuff",
-                publicationAuthor: "publicationAuthor",
-                publicationDate: "31 March 2020",
-                publicationURLBase: "https://pubmed.ncbi.nlm.nih.gov/"
+                publicationId: "32052514",
+                title: "COVID-19 Stuff",
+                authors: [
+                    {foreName: "David", lastName: "Dewey"},
+                    {foreName: "Chester", lastName: "Cheatem"},
+                    {foreName: "Henry", lastName: "Howe"},
+                ],
+                completedDate: "31 March 2020",
             },
             {
-                publicationID: "32052514",
-                publicationTitle: "COVID-19 Stuff",
-                publicationAuthor: "publicationAuthor",
-                publicationDate: "31 March 2020",
-                publicationURLBase: "https://pubmed.ncbi.nlm.nih.gov/"
+                publicationId: "32052514",
+                title: "COVID-19 Stuff",
+                authors: [
+                    {foreName: "David", lastName: "Hasselholf"},
+                    {foreName: "Edward", lastName: "Mulhare"},
+                ],
+                completedDate: "31 March 2020",
             },
             {
-                publicationID: "32052514",
-                publicationTitle: "COVID-19 Stuff",
-                publicationAuthor: "publicationAuthor",
-                publicationDate: "31 March 2020",
-                publicationURLBase: "https://pubmed.ncbi.nlm.nih.gov/"
+                publicationId: "32052514",
+                title: "COVID-19 Stuff",
+                authors: [
+                    {foreName: "George", lastName: "Peppard"},
+                    {foreName: "Dwight", lastName: "Schultz"},
+                ],
+                completedDate: "31 March 2020",
             },
         ]
     };
