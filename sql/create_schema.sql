@@ -166,7 +166,7 @@ CREATE TABLE "user_role" (
 
 CREATE TABLE "gene_goterm" (
   "gene_id" char(20) REFERENCES gene (gene_id),
-  "go_id" char(20)  REFERENCES goterm (go_id),
+  "go_id" char(20),
   "tax_id" Integer,
   "created_date" timestamp,
   "deleted_date" timestamp,
