@@ -1,5 +1,8 @@
 package com.cscie599.gfn.ftp.downloader;
 
+import org.apache.commons.net.ftp.FTPClient;
+
+import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
 public abstract class BasePubmedDownloadRunnable implements Runnable {
@@ -29,5 +32,16 @@ public abstract class BasePubmedDownloadRunnable implements Runnable {
         this.latch = latch;
         this.extractedFileLocation = extractedFileLocation;
         this.extractContent = extractFiles;
+    }
+
+    protected FTPClient getFtpClient() throws IOException {
+        FTPClient ftpClient = new FTPClient();
+
+        ftpClient.connect(ftpServerURL);
+        ftpClient.login(this.username, this.password);
+        ftpClient.enterLocalPassiveMode();
+        ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
+        ftpClient.setBufferSize(1671168); // 16mb
+        return ftpClient;
     }
 }

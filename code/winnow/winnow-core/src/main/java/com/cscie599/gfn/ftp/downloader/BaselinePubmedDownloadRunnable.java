@@ -1,9 +1,10 @@
 package com.cscie599.gfn.ftp.downloader;
 
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTPClient;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.net.ftp.FTPConnectionClosedException;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -12,7 +13,6 @@ import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
@@ -65,22 +65,15 @@ public class BaselinePubmedDownloadRunnable extends BasePubmedDownloadRunnable i
             }
             int index = filesProcessed.nextClearBit(0);
             int retry_count = 0;
+            FTPClient ftpClient = getFtpClient();
             while (index <= LAST_FILE_INDEX && retry_count < 5) {
                 logger.info("Starting from index" + index);
-                FTPClient ftpClient = new FTPClient();
                 String filePath = this.ftpFilePath + File.separator + "pubmed20n" + String.format("%04d", index) + FTP_FILEEXTENSION;
 
                 try {
-                    ftpClient.connect(ftpServerURL);
-                    ftpClient.login(this.username, this.password);
-                    ftpClient.enterLocalPassiveMode();
-                    ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
-                    ftpClient.setBufferSize(1671168); // 16mb
                     logger.info("File path on the ftp server " + filePath);
-
                     String localFilePath = this.localFilePath + File.separator + "pubmed20n" + String.format("%04d", index) + FTP_FILEEXTENSION;
                     File outputFile = new File(localFilePath);
-
                     logger.info("Downloading file " + outputFile.getName());
                     FileOutputStream fos = new FileOutputStream(outputFile);
                     ftpClient.retrieveFile(filePath, fos);
@@ -105,16 +98,21 @@ public class BaselinePubmedDownloadRunnable extends BasePubmedDownloadRunnable i
                     filesProcessed.flip(index);
                     index = filesProcessed.nextClearBit(0);
                     retry_count = 0;
+                } catch (FTPConnectionClosedException ftpe) {
+                    retry_count++;
+                    ftpClient = getFtpClient();
+                    logger.warn("Unable to connect to ftpserver, will retry again.", ftpe);
                 } catch (IOException e) {
                     retry_count++;
                     logger.warn("Unable to connect to ftpserver, will retry again.", e);
                 }
-                logger.info("Marking job as finished successfully");
             }
+            logger.info("Marking job as finished successfully");
         } catch (Exception ex) {
             logger.error("Unable to complete processing of files " + fileName);
         } finally {
             latch.countDown();
         }
     }
+
 }

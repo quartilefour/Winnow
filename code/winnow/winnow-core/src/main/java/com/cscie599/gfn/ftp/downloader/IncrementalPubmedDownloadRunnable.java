@@ -4,12 +4,12 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTPClient;
+import org.apache.commons.net.ftp.FTPConnectionClosedException;
 
 import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.text.SimpleDateFormat;
 import java.util.BitSet;
 import java.util.Iterator;
 import java.util.concurrent.CountDownLatch;
@@ -65,17 +65,12 @@ public class IncrementalPubmedDownloadRunnable extends BasePubmedDownloadRunnabl
             }
             int index = filesProcessed.nextClearBit(FIRST_FILE_INDEX);
             int retry_count = 0;
+            FTPClient ftpClient = getFtpClient();
             while (index <= LAST_FILE_INDEX && retry_count < 5) {
                 logger.info("Starting from index" + index);
-                FTPClient ftpClient = new FTPClient();
                 String filePath = this.ftpFilePath + File.separator + "pubmed20n" + String.format("%04d", index) + FTP_FILEEXTENSION;
 
                 try {
-                    ftpClient.connect(ftpServerURL);
-                    ftpClient.login(this.username, this.password);
-                    ftpClient.enterLocalPassiveMode();
-                    ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
-                    ftpClient.setBufferSize(1671168); // 16mb
                     logger.info("File path on the ftp server " + filePath);
 
                     if (checkFileExists(filePath, ftpClient)) {
@@ -106,6 +101,10 @@ public class IncrementalPubmedDownloadRunnable extends BasePubmedDownloadRunnabl
                     filesProcessed.flip(index);
                     index = filesProcessed.nextClearBit(FIRST_FILE_INDEX);
                     retry_count = 0;
+                } catch (FTPConnectionClosedException ftpe) {
+                    retry_count++;
+                    ftpClient = getFtpClient();
+                    logger.warn("Unable to connect to ftpserver, will retry again.", ftpe);
                 } catch (IOException e) {
                     retry_count++;
                     logger.warn("Unable to connect to ftpserver, will retry again.", e);
