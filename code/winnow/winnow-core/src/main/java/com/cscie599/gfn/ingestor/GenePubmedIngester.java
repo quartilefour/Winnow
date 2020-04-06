@@ -26,7 +26,6 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.io.BufferedReader;
-import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashSet;
@@ -53,11 +52,11 @@ public class GenePubmedIngester extends BaseIngester {
     @Value("classpath:blacklistedpublications.properties")
     public void setResourceFile(Resource resourceFile) {
         publicationToSkip = new HashSet<>();
-        if(resourceFile.exists()){
+        if (resourceFile.exists()) {
             try {
-                BufferedReader br =new BufferedReader(new InputStreamReader(new FileInputStream(resourceFile.getFile())));
+                BufferedReader br = new BufferedReader(new InputStreamReader(resourceFile.getInputStream()));
                 String line = br.readLine();
-                while(line != null){
+                while (line != null) {
                     publicationToSkip.add(line.trim());
                     line = br.readLine();
                 }
@@ -65,6 +64,7 @@ public class GenePubmedIngester extends BaseIngester {
                 logger.error("Unable to read the file with publications to be skipped");
             }
         }
+        logger.info("publicationToSkip initialized " + publicationToSkip);
     }
 
     @Bean
@@ -136,7 +136,7 @@ public class GenePubmedIngester extends BaseIngester {
 
     class DBLogProcessor implements ItemProcessor<GenePublicationPK, GenePublicationPK> {
         public GenePublicationPK process(GenePublicationPK gene) throws Exception {
-            if(publicationToSkip != null && publicationToSkip.contains(gene.getPublicationId())){
+            if (publicationToSkip != null && publicationToSkip.contains(gene.getPublicationId())) {
                 return null;
             }
             if (logger.isDebugEnabled()) {
