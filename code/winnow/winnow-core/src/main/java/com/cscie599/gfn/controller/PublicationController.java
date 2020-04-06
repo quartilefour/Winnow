@@ -11,7 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
+import org.apache.commons.lang3.StringUtils;
 import java.util.*;
 
 @RestController
@@ -112,9 +112,9 @@ public class PublicationController {
             response.put("error", "Missing gene ID.");
         } else if (!(body.containsKey("meshId"))) {
             response.put("error", "Missing mesh term ID.");
-        } else if (body.get("geneId").toString().isBlank()) {
+        } else if (StringUtils.isBlank(body.get("geneId").toString())) {
             response.put("error", "Gene ID cannot be blank.");
-        } else if (body.get("meshId").toString().isBlank()) {
+        } else if (StringUtils.isBlank(body.get("meshId").toString())) {
             response.put("error", "Mesh term ID cannot be blank.");
         }
         return response;

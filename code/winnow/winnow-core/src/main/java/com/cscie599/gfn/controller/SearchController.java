@@ -16,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -77,7 +78,7 @@ public class SearchController {
         if (!(body.containsKey("searchName"))) {
             response.put("error", "Missing search name.");
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-        } else if (body.get("searchName").toString().isBlank()) {
+        } else if (StringUtils.isBlank(body.get("searchName").toString())) {
             response.put("error", "Search name cannot be blank.");
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
@@ -235,9 +236,9 @@ public class SearchController {
             response.put("error", "Missing query type.");
         } else if (!(body.containsKey("queryFormat"))) {
             response.put("error", "Missing query format.");
-        } else if (body.get("queryType").toString().isBlank()) {
+        } else if (StringUtils.isBlank(body.get("queryType").toString())) {
             response.put("error", "Query type cannot be blank.");
-        } else if (body.get("queryFormat").toString().isBlank()) {
+        } else if (StringUtils.isBlank(body.get("queryFormat").toString())) {
             response.put("error", "Query format cannot be blank.");
         } else if (!(body.get("searchQuery") instanceof List<?>)) {
             response.put("error", "Invalid search query.");
