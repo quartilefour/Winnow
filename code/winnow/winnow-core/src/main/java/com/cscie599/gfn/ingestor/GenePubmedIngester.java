@@ -25,6 +25,10 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
 /**
  * @author PulkitBhanot
  */
@@ -40,6 +44,9 @@ public class GenePubmedIngester extends BaseIngester {
 
     @Value("${input.GenePubmedIngester.skipLines:0}")
     private int linesToSkip;
+
+    @Value("${input.blacklisted.publication}")
+    private List<String> publicationToSkip;
 
     @Bean
     @Order(8)
@@ -110,6 +117,10 @@ public class GenePubmedIngester extends BaseIngester {
 
     class DBLogProcessor implements ItemProcessor<GenePublicationPK, GenePublicationPK> {
         public GenePublicationPK process(GenePublicationPK gene) throws Exception {
+            Set<String> blackListSet = new HashSet<>(publicationToSkip);
+            if(publicationToSkip != null && !blackListSet.contains(gene.getPublicationId())){
+                return null;
+            }
             if (logger.isDebugEnabled()) {
                 logger.debug("Inserting GenePublicationPK : " + gene);
             }
