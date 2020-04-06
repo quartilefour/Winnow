@@ -12,6 +12,7 @@ import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.batch.item.file.BufferedReaderFactory;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
@@ -25,6 +26,10 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -45,8 +50,26 @@ public class GenePubmedIngester extends BaseIngester {
     @Value("${input.GenePubmedIngester.skipLines:0}")
     private int linesToSkip;
 
-    @Value("${input.blacklisted.publication}")
-    private List<String> publicationToSkip;
+    @Value("classpath:blacklistedpublications.properties")
+    Resource resourceFile;
+
+    private Set<String> publicationToSkip;
+
+    public void setResourceFile(Resource resourceFile) {
+        this.resourceFile = resourceFile;
+        publicationToSkip = new HashSet<>();
+        if(resourceFile.exists()){
+            try {
+                BufferedReader br =new BufferedReader(new InputStreamReader(new FileInputStream(resourceFile.getFile())));
+                String line = br.readLine();
+                while(line != null){
+                    publicationToSkip.add(line.trim());
+                }
+            } catch (IOException e) {
+                logger.error("Unable to read the file with publications to be skipped");
+            }
+        }
+    }
 
     @Bean
     @Order(8)
@@ -117,8 +140,7 @@ public class GenePubmedIngester extends BaseIngester {
 
     class DBLogProcessor implements ItemProcessor<GenePublicationPK, GenePublicationPK> {
         public GenePublicationPK process(GenePublicationPK gene) throws Exception {
-            Set<String> blackListSet = new HashSet<>(publicationToSkip);
-            if(publicationToSkip != null && !blackListSet.contains(gene.getPublicationId())){
+            if(publicationToSkip != null && publicationToSkip.contains(gene.getPublicationId())){
                 return null;
             }
             if (logger.isDebugEnabled()) {

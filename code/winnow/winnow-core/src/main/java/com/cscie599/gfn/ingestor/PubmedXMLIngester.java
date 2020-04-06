@@ -108,7 +108,7 @@ public class PubmedXMLIngester extends BaseIngester {
     public JdbcBatchItemWriter<Publication> publicationWriter2() {
         JdbcBatchItemWriter<Publication> itemWriter = new UpsertableJdbcBatchItemWriter<Publication>();
         itemWriter.setDataSource(dataSource);
-        itemWriter.setSql("INSERT INTO publication (publication_id,completed_date, date_revised, title, language ) VALUES (:publicationId, :completedDate, :dateRevised, :title, :language) ON CONFLICT DO NOTHING");
+        itemWriter.setSql("INSERT INTO publication (publication_id,completed_date, date_revised, title ) VALUES (:publicationId, :completedDate, :dateRevised, :title) ON CONFLICT DO NOTHING");
         itemWriter.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<Publication>());
         return itemWriter;
     }
