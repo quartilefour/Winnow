@@ -48,13 +48,10 @@ public class GenePubmedIngester extends BaseIngester {
     @Value("${input.GenePubmedIngester.skipLines:0}")
     private int linesToSkip;
 
-    @Value("classpath:blacklistedpublications.properties")
-    Resource resourceFile;
-
     private Set<String> publicationToSkip;
 
+    @Value("classpath:blacklistedpublications.properties")
     public void setResourceFile(Resource resourceFile) {
-        this.resourceFile = resourceFile;
         publicationToSkip = new HashSet<>();
         if(resourceFile.exists()){
             try {
@@ -62,6 +59,7 @@ public class GenePubmedIngester extends BaseIngester {
                 String line = br.readLine();
                 while(line != null){
                     publicationToSkip.add(line.trim());
+                    line = br.readLine();
                 }
             } catch (IOException e) {
                 logger.error("Unable to read the file with publications to be skipped");

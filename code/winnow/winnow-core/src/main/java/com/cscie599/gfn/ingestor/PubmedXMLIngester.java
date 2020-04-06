@@ -50,8 +50,13 @@ public class PubmedXMLIngester extends BaseIngester {
     @Value("${input.PubmedXMLIngester.skipLines:0}")
     private int linesToSkip;
 
+
+    private Set<String> meshTermToSkipSet;
+
     @Value("${input.blacklisted.meshterms}")
-    private List<String> meshTermToSkip;
+    public void setMeshTermToSkip(List<String> meshTermToSkip) {
+        meshTermToSkipSet = new HashSet<>(meshTermToSkip);
+    }
 
     @Bean
     @Order(7)
@@ -201,7 +206,6 @@ public class PubmedXMLIngester extends BaseIngester {
 
     class DBLogProcessor implements ItemProcessor<PubmedArticle, List<Object>> {
         public List<Object> process(PubmedArticle pubmedArticle) throws Exception {
-            Set<String> blackListSet = new HashSet<>(meshTermToSkip);
             List<Object> returnList = new ArrayList<>();
             PubmedArticle article = ((PubmedArticle) pubmedArticle);
             if (article.getMedlineCitation() != null && article.getMedlineCitation().getArticle() != null && article.getMedlineCitation().getArticle().getAuthorList() != null) {
@@ -209,17 +213,17 @@ public class PubmedXMLIngester extends BaseIngester {
                     if (author != null) {
                         Author author1 = new Author();
                         author1.setAuthorId((author.getLastName() == null ? "" : author.getLastName().toLowerCase()) + "-" + (author.getForeName() == null ? "" : author.getForeName().toLowerCase()));
-                        if(author1.getAuthorId() != null && author1.getAuthorId().length()>100){
-                            author1.setAuthorId(author1.getAuthorId().substring(0,100));
+                        if (author1.getAuthorId() != null && author1.getAuthorId().length() > 100) {
+                            author1.setAuthorId(author1.getAuthorId().substring(0, 100));
                         }
-                        if(author.getForeName()!= null && author.getForeName().length()>50){
-                            author1.setForeName(author.getForeName().substring(0,50));
-                        }else{
+                        if (author.getForeName() != null && author.getForeName().length() > 50) {
+                            author1.setForeName(author.getForeName().substring(0, 50));
+                        } else {
                             author1.setForeName(author.getForeName());
                         }
-                        if(author.getLastName()!= null && author.getLastName().length()>50){
-                            author1.setLastName(author.getLastName().substring(0,50));
-                        }else{
+                        if (author.getLastName() != null && author.getLastName().length() > 50) {
+                            author1.setLastName(author.getLastName().substring(0, 50));
+                        } else {
                             author1.setLastName(author.getLastName());
                         }
                         returnList.add(author1);
@@ -235,7 +239,7 @@ public class PubmedXMLIngester extends BaseIngester {
             if (article.getMedlineCitation() != null && article.getMedlineCitation().getMeshHeadingList() != null) {
                 article.getMedlineCitation().getMeshHeadingList().forEach(meshHeading -> {
                     meshHeading.getDescriptorName().forEach(descriptor -> {
-                        if(meshTermToSkip != null && !blackListSet.contains(descriptor.getUI())){
+                        if (meshTermToSkipSet != null && !meshTermToSkipSet.contains(descriptor.getUI())) {
                             PublicationMeshtermPK publicationMeshtermPK = new PublicationMeshtermPK(pubmedArticle.getMedlineCitation().getPMID().getID(), descriptor.getUI());
                             PublicationMeshterm publicationMeshterm = new PublicationMeshterm(publicationMeshtermPK);
                             publicationMeshterm.setCreatedDate(new Date());
