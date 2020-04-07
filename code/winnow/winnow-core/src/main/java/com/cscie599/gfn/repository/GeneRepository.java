@@ -13,6 +13,10 @@ public interface GeneRepository extends JpaRepository<Gene, String> {
 
     List<Gene> findByGeneId(String geneId);
     List<Gene> findAll();
-    @Query("SELECT g FROM Gene g WHERE (LOWER(g.geneId) LIKE %:pattern% OR LOWER(g.symbol) LIKE %:pattern% OR LOWER(g.description) LIKE %:pattern%) AND g.symbol != 'NEWENTRY'")
+    @Query(nativeQuery = true, value = "SELECT * FROM gene g " +
+            "WHERE g.tax_id = 9606 " +
+            "AND (LOWER(g.gene_id) LIKE %:pattern% OR LOWER(g.symbol) LIKE %:pattern% OR LOWER(g.description) LIKE %:pattern%) " +
+            "AND g.symbol NOT LIKE 'NEWENTRY' " +
+            "ORDER BY g.gene_id LIMIT 25")
     List<Gene> findAllContaining(@Param("pattern") String pattern);
 }
