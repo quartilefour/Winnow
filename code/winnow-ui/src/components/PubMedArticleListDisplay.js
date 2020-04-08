@@ -56,18 +56,25 @@ function PubMedArticleListDisplay(props) {
                         <thead>
                         <tr>
                             <th>Title</th>
-                            <th>PubMed ID</th>
                             <th>Author</th>
                             <th>Publication Date</th>
-                            <th>URL</th>
+                            <th>Publication Link</th>
                         </tr>
                         </thead>
                         <tbody>
                         {pubmedData.results.map((value, index) => {
                             return (
                                 <tr key={index}>
-                                    <td>{value.title}</td>
-                                    <td>{value.publicationId}</td>
+                                    <td title={value.title}
+                                        style={{
+                                        border: 0,
+                                        display: "inline-block",
+                                        width: "auto",
+                                        maxWidth: "250px",
+                                        overflow: "hidden",
+                                        textOverflow: "ellipsis",
+                                        whiteSpace: "nowrap",
+                                    }}>{value.title}</td>
                                     <td>{
                                         value.authors.map((author) => {
                                            return (

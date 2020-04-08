@@ -40,7 +40,14 @@ function SearchTermUploader(props) {
                         <Form.Check
                             inline
                             type="radio"
-                            label="Gene Id"
+                            label="MeSH Id"
+                            name="queryFormat"
+                        />
+                        <Form.Check
+                            inline
+                            type="radio"
+                            label="MeSH Term"
+                            name="queryFormat"
                         />
                         <Form.Group>
                             <Form.Control

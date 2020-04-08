@@ -156,45 +156,6 @@ export const mapMeshtermTreeData = (data, node, depth) => {
 
 export const fetchPubMedArticleList = (data) => {
     console.info(`fetchPubMedArticleList: ${JSON.stringify(data)}`);
-    /*let mockResp = {
-        geneId: data.geneId,
-        meshId: data.meshId,
-        symbol: data.symbol,
-        name: data.name,
-        results: [
-            {
-                publicationId: "32052514",
-                title: "COVID-19 Stuff",
-                authors: [
-                    {foreName: "David", lastName: "Dewey"},
-                    {foreName: "Chester", lastName: "Cheatem"},
-                    {foreName: "Henry", lastName: "Howe"},
-                ],
-                completedDate: "31 March 2020",
-            },
-            {
-                publicationId: "32052514",
-                title: "COVID-19 Stuff",
-                authors: [
-                    {foreName: "David", lastName: "Hasselholf"},
-                    {foreName: "Edward", lastName: "Mulhare"},
-                ],
-                completedDate: "31 March 2020",
-            },
-            {
-                publicationId: "32052514",
-                title: "COVID-19 Stuff",
-                authors: [
-                    {foreName: "George", lastName: "Peppard"},
-                    {foreName: "Dwight", lastName: "Schultz"},
-                ],
-                completedDate: "31 March 2020",
-            },
-        ]
-    };
-    return new Promise((resolve, reject) => {
-        resolve(mockResp);
-    });*/
     return new Promise((resolve, reject) => {
         axios.post(
             `${Constants.WINNOW_API_BASE_URL}/publications`,

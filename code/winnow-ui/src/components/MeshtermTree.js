@@ -66,6 +66,8 @@ export function MeshtermTree(props) {
         if (node.isChecked) {
             console.info(`MeshtermTree node ${node.meshId} checked`);
             setChecked([...checked, node.meshId]);
+            let sscn = sessionStorage.getItem('mtt');
+            sessionStorage.setItem('mtt', `${sscn},${node.id}`)
         } else {
             console.info(`MeshtermTree node ${node.meshId} unchecked`);
             setChecked(checked.filter(term => term !== node.meshId));
