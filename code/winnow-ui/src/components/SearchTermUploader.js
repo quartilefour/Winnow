@@ -32,23 +32,65 @@ function SearchTermUploader(props) {
         }
     }, [haveResults, props, batchQueryType, batchQueryFormat]);
 
-    if (isLoaded) {
-        if (!haveResults) {
-            return (
-                <div>
-                    <Form>
+    const queryFormatRadio = () => {
+        console.info(`SearchTermUploader: radios ${props.qType}`);
+        switch(props.qType) {
+            case 'mesh':
+                return (
+                    <div>
                         <Form.Check
                             inline
                             type="radio"
                             label="MeSH Id"
                             name="queryFormat"
+                            value="meshid"
+                        />
+                        <Form.Check
+                            inline
+                            type="radio"
+                            label="MeSH Tree Id"
+                            name="queryFormat"
+                            value="meshtreeid"
                         />
                         <Form.Check
                             inline
                             type="radio"
                             label="MeSH Term"
                             name="queryFormat"
+                            value="meshname"
                         />
+                    </div>
+                );
+            case 'gene':
+                return (
+                    <div>
+                        <Form.Check
+                            inline
+                            type="radio"
+                            label="Gene Id"
+                            name="queryFormat"
+                            value="geneid"
+                        />
+                        <Form.Check
+                            inline
+                            type="radio"
+                            label="Gene Symbol"
+                            name="queryFormat"
+                            value="genesymbol"
+                        />
+                    </div>
+                );
+            default:
+                return null
+        }
+    };
+
+    if (isLoaded) {
+        if (!haveResults) {
+            return (
+                <div>
+                    <Form>
+                        {queryFormatRadio()}
                         <Form.Group>
                             <Form.Control
                                 id="fileUpload"

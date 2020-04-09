@@ -33,14 +33,15 @@ function Mesh2GeneTab(props) {
             /* fetchSearchResults() */
             console.info(`Mesh2Gene execute search for: ${JSON.stringify(checkedTerms)}`);
             fetchSearchResults({
-                searchQuery: checkedTerms,
+                searchQuery: checkedTerms.filter(term => term !== "null"),
                 queryType: "mesh",
-                queryFormat: "meshid"
+                queryFormat: "meshtreeid"
             })
                 .then(res => {
                     console.info(`Mesh2Gene executed search: ${JSON.stringify(res)}`);
                     setResultData(res);
                     setIsLoaded(true);
+                    sessionStorage.setItem('mtt', null);
                 }).catch(err => {
                 setIsLoaded(true);
             });
@@ -86,7 +87,7 @@ function Mesh2GeneTab(props) {
                             <Button onClick={toggleBatch} variant="info" size="sm">Selector</Button>
                             <Button onClick={null} variant="info" size="sm">Search</Button>
                         </div>
-                        <SearchTermUploader data={null}/>
+                        <SearchTermUploader data={null} qType="mesh"/>
                     </div>
                 )
             }

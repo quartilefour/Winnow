@@ -44,7 +44,7 @@ function SaveSearchModal(props) {
                 <Alert variant={alertType} size="sm">{error}</Alert>
             </Modal.Header>
             <Modal.Body>
-                <div>{props.searchdata.searchQuery.toString()}</div>
+                <div>{props.searchdata.results.length} record(s)</div>
                 <Form>
                     <Form.Group>
                         <Form.Label>Bookmark Name</Form.Label>

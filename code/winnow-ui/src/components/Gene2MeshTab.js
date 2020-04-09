@@ -136,7 +136,7 @@ function Gene2MeshTab(props) {
                             <Button onClick={toggleBatch} variant="info" size="sm">Selector</Button>
                             <Button onClick={null} variant="info" size="sm">Search</Button>
                         </div>
-                        <SearchTermUploader data={null}/>
+                        <SearchTermUploader data={null} qType="gene"/>
                     </div>
                 )
             }

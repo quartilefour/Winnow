@@ -63,16 +63,21 @@ export function MeshtermTree(props) {
     }
 
     function updatesCheckedNodes(node) {
-        if (node.isChecked) {
-            console.info(`MeshtermTree node ${node.meshId} checked`);
-            setChecked([...checked, node.meshId]);
+        if (node && node.id !== null) {
             let sscn = sessionStorage.getItem('mtt');
-            sessionStorage.setItem('mtt', `${sscn},${node.id}`)
-        } else {
-            console.info(`MeshtermTree node ${node.meshId} unchecked`);
-            setChecked(checked.filter(term => term !== node.meshId));
+            if (node.isChecked) {
+                console.info(`MeshtermTree updateCN node ${node.meshId} checked`);
+                setChecked([...checked, node.meshId]);
+                sessionStorage.setItem('mtt', `${sscn},${node.id}`)
+            } else {
+                let sscnArray = sscn.split(",");
+                console.info(`MeshtermTree updateCN node ${node.meshId} unchecked`);
+                setChecked(checked.filter(term => term !== node.meshId));
+                sessionStorage.setItem('mtt', `${sscnArray.filter(term => term !== node.id)}`)
+            }
+            props.callback(sessionStorage.getItem('mtt').split(','))
         }
-        console.info(`MeshtermTree checked nodes: ${checked}`);
+        //console.info(`MeshtermTree checked nodes: ${checked}`);
     }
 
     function collectCheckedTerms() {
@@ -96,7 +101,7 @@ export function MeshtermTree(props) {
                 }}
                 onUpdateCb={(updatedData) => {
                     setMeshData(updatedData);
-                    props.callback(checked);
+                    //props.callback(checked);
                     collectCheckedTerms()
                 }}
                 isDeletable={(node, depth) => {
