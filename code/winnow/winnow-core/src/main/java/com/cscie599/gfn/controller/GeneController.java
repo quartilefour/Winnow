@@ -102,7 +102,7 @@ public class GeneController {
         }
         String geneId = body.get("geneId").toString();
         Gene gene = repository.findById(geneId)
-                .orElse(null);q
+                .orElse(null);
         if (gene == null) {
             response.put("error", "Gene not found.");
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
