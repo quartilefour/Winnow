@@ -2,9 +2,9 @@ import React, {useEffect, useState} from "react";
 import {Form, Button, Table} from "react-bootstrap";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChevronLeft} from "@fortawesome/free-solid-svg-icons";
-import PubMedArticleListDisplay from "./PubMedArticleListDisplay";
-import SaveSearchModal from "./common/SaveSearchModal";
-import PageLoader from "./common/PageLoader";
+import PubMedArticleListDisplay from "../pubmed/PubMedArticleListDisplay";
+import SaveSearchModal from "./SaveSearchModal";
+import PageLoader from "./PageLoader";
 
 /**
  * SearchResults displays the results of searches.

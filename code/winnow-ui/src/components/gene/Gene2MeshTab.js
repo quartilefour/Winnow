@@ -1,10 +1,10 @@
 import React, {Fragment, useEffect, useState} from "react";
 import {Form, Button} from "react-bootstrap";
 import Select from "react-select";
-import {fetchGenes, fetchSearchResults} from "../service/ApiService";
-import SearchResultsDisplay from "./SearchResultsDisplay";
-import SearchTermUploader from "./SearchTermUploader";
-import PageLoader from "./common/PageLoader";
+import {fetchGenes, fetchSearchResults} from "../../service/ApiService";
+import SearchResultsDisplay from "../common/SearchResultsDisplay";
+import SearchTermUploader from "../common/SearchTermUploader";
+import PageLoader from "../common/PageLoader";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faBan} from "@fortawesome/free-solid-svg-icons";
 

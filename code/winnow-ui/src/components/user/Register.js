@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Link, Redirect} from "react-router-dom";
 import {Card, Form, Button, Col, Alert} from "react-bootstrap";
-import {sendRegistration} from "../service/AuthService";
-import logoImg from "../img/logo.png";
+import {sendRegistration} from "../../service/AuthService";
+import logoImg from "../../img/logo.png";
 
 /**
  * Renders Registration form and handles responses from API.

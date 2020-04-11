@@ -1,10 +1,10 @@
 import React, {Fragment, useEffect, useState} from "react";
 import {Button, Form} from "react-bootstrap";
-import {MeshtermTree} from "../components/MeshtermTree";
-import {fetchSearchResults} from "../service/ApiService";
-import SearchResultsDisplay from "./SearchResultsDisplay";
-import SearchTermUploader from "./SearchTermUploader";
-import PageLoader from "./common/PageLoader";
+import {MeshtermTree} from "./MeshtermTree";
+import {fetchSearchResults} from "../../service/ApiService";
+import SearchResultsDisplay from "../common/SearchResultsDisplay";
+import SearchTermUploader from "../common/SearchTermUploader";
+import PageLoader from "../common/PageLoader";
 
 /**
  * Mesh2GeneTab builds the content for MeSH term Search.

@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from "react";
 import {Form, Table, Alert} from "react-bootstrap";
-import {fetchPubMedArticleList} from "../service/ApiService";
-import PageLoader from "./common/PageLoader";
-import {PUBMED_BASE_URL} from "../constants";
+import {fetchPubMedArticleList} from "../../service/ApiService";
+import PageLoader from "../common/PageLoader";
+import {PUBMED_BASE_URL} from "../../constants";
 
 /**
  * PubMedArticleListDisplay displays a list of PubMed articles found in a previous search.

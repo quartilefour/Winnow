@@ -1,9 +1,9 @@
 import React, {useEffect, useState} from "react";
 import {Link, Redirect} from "react-router-dom";
 import {Card, Form, Button, Alert} from "react-bootstrap";
-import {sendLoginCredentials} from "../service/AuthService";
-import logoImg from "../img/logo.png";
-import {useAuth} from "../context/auth";
+import {sendLoginCredentials} from "../../service/AuthService";
+import logoImg from "../../img/logo.png";
+import {useAuth} from "../../context/auth";
 
 /**
  * Renders Login form and handles response from API.

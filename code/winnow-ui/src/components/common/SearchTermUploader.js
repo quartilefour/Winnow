@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 import {Form, FormFile, Table} from "react-bootstrap";
-import {fetchSearchResults} from "../service/ApiService";
-import PageLoader from "./common/PageLoader";
+import {fetchSearchResults} from "../../service/ApiService";
+import PageLoader from "./PageLoader";
 
 function SearchTermUploader(props) {
     const [isLoaded, setIsLoaded] = useState(false);

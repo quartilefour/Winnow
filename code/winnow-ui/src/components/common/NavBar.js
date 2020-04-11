@@ -2,10 +2,10 @@ import React, {useEffect, useState} from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faQuestionCircle} from "@fortawesome/free-regular-svg-icons";
 import {faUser} from "@fortawesome/free-solid-svg-icons";
-import {useAuth} from "../context/auth";
-import AuthService from "../service/AuthService";
+import {useAuth} from "../../context/auth";
+import AuthService from "../../service/AuthService";
 import {Nav, Navbar} from "react-bootstrap";
-import logoImg from "../img/logo.png";
+import logoImg from "../../img/logo.png";
 import {Link} from "react-router-dom";
 
 /**
@@ -57,7 +57,7 @@ const NavBar = () => {
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">
                         <Nav.Link as={Link} to="/">Dashboard</Nav.Link>
-                        <Nav.Link as={Link} to="/admin">Admin</Nav.Link>
+                        {/* <Nav.Link as={Link} to="/admin">Admin</Nav.Link> */}
                     </Nav>
                     <Nav.Link as={Link} to='/support'>
                         <FontAwesomeIcon icon={faQuestionCircle} color="cornflowerblue" title="Help" />

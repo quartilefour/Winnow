@@ -1,8 +1,8 @@
 import React, {useEffect, useState} from 'react';
 import {Nav, Tab, Row, Col} from "react-bootstrap";
 import BookmarkTab from "./BookmarkTab";
-import Mesh2GeneTab from "./Mesh2GeneTab";
-import Gene2MeshTab from "./Gene2MeshTab";
+import Mesh2GeneTab from "../mesh/Mesh2GeneTab";
+import Gene2MeshTab from "../gene/Gene2MeshTab";
 
 /**
  * Renders the Dashboard landing page for authenticated users.
@@ -49,7 +49,7 @@ function Dashboard(props) {
                         <Tab.Content id="dashboard-tab-content">
                             <Tab.Pane eventKey="bookmarks">
                                 <p className="tab-heading">User Bookmarks</p>
-                                <BookmarkTab />
+                                <BookmarkTab refresh={true}/>
                             </Tab.Pane>
                             <Tab.Pane eventKey="mesh2gene">
                                 <p className="tab-heading">MeSH 2 Gene Search</p>

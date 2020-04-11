@@ -1,16 +1,16 @@
 import React, {useState} from 'react';
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
-import NavBar from "./components/NavBar";
-import Login from "./components/Login";
-import Register from "./components/Register";
-import Dashboard from "./components/Dashboard";
+import NavBar from "./components/common/NavBar";
+import Login from "./components/user/Login";
+import Register from "./components/user/Register";
+import Dashboard from "./components/user/Dashboard";
 import './App.css';
 import {AuthContext} from "./context/auth";
 import PrivateRoute from "./PrivateRoute";
 import Cookies from 'js-cookie';
-import Profile from "./components/Profile";
+import Profile from "./components/user/Profile";
 import Support from "./components/user/Support";
-import Admin from "./components/Admin";
+import Admin from "./components/admin/Admin";
 import Error from "./components/error/Error";
 
 /**

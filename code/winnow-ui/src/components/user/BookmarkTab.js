@@ -1,9 +1,9 @@
 import React, {Fragment, useEffect, useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlay, faShareAlt, faTimes} from "@fortawesome/free-solid-svg-icons";
-import {fetchUserBookmarks, removeUserBookmark} from "../service/ApiService";
+import {fetchUserBookmarks, removeUserBookmark} from "../../service/ApiService";
 import {Form, Table} from "react-bootstrap";
-import PageLoader from "./common/PageLoader";
+import PageLoader from "../common/PageLoader";
 
 /**
  * BookmarkTab builds the content for user's saved search lists.
@@ -15,10 +15,12 @@ import PageLoader from "./common/PageLoader";
 function BookmarkTab(props) {
 
     const [isLoaded, setIsLoaded] = useState(false);
+    const [refresh, setRefresh] = useState(false);
     const [bookmarkData, setBookmarkData] = useState([]);
     const [deleteBookmark, setDeleteBookmark] = useState(null);
 
     useEffect(() => {
+        setRefresh(props.refresh);
         if (deleteBookmark) {
             removeUserBookmark(deleteBookmark)
                 .then(res => {
@@ -37,8 +39,9 @@ function BookmarkTab(props) {
                 //console.info(`Bookmark count: ${bookmarkData.length}`)
             }).catch(err => {
             setIsLoaded(true);
+            setRefresh(false);
         });
-    }, [deleteBookmark]);
+    }, [deleteBookmark, props]);
 
     if (isLoaded) {
         return (

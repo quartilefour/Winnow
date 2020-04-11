@@ -14,7 +14,7 @@ function SaveSearchModal(props) {
         setSaveEnabled(bookmarkName.length >= 1);
         if (saveBookmark) {
             saveUserBookmark({
-                searchName: bookmarkName,
+                searchName: bookmarkName.slice(0,19),
                 searchQuery: props.searchdata.searchQuery,
                 queryType: props.searchdata.queryType,
                 queryFormat: props.searchdata.queryFormat

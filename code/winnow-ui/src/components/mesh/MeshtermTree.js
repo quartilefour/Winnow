@@ -1,10 +1,10 @@
 import React, {useEffect, useState} from 'react';
 import {Spinner} from "react-bootstrap";
 import 'react-super-treeview/dist/style.css';
-import {fetchMeshtermCat, fetchMeshtermNode, fetchMeshtermTree, mapMeshtermTreeData} from "../service/ApiService";
+import {fetchMeshtermCat, fetchMeshtermNode, fetchMeshtermTree, mapMeshtermTreeData} from "../../service/ApiService";
 import cloneDeep from "lodash/cloneDeep";
 import SuperTreeview from "react-super-treeview";
-import PageLoader from "./common/PageLoader";
+import PageLoader from "../common/PageLoader";
 
 /**
  * Dynamically generates MeSH term tree
