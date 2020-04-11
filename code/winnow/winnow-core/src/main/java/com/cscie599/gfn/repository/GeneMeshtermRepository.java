@@ -3,6 +3,7 @@ package com.cscie599.gfn.repository;
 import com.cscie599.gfn.entities.GeneMeshterm;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -27,5 +28,8 @@ public interface GeneMeshtermRepository extends JpaRepository<GeneMeshterm, Stri
 
     @Query("SELECT gm FROM GeneMeshterm gm INNER JOIN gm.gene g WHERE g.symbol IN (:geneSymbols) ORDER BY gm.pValue")
     List<GeneMeshterm> findByGeneSymbolsOrderByPValue(List<String> geneSymbols);
+
+    @Query("SELECT gm FROM GeneMeshterm gm WHERE gm.geneMeshtermPK.geneId = :geneId ORDER BY gm.pValue")
+    List<GeneMeshterm> findByGeneIdOrderByPValue(@Param("geneId") String geneId);
 
 }
