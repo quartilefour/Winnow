@@ -4,6 +4,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChevronLeft} from "@fortawesome/free-solid-svg-icons";
 import PubMedArticleListDisplay from "../pubmed/PubMedArticleListDisplay";
 import SaveSearchModal from "./SaveSearchModal";
+import GeneDetailModal from "../gene/GeneDetailModal";
 import PageLoader from "./PageLoader";
 
 /**
@@ -20,6 +21,7 @@ function SearchResultsDisplay(props) {
     const [haveResults, setHaveResults] = useState(false);
     const [selectedIndex, setSelectedIndex] = useState(0);
     const [showSaveSearch, setShowSaveSearch] = useState(false);
+    const [activeGeneDetail, setActiveGeneDetail] = useState(null);
     const [bookmarkEnabled, setBookmarkEnabled] = useState(false);
 
 
@@ -36,10 +38,11 @@ function SearchResultsDisplay(props) {
             setResData(props.resData);
             //setHaveResults(true);
             setIsLoaded(true);
+            sessionStorage.setItem('lastSearch', JSON.stringify(resData));
         } else {
             /* fetchSearchResults() */
         }
-    }, [haveResults, props, resData]);
+    }, [haveResults, props, resData, activeGeneDetail]);
 
     if (isLoaded) {
         if (!haveResults) {
@@ -55,7 +58,7 @@ function SearchResultsDisplay(props) {
                             Back
                         </span>
                         <h3>Results</h3>
-                        <Table striped bordered hover>
+                        <Table size="sm" striped bordered hover>
                             <thead>
                             <tr>
                                 <th>Gene Id</th>
@@ -66,16 +69,33 @@ function SearchResultsDisplay(props) {
                                 <th>P-value</th>
                             </tr>
                             </thead>
-                            <tbody>
+                            <tbody style={{overflow: "auto"}}>
                             {resData.results.map((value, index) => {
                                 console.info(`SearchResult ${index}: ${value.geneId} - ${value.meshId}`);
                                 return (
                                     <tr key={index}>
-                                        <td>{value.geneId}</td>
+                                        <td>
+                                            <Button
+                                                variant="outline-info"
+                                                size="sm"
+                                                title={`Details for ${value.symbol}`}
+                                                onClick={() => setActiveGeneDetail(index)}
+                                            >
+                                                {value.geneId}
+                                            </Button>
+                                            <GeneDetailModal
+                                                id={`gdm${index}`}
+                                                show={activeGeneDetail === index}
+                                                onHide={() => setActiveGeneDetail(null)}
+                                                geneid={value.geneId}
+                                            />
+                                        </td>
                                         <td>{value.symbol}</td>
                                         <td>{value.meshId}</td>
                                         <td>{value.name}</td>
                                         <td><Button
+                                            title={`Publication list for ${value.symbol} - ${value.name}`}
+                                            size="sm"
                                             variant="info"
                                             onClick={() => {
                                                 executePubMedArticleListDisplay(index)

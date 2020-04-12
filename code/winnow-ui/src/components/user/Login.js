@@ -32,14 +32,22 @@ function Login(props) {
     function postLogin() {
         const credentials = {userEmail: userEmail, userPassword: userPassword};
         sendLoginCredentials(credentials).then(res => {
-                console.log(`Return status from API: ${res}`);
-                setAuthToken(res);
-                setLoggedIn(true);
+            console.log(`Return status from API: ${res}`);
+            setAuthToken(res);
+            setLoggedIn(true);
         }).catch(error => {
-                console.log(`Login error: ${error}`);
-                setAlertType("danger");
-                setError("Invalid E-mail or password");
+            console.log(`Login error: ${error}`);
+            setAlertType("danger");
+            setError("Invalid E-mail or password");
         });
+    }
+
+    function validateForm(e) {
+        if (e.keyCode === 13) {
+            if (userEmail !== "" && userPassword !== "") {
+                postLogin()
+            }
+        }
     }
 
     if (!isLoggedIn) {
@@ -69,6 +77,9 @@ function Login(props) {
                                     onChange={e => {
                                         setUserEmail(e.target.value);
                                     }}
+                                    onKeyUp={e => {
+                                        validateForm(e)
+                                    }}
                                     placeholder="E-mail Address"
                                 />
                             </Form.Group>
@@ -80,6 +91,9 @@ function Login(props) {
                                     value={userPassword}
                                     onChange={e => {
                                         setUserPassword(e.target.value);
+                                    }}
+                                    onKeyUp={e => {
+                                        validateForm(e)
                                     }}
                                     placeholder="Password"
                                 />

@@ -89,6 +89,34 @@ export const fetchGenes = (partial) => {
     });
 };
 
+export const fetchGeneDetails = (geneId) => {
+    return new Promise((resolve, reject) => {
+        axios.post(
+            `${Constants.WINNOW_API_BASE_URL}/genes`,
+            {geneId: geneId},
+            {
+                headers: AuthService.getAuthHeader(),
+            }
+        )
+            .then(res => {
+                resolve(res.data);
+            })
+            .catch(err => reject(err));
+    });
+};
+
+export const fetchNCBIGeneDetails = (geneId) => {
+    return new Promise((resolve, reject) => {
+        axios.get(
+            `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&retmode=json&api_key=be6a6f419f4f31e609e53403ecb4c0c92b08&id=${geneId}`,
+        )
+            .then(res => {
+                resolve(res.data);
+            })
+            .catch(err => reject(err));
+    });
+};
+
 export const fetchMeshtermCat = () => {
     console.debug(`fetchMeshtermCat: ${Constants.WINNOW_API_BASE_URL}/meshterms/category`);
     return new Promise((resolve, reject) => {
@@ -162,6 +190,22 @@ export const fetchPubMedArticleList = (data) => {
             data,
             {
                 headers: AuthService.getAuthHeader(),
+            }
+        )
+            .then(res => {
+                resolve(res.data);
+            })
+            .catch(err => reject(err));
+    });
+};
+
+export const fetchApiStatus = () => {
+    console.debug(`fetchApiStatus: ${Constants.WINNOW_API_BASE_URL}/status`);
+    return new Promise((resolve, reject) => {
+        axios.get(
+            `${Constants.WINNOW_API_BASE_URL}/status`,
+            {
+                timeout: 1500
             }
         )
             .then(res => {

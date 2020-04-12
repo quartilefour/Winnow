@@ -33,7 +33,7 @@ function Mesh2GeneTab(props) {
             /* fetchSearchResults() */
             console.info(`Mesh2Gene execute search for: ${JSON.stringify(checkedTerms)}`);
             fetchSearchResults({
-                searchQuery: checkedTerms.filter(term => term !== "null"),
+                searchQuery: checkedTerms.filter(term => term !== "null" && term !== "undefined"),
                 queryType: "mesh",
                 queryFormat: "meshtreeid"
             })

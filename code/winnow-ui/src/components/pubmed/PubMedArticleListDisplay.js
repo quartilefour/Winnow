@@ -85,7 +85,7 @@ function PubMedArticleListDisplay(props) {
                                     <td>{value.completedDate}</td>
                                     <td><a target="_blank"
                                            rel="noopener noreferrer"
-                                           href={`${PUBMED_BASE_URL}/${value.publicationId}`}>{value.publicationId}</a>
+                                           href={`${PUBMED_BASE_URL}/${value.publicationId}`}>PubMed Article #{value.publicationId}</a>
                                     </td>
                                 </tr>
                             );

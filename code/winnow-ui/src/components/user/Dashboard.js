@@ -32,7 +32,7 @@ function Dashboard(props) {
                 }
             }>
                 <Row>
-                    <Col sm={3} id="dashboard-outer-tabs">
+                    <Col sm={2} id="dashboard-outer-tabs">
                         <Nav id="dashboard-tabs" variant="tabs" className="flex-column">
                             <Nav.Item>
                                 <Nav.Link eventKey="bookmarks">Bookmarks</Nav.Link>
@@ -45,7 +45,7 @@ function Dashboard(props) {
                             </Nav.Item>
                         </Nav>
                     </Col>
-                    <Col sm={9} id="dashboard-outer-tab-content">
+                    <Col sm={10} id="dashboard-outer-tab-content">
                         <Tab.Content id="dashboard-tab-content">
                             <Tab.Pane eventKey="bookmarks">
                                 <p className="tab-heading">User Bookmarks</p>
