@@ -12,6 +12,9 @@ import org.apache.hadoop.mapreduce.lib.input.TextInputFormat;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import java.util.Map;
+import java.math.BigInteger;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Set;
 import java.util.HashSet;
 import java.lang.StringBuilder;
@@ -257,25 +260,25 @@ public class FisherTest {
     }
 
     public static class Reducer4
-            extends Reducer<Text, Text, Text, DoubleWritable> {
+            extends Reducer<Text, Text, Text, Text> {
 
         public void reduce(Text key, Iterable<Text> values, Context context)
                 throws IOException, InterruptedException {
-            long A = 0;
-            long B = 0;
-            long C = 0;
-            long D = 0;
+            BigInteger A = BigInteger.ZERO;
+            BigInteger B = BigInteger.ZERO;
+            BigInteger C = BigInteger.ZERO;
+            BigInteger D = BigInteger.ZERO;
 
             for (Text val : values) {
                 String [] inputSplit = val.toString().split(" ");
-                A = Long.parseLong(inputSplit[0].split("_")[1]);
-                B = Long.parseLong(inputSplit[1].split("_")[1]);
-                C = Long.parseLong(inputSplit[2].split("_")[1]);
-                D = Long.parseLong(inputSplit[3].split("_")[1]);
+                A = new BigInteger(inputSplit[0].split("_")[1]);
+                B = new BigInteger(inputSplit[1].split("_")[1]);
+                C = new BigInteger(inputSplit[2].split("_")[1]);
+                D = new BigInteger(inputSplit[3].split("_")[1]);
             }
 
             CalculateFisher fisher = new CalculateFisher(A, B, C, D);
-            double result = fisher.calculateFisher();
+            String result = fisher.calculateFisher();
             String [] keySplit = key.toString().split(":");
             StringBuilder outputKey = new StringBuilder (keySplit[0]);
             outputKey.append("\t");
@@ -284,60 +287,57 @@ public class FisherTest {
             outputKey.append(A);
             //System.out.println("outputKey is " + outputKey.toString());
 
-            context.write(new Text(outputKey.toString()), new DoubleWritable(result));
+            context.write(new Text(outputKey.toString()), new Text(result));
         }
 
         public class CalculateFisher {
-            private long A;
-            private long B;
-            private long C;
-            private long D;
+            private BigInteger A;
+            private BigInteger B;
+            private BigInteger C;
+            private BigInteger D;
 
             public CalculateFisher () {
-                this.A = 0;
-                this.B = 0;
-                this.C = 0;
-                this.D = 0;
+                this.A = BigInteger.ZERO;
+                this.B = BigInteger.ZERO;
+                this.C = BigInteger.ZERO;
+                this.D = BigInteger.ZERO;
             }
 
-            public CalculateFisher (long A, long B, long C, long D) {
+            public CalculateFisher (BigInteger A, BigInteger B, BigInteger C, BigInteger D) {
                 this.A = A;
                 this.B = B;
                 this.C = C;
                 this.D = D;
             }
 
-            public double calculateFisher () {
-                long numerator = 0;
-                long denominator = 0;
-                long total = this.A + this.B + this.C + this.D;
+            public String calculateFisher () {
+                BigInteger total = this.A.add(this.B.add(this.C.add(this.D)));
 
-                long component1 = factorial(this.A + this.B);
+                BigInteger component1 = factorial(this.A.add(this.B));
                 //System.out.println("component1 " + component1);
-                long component2 = factorial(this.C + this.D);
+                BigInteger component2 = factorial(this.C.add(this.D));
                 //System.out.println("component2 " + component2);
-                long component3 = factorial(this.A + this.C);
+                BigInteger component3 = factorial(this.A.add(this.C));
                 //System.out.println("component3 " + component3);
-                long component4 = factorial(this.B + this.D);
+                BigInteger component4 = factorial(this.B.add(this.D));
                 //System.out.println("component4 " + component4);
+                BigDecimal numerator = new BigDecimal(component1.multiply(component2.multiply(component3.multiply(component4))));
+                System.out.println("compnents are " + component1 + " "+ component2 + " "+ component3 + " "+ component4 );
 
-                numerator = component1 * component2 * component3 * component4;
+                BigDecimal denominator = new BigDecimal(factorial(this.A).multiply(factorial(this.B).multiply(factorial(this.C).multiply(factorial(this.D).multiply(factorial(total))))));
 
-                denominator = (factorial(this.A) * factorial(this.B) *
-                        factorial(this.C) * factorial(this.D) * factorial(total));
-
-                double result = ((double) numerator/denominator);
-                //System.out.println("results is " + result);
-                // System.out.println("numerator is " + numerator + " and denominator is " + denominator);
-                return result;
+                BigDecimal result = numerator.divide(denominator, 10, RoundingMode.HALF_UP);
+                System.out.println("results is " + result);
+                System.out.println("numerator is " + numerator + " and denominator is " + denominator);
+                return result.toString();
             }
 
-            public long factorial (long value) {
-                //System.out.println("inside factorial value is " + value);
-                if (value <= 0) {
-                    return 1;
+            public BigInteger factorial (BigInteger value) {
+                System.out.println("inside factorial value is " + value);
+                if (value.equals(BigInteger.ZERO)) {
+                    return BigInteger.ONE;
                 }
-                return value * factorial(value - 1);
+                return value.multiply(factorial(value.subtract(BigInteger.ONE)));
             }
         }
     }
@@ -420,7 +420,7 @@ public class FisherTest {
         job4.setReducerClass(Reducer4.class);
 
         job4.setOutputKeyClass(Text.class);
-        job4.setOutputValueClass(DoubleWritable.class);
+        job4.setOutputValueClass(Text.class);
         job4.setMapOutputKeyClass(Text.class);
         job4.setMapOutputValueClass(Text.class);
 
