@@ -5,6 +5,7 @@ import {fetchSearchResults} from "../../service/ApiService";
 import SearchResultsDisplay from "../common/SearchResultsDisplay";
 import SearchTermUploader from "../common/SearchTermUploader";
 import PageLoader from "../common/PageLoader";
+import {addSearchHistory} from "../../service/SearchService";
 
 /**
  * Mesh2GeneTab builds the content for MeSH term Search.
@@ -32,11 +33,18 @@ function Mesh2GeneTab(props) {
         } else {
             /* fetchSearchResults() */
             console.info(`Mesh2Gene execute search for: ${JSON.stringify(checkedTerms)}`);
-            fetchSearchResults({
-                searchQuery: checkedTerms.filter(term => term !== "null" && term !== "undefined"),
-                queryType: "mesh",
-                queryFormat: "meshtreeid"
-            })
+            let search = {
+                searchQuery: {
+                    geneId: [],
+                    symbol: [],
+                    description: [],
+                    meshId: [],
+                    meshTreeId: checkedTerms.filter(term => term !== "null" && term !== "undefined"),
+                    name: []
+                },
+            }
+            addSearchHistory(search);
+            fetchSearchResults(search)
                 .then(res => {
                     console.info(`Mesh2Gene executed search: ${JSON.stringify(res)}`);
                     setResultData(res);

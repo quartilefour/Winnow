@@ -49,6 +49,7 @@ function SaveSearchModal(props) {
                     <Form.Group>
                         <Form.Label>Bookmark Name</Form.Label>
                         <Form.Control
+                            id="bm-input"
                             type="text"
                             onChange={e => {
                                 setBookmarkName(e.target.value);

@@ -8,6 +8,7 @@ import PageLoader from "../common/PageLoader";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faBan} from "@fortawesome/free-solid-svg-icons";
 import {addSearchHistory} from "../../service/SearchService";
+import {MeshtermTree} from "../mesh/MeshtermTree";
 
 /**
  * ComboSearchTab builds the content for Gene Search.
@@ -16,15 +17,21 @@ import {addSearchHistory} from "../../service/SearchService";
  * @returns {*}
  * @constructor
  */
-function Gene2MeshTab(props) {
+function ComboSearchTab(props) {
 
     const [selectedGenes, setSelectedGenes] = useState([]);
     const [useBatch, setUseBatch] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     const [isMenuLoaded, setIsMenuLoaded] = useState(false);
     const [geneData, setGeneData] = useState([]);
+    const [checkedTerms, setCheckedTerms] = useState([]);
     const [haveResults, setHaveResults] = useState(false);
     const [resultData, setResultData] = useState('');
+
+    const getChecked = (checkedNodes) => {
+        setCheckedTerms(checkedNodes);
+        console.info(`ComboSearchTab checked from MeshtermTree(${checkedNodes.length}): ${JSON.stringify(checkedNodes)}`)
+    };
 
     useEffect(() => {
         if (!haveResults) {
@@ -38,7 +45,7 @@ function Gene2MeshTab(props) {
                     symbol: [],
                     description: [],
                     meshId: [],
-                    meshTreeId: [],
+                    meshTreeId: checkedTerms,
                     name: []
                 },
             }
@@ -51,7 +58,7 @@ function Gene2MeshTab(props) {
                 setIsLoaded(true);
             });
         }
-    }, [haveResults, selectedGenes]);
+    }, [haveResults, selectedGenes, checkedTerms]);
 
     function partialSearch(pattern) {
         fetchGenes(pattern)
@@ -85,7 +92,7 @@ function Gene2MeshTab(props) {
     if (isLoaded) {
         if (!haveResults) {
             if (!useBatch) {
-                console.info(`Gene2Mesh selected: ${JSON.stringify(selectedGenes)}`);
+                console.info(`ComboSearchTab selected: ${JSON.stringify(selectedGenes)}`);
                 return (
                     <div>
                         <div className="button-bar">
@@ -94,7 +101,7 @@ function Gene2MeshTab(props) {
                                 onClick={executeSearch}
                                 variant="info"
                                 size="sm"
-                                disabled={selectedGenes.length === 0}
+                                disabled={selectedGenes.length === 0 && checkedTerms.length === 0}
                             >Search</Button>
                         </div>
                         <Form>
@@ -108,20 +115,14 @@ function Gene2MeshTab(props) {
                                     loadingMessage="Loading..."
                                     autoFocus={true}
                                     name="gene"
-                                    onKeyDown={e => {
-                                        console.info(`GeneSelect onKeyDown: ${e.keyCode}`);
-                                        /*if (e.keyCode === 13) {
-                                            executeSearch();
-                                        }*/
-                                    }}
                                     onInputChange={e => {
-                                        console.info(`Gene2Mesh onInputChange: ${JSON.stringify(e)}`);
+                                        console.info(`ComboSearchTab onInputChange: ${JSON.stringify(e)}`);
                                         if (e.length >= 2) {
                                             partialSearch(e);
                                         }
                                     }}
                                     onChange={e => {
-                                        console.info(`Gene2Mesh onChange: ${JSON.stringify(e)}`);
+                                        console.info(`ComboSearchTab onChange: ${JSON.stringify(e)}`);
                                         if (e !== null) {
                                             e.forEach((val, index) => {
                                                 setSelectedGenes([...selectedGenes, val.value]);
@@ -135,6 +136,11 @@ function Gene2MeshTab(props) {
                                 />
                             </Fragment>
                         </Form>
+                        <Fragment>
+                            <div id="meshterm-tree">
+                                <MeshtermTree callback={getChecked}/>
+                            </div>
+                        </Fragment>
                     </div>
                 );
             } else {
@@ -160,4 +166,4 @@ function Gene2MeshTab(props) {
     }
 }
 
-export default Gene2MeshTab;
+export default ComboSearchTab;

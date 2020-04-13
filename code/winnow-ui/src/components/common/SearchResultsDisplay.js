@@ -36,9 +36,8 @@ function SearchResultsDisplay(props) {
         }
         if (!haveResults) {
             setResData(props.resData);
-            //setHaveResults(true);
+            sessionStorage.removeItem('mtt');
             setIsLoaded(true);
-            sessionStorage.setItem('lastSearch', JSON.stringify(resData));
         } else {
             /* fetchSearchResults() */
         }

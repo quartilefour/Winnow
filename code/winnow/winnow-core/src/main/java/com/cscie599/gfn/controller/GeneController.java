@@ -117,10 +117,12 @@ public class GeneController {
                     geneMeshterm.getPublicationCount(),
                     geneMeshterm.getPValue()));
         }
+        List<Gene> coGenes = new ArrayList<>(); /* Placeholder for Gene Co-occurrence */
         response.put("geneId", geneId);
         response.put("symbol", gene.getSymbol().trim());
         response.put("description", gene.getDescription().trim());
         response.put("meshResults", geneDetailMeshtermViews);
+        response.put("geneResults", coGenes); /* Placeholder for Gene Co-occurrence */
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

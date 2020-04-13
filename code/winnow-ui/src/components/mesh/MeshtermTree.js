@@ -68,7 +68,11 @@ export function MeshtermTree(props) {
             if (node.isChecked) {
                 console.info(`MeshtermTree updateCN node ${node.meshId} checked`);
                 setChecked([...checked, node.meshId]);
-                sessionStorage.setItem('mtt', `${sscn},${node.id}`)
+                if (sscn === null) {
+                    sessionStorage.setItem('mtt', `${node.id}`)
+                } else {
+                    sessionStorage.setItem('mtt', `${sscn},${node.id}`)
+                }
             } else {
                 let sscnArray = sscn.split(",");
                 console.info(`MeshtermTree updateCN node ${node.meshId} unchecked`);

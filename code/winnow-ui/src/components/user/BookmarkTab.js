@@ -6,7 +6,7 @@ import {Form, Table} from "react-bootstrap";
 import PageLoader from "../common/PageLoader";
 
 /**
- * BookmarkTab builds the content for user's saved search lists.
+ * RecentSearchesTab builds the content for user's saved search lists.
  *
  * @param props
  * @returns {*}
@@ -15,12 +15,10 @@ import PageLoader from "../common/PageLoader";
 function BookmarkTab(props) {
 
     const [isLoaded, setIsLoaded] = useState(false);
-    const [refresh, setRefresh] = useState(false);
     const [bookmarkData, setBookmarkData] = useState([]);
     const [deleteBookmark, setDeleteBookmark] = useState(null);
 
     useEffect(() => {
-        setRefresh(props.refresh);
         if (deleteBookmark) {
             removeUserBookmark(deleteBookmark)
                 .then(res => {
@@ -39,20 +37,21 @@ function BookmarkTab(props) {
                 //console.info(`Bookmark count: ${bookmarkData.length}`)
             }).catch(err => {
             setIsLoaded(true);
-            setRefresh(false);
         });
-    }, [deleteBookmark, props]);
+        return function () {
+
+        }
+    }, [deleteBookmark]);
 
     if (isLoaded) {
         return (
             <div>
                 <Fragment>
                     <Form>
-                        <Table striped bordered hover>
+                        <Table size="sm" striped bordered hover>
                             <thead>
                             <tr>
                                 <th>Label</th>
-                                <th>Type</th>
                                 <th>Terms</th>
                                 <th>Created</th>
                                 <th>Actions</th>
@@ -64,8 +63,18 @@ function BookmarkTab(props) {
                                 return (
                                     <tr key={bookmark.searchId}>
                                         <td>{bookmark.searchName}</td>
-                                        <td>{bookmark.queryType.toUpperCase()}</td>
-                                        <td>{bookmark.searchQuery.join(', ')}</td>
+                                        <td
+                                            style={{
+                                                width: "auto",
+                                                maxWidth: "400px",
+                                                overflow: "hidden",
+                                                textOverflow: "ellipsis",
+                                                whiteSpace: "nowrap",
+                                            }}
+                                            title={JSON.stringify(bookmark.searchQuery)}
+                                        >
+                                            {JSON.stringify(bookmark.searchQuery)}
+                                        </td>
                                         <td>{new Intl.DateTimeFormat("en-US", {
                                             year: "numeric",
                                             month: "long",

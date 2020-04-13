@@ -3,6 +3,8 @@ import {Nav, Tab, Row, Col} from "react-bootstrap";
 import BookmarkTab from "./BookmarkTab";
 import Mesh2GeneTab from "../mesh/Mesh2GeneTab";
 import Gene2MeshTab from "../gene/Gene2MeshTab";
+import RecentSearchesTab from "./RecentSearchesTab";
+import ComboSearchTab from "../common/ComboSearchTab";
 
 /**
  * Renders the Dashboard landing page for authenticated users.
@@ -24,7 +26,12 @@ function Dashboard(props) {
 
     return (
         <div id="dashboard">
-            <Tab.Container id="left-tabs" activeKey={currentTab} className="tab-container" onSelect={
+            <Tab.Container id="left-tabs"
+                           activeKey={currentTab}
+                           className="tab-container"
+                           mountOnEnter={true}
+                           unmountOnExit={true}
+                           onSelect={
                 (e) => {
                     console.info(`Selecting Dashboard tab: ${e}`);
                     sessionStorage.setItem('dashboardTab', e);
@@ -38,10 +45,10 @@ function Dashboard(props) {
                                 <Nav.Link eventKey="bookmarks">Bookmarks</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="mesh2gene">MeSH 2 Gene</Nav.Link>
+                                <Nav.Link eventKey="search">Search</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="gene2mesh">Gene 2 MeSH</Nav.Link>
+                                <Nav.Link eventKey="search-history">Recent Searches</Nav.Link>
                             </Nav.Item>
                         </Nav>
                     </Col>
@@ -49,15 +56,15 @@ function Dashboard(props) {
                         <Tab.Content id="dashboard-tab-content">
                             <Tab.Pane eventKey="bookmarks">
                                 <p className="tab-heading">User Bookmarks</p>
-                                <BookmarkTab refresh={true}/>
+                                <BookmarkTab />
                             </Tab.Pane>
-                            <Tab.Pane eventKey="mesh2gene">
-                                <p className="tab-heading">MeSH 2 Gene Search</p>
-                                <Mesh2GeneTab />
+                            <Tab.Pane eventKey="search">
+                                <p className="tab-heading">Gene/MeSH Search</p>
+                                <ComboSearchTab />
                             </Tab.Pane>
-                            <Tab.Pane eventKey="gene2mesh">
-                                <p className="tab-heading">Gene 2 MeSH Search</p>
-                                <Gene2MeshTab />
+                            <Tab.Pane eventKey="search-history">
+                                <p className="tab-heading">Recent Searches</p>
+                                <RecentSearchesTab />
                             </Tab.Pane>
                         </Tab.Content>
                     </Col>

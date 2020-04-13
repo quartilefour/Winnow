@@ -4,6 +4,7 @@ import {Card, Form, Button, Alert} from "react-bootstrap";
 import {sendLoginCredentials} from "../../service/AuthService";
 import logoImg from "../../img/logo.png";
 import {useAuth} from "../../context/auth";
+import {createSearchHistory} from "../../service/SearchService";
 
 /**
  * Renders Login form and handles response from API.
@@ -34,6 +35,7 @@ function Login(props) {
         sendLoginCredentials(credentials).then(res => {
             console.log(`Return status from API: ${res}`);
             setAuthToken(res);
+            createSearchHistory();
             setLoggedIn(true);
         }).catch(error => {
             console.log(`Login error: ${error}`);

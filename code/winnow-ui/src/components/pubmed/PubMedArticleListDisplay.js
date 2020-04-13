@@ -39,8 +39,8 @@ function PubMedArticleListDisplay(props) {
                 setIsLoaded(true);
                 setHaveResults(true);
             }).catch(err => {
-                setError(err);
-                setAlertType('danger');
+            setError(err);
+            setAlertType('danger');
             setIsLoaded(true);
         });
     }, [haveResults, props, listData]);
@@ -51,7 +51,8 @@ function PubMedArticleListDisplay(props) {
             <div>
                 <Alert variant={alertType}>{error}</Alert>
                 <Form>
-                    <h3> Publications for {listData.symbol} ({listData.geneId}) and {listData.name} ({listData.meshId})</h3>
+                    <h3> Publications for {listData.symbol} ({listData.geneId})
+                        and {listData.name} ({listData.meshId})</h3>
                     <Table striped bordered hover>
                         <thead>
                         <tr>
@@ -67,25 +68,29 @@ function PubMedArticleListDisplay(props) {
                                 <tr key={index}>
                                     <td title={value.title}
                                         style={{
-                                        border: 0,
-                                        display: "inline-block",
-                                        width: "auto",
-                                        maxWidth: "250px",
-                                        overflow: "hidden",
-                                        textOverflow: "ellipsis",
-                                        whiteSpace: "nowrap",
-                                    }}>{value.title}</td>
+                                            border: 0,
+                                            display: "inline-block",
+                                            width: "auto",
+                                            maxWidth: "250px",
+                                            overflow: "hidden",
+                                            textOverflow: "ellipsis",
+                                            whiteSpace: "nowrap",
+                                        }}>{value.title}</td>
                                     <td>{
                                         value.authors.map((author) => {
-                                           return (
-                                               author.lastName
-                                           )
+                                            return (
+                                                author.lastName
+                                            )
                                         }).join(", ")
                                     }</td>
                                     <td>{value.completedDate}</td>
-                                    <td><a target="_blank"
-                                           rel="noopener noreferrer"
-                                           href={`${PUBMED_BASE_URL}/${value.publicationId}`}>PubMed Article #{value.publicationId}</a>
+                                    <td><a
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        href={`${PUBMED_BASE_URL}/${value.publicationId}`}
+                                    >
+                                        PubMed Article #{value.publicationId}
+                                    </a>
                                     </td>
                                 </tr>
                             );

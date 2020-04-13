@@ -1,6 +1,6 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
-import * as Constants from '../constants';
+import * as C from '../constants';
 
 
 /**
@@ -8,10 +8,10 @@ import * as Constants from '../constants';
  * @return {Promise<T>}
  */
 export const fetchProfileData = () => {
-    console.info(`fetchProfileData: ${Constants.WINNOW_API_BASE_URL}/profile`);
+    console.info(`fetchProfileData: ${C.WINNOW_API_BASE_URL}/profile`);
     return new Promise((resolve, reject) => {
         axios.get(
-            `${Constants.WINNOW_API_BASE_URL}/profile`,
+            `${C.WINNOW_API_BASE_URL}/profile`,
             {
                 headers: new AuthService().getAuthHeader()
             }
@@ -29,10 +29,10 @@ export const fetchProfileData = () => {
  * @return {Promise<T>}
  */
 export const sendRegistration = (credentials) => {
-    console.info(`sendRegistration: ${Constants.WINNOW_API_BASE_URL}/registration`);
+    console.info(`sendRegistration: ${C.WINNOW_API_BASE_URL}/registration`);
     return new Promise((resolve, reject) => {
         axios.post(
-            `${Constants.WINNOW_API_BASE_URL}/registration`,
+            `${C.WINNOW_API_BASE_URL}/registration`,
             credentials,
         )
             .then(res => {
@@ -53,10 +53,10 @@ export const sendRegistration = (credentials) => {
  * @return {Promise<T>}
  */
 export const sendLoginCredentials = (credentials) => {
-    console.info(`sendLoginCredentials: ${Constants.WINNOW_API_BASE_URL}/login`);
+    console.info(`sendLoginCredentials: ${C.WINNOW_API_BASE_URL}/login`);
     return new Promise((resolve, reject) => {
         axios.post(
-            `${Constants.WINNOW_API_BASE_URL}/login`,
+            `${C.WINNOW_API_BASE_URL}/login`,
             credentials,
         )
             .then(res => {
@@ -76,7 +76,7 @@ export const sendLoginCredentials = (credentials) => {
 export const sendProfileUpdate = (userInfo) => {
     return new Promise((resolve, reject) => {
         axios.patch(
-            `${Constants.WINNOW_API_BASE_URL}/profile`,
+            `${C.WINNOW_API_BASE_URL}/profile`,
             userInfo,
             {
                 headers: this.getAuthHeader(),
@@ -98,7 +98,7 @@ export const sendProfileUpdate = (userInfo) => {
 export const sendChangePassword = (credentials) => {
     return new Promise((resolve, reject) => {
         axios.put(
-            `${Constants.WINNOW_API_BASE_URL}/profile`,
+            `${C.WINNOW_API_BASE_URL}/profile`,
             credentials,
             {
                 headers: this.getAuthHeader(),
@@ -125,7 +125,7 @@ class AuthService {
      * @returns { await Promise<AxiosResponse<T>>}
      */
     register(credentials) {
-        return axios.post(`${Constants.WINNOW_API_BASE_URL}/registration`,
+        return axios.post(`${C.WINNOW_API_BASE_URL}/registration`,
             credentials);
     }
 
@@ -137,7 +137,7 @@ class AuthService {
      */
     async getProfile() {
         return axios.get(
-            `${Constants.WINNOW_API_BASE_URL}/profile`,
+            `${C.WINNOW_API_BASE_URL}/profile`,
             {
                 headers: this.getAuthHeader(),
             }
@@ -188,7 +188,7 @@ class AuthService {
      * @returns {null|String}
      */
     getUserInfo() {
-        let token = Cookies.get("token") ? Cookies.get("token") : null;
+        let token = Cookies.get(C.WINNOW_TOKEN) ? Cookies.get(C.WINNOW_TOKEN) : null;
         if (token !== null) {
             console.info(`getUserInfo: ${this.parseToken(token).sub}`);
             return this.parseToken(token).sub;
@@ -202,7 +202,7 @@ class AuthService {
      * @returns boolean
      */
     isTokenExpired() {
-        let token = Cookies.get("token") ? Cookies.get("token") : null;
+        let token = Cookies.get(C.WINNOW_TOKEN) ? Cookies.get(C.WINNOW_TOKEN) : null;
         if (token !== null) {
             let dateNow = new Date();
             let tokenExpiry = new Date(this.parseToken(token).exp * 1000);
@@ -213,7 +213,7 @@ class AuthService {
     }
 
     getAuthHeader() {
-        let token = Cookies.get("token") ? Cookies.get("token") : null;
+        let token = Cookies.get(C.WINNOW_TOKEN) ? Cookies.get(C.WINNOW_TOKEN) : null;
         return {'Authorization': `Bearer ${token}`};
     }
 
@@ -222,7 +222,7 @@ class AuthService {
      */
     logOut() {
         //localStorage.removeItem("userInfo");
-        //return axios.post(Constants.WINNOW_API_BASE_URL + 'logout', {}, Constants.authHeader());
+        //return axios.post(C.WINNOW_API_BASE_URL + 'logout', {}, C.authHeader());
     }
 }
 

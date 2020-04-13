@@ -17,13 +17,18 @@ function SearchTermUploader(props) {
         } else {
             /* Process input */
             fetchSearchResults({
-                searchQuery: ["D0000012", "D0001234", "D000928326"],
-                queryType: batchQueryType,
-                queryFormat: batchQueryFormat
+                searchQuery: {
+                    geneId: [],
+                    symbol: [],
+                    description: [],
+                    meshTreeId: [],
+                    meshId: ["D0000012", "D0001234", "D000928326"]
+                },
             })
                 .then(res => {
                     setResultData(res);
                     setIsLoaded(true);
+                    sessionStorage.removeItem('mtt');
                 }).catch(err => {
                 setIsLoaded(true);
             });
@@ -32,12 +37,25 @@ function SearchTermUploader(props) {
         }
     }, [haveResults, props, batchQueryType, batchQueryFormat]);
 
-    const queryFormatRadio = () => {
-        console.info(`SearchTermUploader: radios ${props.qType}`);
-        switch(props.qType) {
-            case 'mesh':
-                return (
-                    <div>
+    if (isLoaded) {
+        if (!haveResults) {
+            return (
+                <div>
+                    <Form>
+                        <Form.Check
+                            inline
+                            type="radio"
+                            label="Gene Id"
+                            name="queryFormat"
+                            value="geneid"
+                        />
+                        <Form.Check
+                            inline
+                            type="radio"
+                            label="Gene Symbol"
+                            name="queryFormat"
+                            value="genesymbol"
+                        />
                         <Form.Check
                             inline
                             type="radio"
@@ -59,38 +77,6 @@ function SearchTermUploader(props) {
                             name="queryFormat"
                             value="meshname"
                         />
-                    </div>
-                );
-            case 'gene':
-                return (
-                    <div>
-                        <Form.Check
-                            inline
-                            type="radio"
-                            label="Gene Id"
-                            name="queryFormat"
-                            value="geneid"
-                        />
-                        <Form.Check
-                            inline
-                            type="radio"
-                            label="Gene Symbol"
-                            name="queryFormat"
-                            value="genesymbol"
-                        />
-                    </div>
-                );
-            default:
-                return null
-        }
-    };
-
-    if (isLoaded) {
-        if (!haveResults) {
-            return (
-                <div>
-                    <Form>
-                        {queryFormatRadio()}
                         <Form.Group>
                             <Form.Control
                                 id="fileUpload"

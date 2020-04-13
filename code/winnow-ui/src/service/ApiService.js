@@ -3,13 +3,13 @@
  * those related to authentication/authorization.
  */
 import axios from 'axios';
-import * as Constants from '../constants';
+import * as C from '../constants';
 import AuthService from "./AuthService";
 
 export const fetchUserBookmarks = () => {
     return new Promise((resolve, reject) => {
         axios.get(
-            `${Constants.WINNOW_API_BASE_URL}/bookmarks`,
+            `${C.WINNOW_API_BASE_URL}/bookmarks`,
             {
                 headers: AuthService.getAuthHeader(),
             }
@@ -28,7 +28,7 @@ export const saveUserBookmark = (data) => {
             reject("Bookmark name can not be blank!")
         }
         axios.post(
-            `${Constants.WINNOW_API_BASE_URL}/bookmarks`,
+            `${C.WINNOW_API_BASE_URL}/bookmarks`,
             data,
             {
                 headers: AuthService.getAuthHeader(),
@@ -45,7 +45,7 @@ export const removeUserBookmark = (bookmarkId) => {
     console.info(`removeUserBookmark: ${JSON.stringify(bookmarkId)}`);
     return new Promise((resolve, reject) => {
         axios.delete(
-            `${Constants.WINNOW_API_BASE_URL}/bookmarks/${bookmarkId}`,
+            `${C.WINNOW_API_BASE_URL}/bookmarks/${bookmarkId}`,
             {
                 headers: AuthService.getAuthHeader(),
             }
@@ -61,7 +61,7 @@ export const fetchSearchResults = (data) => {
     console.info(`fetchSearchResults: ${JSON.stringify(data)}`);
     return new Promise((resolve, reject) => {
         axios.post(
-            `${Constants.WINNOW_API_BASE_URL}/search`,
+            `${C.WINNOW_API_BASE_URL}/search`,
             data,
             {
                 headers: AuthService.getAuthHeader(),
@@ -77,7 +77,7 @@ export const fetchSearchResults = (data) => {
 export const fetchGenes = (partial) => {
     return new Promise((resolve, reject) => {
         axios.get(
-            `${Constants.WINNOW_API_BASE_URL}/genes/search/${partial}`,
+            `${C.WINNOW_API_BASE_URL}/genes/search/${partial}`,
             {
                 headers: AuthService.getAuthHeader(),
             }
@@ -92,7 +92,7 @@ export const fetchGenes = (partial) => {
 export const fetchGeneDetails = (geneId) => {
     return new Promise((resolve, reject) => {
         axios.post(
-            `${Constants.WINNOW_API_BASE_URL}/genes`,
+            `${C.WINNOW_API_BASE_URL}/genes`,
             {geneId: geneId},
             {
                 headers: AuthService.getAuthHeader(),
@@ -108,7 +108,7 @@ export const fetchGeneDetails = (geneId) => {
 export const fetchNCBIGeneDetails = (geneId) => {
     return new Promise((resolve, reject) => {
         axios.get(
-            `https://eutils.ncbi.nlm.nih.gov/entrez/eutils/esummary.fcgi?db=gene&retmode=json&api_key=be6a6f419f4f31e609e53403ecb4c0c92b08&id=${geneId}`,
+            `${C.NCBI_API_BASE}/esummary.fcgi?db=gene&retmode=json&api_key=${C.NCBI_API_TOKEN}&id=${geneId}`,
         )
             .then(res => {
                 resolve(res.data);
@@ -118,10 +118,10 @@ export const fetchNCBIGeneDetails = (geneId) => {
 };
 
 export const fetchMeshtermCat = () => {
-    console.debug(`fetchMeshtermCat: ${Constants.WINNOW_API_BASE_URL}/meshterms/category`);
+    console.debug(`fetchMeshtermCat: ${C.WINNOW_API_BASE_URL}/meshterms/category`);
     return new Promise((resolve, reject) => {
         axios.get(
-            `${Constants.WINNOW_API_BASE_URL}/meshterms/category`,
+            `${C.WINNOW_API_BASE_URL}/meshterms/category`,
             {
                 headers: AuthService.getAuthHeader(),
             }
@@ -134,10 +134,10 @@ export const fetchMeshtermCat = () => {
 };
 
 export const fetchMeshtermTree = (node) => {
-    console.debug(`fetchMeshtermTree: ${Constants.WINNOW_API_BASE_URL}/meshterms/tree/parentid/${node}`);
+    console.debug(`fetchMeshtermTree: ${C.WINNOW_API_BASE_URL}/meshterms/tree/parentid/${node}`);
     return new Promise((resolve, reject) => {
         axios.get(
-            `${Constants.WINNOW_API_BASE_URL}/meshterms/tree/parentid/${node}`,
+            `${C.WINNOW_API_BASE_URL}/meshterms/tree/parentid/${node}`,
             {
                 headers: AuthService.getAuthHeader(),
             }
@@ -150,10 +150,10 @@ export const fetchMeshtermTree = (node) => {
 };
 
 export const fetchMeshtermNode = (node) => {
-    console.debug(`fetchMeshtermNode: ${Constants.WINNOW_API_BASE_URL}/meshterms/tree/nodeid/${node}`);
+    console.debug(`fetchMeshtermNode: ${C.WINNOW_API_BASE_URL}/meshterms/tree/nodeid/${node}`);
     return new Promise((resolve, reject) => {
         axios.get(
-            `${Constants.WINNOW_API_BASE_URL}/meshterms/tree/nodeid/${node}`,
+            `${C.WINNOW_API_BASE_URL}/meshterms/tree/nodeid/${node}`,
             {
                 headers: AuthService.getAuthHeader(),
             }
@@ -186,7 +186,7 @@ export const fetchPubMedArticleList = (data) => {
     console.info(`fetchPubMedArticleList: ${JSON.stringify(data)}`);
     return new Promise((resolve, reject) => {
         axios.post(
-            `${Constants.WINNOW_API_BASE_URL}/publications`,
+            `${C.WINNOW_API_BASE_URL}/publications`,
             data,
             {
                 headers: AuthService.getAuthHeader(),
@@ -200,12 +200,12 @@ export const fetchPubMedArticleList = (data) => {
 };
 
 export const fetchApiStatus = () => {
-    console.debug(`fetchApiStatus: ${Constants.WINNOW_API_BASE_URL}/status`);
+    console.debug(`fetchApiStatus: ${C.WINNOW_API_BASE_URL}/status`);
     return new Promise((resolve, reject) => {
         axios.get(
-            `${Constants.WINNOW_API_BASE_URL}/status`,
+            `${C.WINNOW_API_BASE_URL}/status`,
             {
-                timeout: 1500
+                timeout: C.WINNOW_API_TIMEOUT
             }
         )
             .then(res => {

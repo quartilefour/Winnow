@@ -5,6 +5,10 @@ body {
     sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /*background-image: url("./img/dna-helix_1048-2465.jpg");
+    background-size: cover;*/
+    background: rgb(58,101,180);
+    background: linear-gradient(117deg, rgba(58,101,180,1) 0%, rgba(29,154,253,0.9304096638655462) 50%, rgba(69,226,252,1) 100%);
 }
 
 code {
@@ -57,6 +61,8 @@ code {
     position: relative;
     z-index: 98;
     background-color: white;
+    color: royalblue;
+    /*box-shadow: -2px -2px 5px darkgrey;*/
 }
 /*
 #dashboard-tabs .nav-item .nav-link.active::before {
@@ -77,9 +83,11 @@ code {
     border-right: 0;
     border-color: #1c7430;
     border-radius: 4px 0 0 4px;
-    padding: 2em;
-    margin-bottom: 1em;
-    background-color: #eee;
+    padding: 1.5em;
+    margin-bottom: 1.5em;
+    background-color: #ddd;
+    font-weight: bold;
+    color: cornflowerblue;
 }
 
 #dashboard-outer-tabs, .outer-tabs {
@@ -93,6 +101,7 @@ code {
     z-index: 1;
     border-radius: 4px;
     height: 70vh;
+    box-shadow: 3px 3px 5px grey;
 }
 
 .super-treeview {
@@ -111,4 +120,17 @@ code {
 
 .exit-results :hover {
     cursor: pointer;
+}
+
+.gene-detail-index {
+    font-style: italic;
+}
+
+.gene-detail-table-div {
+    clear: both;
+    margin-bottom: 1em;
+}
+
+.gene-detail-table-div button{
+    float: right;
 }

@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
+import * as C from "./constants";
 import NavBar from "./components/common/NavBar";
 import Login from "./components/user/Login";
 import Register from "./components/user/Register";
@@ -26,7 +27,7 @@ function App(props) {
     const [apiReady, setApiReady] = useState(false);
     const [timeOut, setTimeOut] = useState(0)
     /* Authentication stateful objects */
-    const token = Cookies.get("token") ? Cookies.get("token") : null;
+    const token = Cookies.get(C.WINNOW_TOKEN) ? Cookies.get(C.WINNOW_TOKEN) : null;
     const [authToken, setAuthToken] = useState(token);
 
     useEffect(() => {
@@ -38,20 +39,22 @@ function App(props) {
             .catch(err => {
                 setApiReady(false);
                 setTimeOut(setTimeout(fetchApiStatus, 15000))
-                console.info(`apistatus: ${timeOut}`);
+                console.info(`apiStatus: ${timeOut}`);
             })
     })
     /**
      * Updates the user's JWT upon login/logout.
      *
+     * Sets cookie to Secure (requires HTTPS) in PROD environments.
+     *
      * @param data - JWT
      */
     const setToken = (data) => {
         if (data === null) {
-            Cookies.remove("token");
+            Cookies.remove(C.WINNOW_TOKEN);
             sessionStorage.clear();
         } else {
-            Cookies.set("token", data);
+            Cookies.set(C.WINNOW_TOKEN, data, {secure: C.W_ENV === 'PROD', sameSite: 'strict'});
         }
         setAuthToken(data);
     };

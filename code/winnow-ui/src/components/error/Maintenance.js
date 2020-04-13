@@ -1,9 +1,6 @@
 import React, {useEffect, useState} from "react";
-import {Link, Redirect} from "react-router-dom";
-import {Card, Form, Button, Alert} from "react-bootstrap";
-import {sendLoginCredentials} from "../../service/AuthService";
+import {Card, Alert} from "react-bootstrap";
 import logoImg from "../../img/logo.png";
-import {useAuth} from "../../context/auth";
 import PageLoader from "../common/PageLoader";
 
 /**

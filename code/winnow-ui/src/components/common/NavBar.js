@@ -24,8 +24,8 @@ const NavBar = () => {
 
     useEffect(() => {
         if (isLoggingOut) {
-            console.info(`NavBar: Clearing authToken: ${authToken}`);
             setAuthToken(null);
+            setIsLoggingOut(false);
             console.info(`NavBar: Clearing authToken: ${authToken}`);
 
         }

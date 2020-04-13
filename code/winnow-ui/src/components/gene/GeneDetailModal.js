@@ -1,7 +1,8 @@
 import React, {useEffect, useState} from 'react';
-import {Alert, Button, Modal, Table} from "react-bootstrap";
+import {Alert, Button, Image, Modal, Table} from "react-bootstrap";
 import PageLoader from "../common/PageLoader";
 import {fetchGeneDetails, fetchNCBIGeneDetails} from "../../service/ApiService";
+import dnaStrand from "../../img/dna-lg.png";
 
 /**
  * GeneDetailModal renders the information for a given Gene.
@@ -27,7 +28,7 @@ function GeneDetailModal(props) {
                         setGeneDetailNCBI(ncbiRes.result[props.geneid])
                         setIsLoaded(true)
                     })
-                    .catch( err=> {
+                    .catch(err => {
 
                     })
             })
@@ -35,6 +36,9 @@ function GeneDetailModal(props) {
                 setError(err);
                 setAlertType('danger');
             })
+        return function () {
+
+        }
     }, [props]);
 
     if (isLoaded) {
@@ -42,23 +46,36 @@ function GeneDetailModal(props) {
             <Modal
                 {...props}
                 size="xl"
+                backdrop="static"
                 aria-labelledby="contained-modal-title-vcenter"
+                scrollable={true}
                 centered
             >
                 <Modal.Header closeButton>
-                    <Modal.Title>Gene Details</Modal.Title>
+                    <Modal.Title className="text-center">
+                        <Image
+                            alt="DNA Helix"
+                            src={dnaStrand}
+                            style={{
+                                display: "inline-block",
+                                margin: "auto",
+                                width: "50%"
+                            }}
+                            fluid
+                        />
+                    </Modal.Title>
                     <Alert variant={alertType}>{error}</Alert>
                 </Modal.Header>
                 <Modal.Body>
                     <div>
-                        <h2>{geneDetail.symbol}</h2>
-                        <h3>{geneDetail.description}</h3>
-                        <h5>{geneDetail.geneId} - {geneDetailNCBI.genomicinfo[0].chraccver}</h5>
+                        <h2 className="gene-detail-symbol">{geneDetail.symbol}</h2>
+                        <h3 className="gene-detail-desc">{geneDetail.description}</h3>
+                        <h5 className="gene-detail-index">{geneDetail.geneId} - {geneDetailNCBI.genomicinfo[0].chraccver}</h5>
                     </div>
                     <div id={`seqv_`}>
                     </div>
-                    <p>{geneDetailNCBI.summary}</p>
-                    <div>
+                    <p className="gene-detail-summary">{geneDetailNCBI.summary}</p>
+                    <div className="gene-detail-table-div">
                         <h3>MeSH Terms Enriched for {geneDetail.symbol}</h3>
                         <Table size="sm" striped bordered hover>
                             <thead>
@@ -82,11 +99,13 @@ function GeneDetailModal(props) {
                         </Table>
                         <Button
                             size="sm"
-                            variant="info">
+                            variant="info"
+                            disabled={!geneDetail.meshResults.length}
+                        >
                             Export MeSH Terms
                         </Button>
                     </div>
-                    <div>
+                    <div className="gene-detail-table-div">
                         <h3>Genes Co-occurring in Publications with {geneDetail.symbol}</h3>
                         <Table size="sm" striped bordered hover>
                             <thead>
@@ -110,7 +129,9 @@ function GeneDetailModal(props) {
                         </Table>
                         <Button
                             size="sm"
-                            variant="info">
+                            variant="info"
+                            disabled={!geneDetail.geneResults.length}
+                        >
                             Export Co-occurring Genes
                         </Button>
                     </div>
