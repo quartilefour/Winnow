@@ -5,18 +5,20 @@ import com.cscie599.gfn.entities.GeneMeshterm;
 import com.cscie599.gfn.entities.Search;
 import com.cscie599.gfn.entities.User;
 import com.cscie599.gfn.repository.GeneMeshtermRepository;
+import com.cscie599.gfn.repository.GeneRepository;
+import com.cscie599.gfn.repository.MeshtermRepository;
 import com.cscie599.gfn.repository.SearchRepository;
 import com.cscie599.gfn.repository.UserRepository;
 import com.cscie599.gfn.views.GeneMeshtermView;
 import com.cscie599.gfn.views.SearchView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
-import org.apache.commons.lang3.StringUtils;
 
 import java.util.*;
 
@@ -30,6 +32,12 @@ public class SearchController {
 
     @Autowired
     GeneMeshtermRepository geneMeshtermRepository;
+
+    @Autowired
+    GeneRepository geneRepository;
+
+    @Autowired
+    MeshtermRepository meshtermRepository;
 
     @Autowired
     UserRepository userRepository;
@@ -49,8 +57,6 @@ public class SearchController {
                     search.getSearchId(),
                     search.getSearchName().trim(),
                     search.getSearchQuery(),
-                    search.getQueryType().trim(),
-                    search.getQueryFormat().trim(),
                     search.getCreatedDate(),
                     search.getUpdatedAt()));
         }
@@ -62,9 +68,14 @@ public class SearchController {
      * POST to /bookmarks
      * Request
      * {
-     *     "searchQuery": [term1, term2, term3,],
-     *     "queryType": "mesh|gene"
-     *     "queryFormat": "meshid|meshtreeid|meshname|geneid|genesymbol"
+     *     "searchQuery": {
+     *         "geneId": ["geneId1", "geneId2",],
+     *         "description": ["geneDescription1", "geneDescription2",],
+     *         "symbol": ["geneSymbol1", "geneSymbol2",],
+     *         "meshId": ["meshId1", "meshId2",],
+     *         "meshTreeId": ["meshTreeId1", "meshTreeId2",],
+     *         "name": ["meshName1", "meshName2",]
+     *     }
      *     "searchName": "search name"
      * }
      */
@@ -85,17 +96,9 @@ public class SearchController {
         String userEmail = authentication.getPrincipal().toString();
         User user = userRepository.findByUserEmail(userEmail);
         Search search = new Search();
-        String searchName = body.get("searchName").toString();
-        Object searchQueryObject = body.get("searchQuery");
-        List<String> searchQueryList = Arrays.asList(body.get("searchQuery").toString()
-                .substring(1, body.get("searchQuery").toString().length() - 1).split("\\s*,\\s*"));
-        String queryType = body.get("queryType").toString();
-        String queryFormat = body.get("queryFormat").toString();
         search.setCreatedBy(user);
-        search.setSearchName(searchName);
-        search.setSearchQuery(searchQueryList);
-        search.setQueryType(queryType);
-        search.setQueryFormat(queryFormat);
+        search.setSearchName(body.get("searchName").toString());
+        search.setSearchQuery((HashMap) body.get("searchQuery"));
         search.setCreatedDate(new Date());
         search.setUpdatedAt(new Date());
         Search savedSearch = searchRepository.save(search);
@@ -123,39 +126,49 @@ public class SearchController {
     }
 
     /*
-     * When I click the search button after entering my mesh terms in MeSH 2 Gene or genes in Gene 2 MeSH,
+     * When I click the search button after entering my genes and/or MeSH terms,
      * POST to /search
      * Request
      * {
-     *     "searchQuery": [term1, term2, term3,],
-     *     "queryType": "mesh|gene"
-     *     "queryFormat": "meshid|meshtreeid|meshname|geneid|genesymbol"
+     *     "searchQuery": {
+     *         "geneId": ["geneId1", "geneId2",],
+     *         "description": ["geneDescription1", "geneDescription2",],
+     *         "symbol": ["geneSymbol1", "geneSymbol2",],
+     *         "meshId": ["meshId1", "meshId2",],
+     *         "meshTreeId": ["meshTreeId1", "meshTreeId2",],
+     *         "name": ["meshName1", "meshName2",]
+     *     }
      * }
      * Response
      * {
-     *      "searchQuery": [term1, term2, term3,],
-     *      "queryType": "mesh|gene",
-     *      "queryFormat": "meshid|meshtreeid|meshname|geneid|genesymbol"
-     *      "results": [
-     *          {
-     *              "geneId": "geneId1",
-     *              "description": "geneDescription1",
-     *              "symbol": "geneSymbol1",
-     *              "meshId": "meshId1",
-     *              "name": "meshName1",
-     *              "publicationCount": "publicationCount",
-     *              "pvalue": "pValue"
-     *          },
-     *          {
-     *              "geneId": "geneId2",
-     *              "description": "geneDescription2",
-     *              "symbol": "geneSymbol2",
-     *              "meshId": "meshId2",
-     *              "name": "meshName2",
-     *              "publicationCount": "publicationCount",
-     *              "pvalue": "pValue"
-     *          },
-     *      ]
+     *     "searchQuery": {
+     *         "geneId": ["geneId1", "geneId2",],
+     *         "description": ["geneDescription1", "geneDescription2",],
+     *         "symbol": ["geneSymbol1", "geneSymbol2",],
+     *         "meshId": ["meshId1", "meshId2",],
+     *         "meshTreeId": ["meshTreeId1", "meshTreeId2",],
+     *         "name": ["meshName1", "meshName2",]
+     *     }
+     *     "results": [
+     *         {
+     *             "geneId": "geneId1",
+     *             "description": "geneDescription1",
+     *             "symbol": "geneSymbol1",
+     *             "meshId": "meshId1",
+     *             "name": "meshName1",
+     *             "publicationCount": "publicationCount",
+     *             "pvalue": "pValue"
+     *         },
+     *         {
+     *             "geneId": "geneId2",
+     *             "description": "geneDescription2",
+     *             "symbol": "geneSymbol2",
+     *             "meshId": "meshId2",
+     *             "name": "meshName2",
+     *             "publicationCount": "publicationCount",
+     *             "pvalue": "pValue"
+     *         },
+     *     ]
      * }
      */
     @ApiOperation(value = "Search results.")
@@ -165,48 +178,30 @@ public class SearchController {
         if (response.containsKey("error")) {
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
-        Object searchQueryObject = body.get("searchQuery");
-        List<String> searchQueryList = Arrays.asList(body.get("searchQuery").toString()
-                .substring(1, body.get("searchQuery").toString().length() - 1).split("\\s*,\\s*"));
-        String queryType = body.get("queryType").toString();
-        String queryFormat = body.get("queryFormat").toString();
+        HashMap<String, Object> searchQuery = (HashMap) body.get("searchQuery");
+        List<String> geneIds = Arrays.asList(searchQuery.get("geneId").toString()
+                .substring(1, searchQuery.get("geneId").toString().length() - 1).split("\\s*,\\s*"));
+        List<String> symbols = Arrays.asList(searchQuery.get("symbol").toString()
+                .substring(1, searchQuery.get("symbol").toString().length() - 1).split("\\s*,\\s*"));
+        List<String> descriptions = Arrays.asList(searchQuery.get("description").toString()
+                .substring(1, searchQuery.get("description").toString().length() - 1).split("\\s*,\\s*"));
+        List<String> meshIds = Arrays.asList(searchQuery.get("meshId").toString()
+                .substring(1, searchQuery.get("meshId").toString().length() - 1).split("\\s*,\\s*"));
+        List<String> names = Arrays.asList(searchQuery.get("name").toString()
+                .substring(1, searchQuery.get("name").toString().length() - 1).split("\\s*,\\s*"));
+        List<String> meshTreeIds = Arrays.asList(searchQuery.get("meshTreeId").toString()
+                .substring(1, searchQuery.get("meshTreeId").toString().length() - 1).split("\\s*,\\s*"));
+        List<String> updatedMeshTreeIds = updateMeshTreeIds(meshTreeIds);
+        List<String> updatedGeneIds = geneRepository.findGeneIdsByGeneIdsOrSymbolsOrDescriptions(geneIds, symbols, descriptions);
+        List<String> updatedMeshIds = meshtermRepository.findMeshIdsByMeshIdsOrNamesOrMeshTreeIds(meshIds, names, updatedMeshTreeIds);
         List<GeneMeshtermView> geneMeshtermViews = new ArrayList<>();
         List<GeneMeshterm> geneMeshterms = new ArrayList<>();
-        switch (queryFormat) {
-            case "meshid":
-                geneMeshterms = geneMeshtermRepository.findByMeshIdsOrderByPValue(searchQueryList);
-                break;
-            case "meshtreeid":
-                // Update the search query list so that the mesh tree records with empty parent ids have "." before it
-                // (for example, "B50" -> ".B50") for findByMeshTreeIds() method
-                List<String> updatedSearchQueryList = new ArrayList<String>();
-                for (String s : searchQueryList) {
-                    String[] treeId = s.toString().split("\\.");
-                    String treeParentId = "";
-                    String treeNodeId = treeId[treeId.length - 1];
-                    if (treeId.length >= 2) {
-                        for (int i = 0; i < treeId.length - 2; i++) {
-                            treeParentId += treeId[i] + ".";
-                        }
-                        treeParentId += treeId[treeId.length - 2];
-                    }
-                    if (treeId.length == 1) {
-                        treeParentId = "";
-                    }
-                    updatedSearchQueryList.add(treeParentId + "." + treeNodeId);
-                }
-                geneMeshterms = geneMeshtermRepository.findByMeshTreeIdsOrderByPValue(updatedSearchQueryList);
-                break;
-            case "meshname":
-                geneMeshterms = geneMeshtermRepository.findByMeshNamesOrderByPValue(searchQueryList);
-                break;
-            case "geneid":
-                geneMeshterms = geneMeshtermRepository.findByGeneIdsOrderByPValue(searchQueryList);
-                break;
-            case "genesymbol":
-                geneMeshterms = geneMeshtermRepository.findByGeneSymbolsOrderByPValue(searchQueryList);
-                break;
-            default:
+        if (updatedGeneIds.toString() == "[]" && !(updatedMeshIds.toString() == "[]")) {
+            geneMeshterms = geneMeshtermRepository.findByMeshIdsOrderByPValue(updatedMeshIds);
+        } else if (!(updatedGeneIds.toString() == "[]") && updatedMeshIds.toString() == "[]") {
+            geneMeshterms = geneMeshtermRepository.findByGeneIdsOrderByPValue(updatedGeneIds);
+        } else if (!(updatedGeneIds.toString() == "[]") && !(updatedMeshIds.toString() == "[]")) {
+            geneMeshterms = geneMeshtermRepository.findByGeneIdsAndMeshIdsOrderByPValue(updatedGeneIds, updatedMeshIds);
         }
         for (GeneMeshterm geneMeshterm : geneMeshterms) {
             geneMeshtermViews.add(new GeneMeshtermView(
@@ -218,9 +213,7 @@ public class SearchController {
                     geneMeshterm.getPublicationCount(),
                     geneMeshterm.getPValue()));
         }
-        response.put("searchQuery", searchQueryObject);
-        response.put("queryType", queryType);
-        response.put("queryFormat", queryFormat);
+        response.put("searchQuery", searchQuery);
         response.put("results", geneMeshtermViews);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -232,26 +225,57 @@ public class SearchController {
         LinkedHashMap<String, Object> response = new LinkedHashMap<>();
         if (!(body.containsKey("searchQuery"))) {
             response.put("error", "Missing search query.");
-        } else if (!(body.containsKey("queryType"))) {
-            response.put("error", "Missing query type.");
-        } else if (!(body.containsKey("queryFormat"))) {
-            response.put("error", "Missing query format.");
-        } else if (StringUtils.isBlank(body.get("queryType").toString())) {
-            response.put("error", "Query type cannot be blank.");
-        } else if (StringUtils.isBlank(body.get("queryFormat").toString())) {
-            response.put("error", "Query format cannot be blank.");
-        } else if (!(body.get("searchQuery") instanceof List<?>)) {
+            return response;
+        } else if (!(body.get("searchQuery") instanceof HashMap)) {
             response.put("error", "Invalid search query.");
-        } else if (body.get("searchQuery").toString() == "[]") {
+            return response;
+        }
+        HashMap<String, Object> searchQuery = (HashMap) body.get("searchQuery");
+        if (!(searchQuery.containsKey("geneId"))) {
+            response.put("error", "Missing geneId.");
+        } else if (!(searchQuery.containsKey("symbol"))) {
+            response.put("error", "Missing symbol.");
+        } else if (!(searchQuery.containsKey("description"))) {
+            response.put("error", "Missing description.");
+        } else if (!(searchQuery.containsKey("meshTreeId"))) {
+            response.put("error", "Missing meshTreeId.");
+        } else if (!(searchQuery.containsKey("meshId"))) {
+            response.put("error", "Missing meshId.");
+        } else if (!(searchQuery.containsKey("name"))) {
+            response.put("error", "Missing name.");
+        } else if (searchQuery.get("geneId").toString() == "[]"
+                && searchQuery.get("symbol").toString() == "[]"
+                && searchQuery.get("description").toString() == "[]"
+                && searchQuery.get("meshTreeId").toString() == "[]"
+                && searchQuery.get("meshId").toString() == "[]"
+                && searchQuery.get("name").toString() == "[]") {
             response.put("error", "Search query cannot be empty.");
-        } else if (!body.get("queryType").equals("gene") && !body.get("queryType").equals("mesh")) {
-            response.put("error", "Invalid query type.");
-        } else if (!body.get("queryFormat").equals("meshid") && !body.get("queryFormat").equals("meshtreeid")
-                && !body.get("queryFormat").equals("meshname") && !body.get("queryFormat").equals("geneid")
-                && !body.get("queryFormat").equals("genesymbol")) {
-            response.put("error", "Invalid query format.");
         }
         return response;
+    }
+
+    /*
+     * Update the search query list so that the mesh tree records with empty parent ids have "." before it
+     * (for example, "B50" -> ".B50") for findMeshIdsByMeshIdsOrNamesOrMeshTreeIds() method in MeshtermRepository.
+     */
+    List<String> updateMeshTreeIds(List<String> meshTreeIds) {
+        List<String> updatedMeshTreeIds = new ArrayList<>();
+        for (String s : meshTreeIds) {
+            String[] treeId = s.toString().split("\\.");
+            String treeParentId = "";
+            String treeNodeId = treeId[treeId.length - 1];
+            if (treeId.length >= 2) {
+                for (int i = 0; i < treeId.length - 2; i++) {
+                    treeParentId += treeId[i] + ".";
+                }
+                treeParentId += treeId[treeId.length - 2];
+            }
+            if (treeId.length == 1) {
+                treeParentId = "";
+            }
+            updatedMeshTreeIds.add(treeParentId + "." + treeNodeId);
+        }
+        return updatedMeshTreeIds;
     }
 
 }

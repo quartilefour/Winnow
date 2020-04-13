@@ -68,11 +68,9 @@ CREATE TABLE "search"
     "created_by"   INTEGER REFERENCES "user" (user_id),
     "created_date" timestamp,
     "search_name"  varchar(20),
-    "search_query" TEXT[],
+    "search_query" jsonb,
     "updated_at"   timestamp,
-    "team_id"      char(20) REFERENCES team (team_id),
-    "query_type"   char(20),
-    "query_format" char(20)
+    "team_id"      char(20) REFERENCES team (team_id)
 );
 
 CREATE TABLE "publication"

@@ -1,24 +1,19 @@
 package com.cscie599.gfn.views;
 
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
 
 public class SearchView {
     private Long searchId;
     private String searchName;
-    private List<String> searchQuery;
-    private String queryType;
-    private String queryFormat;
+    private HashMap<String, Object> searchQuery;
     private Date createdDate;
     private Date updatedAt;
 
-    public SearchView(Long searchId, String searchName, List<String> searchQuery, String queryType, String queryFormat,
-                      Date createdDate, Date updatedAt) {
+    public SearchView(Long searchId, String searchName, HashMap<String, Object> searchQuery, Date createdDate, Date updatedAt) {
         this.searchId = searchId;
         this.searchName = searchName;
         this.searchQuery = searchQuery;
-        this.queryType = queryType;
-        this.queryFormat = queryFormat;
         this.createdDate = createdDate;
         this.updatedAt = updatedAt;
     }
@@ -31,16 +26,8 @@ public class SearchView {
         return searchName;
     }
 
-    public List<String> getSearchQuery() {
+    public HashMap<String, Object> getSearchQuery() {
         return searchQuery;
-    }
-
-    public String getQueryType() {
-        return queryType;
-    }
-
-    public String getQueryFormat() {
-        return queryFormat;
     }
 
     public Date getCreatedDate() {

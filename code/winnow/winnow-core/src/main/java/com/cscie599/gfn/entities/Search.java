@@ -5,7 +5,7 @@
  */
 package com.cscie599.gfn.entities;
 
-import com.vladmihalcea.hibernate.type.array.ListArrayType;
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
 import org.hibernate.annotations.Type;
 import org.hibernate.annotations.TypeDef;
 
@@ -13,7 +13,7 @@ import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.Date;
-import java.util.List;
+import java.util.HashMap;
 
 /**
  *
@@ -22,16 +22,15 @@ import java.util.List;
 @Entity
 @Table(name = "search")
 @TypeDef(
-        name = "list-array",
-        typeClass = ListArrayType.class
+        name = "jsonb",
+        typeClass = JsonBinaryType.class
 )
 @NamedQueries({
     @NamedQuery(name = "Search.findAll", query = "SELECT s FROM Search s"),
     @NamedQuery(name = "Search.findBySearchId", query = "SELECT s FROM Search s WHERE s.searchId = :searchId"),
     @NamedQuery(name = "Search.findByCreatedDate", query = "SELECT s FROM Search s WHERE s.createdDate = :createdDate"),
     @NamedQuery(name = "Search.findBySearchName", query = "SELECT s FROM Search s WHERE s.searchName = :searchName"),
-    @NamedQuery(name = "Search.findByUpdatedAt", query = "SELECT s FROM Search s WHERE s.updatedAt = :updatedAt"),
-    @NamedQuery(name = "Search.findByQueryType", query = "SELECT s FROM Search s WHERE s.queryType = :queryType")})
+    @NamedQuery(name = "Search.findByUpdatedAt", query = "SELECT s FROM Search s WHERE s.updatedAt = :updatedAt")})
 public class Search implements Serializable {
 
     private static final long serialVersionUID = 1L;
@@ -45,19 +44,15 @@ public class Search implements Serializable {
     private Date createdDate;
     @Column(name = "search_name", length = 20)
     private String searchName;
-    @Type(type = "list-array")
+    @Type(type = "jsonb")
     @Column(
             name = "search_query",
-            columnDefinition = "text[]"
+            columnDefinition = "jsonb"
     )
-    private List<String> searchQuery;
+    private HashMap<String, Object> searchQuery;
     @Column(name = "updated_at")
     @Temporal(TemporalType.TIMESTAMP)
     private Date updatedAt;
-    @Column(name = "query_type", length = 20)
-    private String queryType;
-    @Column(name = "query_format", length = 20)
-    private String queryFormat;
     @OneToMany(cascade = CascadeType.ALL, mappedBy = "search")
     private Collection<UserSearchSharing> userSearchSharingCollection;
     @JoinColumn(name = "team_id", referencedColumnName = "team_id")
@@ -98,11 +93,11 @@ public class Search implements Serializable {
         this.searchName = searchName;
     }
 
-    public List<String> getSearchQuery() {
+    public HashMap<String, Object> getSearchQuery() {
         return searchQuery;
     }
 
-    public void setSearchQuery(List<String> searchQuery) {
+    public void setSearchQuery(HashMap<String, Object> searchQuery) {
         this.searchQuery = searchQuery;
     }
 
@@ -112,22 +107,6 @@ public class Search implements Serializable {
 
     public void setUpdatedAt(Date updatedAt) {
         this.updatedAt = updatedAt;
-    }
-
-    public String getQueryType() {
-        return queryType;
-    }
-
-    public void setQueryType(String queryType) {
-        this.queryType = queryType;
-    }
-
-    public String getQueryFormat() {
-        return queryFormat;
-    }
-
-    public void setQueryFormat(String queryFormat) {
-        this.queryFormat = queryFormat;
     }
 
     public Collection<UserSearchSharing> getUserSearchSharingCollection() {
