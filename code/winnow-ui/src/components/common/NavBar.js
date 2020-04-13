@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faQuestionCircle} from "@fortawesome/free-regular-svg-icons";
-import {faUser} from "@fortawesome/free-solid-svg-icons";
+import {faUser, faSignOutAlt} from "@fortawesome/free-solid-svg-icons";
 import {useAuth} from "../../context/auth";
 import AuthService from "../../service/AuthService";
 import {Nav, Navbar} from "react-bootstrap";
@@ -69,7 +69,9 @@ const NavBar = () => {
                         ({user})
                     </Nav.Item>
                     <Nav>
-                        <Nav.Link href="#" onClick={logOut}>Log Out</Nav.Link>
+                        <Nav.Link href="#" onClick={logOut} title="Log Out">
+                            <FontAwesomeIcon icon={faSignOutAlt} color="cornflowerblue" title="Log Out" />
+                        </Nav.Link>
                     </Nav>
                 </Navbar.Collapse>
             </Navbar>

@@ -57,7 +57,7 @@ function Login(props) {
             <div>
                 <Card
                     border="info"
-                    className="text-center"
+                    className="text-center entry-form"
                     style={{
                         flexDirection: 'column',
                         maxWidth: '410px',

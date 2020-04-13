@@ -5,8 +5,6 @@ body {
     sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    /*background-image: url("./img/dna-helix_1048-2465.jpg");
-    background-size: cover;*/
     background: rgb(58,101,180);
     background: linear-gradient(117deg, rgba(58,101,180,1) 0%, rgba(29,154,253,0.9304096638655462) 50%, rgba(69,226,252,1) 100%);
 }
@@ -14,6 +12,32 @@ body {
 code {
     font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+.entry-form {
+    box-shadow: 3px 3px 5px grey;
+}
+
+#basic-navbar-nav .navbar-nav .nav-link {
+    font-weight: bold;
+    text-shadow: 3px 3px 5px cornflowerblue;
+}
+
+table {
+    box-shadow: 3px 3px 5px grey;
+}
+
+thead {
+    background-color: lightblue;
+}
+
+th {
+    border: 0;
+}
+
+.btn {
+    box-shadow: 3px 3px 5px darkgrey;
+
 }
 
 .form-row {
@@ -133,4 +157,9 @@ code {
 
 .gene-detail-table-div button{
     float: right;
+}
+
+.modal-header {
+    background-color: lightgoldenrodyellow;
+    box-shadow: 0px 2px 5px grey;
 }

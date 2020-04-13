@@ -83,7 +83,7 @@ function Profile() {
         return (
             <Card
                 border="info"
-                className="text-center tab"
+                className="text-center tab entry-form"
                 defaultActiveKey="profile"
                 style={{
                     flexDirection: 'column',
