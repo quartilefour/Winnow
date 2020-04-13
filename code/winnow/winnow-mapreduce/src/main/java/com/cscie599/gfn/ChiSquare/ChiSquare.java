@@ -347,8 +347,8 @@ public class ChiSquare {
             public double calculateTestStatistic (double [] expected, long [] observed) {
                 double result = 0.0;
 
-                result = (Math.pow(observed[0] - expected[0], 2) + Math.pow(observed[1] - expected[1], 2) + 
-                    + Math.pow(observed[2] - expected[2], 2) + Math.pow(observed[3] - expected[3], 2));
+                result = ((Math.pow(observed[0] - expected[0], 2)/expected[0]) + (Math.pow(observed[1] - expected[1], 2)/expected[1]) 
+                    + (Math.pow(observed[2] - expected[2], 2)/expected[2]) + (Math.pow(observed[3] - expected[3], 2)/expected[3]));
 
                 return result;
             }
