@@ -1,8 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import {Nav, Tab, Row, Col} from "react-bootstrap";
 import BookmarkTab from "./BookmarkTab";
-import Mesh2GeneTab from "../mesh/Mesh2GeneTab";
-import Gene2MeshTab from "../gene/Gene2MeshTab";
 import RecentSearchesTab from "./RecentSearchesTab";
 import ComboSearchTab from "../common/ComboSearchTab";
 

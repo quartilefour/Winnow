@@ -59,7 +59,8 @@ function GeneDetailModal(props) {
                             style={{
                                 display: "inline-block",
                                 margin: "auto",
-                                width: "50%"
+                                height: "30px",
+                                width: "90%"
                             }}
                             fluid
                         />

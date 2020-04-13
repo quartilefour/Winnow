@@ -30,6 +30,7 @@ export const getSearchHistory = () => {
  * @return {{}|any}
  */
 export const getLastSearch = () => {
+    console.info(`SearchService getlastSearch: ${JSON.stringify(getSearchHistory().pop())}`);
     return getSearchHistory().pop();
 }
 

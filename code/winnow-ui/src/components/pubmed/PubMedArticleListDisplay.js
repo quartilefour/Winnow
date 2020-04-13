@@ -1,8 +1,10 @@
 import React, {useEffect, useState} from "react";
-import {Form, Table, Alert} from "react-bootstrap";
+import {Form, Table, Alert, Button} from "react-bootstrap";
 import {fetchPubMedArticleList} from "../../service/ApiService";
 import PageLoader from "../common/PageLoader";
 import {PUBMED_BASE_URL} from "../../constants";
+import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
+import {faChevronLeft} from "@fortawesome/free-solid-svg-icons";
 
 /**
  * PubMedArticleListDisplay displays a list of PubMed articles found in a previous search.
@@ -51,6 +53,18 @@ function PubMedArticleListDisplay(props) {
             <div>
                 <Alert variant={alertType}>{error}</Alert>
                 <Form>
+                    <span
+                        className="exit-results"
+                    >
+                            <Button
+                                variant="outline-info"
+                                size="sm"
+                                onClick={props.history}
+                            >
+                                <FontAwesomeIcon icon={faChevronLeft} color="cornflowerblue"/>
+                                Back
+                            </Button>
+                        </span>
                     <h3> Publications for {listData.symbol} ({listData.geneId})
                         and {listData.name} ({listData.meshId})</h3>
                     <Table striped bordered hover>

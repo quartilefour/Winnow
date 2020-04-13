@@ -7,7 +7,7 @@ import SearchTermUploader from "../common/SearchTermUploader";
 import PageLoader from "../common/PageLoader";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faBan} from "@fortawesome/free-solid-svg-icons";
-import {addSearchHistory} from "../../service/SearchService";
+import {addSearchHistory, getLastSearch} from "../../service/SearchService";
 import {MeshtermTree} from "../mesh/MeshtermTree";
 
 /**
@@ -85,7 +85,9 @@ function ComboSearchTab(props) {
     }
 
     function returnToSelection() {
-        setSelectedGenes([]);
+        let lastSearch = getLastSearch();
+        setSelectedGenes(lastSearch.searchQuery.geneId)
+        setCheckedTerms(lastSearch.searchQuery.meshTreeId)
         setHaveResults(false);
     }
 

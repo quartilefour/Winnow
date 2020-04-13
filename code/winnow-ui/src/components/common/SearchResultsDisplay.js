@@ -41,7 +41,13 @@ function SearchResultsDisplay(props) {
         } else {
             /* fetchSearchResults() */
         }
+        return () => {
+        }
     }, [haveResults, props, resData, activeGeneDetail]);
+
+    function returnToResults() {
+        setHaveResults(false)
+    }
 
     if (isLoaded) {
         if (!haveResults) {
@@ -51,10 +57,15 @@ function SearchResultsDisplay(props) {
                     <Form>
                         <span
                             className="exit-results"
-                            onClick={props.history}
                         >
+                            <Button
+                                variant="outline-info"
+                                size="sm"
+                                onClick={props.history}
+                            >
                             <FontAwesomeIcon icon={faChevronLeft} color="cornflowerblue"/>
                             Back
+                            </Button>
                         </span>
                         <h3>Results</h3>
                         <Table size="sm" striped bordered hover>
@@ -130,7 +141,8 @@ function SearchResultsDisplay(props) {
         } else {
             console.info(`PubMedArticleDisplay Selected: ${JSON.stringify(resData)}`);
             return (
-                <div><PubMedArticleListDisplay listData={resData.results[selectedIndex]}/></div>
+                <div><PubMedArticleListDisplay listData={resData.results[selectedIndex]} history={returnToResults}/>
+                </div>
             )
         }
     } else {

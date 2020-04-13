@@ -43,7 +43,7 @@ const NavBar = () => {
 
     if (authToken) {
         return (
-            <Navbar bg="light" expand="md">
+            <Navbar id="winnow-nav" bg="light" expand="md">
                 <Navbar.Brand as={Link} to="/">
                     <img
                         alt={"Winnow Logo"}
