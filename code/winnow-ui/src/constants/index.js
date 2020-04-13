@@ -3,7 +3,7 @@ console.info(`${currentHost}`);
 export const WINNOW_API_BASE_URL = (currentHost === "localhost:3000")
     ? 'http://localhost:8080/api'
     : 'https://winnow-api.olympus3.com/api';
-export const WINNOW_API_TIMEOUT = 3500;
+export const WINNOW_API_TIMEOUT = 35000;
 export const WINNOW_TOKEN = '_winnow_token';
 export const W_ENV = (currentHost === "localhost:3000")
     ? 'DEV'
