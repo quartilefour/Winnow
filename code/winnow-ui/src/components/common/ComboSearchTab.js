@@ -5,13 +5,14 @@ import {fetchGenes, fetchSearchResults} from "../../service/ApiService";
 import SearchResultsDisplay from "../common/SearchResultsDisplay";
 import SearchTermUploader from "../common/SearchTermUploader";
 import PageLoader from "../common/PageLoader";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faBan} from "@fortawesome/free-solid-svg-icons";
 import {addSearchHistory, getLastSearch} from "../../service/SearchService";
 import {MeshtermTree} from "../mesh/MeshtermTree";
 
 /**
- * ComboSearchTab builds the content for Gene Search.
+ * ComboSearchTab builds the content for Gene Auto-complete Select and MesH Checkbox tree.
+ *
+ * Select - https://react-select.com/props
+ * Checkbox Tree - See MeshtermTree.js
  *
  * @param props
  * @returns {*}

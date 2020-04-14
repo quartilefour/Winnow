@@ -3,6 +3,7 @@ import {Alert, Button, Image, Modal, Table} from "react-bootstrap";
 import PageLoader from "../common/PageLoader";
 import {fetchGeneDetails, fetchNCBIGeneDetails} from "../../service/ApiService";
 import dnaStrand from "../../img/dna-lg.png";
+import {GENEDB_BASE_URL} from "../../constants";
 
 /**
  * GeneDetailModal renders the information for a given Gene.
@@ -71,7 +72,16 @@ function GeneDetailModal(props) {
                     <div>
                         <h2 className="gene-detail-symbol">{geneDetail.symbol}</h2>
                         <h3 className="gene-detail-desc">{geneDetail.description}</h3>
-                        <h5 className="gene-detail-index">{geneDetail.geneId} - {geneDetailNCBI.genomicinfo[0].chraccver}</h5>
+                        <h5 className="gene-detail-index">
+                            {geneDetail.geneId} -
+                            <a
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href={`${GENEDB_BASE_URL}/${geneDetail.geneId}`}
+                            >
+                            {geneDetailNCBI.genomicinfo[0].chraccver}
+                            </a>
+                        </h5>
                     </div>
                     <div id={`seqv_`}>
                     </div>

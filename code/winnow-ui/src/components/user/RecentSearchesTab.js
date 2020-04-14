@@ -29,7 +29,7 @@ function RecentSearchesTab(props) {
 
     if (isLoaded) {
         return (
-            <div>
+            <div id="recent-search-div">
                 <Fragment>
                     <Form>
                         <Table size="sm" striped bordered hover>
