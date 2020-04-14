@@ -179,28 +179,22 @@ public class SearchController {
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
         HashMap<String, Object> searchQuery = (HashMap) body.get("searchQuery");
-        List<String> geneIds = Arrays.asList(searchQuery.get("geneId").toString()
-                .substring(1, searchQuery.get("geneId").toString().length() - 1).split("\\s*,\\s*"));
-        List<String> symbols = Arrays.asList(searchQuery.get("symbol").toString()
-                .substring(1, searchQuery.get("symbol").toString().length() - 1).split("\\s*,\\s*"));
-        List<String> descriptions = Arrays.asList(searchQuery.get("description").toString()
-                .substring(1, searchQuery.get("description").toString().length() - 1).split("\\s*,\\s*"));
-        List<String> meshIds = Arrays.asList(searchQuery.get("meshId").toString()
-                .substring(1, searchQuery.get("meshId").toString().length() - 1).split("\\s*,\\s*"));
-        List<String> names = Arrays.asList(searchQuery.get("name").toString()
-                .substring(1, searchQuery.get("name").toString().length() - 1).split("\\s*,\\s*"));
-        List<String> meshTreeIds = Arrays.asList(searchQuery.get("meshTreeId").toString()
-                .substring(1, searchQuery.get("meshTreeId").toString().length() - 1).split("\\s*,\\s*"));
+        List<String> geneIds = (ArrayList) searchQuery.get("geneId");
+        List<String> symbols = (ArrayList) searchQuery.get("symbol");
+        List<String> descriptions = (ArrayList) searchQuery.get("description");
+        List<String> meshIds = (ArrayList) searchQuery.get("meshId");
+        List<String> names = (ArrayList) searchQuery.get("name");
+        List<String> meshTreeIds = (ArrayList) searchQuery.get("meshTreeId");
         List<String> updatedMeshTreeIds = updateMeshTreeIds(meshTreeIds);
         List<String> updatedGeneIds = geneRepository.findGeneIdsByGeneIdsOrSymbolsOrDescriptions(geneIds, symbols, descriptions);
         List<String> updatedMeshIds = meshtermRepository.findMeshIdsByMeshIdsOrNamesOrMeshTreeIds(meshIds, names, updatedMeshTreeIds);
         List<GeneMeshtermView> geneMeshtermViews = new ArrayList<>();
         List<GeneMeshterm> geneMeshterms = new ArrayList<>();
-        if (updatedGeneIds.toString() == "[]" && !(updatedMeshIds.toString() == "[]")) {
+        if (geneIds.isEmpty() && symbols.isEmpty() && descriptions.isEmpty() && !(updatedMeshIds.isEmpty())) {
             geneMeshterms = geneMeshtermRepository.findByMeshIdsOrderByPValue(updatedMeshIds);
-        } else if (!(updatedGeneIds.toString() == "[]") && updatedMeshIds.toString() == "[]") {
+        } else if (meshIds.isEmpty() && names.isEmpty() && meshTreeIds.isEmpty() && !(updatedGeneIds.isEmpty())) {
             geneMeshterms = geneMeshtermRepository.findByGeneIdsOrderByPValue(updatedGeneIds);
-        } else if (!(updatedGeneIds.toString() == "[]") && !(updatedMeshIds.toString() == "[]")) {
+        } else if (!(updatedGeneIds.isEmpty()) && !(updatedMeshIds.isEmpty())) {
             geneMeshterms = geneMeshtermRepository.findByGeneIdsAndMeshIdsOrderByPValue(updatedGeneIds, updatedMeshIds);
         }
         for (GeneMeshterm geneMeshterm : geneMeshterms) {
@@ -226,30 +220,31 @@ public class SearchController {
         if (!(body.containsKey("searchQuery"))) {
             response.put("error", "Missing search query.");
             return response;
-        } else if (!(body.get("searchQuery") instanceof HashMap)) {
+        } else if (!(body.get("searchQuery") instanceof Map)) {
             response.put("error", "Invalid search query.");
             return response;
         }
         HashMap<String, Object> searchQuery = (HashMap) body.get("searchQuery");
-        if (!(searchQuery.containsKey("geneId"))) {
-            response.put("error", "Missing geneId.");
-        } else if (!(searchQuery.containsKey("symbol"))) {
-            response.put("error", "Missing symbol.");
-        } else if (!(searchQuery.containsKey("description"))) {
-            response.put("error", "Missing description.");
-        } else if (!(searchQuery.containsKey("meshTreeId"))) {
-            response.put("error", "Missing meshTreeId.");
-        } else if (!(searchQuery.containsKey("meshId"))) {
-            response.put("error", "Missing meshId.");
-        } else if (!(searchQuery.containsKey("name"))) {
-            response.put("error", "Missing name.");
-        } else if (searchQuery.get("geneId").toString() == "[]"
-                && searchQuery.get("symbol").toString() == "[]"
-                && searchQuery.get("description").toString() == "[]"
-                && searchQuery.get("meshTreeId").toString() == "[]"
-                && searchQuery.get("meshId").toString() == "[]"
-                && searchQuery.get("name").toString() == "[]") {
+        String[] searchQueryTypes = {"geneId", "symbol", "description", "meshTreeId", "meshId", "name"};
+        int count = 0;
+        for (String searchQueryType : searchQueryTypes) {
+            if (!(searchQuery.containsKey(searchQueryType))) {
+                response.put("error", "Missing " + searchQueryType + ".");
+                return response;
+            }
+            if (!(searchQuery.get(searchQueryType) instanceof List)) {
+                response.put("error", "Invalid " + searchQueryType + ".");
+                return response;
+            }
+            else {
+                if (((List) (searchQuery.get(searchQueryType))).isEmpty()) {
+                    count++;
+                }
+            }
+        }
+        if (count == searchQueryTypes.length) {
             response.put("error", "Search query cannot be empty.");
+            return response;
         }
         return response;
     }
