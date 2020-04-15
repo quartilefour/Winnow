@@ -1,29 +1,20 @@
 package com.cscie599.gfn;
-import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.Assert.assertTrue;
-import com.cscie599.gfn.controller.*;
-import io.zonky.test.db.AutoConfigureEmbeddedDatabase;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.jupiter.api.BeforeAll;
-import org.junit.jupiter.api.Test;
-import org.junit.Before;
-import org.junit.After;
+import org.junit.BeforeClass;
+import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
-import org.springframework.test.context.ActiveProfiles;
 import org.springframework.web.client.RestTemplate;
 
-import javax.sql.DataSource;
+import static org.junit.Assert.assertTrue;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
-@ActiveProfiles("dev")
-@AutoConfigureEmbeddedDatabase
-public class UserTest {
+public class UserTest extends BaseTest{
 
     private static RestTemplate restTemplate;
     private static HttpHeaders userHeaders;
@@ -33,7 +24,7 @@ public class UserTest {
     private static JSONObject loginJsonObject;
     private static final Logger logger = LoggerFactory.getLogger(UserTest.class);
 
-    @BeforeAll
+    @BeforeClass
     public static void runBeforeAllTestMethods() throws JSONException {
 
         restTemplate = new RestTemplate();
@@ -87,30 +78,30 @@ public class UserTest {
     public void registeredUserCanLogin() throws Exception {
 
         assertTrue(true);
-//        HttpEntity<String> registerRequest =
-//                new HttpEntity<String>(user2JsonObject.toString(), loginHeaders);
-//
-//        logger.info("Request to be posted is: \"" + registerRequest.toString() + "\"");
-//
-//        ResponseEntity<String> registerResponse = restTemplate.
-//                postForEntity(createURLWithPort("/api/registration"),
-//                        registerRequest, String.class);
-//
-//        logger.info("Registration API Response was: \"" + registerResponse.getStatusCode().toString() + "\"");
-//
-//
-//        HttpEntity<String> request =
-//                new HttpEntity<String>(loginJsonObject.toString(), loginHeaders);
-//
-//        logger.info("Request to be posted is: \"" + request.toString() + "\"");
-//
-//        ResponseEntity<String> response = restTemplate.
-//                postForEntity(createURLWithPort("/api/login"),
-//                        request, String.class);
-//
-//        logger.info("Login API Response was: \"" + response.getStatusCode().toString() + "\"");
-//
-//        assertTrue(response.getStatusCode().equals(HttpStatus.INTERNAL_SERVER_ERROR));
+        HttpEntity<String> registerRequest =
+                new HttpEntity<String>(user2JsonObject.toString(), loginHeaders);
+
+        logger.info("Request to be posted is: \"" + registerRequest.toString() + "\"");
+
+        ResponseEntity<String> registerResponse = restTemplate.
+                postForEntity(createURLWithPort("/api/registration"),
+                        registerRequest, String.class);
+
+        logger.info("Registration API Response was: \"" + registerResponse.getStatusCode().toString() + "\"");
+
+
+        HttpEntity<String> request =
+                new HttpEntity<String>(loginJsonObject.toString(), loginHeaders);
+
+        logger.info("Request to be posted is: \"" + request.toString() + "\"");
+
+        ResponseEntity<String> response = restTemplate.
+                postForEntity(createURLWithPort("/api/login"),
+                        request, String.class);
+
+        logger.info("Login API Response was: \"" + response.getStatusCode().toString() + "\"");
+
+        assertTrue(response.getStatusCode().equals(HttpStatus.OK));
     }
 
     private String createURLWithPort(String uri) {

@@ -1,8 +1,7 @@
-
 CREATE TABLE "author" (
-  "author_id" char(50)  PRIMARY KEY,
-  "fore_name" char(30),
-  "last_name" char(30)
+  "author_id" char(100)  PRIMARY KEY,
+  "fore_name" char(50),
+  "last_name" char(50)
 );
 
 
@@ -15,11 +14,12 @@ CREATE TABLE "goterm" (
 
 CREATE TABLE "gene" (
   "gene_id" char(20)  PRIMARY KEY,
-  "symbol" char(40),
-  "type" char(20),
+  "symbol" varchar(1024),
+  "type" varchar(1024),
   "description" text,
   "publication_count" Integer,
-  "synonym" char(20),
+  "synonym" varchar(1024),
+  "tax_id" Integer,
   "modification_date" Date,
   "count_modification_time" timestamp
 );
@@ -61,24 +61,23 @@ CREATE TABLE "address" (
   "country" char(20)
 );
 
-CREATE TABLE "search" (
-  "search_id" char(20)  PRIMARY KEY,
-  "created_by" INTEGER REFERENCES "user" (user_id),
-  "created_date" timestamp,
-  "search_name" varchar(20),
-  "search_query" JSON,
-  "deleted_date" timestamp,
-  "updated_at" timestamp,
-  "team_id" char(20) REFERENCES team (team_id),
-  "query_type" char(20)
+CREATE TABLE "search"
+(
+    "search_id"    BIGSERIAL PRIMARY KEY,
+    "created_by"   INTEGER REFERENCES "user" (user_id),
+    "created_date" timestamp,
+    "search_name"  varchar(20),
+    "search_query" jsonb,
+    "updated_at"   timestamp,
+    "team_id"      char(20) REFERENCES team (team_id)
 );
 
-CREATE TABLE "publication" (
-  "publication_id" char(20)  PRIMARY KEY,
-  "completed_date" Date,
-  "date_revised" Date,
-  "title" text,
-  "language" char(20)
+CREATE TABLE "publication"
+(
+    "publication_id" char(20) PRIMARY KEY,
+    "completed_date" Date,
+    "date_revised"   Date,
+    "title"          text
 );
 
 CREATE TABLE "meshterm" (
@@ -88,7 +87,12 @@ CREATE TABLE "meshterm" (
   "date_revised" Date,
   "note" text,
   "supplemental_id" char(20),
-  "name" char(100)
+  "name" char(200)
+);
+
+CREATE TABLE "meshterm_category" (
+  "category_id" char(20)  PRIMARY KEY,
+  "name" char(128)
 );
 
 CREATE TABLE "meshterm_tree" (
@@ -105,19 +109,19 @@ CREATE TABLE "gene_gene" (
   PRIMARY KEY ("gene_id", "other_gene_id", "relationship_id")
 );
 
-CREATE TABLE "user_search_sharing" (
-  "search_id" char(20) REFERENCES search (search_id),
-  "user_id" INTEGER REFERENCES "user" (user_id),
-  "shared_by" INTEGER REFERENCES "user" (user_id),
-  "shared_date" timestamp,
-  "deleted_date" timestamp,
-  PRIMARY KEY ("search_id", "user_id")
-
+CREATE TABLE "user_search_sharing"
+(
+    "search_id"    BIGINT REFERENCES "search" (search_id),
+    "user_id"      INTEGER REFERENCES "user" (user_id),
+    "shared_by"    INTEGER REFERENCES "user" (user_id),
+    "shared_date"  timestamp,
+    "deleted_date" timestamp,
+    PRIMARY KEY ("search_id", "user_id")
 );
 
 CREATE TABLE "publication_author" (
   "publication_id" char(20) REFERENCES publication (publication_id),
-  "author_id" char(50) REFERENCES author (author_id),
+  "author_id" char(100) REFERENCES author (author_id),
   "creation_date" date,
   PRIMARY KEY ("publication_id", "author_id")
 );
@@ -125,9 +129,10 @@ CREATE TABLE "publication_author" (
 CREATE TABLE "gene_publication" (
   "gene_id" char(20) REFERENCES gene (gene_id),
   "publication_id" char(20) REFERENCES publication (publication_id),
+  "tax_id" Integer,
   "created_date" timestamp,
   "deleted_date" timestamp,
-  PRIMARY KEY ("gene_id", "publication_id")
+  PRIMARY KEY ("tax_id","gene_id", "publication_id")
 
 );
 
@@ -158,10 +163,11 @@ CREATE TABLE "user_role" (
 
 CREATE TABLE "gene_goterm" (
   "gene_id" char(20) REFERENCES gene (gene_id),
-  "go_id" char(20)  REFERENCES goterm (go_id),
+  "go_id" char(20),
+  "tax_id" Integer,
   "created_date" timestamp,
   "deleted_date" timestamp,
-  PRIMARY KEY ("gene_id", "go_id")  
+  PRIMARY KEY ("tax_id", "gene_id", "go_id")
 );
 
 CREATE TABLE "gene_meshterm" (
