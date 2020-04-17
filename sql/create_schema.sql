@@ -179,6 +179,14 @@ CREATE TABLE "gene_meshterm" (
   PRIMARY KEY ("gene_id", "mesh_id")
 );
 
+CREATE TABLE "gene_association" (
+  "gene_id" char(20) REFERENCES gene (gene_id),
+  "other_gene_id" char(20) REFERENCES gene (gene_id),
+  "p_value" float,
+  "publication_count" Integer,
+  PRIMARY KEY ("gene_id", "other_gene_id")
+);
+
 /* Following tables are used by spring boot scheduler */
 
 CREATE TABLE BATCH_JOB_INSTANCE  (

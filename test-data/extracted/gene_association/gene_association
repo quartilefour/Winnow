@@ -1,0 +1,4 @@
+gene_id	other_gene_id	p_value	publication_count
+5692769	1246505	0.012	12
+1246505	8655732	0.001	13
+8655732	5692769	0.049	1
