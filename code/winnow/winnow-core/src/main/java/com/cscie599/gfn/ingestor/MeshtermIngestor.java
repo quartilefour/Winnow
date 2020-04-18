@@ -42,6 +42,7 @@ import java.util.List;
 @EnableAutoConfiguration
 public class MeshtermIngestor extends BaseIngester {
 
+    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     protected static final Log logger = LogFactory.getLog(MeshtermIngestor.class);
 
     @Value("file:${input.directory}${input.meshsub.file}")
@@ -169,15 +170,13 @@ public class MeshtermIngestor extends BaseIngester {
                 meshterm.setMeshId(record.getDescriptorUI());
                 if (record.getDateCreated() != null) {
                     // set the date_created
-                    DateFormat format = new SimpleDateFormat("yyyy-MM-dd");
-                    Date dateCreated = format.parse(record.getDateCreated().getYear() + "-" + record.getDateCreated().getMonth() + "-" + record.getDateCreated().getDay());
+                    Date dateCreated = DATE_FORMAT.parse(record.getDateCreated().getYear() + "-" + record.getDateCreated().getMonth() + "-" + record.getDateCreated().getDay());
                     meshterm.setDateCreated(dateCreated);
                 }
 
                 if (record.getDateRevised() != null) {
                     // set the date_revised
-                    DateFormat format2 = new SimpleDateFormat("yyyy-MM-dd");
-                    Date dateRevised = format2.parse(record.getDateRevised().getYear() + "-" + record.getDateRevised().getMonth() + "-" + record.getDateRevised().getDay());
+                    Date dateRevised = DATE_FORMAT.parse(record.getDateRevised().getYear() + "-" + record.getDateRevised().getMonth() + "-" + record.getDateRevised().getDay());
                     meshterm.setDateRevised(dateRevised);
                 }
                 // set note
