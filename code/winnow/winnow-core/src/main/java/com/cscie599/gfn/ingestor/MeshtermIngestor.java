@@ -136,6 +136,7 @@ public class MeshtermIngestor extends BaseIngester {
         logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
         SkipSupportedMultiResourceItemReader<DescriptorRecord> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<DescriptorRecord>();
         multiResourceItemReader.setResources(inputResources);
+        multiResourceItemReader.setStrict(true);
         StaxEventItemReader<DescriptorRecord> reader = new StaxEventItemReader<DescriptorRecord>();
         multiResourceItemReader.setDelegate(new GZResourceAwareItemReaderItemStream(reader, useZippedFormat));
         reader.setFragmentRootElementName("DescriptorRecord");
