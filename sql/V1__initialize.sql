@@ -1,20 +1,20 @@
 
 CREATE TABLE "author" (
-  "author_id" char(100)  PRIMARY KEY,
-  "fore_name" char(50),
-  "last_name" char(50)
+  "author_id" varchar (100)  PRIMARY KEY,
+  "fore_name" varchar(50),
+  "last_name" varchar(50)
 );
 
 
 CREATE TABLE "goterm" (
-  "go_id" char(20)  PRIMARY KEY,
+  "go_id" varchar(20)  PRIMARY KEY,
   "definition" text,
   "xrefs" varchar(200),
   "label" varchar(200)
 );
 
 CREATE TABLE "gene" (
-  "gene_id" char(20)  PRIMARY KEY,
+  "gene_id" varchar (20)  PRIMARY KEY,
   "symbol" varchar(1024),
   "type" varchar(1024),
   "description" text,
@@ -26,13 +26,13 @@ CREATE TABLE "gene" (
 );
 
 CREATE TABLE "role" (
-  "role_id" char(20)  PRIMARY KEY,
+  "role_id" varchar(20)  PRIMARY KEY,
   "role_name" varchar(40)
 );
 
 CREATE TABLE "team" (
-  "team_id" char(20)  PRIMARY KEY,
-  "team_lead_id" char(20),
+  "team_id" varchar(20)  PRIMARY KEY,
+  "team_lead_id" varchar(20),
   "description" varchar(100)
 );
 
@@ -40,7 +40,7 @@ CREATE TABLE "team" (
 CREATE TABLE "user" (
   "user_id" SERIAL PRIMARY KEY,
   "user_email" varchar(254),
-  "user_password" char(60),
+  "user_password" varchar(60),
   "first_name" varchar(40),
   "last_name" varchar(40),
   "created_at" timestamp,
@@ -48,7 +48,7 @@ CREATE TABLE "user" (
 );
 
 CREATE TABLE "gene_relationship" (
-  "relationship_id" char(50)  PRIMARY KEY,
+  "relationship_id" varchar(50)  PRIMARY KEY,
   "name" varchar(50)
 );
 
@@ -56,10 +56,10 @@ CREATE TABLE "address" (
   "user_id" INTEGER PRIMARY KEY REFERENCES "user" (user_id),
   "address1" varchar(100),
   "address2" varchar(100),
-  "city" char(20),
-  "zipcode" char(10),
-  "state" char(20),
-  "country" char(20)
+  "city" varchar(20),
+  "zipcode" varchar(10),
+  "state" varchar(20),
+  "country" varchar(20)
 );
 
 CREATE TABLE "search"
@@ -70,43 +70,43 @@ CREATE TABLE "search"
     "search_name"  varchar(20),
     "search_query" jsonb,
     "updated_at"   timestamp,
-    "team_id"      char(20) REFERENCES team (team_id)
+    "team_id"      varchar(20) REFERENCES team (team_id)
 );
 
 CREATE TABLE "publication"
 (
-    "publication_id" char(20) PRIMARY KEY,
+    "publication_id" varchar(20) PRIMARY KEY,
     "completed_date" Date,
     "date_revised"   Date,
     "title"          text
 );
 
 CREATE TABLE "meshterm" (
-  "mesh_id" char(20)  PRIMARY KEY,
+  "mesh_id" varchar (20)  PRIMARY KEY,
   "publication_count" Integer,
   "date_created" Date,
   "date_revised" Date,
   "note" text,
-  "supplemental_id" char(20),
-  "name" char(200)
+  "supplemental_id" varchar(20),
+  "name" varchar(200)
 );
 
 CREATE TABLE "meshterm_category" (
-  "category_id" char(20)  PRIMARY KEY,
-  "name" char(128)
+  "category_id" varchar(20)  PRIMARY KEY,
+  "name" varchar(128)
 );
 
 CREATE TABLE "meshterm_tree" (
-  "mesh_id" char(20) REFERENCES meshterm (mesh_id),
+  "mesh_id" varchar (20) REFERENCES meshterm (mesh_id),
   "tree_parent_id" varchar(120),
   "tree_node_id" varchar(6),
   PRIMARY KEY ("mesh_id", "tree_parent_id", "tree_node_id")
 );
 
 CREATE TABLE "gene_gene" (
-  "gene_id" char(20) REFERENCES gene (gene_id),
-  "other_gene_id" char(20) REFERENCES gene (gene_id),
-  "relationship_id" char(50) REFERENCES gene_relationship (relationship_id),
+  "gene_id" varchar (20) REFERENCES gene (gene_id),
+  "other_gene_id" varchar (20) REFERENCES gene (gene_id),
+  "relationship_id" varchar(50) REFERENCES gene_relationship (relationship_id),
   PRIMARY KEY ("gene_id", "other_gene_id", "relationship_id")
 );
 
@@ -121,15 +121,15 @@ CREATE TABLE "user_search_sharing"
 );
 
 CREATE TABLE "publication_author" (
-  "publication_id" char(20) REFERENCES publication (publication_id),
-  "author_id" char(100) REFERENCES author (author_id),
+  "publication_id" varchar(20) REFERENCES publication (publication_id),
+  "author_id" varchar(100) REFERENCES author (author_id),
   "creation_date" date,
   PRIMARY KEY ("publication_id", "author_id")
 );
 
 CREATE TABLE "gene_publication" (
-  "gene_id" char(20) REFERENCES gene (gene_id),
-  "publication_id" char(20) REFERENCES publication (publication_id),
+  "gene_id" varchar (20) REFERENCES gene (gene_id),
+  "publication_id" varchar(20) REFERENCES publication (publication_id),
   "tax_id" Integer,
   "created_date" timestamp,
   "deleted_date" timestamp,
@@ -138,15 +138,15 @@ CREATE TABLE "gene_publication" (
 );
 
 CREATE TABLE "publication_meshterm" (
-  "publication_id" char(20) REFERENCES publication (publication_id),
-  "mesh_id" char(20) REFERENCES meshterm (mesh_id),
+  "publication_id" varchar(20) REFERENCES publication (publication_id),
+  "mesh_id" varchar (20) REFERENCES meshterm (mesh_id),
   "created_date" timestamp,
   "deleted_date" timestamp,
   PRIMARY KEY ("publication_id", "mesh_id")
 );
 
 CREATE TABLE "user_team" (
-  "team_id" char(20) REFERENCES team (team_id),
+  "team_id" varchar(20) REFERENCES team (team_id),
   "user_id" INTEGER REFERENCES "user" (user_id),
   "created_date" timestamp,
   "deleted_date" timestamp,
@@ -155,7 +155,7 @@ CREATE TABLE "user_team" (
 );
 
 CREATE TABLE "user_role" (
-  "role_id" char(20) REFERENCES role (role_id),
+  "role_id" varchar(20) REFERENCES role (role_id),
   "user_id" INTEGER REFERENCES "user" (user_id),
   "created_date" timestamp,
   "deleted_date" timestamp,
@@ -163,8 +163,8 @@ CREATE TABLE "user_role" (
 );
 
 CREATE TABLE "gene_goterm" (
-  "gene_id" char(20) REFERENCES gene (gene_id),
-  "go_id" char(20),
+  "gene_id" varchar (20) REFERENCES gene (gene_id),
+  "go_id" varchar(20),
   "tax_id" Integer,
   "created_date" timestamp,
   "deleted_date" timestamp,
@@ -172,16 +172,16 @@ CREATE TABLE "gene_goterm" (
 );
 
 CREATE TABLE "gene_meshterm" (
-  "gene_id" char(20) REFERENCES gene (gene_id),
-  "mesh_id" char(20) REFERENCES meshterm (mesh_id),
+  "gene_id" varchar (20) REFERENCES gene (gene_id),
+  "mesh_id" varchar (20) REFERENCES meshterm (mesh_id),
   "p_value" float,
   "publication_count" Integer,
   PRIMARY KEY ("gene_id", "mesh_id")
 );
 
 CREATE TABLE "gene_association" (
-  "gene_id" char(20) REFERENCES gene (gene_id),
-  "other_gene_id" char(20) REFERENCES gene (gene_id),
+  "gene_id" varchar (20) REFERENCES gene (gene_id),
+  "other_gene_id" varchar(20) REFERENCES gene (gene_id),
   "p_value" float,
   "publication_count" Integer,
   PRIMARY KEY ("gene_id", "other_gene_id")
