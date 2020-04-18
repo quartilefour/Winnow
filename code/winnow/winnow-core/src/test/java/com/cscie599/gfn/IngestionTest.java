@@ -76,8 +76,8 @@ public class IngestionTest extends BaseTest {
         assertEquals(1, meshtermList.size());
         assertEquals("D005561", meshtermList.get(0).getMeshId());
         assertEquals("Formates", meshtermList.get(0).getName());
-        assertEquals(" Date create for meshTerm", MeshtermIngestor.DATE_FORMAT.format(new Date(915177600000L)), meshtermList.get(0).getDateCreated());
-        assertEquals(" Date revised for meshTerm", MeshtermIngestor.DATE_FORMAT.format(new Date(1341298800000L)), meshtermList.get(0).getDateRevised());
+        assertEquals(" Date create for meshTerm", MeshtermIngestor.DATE_FORMAT.format(new Date(915177600000L)), meshtermList.get(0).getDateCreated().toString());
+        assertEquals(" Date revised for meshTerm", MeshtermIngestor.DATE_FORMAT.format(new Date(1341298800000L)), meshtermList.get(0).getDateRevised().toString());
 
         assertEquals("Meshterm tree count", meshtermTreeRepository.findAll().size(), 99);
         MeshtermTree meshtermTree = meshtermTreeRepository.findByTreeNodeId("260").get(0);
@@ -86,8 +86,8 @@ public class IngestionTest extends BaseTest {
         assertEquals("260", meshtermTree.getMeshtermTreePK().getTreeNodeId());
         assertEquals("Computers", meshtermTree.getMeshterm().getName());
         assertEquals("D003201", meshtermTree.getMeshterm().getMeshId());
-        assertEquals(MeshtermIngestor.DATE_FORMAT.format(new Date(915177600000L)), meshtermTree.getMeshterm().getDateCreated());
-        assertEquals(MeshtermIngestor.DATE_FORMAT.format(new Date(1520838000000L)), meshtermTree.getMeshterm().getDateRevised());
+        assertEquals(MeshtermIngestor.DATE_FORMAT.format(new Date(915177600000L)), meshtermTree.getMeshterm().getDateCreated().toString());
+        assertEquals(MeshtermIngestor.DATE_FORMAT.format(new Date(1520838000000L)), meshtermTree.getMeshterm().getDateRevised().toString());
 
         assertEquals("Publication count", publicationRepository.findAll().size(), 9);
     }
