@@ -9,7 +9,7 @@ ENV POSTGRES_USER=$ENV_POSTGRES_USER
 ARG ENV_POSTGRES_DB=gfn 
 ENV POSTGRES_DB=$ENV_POSTGRES_DB
 
-COPY ./sql/create_schema.sql /docker-entrypoint-initdb.d/
+COPY ./sql/V1__initialize.sql /docker-entrypoint-initdb.d/
 
 EXPOSE 5432
 
