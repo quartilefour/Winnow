@@ -3,6 +3,7 @@ package com.cscie599.gfn;
 import com.cscie599.gfn.entities.*;
 import com.cscie599.gfn.repository.*;
 import com.cscie599.gfn.service.IngestionService;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -43,8 +44,13 @@ public class IngestionExtractedTest extends BaseTest{
     @Autowired
     PublicationRepository publicationRepository;
 
+    @BeforeClass
+    public static void onlyOnce() {
+        System.setProperty("user.timezone", "GMT");
+    }
+
     @Test
-    public void testRawIngestion() throws Exception {
+    public void testExtractedIngestion() throws Exception {
         ingestionService.startIngestion();
         assertEquals("Gene count", geneRepository.findAll().size(), 26);
         Gene gene = geneRepository.findByGeneId("814636").get(0);
