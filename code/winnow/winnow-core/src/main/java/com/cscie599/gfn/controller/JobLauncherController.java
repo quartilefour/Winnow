@@ -24,7 +24,7 @@ public class JobLauncherController {
 
     @RequestMapping("/jobLauncher.html")
     public ResponseEntity handle() throws Exception {
-        boolean ingestionStatus = ingestionService.startIngestion();
+        boolean ingestionStatus = ingestionService.ingestBaseData();
         if(ingestionStatus)
             return new ResponseEntity<>("Job completed successfully!", HttpStatus.OK);
         else

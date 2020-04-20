@@ -52,7 +52,7 @@ public class IngestionExtractedTest extends BaseTest {
 
     @Test
     public void testExtractedIngestion() throws Exception {
-        ingestionService.startIngestion();
+        ingestionService.ingestBaseData();
         assertEquals("Gene count", geneRepository.findAll().size(), 71);
         Gene gene = geneRepository.findByGeneId("814636").get(0);
         assertTrue(gene.getSymbol().equals("AT2G01080"));

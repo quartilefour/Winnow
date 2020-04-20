@@ -42,7 +42,7 @@ public class GeneMeshtermIngestor extends BaseIngester {
     @Bean
     @Order(6)
     public Job getGeneMeshtermIngester() {
-        return jobBuilderFactory.get("GeneMeshtermIngester")
+        return jobBuilderFactory.get("GeneMeshtermIngestor")
                 .start(stepGeneMeshtermInfo())
                 .build();
     }

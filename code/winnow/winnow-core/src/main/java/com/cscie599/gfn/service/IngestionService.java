@@ -5,5 +5,9 @@ package com.cscie599.gfn.service;
  */
 public interface IngestionService {
 
-    boolean startIngestion();
+    boolean ingestBaseData();
+
+    boolean ingestDataForEnrichmentAnalysis();
+
+    boolean ingestEnrichedData();
 }

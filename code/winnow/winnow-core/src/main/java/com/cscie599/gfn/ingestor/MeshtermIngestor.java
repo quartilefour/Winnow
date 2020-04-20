@@ -57,7 +57,7 @@ public class MeshtermIngestor extends BaseIngester {
     @Bean
     @Order(1)
     public Job getMeshtermXMLIngestor() {
-        return jobBuilderFactory.get("MeshtermXMLIngestor")
+        return jobBuilderFactory.get("MeshtermIngestor")
                 .start(stepMeshterm())
                 .build();
     }
