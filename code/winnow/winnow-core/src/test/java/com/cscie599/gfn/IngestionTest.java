@@ -50,7 +50,7 @@ public class IngestionTest extends BaseTest {
     @Test
     public void testRawIngestion() throws Exception {
         ingestionService.startIngestion();
-        assertEquals("Gene count", geneRepository.findAll().size(), 26);
+        assertEquals("Gene count", geneRepository.findAll().size(), 71);
         Gene gene = geneRepository.findByGeneId("1246503").get(0);
         assertTrue(gene.getSymbol().equals("leuB"));
         assertTrue(gene.getGeneId().equals("1246503"));
