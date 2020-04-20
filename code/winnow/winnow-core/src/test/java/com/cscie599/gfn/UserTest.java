@@ -7,6 +7,7 @@ import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.web.client.RestTemplate;
@@ -16,7 +17,7 @@ import static org.junit.Assert.assertTrue;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 public class UserTest extends BaseTest{
 
-    private static RestTemplate restTemplate;
+    private static TestRestTemplate restTemplate;
     private static HttpHeaders userHeaders;
     private static HttpHeaders loginHeaders;
     private static JSONObject userJsonObject;
@@ -27,7 +28,7 @@ public class UserTest extends BaseTest{
     @BeforeClass
     public static void runBeforeAllTestMethods() throws JSONException {
 
-        restTemplate = new RestTemplate();
+        restTemplate = new TestRestTemplate();
         userHeaders = new HttpHeaders();
         loginHeaders = new HttpHeaders();
         userJsonObject = new JSONObject();
@@ -89,6 +90,7 @@ public class UserTest extends BaseTest{
 
         logger.info("Registration API Response was: \"" + registerResponse.getStatusCode().toString() + "\"");
 
+        assertTrue(registerResponse.getStatusCode().equals(HttpStatus.CREATED));
 
         HttpEntity<String> request =
                 new HttpEntity<String>(loginJsonObject.toString(), loginHeaders);
