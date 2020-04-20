@@ -268,3 +268,20 @@ CREATE TABLE BATCH_JOB_EXECUTION_CONTEXT  (
 CREATE SEQUENCE BATCH_STEP_EXECUTION_SEQ MAXVALUE 9223372036854775807 NO CYCLE;
 CREATE SEQUENCE BATCH_JOB_EXECUTION_SEQ MAXVALUE 9223372036854775807 NO CYCLE;
 CREATE SEQUENCE BATCH_JOB_SEQ MAXVALUE 9223372036854775807 NO CYCLE;
+
+INSERT INTO meshterm_category (category_id, name) VALUES ('A', 'Anatomy');
+INSERT INTO meshterm_category (category_id, name) VALUES ('B', 'Organisms');
+INSERT INTO meshterm_category (category_id, name) VALUES ('C', 'Diseases');
+INSERT INTO meshterm_category (category_id, name) VALUES ('D', 'Chemicals and Drugs');
+INSERT INTO meshterm_category (category_id, name) VALUES ('E', 'Analytical, Diagnostic and Therapeutic Techniques, and Equipment');
+INSERT INTO meshterm_category (category_id, name) VALUES ('F', 'Psychiatry and Psychology');
+INSERT INTO meshterm_category (category_id, name) VALUES ('G', 'Phenomena and Processes');
+INSERT INTO meshterm_category (category_id, name) VALUES ('H', 'Disciplines and Occupations');
+INSERT INTO meshterm_category (category_id, name) VALUES ('I', 'Anthropology, Education, Sociology, and Social Phenomena');
+INSERT INTO meshterm_category (category_id, name) VALUES ('J', 'Technology, Industry, and Agriculture');
+INSERT INTO meshterm_category (category_id, name) VALUES ('K', 'Humanities');
+INSERT INTO meshterm_category (category_id, name) VALUES ('L', 'Information Science');
+INSERT INTO meshterm_category (category_id, name) VALUES ('M', 'Named Groups');
+INSERT INTO meshterm_category (category_id, name) VALUES ('N', 'Health Care');
+INSERT INTO meshterm_category (category_id, name) VALUES ('V', 'Publication Characteristics');
+INSERT INTO meshterm_category (category_id, name) VALUES ('Z', 'Geographicals');

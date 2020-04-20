@@ -67,7 +67,7 @@ public class IngestionExtractedTest extends BaseTest {
         assertTrue(geneMeshterm.getPublicationCount() == 0);
         assertTrue(geneMeshterm.getPValue().equals(0.0095D));
 
-        assertEquals("Meshterm category count", meshtermCategoryRepository.findAll().size(), 15);
+        assertEquals("Meshterm category count", meshtermCategoryRepository.findAll().size(), 16);
         List<MeshtermCategory> allcategories = meshtermCategoryRepository.findByCategoryId("K");
         assertEquals(1, allcategories.size());
         assertEquals(allcategories.get(0).getName(), "Humanities");
