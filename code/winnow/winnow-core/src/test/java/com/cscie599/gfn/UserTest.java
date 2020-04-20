@@ -38,10 +38,10 @@ public class UserTest extends BaseTest{
         userHeaders.setContentType(MediaType.APPLICATION_JSON);
         loginHeaders.setContentType(MediaType.APPLICATION_JSON);
 
-        userJsonObject.put("userEmail", "john_harvard@harvard.edu");
+        userJsonObject.put("userEmail", "frank_harvard@harvard.edu");
         userJsonObject.put("userPassword", "T3st1234!");
         userJsonObject.put("passwordConfirm", "T3st1234!");
-        userJsonObject.put("firstName", "John");
+        userJsonObject.put("firstName", "Frank");
         userJsonObject.put("lastName", "Harvard");
 
         user2JsonObject.put("userEmail", "jane_harvard@harvard.edu");
@@ -72,7 +72,6 @@ public class UserTest extends BaseTest{
         logger.info("Registration API Response was: \"" + response.getStatusCode().toString() + "\"");
 
         assertTrue(response.getStatusCode().equals(HttpStatus.CREATED));
-
     }
 
     @Test
