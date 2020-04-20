@@ -8,6 +8,11 @@ import org.springframework.boot.CommandLineRunner;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
+/**
+ * Springboot application that ingests only the basedata i.e datasets that are publicly available on the internet.
+ *
+ * @author PulkitBhanot
+ */
 @SpringBootApplication
 public class BulkIngesterApp implements CommandLineRunner {
     protected static final Log logger = LogFactory.getLog(BulkIngesterApp.class);

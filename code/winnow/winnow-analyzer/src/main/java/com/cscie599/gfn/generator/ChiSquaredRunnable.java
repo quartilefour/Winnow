@@ -19,6 +19,8 @@ import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 
 /**
+ * An implementation of {@java.lang.Runnable} that is used to compute chi squared tests between a given set of lists of genes and meshterms
+ *
  * @author PulkitBhanot
  */
 public class ChiSquaredRunnable implements Runnable {
@@ -36,12 +38,19 @@ public class ChiSquaredRunnable implements Runnable {
 
     private final Pair<List<GeneRawStats>, List<MeshtermRawStats>> processPairs;
 
+    // Latch to be notified when the processing across all the pairs allocated to this thread finishes.
     private final CountDownLatch countDownLatch;
+    //Index of this thread across other threads. This is also used for the name of the file.
     private final int index;
+    // Property to determine if pairs with 0 publications should also have chi-squared tests run and p-value's generated and saved in DB.
     private final boolean includePairsWith0Publications;
+    // Reference to the all the gene mesh pairs with the counts of publications in common between them.
     private final Map<String, GeneMeshPub> cachedGeneMeshPubStats;
+    // Output file where the chi-squared output should be stored.
     private final File outputFile;
+    // CSV writer used to write to outputFile above
     private final CsvWriter csvWriter;
+    // Decimal format for properly writing the double value and not using the inbuilt string representation that produces values having e.
     private final DecimalFormat df = new DecimalFormat("#");
 
     public ChiSquaredRunnable(Pair<List<GeneRawStats>, List<MeshtermRawStats>> processPairs, CountDownLatch countDownLatch, int index, boolean includePairsWith0Publications, Map<String, GeneMeshPub> cachedGeneMeshPubStats, String outputDirectory) {
@@ -74,15 +83,15 @@ public class ChiSquaredRunnable implements Runnable {
                             Long row0col0 = geneMeshPub != null ? geneMeshPub.getCounter().get() : 0;
                             Long row0col1 = geneRawStat.getPublicationsWithGene() - row0col0;
                             Long row1col0 = meshtermRawStat.getPublicationsWithTerm() - row0col0;
-                            if (row0col0 < 0 || row0col1 < 0 || row1col0 < 0) {
-                                logger.error("Invalid case found for " + geneRawStat + " --- " + meshtermRawStat + "------" + geneMeshPub);
-                            }
+
                             Long row1col1 = (geneRawStat.getPublicationsWithGene() + geneRawStat.getPublicationsWithoutGene()) - row0col0 - row0col1 - row1col0;
 
+                            // Additional validation to make sure we do not end up with any bad datasets
                             if (row0col0 < 0 || row0col1 < 0 || row1col0 < 0 || row1col1 < 0) {
                                 logger.error("Invalid case found for row1col1 with " + geneRawStat + " --- " + meshtermRawStat + "------" + geneMeshPub + "," + row0col0 + "," + row0col1 + "," + row1col0 + "," + row1col1);
                             }
                             Pair<Double, Double> returnedPair = chiSquare(row0col0, row0col1, row1col0, row1col1);
+
                             try {
                                 csvAppender.appendField(geneRawStat.getGeneId());
                                 csvAppender.appendField(meshtermRawStat.getMeshId());
@@ -94,9 +103,8 @@ public class ChiSquaredRunnable implements Runnable {
                                 csvAppender.appendField(df.format(returnedPair.getValue1()));
                                 csvAppender.endLine();
                             } catch (IOException e) {
-                                logger.error("Error writing to csv");
+                                logger.error("Error writing to csv", e);
                             }
-                            //logger.info(geneRawStat.getGeneId() + "," + meshtermRawStat.getMeshId() + "," + row0col0 + "," + row0col1 + "," + row1col0 + "," + row1col1 + "," + returnedPair.getValue0() + "," + returnedPair.getValue1());
                         }
                     });
                 });
@@ -146,32 +154,31 @@ public class ChiSquaredRunnable implements Runnable {
     }
 
     /**
-     * Assumed there are total 100 publications, with Gene A occurring in 5, Mesh B occuring in 10,
+     * Function to perform the chi-squared test analysis and return the sum squared and p-value. Given the scenario only has 2x2 matrix,
+     * we have flattened out the calculation to avoid unnecessary creation of intermediate objects and scale the execution.
+     * <p>
+     * Assumed there are total 100 publications, with Gene A occurring in 5, Mesh B occurring in 10,
      * and there are 2 publications having Gene A and Mesh B together.
      * <p>
-     * |--- Mesh B ---|--Not Mesh B--|
+     * |    Mesh B    |  Not Mesh B  |
      * |--------------|--------------|
-     * Gene A      |      2       |       3      |
-     * Not Gene A   |      8       |      87      |
+     * Gene A      |      2(A)    |      3(B)    |
+     * Not Gene A  |      8(C)    |     87(D)    |
      * |--------------|--------------|
      *
-     * @param row0col0
-     * @param row0col1
-     * @param row1col0
-     * @param row1col1
-     * @return
+     * @param row0col0 Number of publications that have both the gene A and meshterm B referenced in it. Cell A above
+     * @param row0col1 Number of publications having referenced gene A but not meshterm B. Cell B above
+     * @param row1col0 Number of publications having referenced meshterm B but not gene A. Cell C above
+     * @param row1col1 Number of publications not referencing meshterm B and gene A. Cell D above
+     * @return A pair with sum squared as the first value and the p-value for the later.
      */
     public static Pair<Double, Double> chiSquare(Long row0col0, Long row0col1, Long row1col0, Long row1col1) {
-        int nRows = 2;
-        int nCols = 2;
         double total = row0col0 + row0col1 + row1col0 + row1col1;
         double rowSum0 = row0col0 + row0col1;
         double rowSum1 = row1col0 + row1col1;
 
-
         double colSum0 = row0col0 + row1col0;
         double colSum1 = row0col1 + row1col1;
-
 
         double sumSq = 0.0d;
         double expected = 0.0d;
@@ -188,7 +195,6 @@ public class ChiSquaredRunnable implements Runnable {
         expected = (rowSum1 * colSum1) / total;
         sumSq += ((row1col1 - expected) * (row1col1 - expected)) / expected;
 
-
         // The following code is directly using GammaDistribution which is internally being used by ChiSquaredDistribution here
         //https://github.com/apache/commons-statistics/blob/master/commons-statistics-distribution/src/main/java/org/apache/commons/statistics/distribution/ChiSquaredDistribution.java
         //GammaDistribution gamma = new GammaDistribution(df / 2, 2);
@@ -199,6 +205,9 @@ public class ChiSquaredRunnable implements Runnable {
 
     }
 
+    /**
+     * Returns the p-value using the {@href org.apache.commons.numbers.gamma.RegularizedGamma} api's.
+     */
     public static double cumulativeProbability(double x, double shape, double scale) {
         if (x <= ChiSquaredRunnable.SUPPORT_LO) {
             return 0;

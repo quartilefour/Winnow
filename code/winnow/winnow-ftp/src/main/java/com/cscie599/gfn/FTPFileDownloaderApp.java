@@ -15,6 +15,8 @@ import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Spring Boot application that downloads files from difference sources over different.
+ *
  * @author PulkitBhanot
  */
 @SpringBootApplication

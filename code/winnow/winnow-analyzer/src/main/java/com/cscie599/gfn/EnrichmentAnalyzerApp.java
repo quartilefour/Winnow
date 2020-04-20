@@ -24,6 +24,10 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 /**
+ * Springboot application to start the enrichment analysis application. This application loads the precomputed gene,
+ * meshterm and gene-meshterm-publication statistics and generates file which contain the 2x2 table used for computation
+ * of Chi-squared test and the p-value for a given gene-meshterm pair.
+ *
  * @author PulkitBhanot
  */
 @SpringBootApplication
@@ -34,12 +38,15 @@ public class EnrichmentAnalyzerApp implements CommandLineRunner {
     @Autowired
     private IngestionService ingestionService;
 
+    // Number of splits to be done across the provided gene and meshterm datasets to perform parallel processing and produce output files.
     @Value("${analyzer.parallelism:10}")
     private int parallelism;
 
+    // Property that determines whether chi-sqaured tests should also be done for gene-meshterm pairs with 0 publications in common.
     @Value("${analyzer.includePairsWith0Publications:true}")
     private boolean includePairsWith0Publications;
 
+    // Output directory for storing the enrichment analysis tes.
     @Value("file:${input.directory}${output.gene_meshterm.file}")
     private Resource outputResource;
 
@@ -66,7 +73,7 @@ public class EnrichmentAnalyzerApp implements CommandLineRunner {
             ExecutorService executorService = Executors.newFixedThreadPool(parallelism);
             CountDownLatch countDownLatch = new CountDownLatch(parallelism);
             for (int i = 0; i < parallelism; i++) {
-                logger.info(">>>>" + partitionedPairs.get(i).getValue0().size() + ">>>>>>>" + partitionedPairs.get(i).getValue1().size());
+                logger.info("Index " + i + "will process genes " + partitionedPairs.get(i).getValue0().size() + " and meshterms " + partitionedPairs.get(i).getValue1().size());
                 executorService.submit(new ChiSquaredRunnable(partitionedPairs.get(i), countDownLatch, i, includePairsWith0Publications, inMemoryCache.getCachedGeneMeshPubStats(), outputResource.getURI().getPath()));
             }
             countDownLatch.await(60, TimeUnit.MINUTES);
