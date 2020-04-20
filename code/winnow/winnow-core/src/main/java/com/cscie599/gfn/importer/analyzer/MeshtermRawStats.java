@@ -5,6 +5,8 @@ import com.cscie599.gfn.importer.CacheableEntity;
 import java.util.Objects;
 
 /**
+ * A POJO representation of the input object for Enrichment analysis of Meshterm.
+ *
  * @author PulkitBhanot
  */
 public class MeshtermRawStats implements CacheableEntity {

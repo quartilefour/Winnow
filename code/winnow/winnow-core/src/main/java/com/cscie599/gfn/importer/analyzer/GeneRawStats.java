@@ -5,6 +5,8 @@ import com.cscie599.gfn.importer.CacheableEntity;
 import java.util.Objects;
 
 /**
+ * A POJO representation of the input object for Enrichment analysis of Gene.
+ *
  * @author PulkitBhanot
  */
 public class GeneRawStats implements CacheableEntity {

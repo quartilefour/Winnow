@@ -5,6 +5,9 @@ import com.cscie599.gfn.importer.CacheableEntity;
 import java.util.concurrent.atomic.AtomicLong;
 
 /**
+ * A POJO representation of the input object for Enrichment analysis of Gene and Meshterms.
+ * This is a record of an association between a gene and Meshterm via a publication.
+ *
  * @author PulkitBhanot
  */
 public class GeneMeshPub implements CacheableEntity {
