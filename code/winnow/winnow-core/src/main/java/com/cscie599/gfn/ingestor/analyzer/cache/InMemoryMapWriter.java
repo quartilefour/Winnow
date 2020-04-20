@@ -1,5 +1,6 @@
-package com.cscie599.gfn.analyzer;
+package com.cscie599.gfn.ingestor.analyzer.cache;
 
+import com.cscie599.gfn.importer.CacheableEntity;
 import org.springframework.batch.item.ItemWriter;
 
 import java.util.List;
