@@ -58,13 +58,13 @@ public class IngestionExtractedTest extends BaseTest {
         assertTrue(gene.getSymbol().equals("AT2G01080"));
         assertTrue(gene.getGeneId().equals("814636"));
 
-        assertEquals("Gene Mesh count", geneMeshtermRepository.findAll().size(), 3);
-        assertTrue(geneMeshtermRepository.findByGeneIdOrderByPValue("8655732").size() == 1);
+        assertEquals("Gene Mesh count", geneMeshtermRepository.findAll().size(), 15);
+        assertTrue(geneMeshtermRepository.findByGeneIdOrderByPValue("8655732").size() == 3);
         GeneMeshterm geneMeshterm = geneMeshtermRepository.findByGeneIdOrderByPValue("8655732").get(0);
         assertTrue(geneMeshterm.getGeneMeshtermPK().getGeneId().equals("8655732"));
-        assertTrue(geneMeshterm.getGeneMeshtermPK().getMeshId().equals("D003201"));
-        assertTrue(geneMeshterm.getPublicationCount() == 1);
-        assertTrue(geneMeshterm.getPValue().equals(0.049D));
+        assertTrue(geneMeshterm.getGeneMeshtermPK().getMeshId().equals("D003063"));
+        assertTrue(geneMeshterm.getPublicationCount() == 0);
+        assertTrue(geneMeshterm.getPValue().equals(0.0095D));
 
         assertEquals("Meshterm category count", meshtermCategoryRepository.findAll().size(), 15);
         List<MeshtermCategory> allcategories = meshtermCategoryRepository.findByCategoryId("K");
