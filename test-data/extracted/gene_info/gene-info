@@ -70,3 +70,4 @@
 9606	100288463	CUL1P1	-	-	HGNC:HGNC:49567	5	5q23.2	cullin 1 pseudogene 1	pseudo	CUL1P1	cullin 1 pseudogene 1	O	-	20191221	-
 9606	100129008	CUL4AP1	-	-	HGNC:HGNC:44027	4	4q26	cullin 4A pseudogene 1	pseudo	CUL4AP1	cullin 4A pseudogene 1	O	-	20191221	-
 9606	100130060	GNPATP	-	-	HGNC:HGNC:34031	16	16q21	glyceronephosphate O-acyltransferase pseudogene	pseudo	GNPATP	glyceronephosphate O-acyltransferase pseudogene	O	-	20191221	-
+10090	113939900	Gm51263	-	Ancv1r	MGI:MGI:6364925|Ensembl:ENSMUSG00000118407	18	18 D1|18	predicted gene, 51263	protein-coding	Gm51263	predicted gene, 51263	O	ancient vomeronasal 1 receptor	20191105	-
