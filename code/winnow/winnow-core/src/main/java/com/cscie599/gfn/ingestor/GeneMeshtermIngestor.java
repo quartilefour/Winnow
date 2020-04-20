@@ -31,7 +31,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 @EnableAutoConfiguration
 public class GeneMeshtermIngestor extends BaseIngester {
 
-    protected static final Log logger = LogFactory.getLog(GenePubmedIngester.class);
+    protected static final Log logger = LogFactory.getLog(GeneMeshtermIngestor.class);
 
     @Value("file:${input.directory}${input.gene_meshterm.file}")
     private Resource[] inputResources;

@@ -14,7 +14,7 @@ import javax.sql.DataSource;
  */
 public abstract class BaseIngester {
 
-    protected static final Log logger = LogFactory.getLog(MeshtermIngestor.class);
+    protected static final Log logger = LogFactory.getLog(BaseIngester.class);
 
     @Autowired
     protected StepBuilderFactory stepBuilderFactory;

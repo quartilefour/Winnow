@@ -1,7 +1,11 @@
-package com.cscie599.gfn.ingestor;
+package com.cscie599.gfn.ingestor.basedata;
 
 import com.cscie599.gfn.entities.Goterm;
 import com.cscie599.gfn.importer.goterm.Root;
+import com.cscie599.gfn.ingestor.BaseIngester;
+import com.cscie599.gfn.ingestor.CustomJsonItemReader;
+import com.cscie599.gfn.ingestor.GZResourceAwareItemReaderItemStream;
+import com.cscie599.gfn.ingestor.IngeterUtil;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import com.fasterxml.jackson.databind.DeserializationFeature;
 import com.fasterxml.jackson.databind.ObjectMapper;

@@ -1,6 +1,9 @@
-package com.cscie599.gfn.ingestor;
+package com.cscie599.gfn.ingestor.basedata;
 
 import com.cscie599.gfn.entities.GeneGotermPK;
+import com.cscie599.gfn.ingestor.BaseIngester;
+import com.cscie599.gfn.ingestor.GZResourceAwareItemReaderItemStream;
+import com.cscie599.gfn.ingestor.IngeterUtil;
 import com.cscie599.gfn.ingestor.reader.SkipSupportedMultiResourceItemReader;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import org.apache.commons.logging.Log;

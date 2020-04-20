@@ -1,10 +1,13 @@
-package com.cscie599.gfn.ingestor;
+package com.cscie599.gfn.ingestor.basedata;
 
 import com.cscie599.gfn.entities.Meshterm;
 import com.cscie599.gfn.entities.MeshtermTree;
 import com.cscie599.gfn.entities.MeshtermTreePK;
 import com.cscie599.gfn.importer.meshterm.DescriptorRecord;
 import com.cscie599.gfn.importer.meshterm.MeshConverter;
+import com.cscie599.gfn.ingestor.BaseIngester;
+import com.cscie599.gfn.ingestor.GZResourceAwareItemReaderItemStream;
+import com.cscie599.gfn.ingestor.IngeterUtil;
 import com.cscie599.gfn.ingestor.reader.SkipSupportedMultiResourceItemReader;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import org.apache.commons.logging.Log;
@@ -15,9 +18,7 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.item.*;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
-import org.springframework.batch.item.support.CompositeItemWriter;
 import org.springframework.batch.item.xml.StaxEventItemReader;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -26,12 +27,9 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.oxm.xstream.XStreamMarshaller;
-import org.springframework.util.Assert;
 
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
-import javax.sql.DataSource;
-import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;

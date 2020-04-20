@@ -1,9 +1,12 @@
-package com.cscie599.gfn.ingestor;
+package com.cscie599.gfn.ingestor.basedata;
 
 import com.cscie599.gfn.entities.*;
 import com.cscie599.gfn.importer.pubmed.PubmedArticle;
 import com.cscie599.gfn.importer.pubmed.converter.MeshHeadingConverter;
 import com.cscie599.gfn.importer.pubmed.converter.PMIDConverter;
+import com.cscie599.gfn.ingestor.BaseIngester;
+import com.cscie599.gfn.ingestor.GZResourceAwareItemReaderItemStream;
+import com.cscie599.gfn.ingestor.IngeterUtil;
 import com.cscie599.gfn.ingestor.reader.SkipSupportedMultiResourceItemReader;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import org.apache.commons.logging.Log;
@@ -24,8 +27,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
-import org.springframework.core.task.SimpleAsyncTaskExecutor;
-import org.springframework.core.task.TaskExecutor;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.oxm.xstream.XStreamMarshaller;
