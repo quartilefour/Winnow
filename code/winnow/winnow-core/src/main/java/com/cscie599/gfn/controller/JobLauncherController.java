@@ -24,8 +24,9 @@ public class JobLauncherController {
 
     @RequestMapping("/jobLauncher.html")
     public ResponseEntity handle() throws Exception {
-        boolean ingestionStatus = ingestionService.ingestBaseData();
-        if(ingestionStatus)
+        boolean ingestBaseDataStatus = ingestionService.ingestBaseData();
+        boolean ingestEnrichedDataStatus = ingestionService.ingestEnrichedData();
+        if (ingestBaseDataStatus && ingestEnrichedDataStatus)
             return new ResponseEntity<>("Job completed successfully!", HttpStatus.OK);
         else
             return new ResponseEntity<>("All Jobs didnot completed successfully!", HttpStatus.INTERNAL_SERVER_ERROR);

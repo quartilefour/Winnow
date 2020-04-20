@@ -37,9 +37,9 @@ public class IngestionServiceImpl implements IngestionService {
     private static Map<String, Set<String>> jobStageMap = new HashMap<>();
 
     static {
-        jobStageMap.put(BASE_DATA_INGESTION, Sets.newHashSet("PubmedXMLIngester", "GoTermIngester", "GeneRelationshipIngester", "GeneGoTermIngester", "GeneMeshtermIngestor", "MeshtermIngestor", "GeneInfoIngester"));
+        jobStageMap.put(BASE_DATA_INGESTION, Sets.newHashSet("PubmedXMLIngester", "GoTermIngester", "GeneRelationshipIngester", "GeneGoTermIngester", "GeneMeshtermIngestor", "MeshtermIngestor", "GeneInfoIngester", "MeshtermCategoryIngestor"));
         jobStageMap.put(ENRICHMENT_DATA_INGESTION, Sets.newHashSet("MeshRawStatsIngester", "GeneRawStatsIngester", "GeneMeshPubStatsInMemoryIngester"));
-        jobStageMap.put(ENRICHED_DATA_INGESTION, Sets.newHashSet("GenePubmedIngester"));
+        jobStageMap.put(ENRICHED_DATA_INGESTION, Sets.newHashSet("GenePubmedIngester", "GeneAssociationIngestor"));
     }
 
     @Override
@@ -62,8 +62,8 @@ public class IngestionServiceImpl implements IngestionService {
                         logger.info(" status for " + action.getStepName() + " readCount " + action.getReadCount() + " commitCount " + action.getCommitCount() + " writeCount " + action.getWriteCount() + " writeSkipCount " + action.getWriteSkipCount() + " rollbackCount " + action.getRollbackCount() + " failureCount " + action.getFilterCount());
                     });
                     logger.info("Finished processing of job:- " + job.getName() + " timeTakenInMs:- " + (System.currentTimeMillis() - startTime));
-                } catch (Exception e) {
-                    logger.error("Unable to complete processing of all the jobs", e);
+                } catch (Exception ex) {
+                    logger.error("Unable to complete processing of all the jobs", ex);
                     processedAll.set(false);
                 }
             } else {

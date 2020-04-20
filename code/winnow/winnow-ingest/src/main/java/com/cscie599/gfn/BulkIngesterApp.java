@@ -22,7 +22,7 @@ public class BulkIngesterApp implements CommandLineRunner {
     @Override
     public void run(String... args) throws Exception {
         logger.info("Starting ingestion of all files");
-        boolean response = ingestionService.startIngestion();
+        boolean response = ingestionService.ingestBaseData();
         logger.info("Ingestion of all files completed successfully " + response);
         if (response) {
             System.exit(0);
