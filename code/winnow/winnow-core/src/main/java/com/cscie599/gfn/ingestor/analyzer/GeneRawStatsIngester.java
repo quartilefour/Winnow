@@ -1,11 +1,11 @@
-package com.cscie599.gfn.analyzer.ingester;
+package com.cscie599.gfn.ingestor.analyzer;
 
-import com.cscie599.gfn.analyzer.entities.GeneRawStats;
-import com.cscie599.gfn.analyzer.InMemoryCache;
-import com.cscie599.gfn.analyzer.InMemoryMapWriter;
+import com.cscie599.gfn.importer.analyzer.GeneRawStats;
 import com.cscie599.gfn.ingestor.BaseIngester;
 import com.cscie599.gfn.ingestor.GZResourceAwareItemReaderItemStream;
 import com.cscie599.gfn.ingestor.IngeterUtil;
+import com.cscie599.gfn.ingestor.analyzer.cache.InMemoryCache;
+import com.cscie599.gfn.ingestor.analyzer.cache.InMemoryMapWriter;
 import com.cscie599.gfn.ingestor.reader.SkipSupportedMultiResourceItemReader;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import org.apache.commons.logging.Log;
@@ -23,6 +23,7 @@ import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -51,6 +52,9 @@ public class GeneRawStatsIngester extends BaseIngester {
 
     @Value("${input.StatsIngester.inMemory}")
     private boolean inMemory;
+
+    @Autowired
+    InMemoryCache inMemoryCache;
 
     @Bean
     @Order(201)
@@ -88,7 +92,7 @@ public class GeneRawStatsIngester extends BaseIngester {
         logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
         SkipSupportedMultiResourceItemReader<GeneRawStats> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<>();
         multiResourceItemReader.setResources(inputResources);
-        multiResourceItemReader.setStrict(true);
+        multiResourceItemReader.setStrict(false);
         FlatFileItemReader<GeneRawStats> itemReader = new FlatFileItemReader<GeneRawStats>();
         itemReader.setLineMapper(lineMapperForGeneRawStats());
         multiResourceItemReader.setLinesToSkip(linesToSkip);
@@ -123,7 +127,7 @@ public class GeneRawStatsIngester extends BaseIngester {
 
     @Bean
     public InMemoryMapWriter<GeneRawStats> writerForGene2() {
-        InMemoryMapWriter<GeneRawStats> itemWriter = new InMemoryMapWriter<>(InMemoryCache.getInstance().getCachedGeneStats());
+        InMemoryMapWriter<GeneRawStats> itemWriter = new InMemoryMapWriter<>(inMemoryCache.getCachedGeneStats());
         return itemWriter;
     }
 

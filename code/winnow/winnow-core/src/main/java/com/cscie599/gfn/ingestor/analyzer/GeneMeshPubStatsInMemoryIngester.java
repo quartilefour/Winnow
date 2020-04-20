@@ -1,11 +1,11 @@
-package com.cscie599.gfn.analyzer.ingester;
+package com.cscie599.gfn.ingestor.analyzer;
 
-import com.cscie599.gfn.analyzer.InMemoryCache;
-import com.cscie599.gfn.analyzer.InMemoryMapCounterWriter;
-import com.cscie599.gfn.analyzer.entities.GeneMeshPub;
+import com.cscie599.gfn.importer.analyzer.GeneMeshPub;
 import com.cscie599.gfn.ingestor.BaseIngester;
 import com.cscie599.gfn.ingestor.GZResourceAwareItemReaderItemStream;
 import com.cscie599.gfn.ingestor.IngeterUtil;
+import com.cscie599.gfn.ingestor.analyzer.cache.InMemoryCache;
+import com.cscie599.gfn.ingestor.analyzer.cache.InMemoryMapCounterWriter;
 import com.cscie599.gfn.ingestor.reader.SkipSupportedMultiResourceItemReader;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -19,6 +19,7 @@ import org.springframework.batch.item.file.LineMapper;
 import org.springframework.batch.item.file.mapping.BeanWrapperFieldSetMapper;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
 import org.springframework.context.annotation.Bean;
@@ -41,6 +42,9 @@ public class GeneMeshPubStatsInMemoryIngester extends BaseIngester {
 
     @Value("${input.GeneMeshPubStatsInMemoryIngester.skipLines:0}")
     private int linesToSkip;
+
+    @Autowired
+    InMemoryCache inMemoryCache;
 
     @Bean
     @Order(200)
@@ -73,7 +77,7 @@ public class GeneMeshPubStatsInMemoryIngester extends BaseIngester {
         logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
         SkipSupportedMultiResourceItemReader<GeneMeshPub> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<>();
         multiResourceItemReader.setResources(inputResources);
-        multiResourceItemReader.setStrict(true);
+        multiResourceItemReader.setStrict(false);
         FlatFileItemReader<GeneMeshPub> itemReader = new FlatFileItemReader<GeneMeshPub>();
         itemReader.setLineMapper(lineMapperForGeneMeshPub());
         multiResourceItemReader.setLinesToSkip(linesToSkip);
@@ -99,7 +103,7 @@ public class GeneMeshPubStatsInMemoryIngester extends BaseIngester {
 
     @Bean
     public InMemoryMapCounterWriter writerForGeneMeshPubStats() {
-        InMemoryMapCounterWriter itemWriter = new InMemoryMapCounterWriter(InMemoryCache.getInstance().getCachedGeneMeshPubStats());
+        InMemoryMapCounterWriter itemWriter = new InMemoryMapCounterWriter(inMemoryCache.getCachedGeneMeshPubStats());
         return itemWriter;
     }
 
