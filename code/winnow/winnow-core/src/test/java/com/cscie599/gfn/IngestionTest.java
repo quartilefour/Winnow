@@ -1,7 +1,7 @@
 package com.cscie599.gfn;
 
 import com.cscie599.gfn.entities.*;
-import com.cscie599.gfn.ingestor.MeshtermIngestor;
+import com.cscie599.gfn.ingestor.basedata.MeshtermIngestor;
 import com.cscie599.gfn.repository.*;
 import com.cscie599.gfn.service.IngestionService;
 import org.junit.BeforeClass;
