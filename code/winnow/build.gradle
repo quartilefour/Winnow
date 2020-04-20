@@ -63,6 +63,9 @@ subprojects {
 		testImplementation 'io.zonky.test:embedded-database-spring-test:1.5.3'
 		testCompile "junit:junit:4.12"
         compile "org.jsoup:jsoup:1.12.1"
+		compile 'org.javatuples:javatuples:1.2'
+		compile 'org.apache.commons:commons-numbers-gamma:1.0-beta1'
+		compile 'de.siegmar:fastcsv:1.0.3'
     }
 
 	test {
