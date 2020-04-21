@@ -14,11 +14,12 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
-import org.springframework.batch.item.ItemProcessor;
-import org.springframework.batch.item.ItemReader;
-import org.springframework.batch.item.ItemWriter;
+import org.springframework.batch.item.*;
 import org.springframework.batch.item.database.BeanPropertyItemSqlParameterSourceProvider;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.batch.item.file.FlatFileItemWriter;
+import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
+import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.batch.item.support.CompositeItemWriter;
 import org.springframework.batch.item.xml.StaxEventItemReader;
 import org.springframework.beans.factory.annotation.Value;
@@ -36,6 +37,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.*;
 
 /**
+ * Ingester that processes publication files stored as 1000's of compressed gzipped files and writes to 5 different destination.
+ * 4 of these are db tables author, publication, publication_meshterm and publication_author.
+ * The 5th one is the csv writer for publication_author this is required for creating aggregated stats to be used by enrichment analysis later.
+ *
  * @author PulkitBhanot
  */
 @Configuration
@@ -45,15 +50,23 @@ public class PubmedXMLIngester extends BaseIngester {
 
     protected static final Log logger = LogFactory.getLog(PubmedXMLIngester.class);
 
+    // List of input files to be processed
     @Value("file:${input.directory}${input.pubmed.file}")
     private Resource[] inputResources;
 
+    // Number of lines of input to skip, used when we want to resume a job.
     @Value("${input.PubmedXMLIngester.skipLines:0}")
     private int linesToSkip;
 
+    // Output file location where the publication meshterm association needs to be stored.
+    @Value("file:${output.directory}${output.pubmed_meshterm_csv.file}")
+    private Resource outputResource;
 
+    // Known list of bad meshterm entries to skip. This is due to incomplete meshterm dataset.
     private Set<String> meshTermToSkipSet;
 
+    // Location of the file where the blacklisted meshterms are stores. Springboot reads them from the file and passes
+    // them as a list here.
     @Value("${input.blacklisted.meshterms}")
     public void setMeshTermToSkip(List<String> meshTermToSkip) {
         meshTermToSkipSet = new HashSet<>(meshTermToSkip);
@@ -74,7 +87,7 @@ public class PubmedXMLIngester extends BaseIngester {
                 .<PubmedArticle, List<Object>>chunk(ingestionBatchSize)
                 .reader(readerForPubmed())
                 .processor(processorForAuthors())
-                .writer(new MultiOutputItemWriter(authorWriter1(), publicationWriter2(), authorPublicationWriter3(), publicationMeshWriter4()))
+                .writer(new MultiOutputItemWriter(authorWriter1(), publicationWriter2(), authorPublicationWriter3(), publicationMeshWriter4(), publicationMeshWriterCSV5()))
                 .faultTolerant()
                 .skip(EmptyResultDataAccessException.class)
                 .skip(DataIntegrityViolationException.class)
@@ -101,6 +114,7 @@ public class PubmedXMLIngester extends BaseIngester {
         return itemWriter;
     }
 
+    // Returns Writer for the Author table
     @Bean
     public JdbcBatchItemWriter<Author> authorWriter1() {
         JdbcBatchItemWriter<Author> itemWriter = new UpsertableJdbcBatchItemWriter<>();
@@ -110,6 +124,7 @@ public class PubmedXMLIngester extends BaseIngester {
         return itemWriter;
     }
 
+    // Returns Writer for the Publication table
     @Bean
     public JdbcBatchItemWriter<Publication> publicationWriter2() {
         JdbcBatchItemWriter<Publication> itemWriter = new UpsertableJdbcBatchItemWriter<Publication>();
@@ -119,6 +134,7 @@ public class PubmedXMLIngester extends BaseIngester {
         return itemWriter;
     }
 
+    // Returns Writer for the PublicationAuthor table
     @Bean
     public JdbcBatchItemWriter<PublicationAuthor> authorPublicationWriter3() {
         JdbcBatchItemWriter<PublicationAuthor> itemWriter = new UpsertableJdbcBatchItemWriter<PublicationAuthor>();
@@ -128,6 +144,7 @@ public class PubmedXMLIngester extends BaseIngester {
         return itemWriter;
     }
 
+    // Returns Writer for the PublicationMeshterm table
     @Bean
     public JdbcBatchItemWriter<PublicationMeshterm> publicationMeshWriter4() {
         JdbcBatchItemWriter<PublicationMeshterm> itemWriter = new UpsertableJdbcBatchItemWriter<PublicationMeshterm>();
@@ -137,18 +154,35 @@ public class PubmedXMLIngester extends BaseIngester {
         return itemWriter;
     }
 
-    public class MultiOutputItemWriter implements ItemWriter<Object> {
+    // Returns Writer for the PublicationMeshterm to a file
+    @Bean
+    public ItemStreamWriter<PublicationMeshtermPK> publicationMeshWriterCSV5() {
+        FlatFileItemWriter<PublicationMeshtermPK> writer = new FlatFileItemWriter<PublicationMeshtermPK>();
+        writer.setResource(outputResource);
+        DelimitedLineAggregator<PublicationMeshtermPK> delLineAgg = new DelimitedLineAggregator<PublicationMeshtermPK>();
+        delLineAgg.setDelimiter(",");
+        BeanWrapperFieldExtractor<PublicationMeshtermPK> fieldExtractor = new BeanWrapperFieldExtractor<PublicationMeshtermPK>();
+        fieldExtractor.setNames(new String[]{"meshId", "publicationId"});
+        delLineAgg.setFieldExtractor(fieldExtractor);
+        writer.setLineAggregator(delLineAgg);
+        return writer;
+    }
+
+    // A Composition based writer that writes to all the destinations configured post reading of records for this ingester.
+    public class MultiOutputItemWriter implements ItemStreamWriter<Object> {
 
         private JdbcBatchItemWriter<Author> delegateAuthor;
         private JdbcBatchItemWriter<Publication> delegatePublication;
         private JdbcBatchItemWriter<PublicationAuthor> delegatePublicationAuthor;
         private JdbcBatchItemWriter<PublicationMeshterm> delegatePublicationMeshTerm;
+        private ItemStreamWriter<PublicationMeshtermPK> delegatePublicationMeshTermCSVWriter;
 
-        public MultiOutputItemWriter(JdbcBatchItemWriter<Author> delegateAuthor, JdbcBatchItemWriter<Publication> delegatePublication, JdbcBatchItemWriter<PublicationAuthor> delegatePublicationAuthor, JdbcBatchItemWriter<PublicationMeshterm> delegatePublicationMeshTerm) {
+        public MultiOutputItemWriter(JdbcBatchItemWriter<Author> delegateAuthor, JdbcBatchItemWriter<Publication> delegatePublication, JdbcBatchItemWriter<PublicationAuthor> delegatePublicationAuthor, JdbcBatchItemWriter<PublicationMeshterm> delegatePublicationMeshTerm, ItemStreamWriter<PublicationMeshtermPK> delegatePublicationMeshTermCSVWriter) {
             this.delegateAuthor = delegateAuthor;
             this.delegatePublication = delegatePublication;
             this.delegatePublicationAuthor = delegatePublicationAuthor;
             this.delegatePublicationMeshTerm = delegatePublicationMeshTerm;
+            this.delegatePublicationMeshTermCSVWriter = delegatePublicationMeshTermCSVWriter;
         }
 
         @Transactional(isolation = Isolation.SERIALIZABLE)
@@ -157,6 +191,7 @@ public class PubmedXMLIngester extends BaseIngester {
             List<Publication> publications = new ArrayList<>();
             List<PublicationAuthor> publicationAuthors = new ArrayList<>();
             List<PublicationMeshterm> publicationMeshterms = new ArrayList<>();
+            List<PublicationMeshtermPK> publicationMeshtermPKs = new ArrayList<>();
 
 
             items.forEach(sublist -> {
@@ -169,6 +204,7 @@ public class PubmedXMLIngester extends BaseIngester {
                         publicationAuthors.add((PublicationAuthor) item);
                     } else if (item.getClass().equals(PublicationMeshterm.class)) {
                         publicationMeshterms.add((PublicationMeshterm) item);
+                        publicationMeshtermPKs.add(((PublicationMeshterm) item).getPublicationMeshtermPK());
                     }
                 });
             });
@@ -176,10 +212,25 @@ public class PubmedXMLIngester extends BaseIngester {
             delegatePublication.write(publications);
             delegatePublicationAuthor.write(publicationAuthors);
             delegatePublicationMeshTerm.write(publicationMeshterms);
+            delegatePublicationMeshTermCSVWriter.write(publicationMeshtermPKs);
+        }
+
+        @Override
+        public void open(ExecutionContext executionContext) throws ItemStreamException {
+            this.delegatePublicationMeshTermCSVWriter.open(executionContext);
+        }
+
+        @Override
+        public void update(ExecutionContext executionContext) throws ItemStreamException {
+            this.delegatePublicationMeshTermCSVWriter.update(executionContext);
+        }
+
+        @Override
+        public void close() throws ItemStreamException {
+            this.delegatePublicationMeshTermCSVWriter.close();
         }
     }
-
-
+    
     @Bean
     public ItemReader<PubmedArticle> readerForPubmed() {
         logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
