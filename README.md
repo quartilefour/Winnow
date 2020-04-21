@@ -61,6 +61,7 @@ See [here](./code/winnow/HELP.md) for some documentation around springboot.
 ### ReactJS UI
 ```
 winnow-ui
+├── jest.config.json
 ├── package.json
 ├── package-lock.json
 ├── public
@@ -73,6 +74,7 @@ cd code/winnow-ui
 npm install
 npm start
 ```
+After ```npm start```, a browser window should automatically open to http://localhost:3000/
 
 
 ### Production Setup ###

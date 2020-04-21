@@ -1,11 +1,11 @@
 import React, {useEffect, useState} from "react";
-import {Link, Redirect} from "react-router-dom";
+import {Redirect} from "react-router-dom";
 import {Card, Form, Button, Col, Alert} from "react-bootstrap";
 import {sendRegistration} from "../../service/AuthService";
 import logoImg from "../../img/logo.png";
 
 /**
- * Renders Registration form and handles responses from API.
+ * Functional component to render Registration form and handle responses from API.
  *
  * @param props
  * @returns {*}
@@ -37,15 +37,14 @@ function Register(props) {
         };
         sendRegistration(credentials).then(res => {
             setIsRegistered(true);
-            console.log("Non-200 status from API: " + JSON.stringify(res));
         })
             .catch(error => {
-                console.log("Registration: " + error.toString());
                 setAlertType("danger");
                 setError(error.toString());
             });
     }
 
+    /* Displays Registration form */
     if (!isRegistered) {
         return (
             <Card
@@ -128,18 +127,20 @@ function Register(props) {
                         <Button
                             block
                             variant="info"
-                            onClick={postRegistration}>Register
+                            onClick={postRegistration}
+                        >
+                            Register
                         </Button>
                     </Form>
                 </Card.Body>
                 <Card.Footer>
                     <Alert variant={alertType}>{error}</Alert>
-                    <Link to="/login">Already have an account?</Link>
+                    <a href="/login">Already have an account?</a>
                 </Card.Footer>
             </Card>
         )
+        /* Redirect to Login page after successful registration */
     } else {
-        console.log(`Successfully registered: ${userEmail}`);
         return (
             <Redirect to="/login"/>
         )

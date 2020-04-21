@@ -22,19 +22,16 @@ function BookmarkTab(props) {
         if (deleteBookmark) {
             removeUserBookmark(deleteBookmark)
                 .then(res => {
-
                     setDeleteBookmark(null);
                 })
                 .catch(err => {
-
+                    /* TODO: Should display/flash error message */
                 });
         }
         fetchUserBookmarks()
             .then(res => {
-                console.info(`Fetching user bookmarks: ${JSON.stringify(res)}`);
                 setBookmarkData(res);
                 setIsLoaded(true);
-                //console.info(`Bookmark count: ${bookmarkData.length}`)
             }).catch(err => {
             setIsLoaded(true);
         });
@@ -43,6 +40,7 @@ function BookmarkTab(props) {
         }
     }, [deleteBookmark]);
 
+    /* Displays User's saved bookmarks, if any */
     if (isLoaded) {
         return (
             <div>
@@ -59,7 +57,6 @@ function BookmarkTab(props) {
                             </thead>
                             <tbody>
                             {bookmarkData.map((bookmark) => {
-                                console.info(`Looping through bookmarks: ${JSON.stringify(bookmark)}`);
                                 return (
                                     <tr key={bookmark.searchId}>
                                         <td>{bookmark.searchName}</td>
@@ -104,7 +101,6 @@ function BookmarkTab(props) {
                                                 color="maroon"
                                                 title="Delete Search"
                                                 onClick={(e) => {
-                                                    console.info(`Clicked delete on bookmark #${bookmark.searchId} `);
                                                     setDeleteBookmark(bookmark.searchId)
                                                 }}
                                             />

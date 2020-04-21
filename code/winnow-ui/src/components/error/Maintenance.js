@@ -38,7 +38,7 @@ function Maintenance (props) {
                     <Card.Subtitle>Gene Function Navigator</Card.Subtitle>
                     <Card.Img variant="top" src={logoImg} style={{margin: 'auto', width: '50%'}}/>
                     <Card.Body>
-                        Application is currently undergoing maintenance.
+                        Winnow API is currently unavailable.
                     </Card.Body>
                     <Card.Footer>
                         <Alert variant={alertType}>{error}</Alert>

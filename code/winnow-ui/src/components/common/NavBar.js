@@ -3,7 +3,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faQuestionCircle} from "@fortawesome/free-regular-svg-icons";
 import {faUser, faSignOutAlt} from "@fortawesome/free-solid-svg-icons";
 import {useAuth} from "../../context/auth";
-import AuthService from "../../service/AuthService";
+import {isTokenExpired, fetchProfileData} from "../../service/AuthService";
 import {Nav, Navbar} from "react-bootstrap";
 import logoImg from "../../img/logo.png";
 import {Link} from "react-router-dom";
@@ -26,19 +26,20 @@ const NavBar = () => {
         if (isLoggingOut) {
             setAuthToken(null);
             setIsLoggingOut(false);
-            console.info(`NavBar: Clearing authToken: ${authToken}`);
-
         }
-        if (!AuthService.isTokenExpired()) {
+        if (!isTokenExpired()) {
             setIsTokenValid(true);
-            setUser(AuthService.getUserInfo());
-            console.info(`NavBar: Valid token: ${isTokenValid}`);
+            fetchProfileData()
+                .then(res => {
+                    setUser(res.userEmail)
+                })
+                .catch(err => {})
         }
     }, [isTokenValid, isLoggingOut, authToken, setAuthToken]);
 
+    /* Logs user out of application, clears cookie and session */
     function logOut() {
         setIsLoggingOut(true);
-        console.info(`NavBar: Logging out: ${isLoggingOut}`);
     }
 
     if (authToken) {

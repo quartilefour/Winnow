@@ -7,6 +7,9 @@ code/winnow/.idea
 *.css.map
 .sass-cache
 
+code/winnow-ui/coverage
+__snapshots__/
+
 flask_session/
 
 ### Python template

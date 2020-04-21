@@ -27,6 +27,7 @@ function RecentSearchesTab(props) {
         setIsLoaded(true);
     }, [removeSearch, setSearchHistory]);
 
+    /* Displays user's recent session searches */
     if (isLoaded) {
         return (
             <div id="recent-search-div">
@@ -42,7 +43,6 @@ function RecentSearchesTab(props) {
                             </thead>
                             <tbody>
                             {searchHistory.map((search, index) => {
-                                console.info(`Looping through searches: ${JSON.stringify(search)}`);
                                 return (
                                     <tr key={index}>
                                         <td>{index+1}</td>
@@ -70,7 +70,6 @@ function RecentSearchesTab(props) {
                                                 color="maroon"
                                                 title="Delete Search"
                                                 onClick={(e) => {
-                                                    console.info(`Clicked delete on bookmark #${index} `);
                                                     setRemoveSearch(index)
                                                 }}
                                             />

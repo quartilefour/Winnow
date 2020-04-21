@@ -22,13 +22,14 @@ function SearchTermUploader(props) {
                     symbol: [],
                     description: [],
                     meshTreeId: [],
-                    meshId: ["D0000012", "D0001234", "D000928326"]
+                    meshId: []
                 },
             })
                 .then(res => {
-                    setResultData(res);
-                    setIsLoaded(true);
                     sessionStorage.removeItem('mtt');
+                    setResultData(res);
+                    setHaveResults(true);
+                    setIsLoaded(true);
                 }).catch(err => {
                 setIsLoaded(true);
             });
@@ -85,7 +86,10 @@ function SearchTermUploader(props) {
                         </Form.Group>
                         <Form.Group>
                             <Form.Label>Manual Entry</Form.Label>
-                            <Form.Control as={"textarea"} rows={"15"}/>
+                            <Form.Control
+                                as={"textarea"}
+                                rows={"15"}
+                            />
                         </Form.Group>
                     </Form>
                 </div>

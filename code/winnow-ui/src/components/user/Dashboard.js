@@ -17,7 +17,6 @@ function Dashboard(props) {
     useEffect(() => {
         let storedTab = sessionStorage.getItem('dashboardTab');
         if (storedTab) {
-            console.info(`Dashboard: setting tab to: ${JSON.stringify(storedTab)}`);
             setCurrentTab(storedTab);
         }
     }, [currentTab]);
@@ -30,12 +29,11 @@ function Dashboard(props) {
                            mountOnEnter={true}
                            unmountOnExit={true}
                            onSelect={
-                (e) => {
-                    console.info(`Selecting Dashboard tab: ${e}`);
-                    sessionStorage.setItem('dashboardTab', e);
-                    setCurrentTab(e)
-                }
-            }>
+                               (e) => {
+                                   sessionStorage.setItem('dashboardTab', e);
+                                   setCurrentTab(e)
+                               }
+                           }>
                 <Row>
                     <Col sm={2} id="dashboard-outer-tabs">
                         <Nav id="dashboard-tabs" variant="tabs" className="flex-column">
@@ -54,15 +52,15 @@ function Dashboard(props) {
                         <Tab.Content id="dashboard-tab-content">
                             <Tab.Pane eventKey="bookmarks">
                                 <p className="tab-heading">User Bookmarks</p>
-                                <BookmarkTab />
+                                <BookmarkTab/>
                             </Tab.Pane>
                             <Tab.Pane eventKey="search">
                                 <p className="tab-heading">Gene/MeSH Search</p>
-                                <ComboSearchTab />
+                                <ComboSearchTab/>
                             </Tab.Pane>
                             <Tab.Pane eventKey="search-history">
                                 <p className="tab-heading">Recent Searches</p>
-                                <RecentSearchesTab />
+                                <RecentSearchesTab/>
                             </Tab.Pane>
                         </Tab.Content>
                     </Col>

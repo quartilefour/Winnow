@@ -9,11 +9,11 @@ import PageLoader from "../common/PageLoader";
 /**
  * Dynamically generates MeSH term tree
  *
- * Uses https://github.com/azizali/react-super-treeview
+ * Uses https://github.com/azizali/react-super-treeview with heavy customizations to
+ * dynamically build MeSH term hierarchy.
  *
  * @param props
  * @returns {*}
- * @constructor
  */
 
 export function MeshtermTree(props) {
@@ -62,11 +62,12 @@ export function MeshtermTree(props) {
         setIsLoaded(true);
     }
 
+    /* Updated session object with checked MeSH tree terms and updates parent component */
     function updatesCheckedNodes(node) {
         if (node && node.id !== null) {
             let sscn = sessionStorage.getItem('mtt');
             if (node.isChecked) {
-                console.info(`MeshtermTree updateCN node ${node.meshId} checked`);
+                console.debug(`MeshtermTree updateCN node ${node.meshId} checked`);
                 setChecked([...checked, node.meshId]);
                 if (sscn === null) {
                     sessionStorage.setItem('mtt', `${node.id}`)
@@ -75,26 +76,15 @@ export function MeshtermTree(props) {
                 }
             } else {
                 let sscnArray = sscn.split(",");
-                console.info(`MeshtermTree updateCN node ${node.meshId} unchecked`);
+                console.debug(`MeshtermTree updateCN node ${node.meshId} unchecked`);
                 setChecked(checked.filter(term => term !== node.meshId));
                 sessionStorage.setItem('mtt', `${sscnArray.filter(term => term !== node.id)}`)
             }
             props.callback(sessionStorage.getItem('mtt').split(','))
         }
-        //console.info(`MeshtermTree checked nodes: ${checked}`);
     }
 
-    function collectCheckedTerms() {
-        let elem = document.getElementById("meshterm-tree");
-        let checkedBoxes = elem.querySelectorAll('input[type=checkbox]:checked');
-        console.info(`MeshtermTree number of checked terms: ${checkedBoxes.length}`);
-        if (checkedBoxes.length > 0) {
-            checkedBoxes.forEach((node) => {
-                console.info(`Checked node: ${node.id}`)
-            })
-        }
-    }
-
+    /* Displays MeSH term tree, dynamically populating/removing children as expanded/collapsed */
     if (isLoaded) {
         return (
             <SuperTreeview
@@ -105,8 +95,6 @@ export function MeshtermTree(props) {
                 }}
                 onUpdateCb={(updatedData) => {
                     setMeshData(updatedData);
-                    //props.callback(checked);
-                    collectCheckedTerms()
                 }}
                 isDeletable={(node, depth) => {
                     return false;
@@ -115,47 +103,25 @@ export function MeshtermTree(props) {
                     return node.hasChild;
                 }}
                 onCheckToggleCb={(nodes, depth)=>{
-                    console.info(`MeshtermTree checkToggle: ${JSON.stringify(nodes)}`);
+                    console.debug(`MeshtermTree checkToggle: ${JSON.stringify(nodes)}`);
                     const checkState = nodes[0].isChecked;
 
                     applyCheckStateTo(nodes);
 
+                    /* Recursively checks/unchecks immediate children */
                     function applyCheckStateTo(nodes){
                         nodes.forEach((node)=>{
                             node.isChecked = checkState;
-                            if (checkState) {
-                                /*node.isExpanded = true;
-                                node.isChildrenLoading = true;
-
-                                if (depth === 0) {
-                                    fetchMeshtermNode(node.id)
-                                        .then(res => {
-                                            insertChildNodes(node, depth, mapMeshtermTreeData(res, node, depth));
-                                        }).catch(err => {
-                                        console.debug(`MeshtermTree Error: ${err}`);
-                                        console.debug(`MeshtermTree Error: ${JSON.stringify(err)}`);
-                                    })
-                                } else {
-                                    fetchMeshtermTree(node.id)
-                                        .then(res => {
-                                            insertChildNodes(node, depth, mapMeshtermTreeData(res, node, depth));
-                                        }).catch(err => {
-                                        console.debug(`MeshtermTree Error: ${err}`);
-                                        console.debug(`MeshtermTree Error: ${JSON.stringify(err)}`);
-                                    })
-                                }*/
-                            }
                              updatesCheckedNodes(node);
                             if(node.children){
                                 applyCheckStateTo(node.children);
                             }
                         })
                     }
-                    collectCheckedTerms()
                 }}
                 onExpandToggleCb={(node, depth) => {
                     if (node.isExpanded === true) {
-                        console.info(`MeshtermTree expanding: ${node.name}`);
+                        console.debug(`MeshtermTree expanding: ${node.name}`);
                         node.isChildrenLoading = true;
 
                         if (depth === 0) {
@@ -176,7 +142,6 @@ export function MeshtermTree(props) {
                             })
                         }
                     }
-                    collectCheckedTerms()
                 }}
             />
         )

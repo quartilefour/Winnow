@@ -1,17 +1,22 @@
 /**
  * The ApiService provides access to all the Winnow API calls except
- * those related to authentication/authorization.
+ * those related to authentication/authorization and user management.
  */
 import axios from 'axios';
 import * as C from '../constants';
-import AuthService from "./AuthService";
+import {getAuthHeader} from "./AuthService";
 
+/**
+ * Retrieves User bookmarks.
+ *
+ * @return {Promise<>}
+ */
 export const fetchUserBookmarks = () => {
     return new Promise((resolve, reject) => {
         axios.get(
             `${C.WINNOW_API_BASE_URL}/bookmarks`,
             {
-                headers: AuthService.getAuthHeader(),
+                headers: getAuthHeader(),
             }
         )
             .then(res => {
@@ -21,6 +26,12 @@ export const fetchUserBookmarks = () => {
     });
 };
 
+/**
+ * Saves a User's search as a bookmark.
+ *
+ * @param data - JSON object describing a search.
+ * @return {Promise<>}
+ */
 export const saveUserBookmark = (data) => {
     console.info(`saveUserBookmark: ${JSON.stringify(data)}`);
     return new Promise((resolve, reject) => {
@@ -31,7 +42,7 @@ export const saveUserBookmark = (data) => {
             `${C.WINNOW_API_BASE_URL}/bookmarks`,
             data,
             {
-                headers: AuthService.getAuthHeader(),
+                headers: getAuthHeader(),
             }
         )
             .then(res => {
@@ -41,13 +52,18 @@ export const saveUserBookmark = (data) => {
     });
 };
 
+/**
+ * Deletes a User's saved bookmark.
+ *
+ * @param bookmarkId
+ * @return {Promise<>}
+ */
 export const removeUserBookmark = (bookmarkId) => {
-    console.info(`removeUserBookmark: ${JSON.stringify(bookmarkId)}`);
     return new Promise((resolve, reject) => {
         axios.delete(
             `${C.WINNOW_API_BASE_URL}/bookmarks/${bookmarkId}`,
             {
-                headers: AuthService.getAuthHeader(),
+                headers: getAuthHeader(),
             }
         )
             .then(res => {
@@ -57,14 +73,19 @@ export const removeUserBookmark = (bookmarkId) => {
     });
 };
 
+/**
+ * Retrieves search results for selected Genes/MeSH terms.
+ *
+ * @param data
+ * @return {Promise<>}
+ */
 export const fetchSearchResults = (data) => {
-    console.info(`fetchSearchResults: ${JSON.stringify(data)}`);
     return new Promise((resolve, reject) => {
         axios.post(
             `${C.WINNOW_API_BASE_URL}/search`,
             data,
             {
-                headers: AuthService.getAuthHeader(),
+                headers: getAuthHeader(),
             }
         )
             .then(res => {
@@ -74,12 +95,18 @@ export const fetchSearchResults = (data) => {
     });
 };
 
+/**
+ * Retrieves genes matching `partial` search term.
+ *
+ * @param partial - String to search gene Id, Symbol, and Description.
+ * @return {Promise<>}
+ */
 export const fetchGenes = (partial) => {
     return new Promise((resolve, reject) => {
         axios.get(
             `${C.WINNOW_API_BASE_URL}/genes/search/${partial}`,
             {
-                headers: AuthService.getAuthHeader(),
+                headers: getAuthHeader(),
             }
         )
             .then(res => {
@@ -89,13 +116,19 @@ export const fetchGenes = (partial) => {
     });
 };
 
+/**
+ * Retrieves details associated with a given gene.
+ *
+ * @param geneId
+ * @return {Promise<>}
+ */
 export const fetchGeneDetails = (geneId) => {
     return new Promise((resolve, reject) => {
         axios.post(
             `${C.WINNOW_API_BASE_URL}/genes`,
             {geneId: geneId},
             {
-                headers: AuthService.getAuthHeader(),
+                headers: getAuthHeader(),
             }
         )
             .then(res => {
@@ -105,6 +138,12 @@ export const fetchGeneDetails = (geneId) => {
     });
 };
 
+/**
+ * Retrieves details for a given gene from the NCBI.
+ *
+ * @param geneId
+ * @return {Promise<>}
+ */
 export const fetchNCBIGeneDetails = (geneId) => {
     return new Promise((resolve, reject) => {
         axios.get(
@@ -117,13 +156,17 @@ export const fetchNCBIGeneDetails = (geneId) => {
     });
 };
 
+/**
+ * Retrieves top level MeSH term categories.
+ *
+ * @return {Promise<>}
+ */
 export const fetchMeshtermCat = () => {
-    console.debug(`fetchMeshtermCat: ${C.WINNOW_API_BASE_URL}/meshterms/category`);
     return new Promise((resolve, reject) => {
         axios.get(
             `${C.WINNOW_API_BASE_URL}/meshterms/category`,
             {
-                headers: AuthService.getAuthHeader(),
+                headers: getAuthHeader(),
             }
         )
             .then(res => {
@@ -133,13 +176,18 @@ export const fetchMeshtermCat = () => {
     });
 };
 
+/**
+ * Retrieves MeSH term tree branch for given parent node.
+ *
+ * @param node
+ * @return {Promise<>}
+ */
 export const fetchMeshtermTree = (node) => {
-    console.debug(`fetchMeshtermTree: ${C.WINNOW_API_BASE_URL}/meshterms/tree/parentid/${node}`);
     return new Promise((resolve, reject) => {
         axios.get(
             `${C.WINNOW_API_BASE_URL}/meshterms/tree/parentid/${node}`,
             {
-                headers: AuthService.getAuthHeader(),
+                headers: getAuthHeader(),
             }
         )
             .then(res => {
@@ -149,13 +197,18 @@ export const fetchMeshtermTree = (node) => {
     });
 };
 
+/**
+ * Retrieves MeSH term tree node.
+ *
+ * @param node
+ * @return {Promise<>}
+ */
 export const fetchMeshtermNode = (node) => {
-    console.debug(`fetchMeshtermNode: ${C.WINNOW_API_BASE_URL}/meshterms/tree/nodeid/${node}`);
     return new Promise((resolve, reject) => {
         axios.get(
             `${C.WINNOW_API_BASE_URL}/meshterms/tree/nodeid/${node}`,
             {
-                headers: AuthService.getAuthHeader(),
+                headers: getAuthHeader(),
             }
         )
             .then(res => {
@@ -165,6 +218,14 @@ export const fetchMeshtermNode = (node) => {
     });
 };
 
+/**
+ * Helper function to map MeSH term data to tree view node.
+ *
+ * @param data - JSON object of MeSH term.
+ * @param node - Tree view node.
+ * @param depth - Tree view depth.
+ * @return JSON object of Tree node to insert.
+ */
 export const mapMeshtermTreeData = (data, node, depth) => {
     return data.map((mesh, index) => {
         let id = (depth > 0)
@@ -182,14 +243,19 @@ export const mapMeshtermTreeData = (data, node, depth) => {
     });
 };
 
+/**
+ * Retrieves PubMed articles associated with provided Gene/MeSH terms.
+ *
+ * @param data - JSON object containing geneIds/meshIds.
+ * @return {Promise<>}
+ */
 export const fetchPubMedArticleList = (data) => {
-    console.info(`fetchPubMedArticleList: ${JSON.stringify(data)}`);
     return new Promise((resolve, reject) => {
         axios.post(
             `${C.WINNOW_API_BASE_URL}/publications`,
             data,
             {
-                headers: AuthService.getAuthHeader(),
+                headers: getAuthHeader(),
             }
         )
             .then(res => {
@@ -199,8 +265,12 @@ export const fetchPubMedArticleList = (data) => {
     });
 };
 
+/**
+ * Checks for API availability.
+ *
+ * @return {Promise<>}
+ */
 export const fetchApiStatus = () => {
-    console.debug(`fetchApiStatus: ${C.WINNOW_API_BASE_URL}/status`);
     return new Promise((resolve, reject) => {
         axios.get(
             `${C.WINNOW_API_BASE_URL}/status`,

@@ -25,11 +25,6 @@ function SearchResultsDisplay(props) {
     const [bookmarkEnabled, setBookmarkEnabled] = useState(false);
 
 
-    function executePubMedArticleListDisplay(index) {
-        setSelectedIndex(index);
-        setHaveResults(true);
-    }
-
     useEffect(() => {
         if (resData.results !== undefined && resData.results.length > 0) {
             setBookmarkEnabled(true);
@@ -38,12 +33,16 @@ function SearchResultsDisplay(props) {
             setResData(props.resData);
             sessionStorage.removeItem('mtt');
             setIsLoaded(true);
-        } else {
-            /* fetchSearchResults() */
         }
         return () => {
         }
     }, [haveResults, props, resData, activeGeneDetail]);
+
+    /* Enable display of PubMed articles associated with given result. */
+    function executePubMedArticleListDisplay(index) {
+        setSelectedIndex(index);
+        setHaveResults(true);
+    }
 
     function returnToResults() {
         setHaveResults(false)
@@ -81,7 +80,6 @@ function SearchResultsDisplay(props) {
                             </thead>
                             <tbody style={{overflow: "auto"}}>
                             {resData.results.map((value, index) => {
-                                console.info(`SearchResult ${index}: ${value.geneId} - ${value.meshId}`);
                                 return (
                                     <tr key={index}>
                                         <td>
@@ -139,7 +137,6 @@ function SearchResultsDisplay(props) {
                 </div>
             );
         } else {
-            console.info(`PubMedArticleDisplay Selected: ${JSON.stringify(resData)}`);
             return (
                 <div><PubMedArticleListDisplay listData={resData.results[selectedIndex]} history={returnToResults}/>
                 </div>

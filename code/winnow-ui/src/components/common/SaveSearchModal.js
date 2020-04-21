@@ -2,6 +2,13 @@ import React, {useEffect, useState} from "react";
 import {Modal, Form, Button, Alert} from "react-bootstrap";
 import {saveUserBookmark} from "../../service/ApiService";
 
+/**
+ * Functional component to save a User's current search as a bookmark.
+ *
+ * @param props
+ * @return {*}
+ * @constructor
+ */
 function SaveSearchModal(props) {
 
     const [bookmarkName, setBookmarkName] = useState('');
@@ -14,13 +21,12 @@ function SaveSearchModal(props) {
         setSaveEnabled(bookmarkName.length >= 1);
         if (saveBookmark) {
             saveUserBookmark({
-                searchName: bookmarkName.slice(0,19),
+                searchName: bookmarkName.slice(0, 19),
                 searchQuery: props.searchdata.searchQuery,
                 queryType: props.searchdata.queryType,
                 queryFormat: props.searchdata.queryFormat
             })
-                .then( res =>{
-                    console.info(`Saved bookmark named: ${bookmarkName}`);
+                .then(res => {
                     setSaveBookmark(false);
                     props.onHide()
                 })
@@ -30,7 +36,6 @@ function SaveSearchModal(props) {
                 })
         }
     }, [props, saveBookmark, bookmarkName]);
-
 
     return (
         <Modal
@@ -66,7 +71,9 @@ function SaveSearchModal(props) {
                     variant="info"
                     size="sm"
                     disabled={!saveEnabled}
-                    onClick={() => {setSaveBookmark(true)}}
+                    onClick={() => {
+                        setSaveBookmark(true)
+                    }}
                 >
                     Save
                 </Button>

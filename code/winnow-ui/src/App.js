@@ -5,7 +5,6 @@ import NavBar from "./components/common/NavBar";
 import Login from "./components/user/Login";
 import Register from "./components/user/Register";
 import Dashboard from "./components/user/Dashboard";
-import './App.css';
 import {AuthContext} from "./context/auth";
 import PrivateRoute from "./PrivateRoute";
 import Cookies from 'js-cookie';
@@ -39,7 +38,6 @@ function App(props) {
             .catch(err => {
                 setApiReady(false);
                 setTimeOut(setTimeout(fetchApiStatus, 15000))
-                console.info(`apiStatus: ${timeOut}`);
             })
     })
     /**
@@ -59,6 +57,7 @@ function App(props) {
         setAuthToken(data);
     };
 
+    /* Displays application when API is available */
     if (apiReady) {
         return (
             <AuthContext.Provider value={{authToken, setAuthToken: setToken}}>

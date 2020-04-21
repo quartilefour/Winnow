@@ -5,6 +5,12 @@ import {faUser} from "@fortawesome/free-solid-svg-icons";
 import {fetchProfileData, sendChangePassword, sendProfileUpdate} from "../../service/AuthService";
 import PageLoader from "../common/PageLoader";
 
+/**
+ * Functional component to render User Profile form.
+ *
+ * @return {*}
+ * @constructor
+ */
 function Profile() {
 
     const [isLoaded, setIsLoaded] = useState(false);
@@ -35,8 +41,8 @@ function Profile() {
         });
     }, [error, alertType]);
 
+    /* Updates user name and/or email */
     function updateProfile() {
-        /* Call sendProfileUpdate(profileData) */
         const userInfo = {
             firstName: firstName,
             lastName: lastName,
@@ -51,11 +57,10 @@ function Profile() {
                 setAlertType("danger");
                 setError(err);
             });
-        console.info(`Profile update: ${error}`);
     }
 
+    /* Changes user password */
     function changePassword() {
-        /* Call sendChangePassword(credentials)*/
         const credentials = {
             userPassword: userNewPassword,
             passwordConfirm: newPasswordConfirm
@@ -69,16 +74,15 @@ function Profile() {
                 setAlertType("danger");
                 setError(err)
             });
-        console.info(`Password change: ${error}`);
     }
 
-
+    /* Resets form entry errors */
     function resetError() {
         setError(null);
         setAlertType('');
     }
 
-    //console.info(`Profile data: ${JSON.stringify(data)}`);
+    /* Displays current Profile data once loaded from API */
     if (isLoaded) {
         return (
             <Card
@@ -154,8 +158,15 @@ function Profile() {
                                                 />
                                             </Col>
                                         </Form.Row>
-                                        <Button block onClick={updateProfile} disabled={false} variant="info" size="sm">Update
-                                            Profile</Button>
+                                        <Button
+                                            block
+                                            onClick={updateProfile}
+                                            disabled={false}
+                                            variant="info"
+                                            size="sm"
+                                        >
+                                            Update Profile
+                                        </Button>
                                     </Form.Group>
                                 </Tab.Pane>
                                 <Tab.Pane eventKey="password" id="password">
@@ -202,8 +213,15 @@ function Profile() {
                                                 />
                                             </Col>
                                         </Form.Row>
-                                        <Button block onClick={changePassword} disabled={false} variant="info"
-                                                size="sm">Change Password</Button>
+                                        <Button
+                                            block
+                                            onClick={changePassword}
+                                            disabled={false}
+                                            variant="info"
+                                            size="sm"
+                                        >
+                                            Change Password
+                                        </Button>
                                     </Form.Group>
                                 </Tab.Pane>
                             </Tab.Content>

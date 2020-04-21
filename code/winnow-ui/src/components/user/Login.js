@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from "react";
-import {Link, Redirect} from "react-router-dom";
+import {Redirect} from "react-router-dom";
 import {Card, Form, Button, Alert} from "react-bootstrap";
 import {sendLoginCredentials} from "../../service/AuthService";
 import logoImg from "../../img/logo.png";
@@ -7,7 +7,7 @@ import {useAuth} from "../../context/auth";
 import {createSearchHistory} from "../../service/SearchService";
 
 /**
- * Renders Login form and handles response from API.
+ * Functional component to render Login form and handle response from API.
  *
  * @param props
  * @returns {*}
@@ -24,7 +24,6 @@ function Login(props) {
 
     useEffect(() => {
         if (authToken) {
-            console.info(`Login: Have ${authToken}, setting isLoggedIn to 'true'`);
             setLoggedIn(true);
         }
     }, [authToken, isLoggedIn]);
@@ -33,17 +32,16 @@ function Login(props) {
     function postLogin() {
         const credentials = {userEmail: userEmail, userPassword: userPassword};
         sendLoginCredentials(credentials).then(res => {
-            console.log(`Return status from API: ${res}`);
             setAuthToken(res);
             createSearchHistory();
             setLoggedIn(true);
         }).catch(error => {
-            console.log(`Login error: ${error}`);
             setAlertType("danger");
             setError("Invalid E-mail or password");
         });
     }
 
+    /* Validates user input before submitting */
     function validateForm(e) {
         if (e.keyCode === 13) {
             if (userEmail !== "" && userPassword !== "") {
@@ -52,6 +50,7 @@ function Login(props) {
         }
     }
 
+    /* Displays Login form */
     if (!isLoggedIn) {
         return (
             <div>
@@ -108,11 +107,12 @@ function Login(props) {
                     </Card.Body>
                     <Card.Footer>
                         <Alert variant={alertType}>{error}</Alert>
-                        <Link to="/register">Don't have an account?</Link>
+                        <a href="/register">Don't have an account?</a>
                     </Card.Footer>
                 </Card>
             </div>
         )
+    /* Redirects after successful log in */
     } else {
         return (
             <Redirect to={referer}/>

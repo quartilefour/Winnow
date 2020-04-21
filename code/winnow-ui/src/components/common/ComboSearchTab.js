@@ -29,11 +29,6 @@ function ComboSearchTab(props) {
     const [haveResults, setHaveResults] = useState(false);
     const [resultData, setResultData] = useState('');
 
-    const getChecked = (checkedNodes) => {
-        setCheckedTerms(checkedNodes);
-        console.info(`ComboSearchTab checked from MeshtermTree(${checkedNodes.length}): ${JSON.stringify(checkedNodes)}`)
-    };
-
     useEffect(() => {
         if (!haveResults) {
             setIsLoaded(true);
@@ -61,6 +56,7 @@ function ComboSearchTab(props) {
         }
     }, [haveResults, selectedGenes, checkedTerms]);
 
+    /* Populates predictive dropdown with partial search results from API */
     function partialSearch(pattern) {
         fetchGenes(pattern)
             .then(res => {
@@ -76,15 +72,18 @@ function ComboSearchTab(props) {
         });
     }
 
+    /* Submits search criteria to API */
     function executeSearch() {
         setIsLoaded(false);
         setHaveResults(true);
     }
 
+    /* Toogles GUI selection and bulk imports for searches */
     function toggleBatch() {
         setUseBatch(!useBatch);
     }
 
+    /* Returns to selection from results display */
     function returnToSelection() {
         let lastSearch = getLastSearch();
         setSelectedGenes(lastSearch.searchQuery.geneId)
@@ -92,10 +91,14 @@ function ComboSearchTab(props) {
         setHaveResults(false);
     }
 
+    /* Callback for MeshtermTree */
+    const getChecked = (checkedNodes) => {
+        setCheckedTerms(checkedNodes);
+    };
+
     if (isLoaded) {
         if (!haveResults) {
             if (!useBatch) {
-                console.info(`ComboSearchTab selected: ${JSON.stringify(selectedGenes)}`);
                 return (
                     <div>
                         <div className="button-bar">
@@ -116,16 +119,15 @@ function ComboSearchTab(props) {
                                     hideSelectedOptions={true}
                                     isLoading={!isMenuLoaded}
                                     loadingMessage="Loading..."
+                                    placeholder="Enter partial Gene Id, Symbol, or Description"
                                     autoFocus={true}
                                     name="gene"
                                     onInputChange={e => {
-                                        console.info(`ComboSearchTab onInputChange: ${JSON.stringify(e)}`);
                                         if (e.length >= 2) {
                                             partialSearch(e);
                                         }
                                     }}
                                     onChange={e => {
-                                        console.info(`ComboSearchTab onChange: ${JSON.stringify(e)}`);
                                         if (e !== null) {
                                             e.forEach((val, index) => {
                                                 setSelectedGenes([...selectedGenes, val.value]);
@@ -158,6 +160,7 @@ function ComboSearchTab(props) {
                 )
             }
         } else {
+            /* Display search results retrieved from API */
             return (
                 <SearchResultsDisplay resData={resultData} history={returnToSelection}/>
             )
