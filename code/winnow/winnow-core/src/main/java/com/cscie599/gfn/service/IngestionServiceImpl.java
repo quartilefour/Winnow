@@ -37,9 +37,9 @@ public class IngestionServiceImpl implements IngestionService {
     private static Map<String, Set<String>> jobStageMap = new HashMap<>();
 
     static {
-        jobStageMap.put(BASE_DATA_INGESTION, Sets.newHashSet("PubmedXMLIngester", "GoTermIngester", "GeneRelationshipIngester", "GeneGoTermIngester", "GeneMeshtermIngestor", "MeshtermIngestor", "GeneInfoIngester"));
+        jobStageMap.put(BASE_DATA_INGESTION, Sets.newHashSet("PubmedXMLIngester", "GoTermIngester", "GeneRelationshipIngester", "GeneGoTermIngester", "MeshtermIngestor", "GenePubmedIngester", "GeneInfoIngester"));
         jobStageMap.put(ENRICHMENT_DATA_INGESTION, Sets.newHashSet("MeshRawStatsIngester", "GeneRawStatsIngester", "GeneMeshPubStatsInMemoryIngester"));
-        jobStageMap.put(ENRICHED_DATA_INGESTION, Sets.newHashSet("GenePubmedIngester", "GeneAssociationIngestor"));
+        jobStageMap.put(ENRICHED_DATA_INGESTION, Sets.newHashSet("MeshRawStatsIngester", "GeneRawStatsIngester",  "GeneMeshtermIngestor", "GeneAssociationIngestor"));
     }
 
     @Override

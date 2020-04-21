@@ -59,7 +59,7 @@ public class IngestionExtractedTest extends BaseTest {
         assertTrue(gene.getSymbol().equals("AT2G01080"));
         assertTrue(gene.getGeneId().equals("814636"));
 
-        assertEquals("Gene Mesh count", geneMeshtermRepository.findAll().size(), 15);
+        assertEquals("Gene Mesh count", geneMeshtermRepository.findAll().size(), 127);
         assertTrue(geneMeshtermRepository.findByGeneIdOrderByPValue("8655732").size() == 3);
         GeneMeshterm geneMeshterm = geneMeshtermRepository.findByGeneIdOrderByPValue("8655732").get(0);
         assertTrue(geneMeshterm.getGeneMeshtermPK().getGeneId().equals("8655732"));

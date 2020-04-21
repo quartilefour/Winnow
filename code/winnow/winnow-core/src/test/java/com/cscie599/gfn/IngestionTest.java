@@ -56,7 +56,7 @@ public class IngestionTest extends BaseTest {
         assertTrue(gene.getSymbol().equals("leuB"));
         assertTrue(gene.getGeneId().equals("1246503"));
 
-        assertEquals("Gene Mesh count", geneMeshtermRepository.findAll().size(), 15);
+        assertEquals("Gene Mesh count", geneMeshtermRepository.findAll().size(), 127);
         assertTrue(geneMeshtermRepository.findByGeneIdOrderByPValue("5692769").size() == 3);
         GeneMeshterm geneMeshterm = geneMeshtermRepository.findByGeneIdOrderByPValue("5692769").get(0);
         assertTrue(geneMeshterm.getGeneMeshtermPK().getGeneId().equals("5692769"));
