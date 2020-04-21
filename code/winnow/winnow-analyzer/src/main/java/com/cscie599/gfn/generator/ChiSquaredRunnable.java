@@ -3,6 +3,7 @@ package com.cscie599.gfn.generator;
 import com.cscie599.gfn.importer.analyzer.GeneMeshPub;
 import com.cscie599.gfn.importer.analyzer.GeneRawStats;
 import com.cscie599.gfn.importer.analyzer.MeshtermRawStats;
+import com.google.common.annotations.VisibleForTesting;
 import de.siegmar.fastcsv.writer.CsvAppender;
 import de.siegmar.fastcsv.writer.CsvWriter;
 import org.apache.commons.logging.Log;
@@ -109,7 +110,6 @@ public class ChiSquaredRunnable implements Runnable {
                     });
                 });
                 logger.info("Finished processing for index " + index + " timetaken " + (System.currentTimeMillis() - startTime));
-
             }
         } catch (Exception ex) {
             logger.error("Unable to write to csv ", ex);
@@ -119,7 +119,7 @@ public class ChiSquaredRunnable implements Runnable {
     }
 
     // this test only exists here for testing, there is a more optimized version overloaded version of this below which we use in the test.
-    public static double chiSquare(final long[][] counts) {
+    public static Pair<Double, Double> chiSquare(final long[][] counts) {
         int nRows = counts.length; //2
         int nCols = counts[0].length; //2
         // compute row, column and total sums
@@ -148,9 +148,8 @@ public class ChiSquaredRunnable implements Runnable {
         // The following code is directly using GammaDistribution which is internally being used by ChiSquaredDistribution here
         //https://github.com/apache/commons-statistics/blob/master/commons-statistics-distribution/src/main/java/org/apache/commons/statistics/distribution/ChiSquaredDistribution.java
         //GammaDistribution gamma = new GammaDistribution(df / 2, 2);
-        System.out.println(sumSq);
-        System.out.println(1 - cumulativeProbability(sumSq, df / 2, 2));
-        return sumSq;
+        double pval = 1 - cumulativeProbability(sumSq, df / 2, 2);
+        return new Pair<Double, Double>(sumSq, pval);
     }
 
     /**
@@ -172,7 +171,8 @@ public class ChiSquaredRunnable implements Runnable {
      * @param row1col1 Number of publications not referencing meshterm B and gene A. Cell D above
      * @return A pair with sum squared as the first value and the p-value for the later.
      */
-    public static Pair<Double, Double> chiSquare(Long row0col0, Long row0col1, Long row1col0, Long row1col1) {
+    @VisibleForTesting
+    static Pair<Double, Double> chiSquare(Long row0col0, Long row0col1, Long row1col0, Long row1col1) {
         double total = row0col0 + row0col1 + row1col0 + row1col1;
         double rowSum0 = row0col0 + row0col1;
         double rowSum1 = row1col0 + row1col1;
@@ -202,13 +202,13 @@ public class ChiSquaredRunnable implements Runnable {
 
         double pval = 1 - cumulativeProbability(sumSq, df / 2, 2);
         return new Pair<Double, Double>(sumSq, pval);
-
     }
 
     /**
      * Returns the p-value using the {@href org.apache.commons.numbers.gamma.RegularizedGamma} api's.
      */
-    public static double cumulativeProbability(double x, double shape, double scale) {
+    @VisibleForTesting
+    static double cumulativeProbability(double x, double shape, double scale) {
         if (x <= ChiSquaredRunnable.SUPPORT_LO) {
             return 0;
         } else if (x >= ChiSquaredRunnable.SUPPORT_HI) {

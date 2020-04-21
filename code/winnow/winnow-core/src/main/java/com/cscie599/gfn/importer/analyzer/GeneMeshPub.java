@@ -19,6 +19,15 @@ public class GeneMeshPub implements CacheableEntity {
     // Default initialize with a value of 1 as this object is only going to be created when there is a pair of gene mesh in some publication
     private AtomicLong counter = new AtomicLong(1);
 
+    public GeneMeshPub() {
+    }
+
+    public GeneMeshPub(String geneId, String publicationId, String meshId) {
+        this.geneId = geneId;
+        this.publicationId = publicationId;
+        this.meshId = meshId;
+    }
+
     public String getGeneId() {
         return geneId;
     }

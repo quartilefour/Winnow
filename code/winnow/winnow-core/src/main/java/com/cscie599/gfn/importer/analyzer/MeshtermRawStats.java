@@ -17,6 +17,15 @@ public class MeshtermRawStats implements CacheableEntity {
 
     private String meshId;
 
+    public MeshtermRawStats() {
+    }
+
+    public MeshtermRawStats(long publicationsWithoutTerm, long publicationsWithTerm, String meshId) {
+        this.publicationsWithoutTerm = publicationsWithoutTerm;
+        this.publicationsWithTerm = publicationsWithTerm;
+        this.meshId = meshId;
+    }
+
     public long getPublicationsWithoutTerm() {
         return publicationsWithoutTerm;
     }

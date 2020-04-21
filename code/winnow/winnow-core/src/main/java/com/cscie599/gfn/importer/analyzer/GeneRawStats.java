@@ -1,6 +1,7 @@
 package com.cscie599.gfn.importer.analyzer;
 
 import com.cscie599.gfn.importer.CacheableEntity;
+import com.google.common.annotations.VisibleForTesting;
 
 import java.util.Objects;
 
@@ -16,6 +17,16 @@ public class GeneRawStats implements CacheableEntity {
     private long publicationsWithGene;
 
     private String geneId;
+
+    public GeneRawStats() {
+    }
+
+    @VisibleForTesting
+    public GeneRawStats(long publicationsWithoutGene, long publicationsWithGene, String geneId) {
+        this.publicationsWithoutGene = publicationsWithoutGene;
+        this.publicationsWithGene = publicationsWithGene;
+        this.geneId = geneId;
+    }
 
     public long getPublicationsWithoutGene() {
         return publicationsWithoutGene;

@@ -85,9 +85,9 @@ subprojects {
 		}
 
 		// needed for report - if you use source sets it'll bring in all deps into the report
-		def classTree = fileTree(dir: 'build/classes/java/main', include: 'com/cscie599/**')
+		def classTree = fileTree(dir: 'build/classes/java/main', include: 'com/cscie599/**', excludes: ['**/entities/**','**/*App*'])
 		// maybe omit classes from the report
-		classTree.exclude '**/entities/**'
+		//classTree.excludes ['**/entities/**','**/*App']
 		classDirectories.from = classTree
 
 		// needed for source highlight
