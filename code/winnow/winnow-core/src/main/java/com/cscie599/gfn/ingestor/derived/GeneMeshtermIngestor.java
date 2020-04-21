@@ -76,7 +76,6 @@ public class GeneMeshtermIngestor extends BaseIngester {
         multiResourceItemReader.setResources(inputResources);
         FlatFileItemReader<GeneMeshterm> itemReader = new FlatFileItemReader<GeneMeshterm>();
         itemReader.setLineMapper(lineMapperForGeneMeshterm());
-        itemReader.setLinesToSkip(1);
         multiResourceItemReader.setDelegate(new GZResourceAwareItemReaderItemStream(itemReader, useZippedFormat));
         multiResourceItemReader.setLinesToSkip(linesToSkip);
         return multiResourceItemReader;
@@ -85,9 +84,9 @@ public class GeneMeshtermIngestor extends BaseIngester {
     @Bean
     public LineMapper<GeneMeshterm> lineMapperForGeneMeshterm() {
         DefaultLineMapper<GeneMeshterm> lineMapper = new DefaultLineMapper<GeneMeshterm>();
-        DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer(DelimitedLineTokenizer.DELIMITER_TAB);
-        lineTokenizer.setNames(new String[]{"geneId", "meshId", "pValue", "publicationCount"});
-        lineTokenizer.setIncludedFields(new int[]{0, 1, 2, 3});
+        DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer(DelimitedLineTokenizer.DELIMITER_COMMA);
+        lineTokenizer.setNames(new String[]{"geneId", "meshId", "publicationCount","pValue",});
+        lineTokenizer.setIncludedFields(new int[]{0, 1, 2, 7});
         BeanWrapperFieldSetMapper<GeneMeshterm> fieldSetMapper = new BeanWrapperFieldSetMapper<GeneMeshterm>();
         fieldSetMapper.setStrict(true);
         fieldSetMapper.setDistanceLimit(1);
