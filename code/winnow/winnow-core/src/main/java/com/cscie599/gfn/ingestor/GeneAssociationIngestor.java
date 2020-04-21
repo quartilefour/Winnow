@@ -89,7 +89,6 @@ public class GeneAssociationIngestor extends BaseIngester {
         lineTokenizer.setNames(new String[]{"geneId", "otherGeneId", "pValue", "publicationCount"});
         lineTokenizer.setIncludedFields(new int[]{0, 1, 2, 3});
         BeanWrapperFieldSetMapper<GeneAssociation> fieldSetMapper = new BeanWrapperFieldSetMapper<GeneAssociation>();
-        fieldSetMapper.setStrict(true);
         fieldSetMapper.setDistanceLimit(1);
         fieldSetMapper.setTargetType(GeneAssociation.class);
         lineMapper.setLineTokenizer(lineTokenizer);

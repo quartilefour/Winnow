@@ -27,6 +27,8 @@ import java.util.concurrent.TimeUnit;
  * Springboot application to start the enrichment analysis application. This application loads the precomputed gene,
  * meshterm and gene-meshterm-publication statistics and generates file which contain the 2x2 table used for computation
  * of Chi-squared test and the p-value for a given gene-meshterm pair.
+ * <p>
+ * Run this file passing the command line argument input.StatsIngester.inMemory to true
  *
  * @author PulkitBhanot
  */
@@ -50,6 +52,10 @@ public class EnrichmentAnalyzerApp implements CommandLineRunner {
     @Value("file:${input.directory}${output.gene_meshterm.file}")
     private Resource outputResource;
 
+    // Property that overrides the analyser ingester behavior and configures it to write to db
+    @Value("${input.StatsIngester.inMemory}")
+    private boolean inMemory;
+
     @Autowired
     InMemoryCache inMemoryCache;
 
@@ -59,6 +65,10 @@ public class EnrichmentAnalyzerApp implements CommandLineRunner {
 
     @Override
     public void run(String... args) throws Exception {
+        if (!inMemory) {
+            logger.error(" This app can only be run if the flag input.StatsIngester.inMemory is set to true");
+            System.exit(1);
+        }
 
         try {
             outputResource.getFile();

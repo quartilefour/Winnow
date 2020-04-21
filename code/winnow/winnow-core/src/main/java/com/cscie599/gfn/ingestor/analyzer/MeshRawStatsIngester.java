@@ -57,7 +57,7 @@ public class MeshRawStatsIngester  extends BaseIngester {
     InMemoryCache inMemoryCache;
 
     @Bean
-    @Order(1)
+    @Order(201)
     public Job getMeshRawStatsIngester() {
         return jobBuilderFactory.get("MeshRawStatsIngester")
                 .start(stepMeshRawStats())

@@ -57,7 +57,7 @@ public class GeneRawStatsIngester extends BaseIngester {
     InMemoryCache inMemoryCache;
 
     @Bean
-    @Order(201)
+    @Order(202)
     public Job getGeneRawStatsIngester() {
         return jobBuilderFactory.get("GeneRawStatsIngester")
                 .start(stepGeneRawStats())

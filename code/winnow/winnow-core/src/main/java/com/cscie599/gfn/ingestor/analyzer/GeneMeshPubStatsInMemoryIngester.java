@@ -47,7 +47,7 @@ public class GeneMeshPubStatsInMemoryIngester extends BaseIngester {
     InMemoryCache inMemoryCache;
 
     @Bean
-    @Order(200)
+    @Order(203)
     public Job getGeneMeshPubStatsInMemoryIngester() {
         return jobBuilderFactory.get("GeneMeshPubStatsInMemoryIngester")
                 .start(stepGeneMeshPubStatsInMemory())
