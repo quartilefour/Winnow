@@ -90,7 +90,53 @@ public class IngestionTest extends BaseTest {
         assertEquals(MeshtermIngestor.DATE_FORMAT.format(new Date(915177600000L)), meshtermTree.getMeshterm().getDateCreated().toString());
         assertEquals(MeshtermIngestor.DATE_FORMAT.format(new Date(1520838000000L)), meshtermTree.getMeshterm().getDateRevised().toString());
 
+        // publication tests, positive tests
         assertEquals("Publication count", publicationRepository.findAll().size(), 9);
+        assertEquals("Publications for Gene-Meshterm", publicationRepository.findByGeneIdAndMeshId("5692769", "D000313").size(), 1);
+        assertEquals("Publications for Gene-Meshterm", publicationRepository.findByGeneIdAndMeshId("8655736", "D000818").size(), 2);
+        assertEquals("Publications for Gene-Meshterm", publicationRepository.findByGeneIdAndMeshId("8655733", "D000818").size(), 2);
+        assertTrue(publicationRepository.findByGeneIdAndMeshId("5692769", "D000313").get(0).getPublicationId().equals("7"));
+        assertTrue(publicationRepository.findByGeneIdAndMeshId("8655733", "D006801").get(0).getPublicationId().equals("3"));
+
+        // negative test: valid gene_id, not ingested for publications
+        assertTrue(publicationRepository.findByGeneIdAndMeshId("1", "D000313").isEmpty());
+
+        // negative test: invalid gene_id, not ingested
+        assertTrue(publicationRepository.findByGeneIdAndMeshId("A", "D000313").isEmpty());
+
+        // negative test: valid mesh_id, not ingested for publications
+        assertTrue(publicationRepository.findByGeneIdAndMeshId("1246509", "D000001").isEmpty());
+
+        // negative test: invalid mesh_id, not ingested
+        assertTrue(publicationRepository.findByGeneIdAndMeshId("1246509", "D000000").isEmpty());
+
+        // no genes were ingested for publication id == 1, so no queries to 'findByGeneIdAndMeshId' should contain PMID '1'
+        List<Meshterm> allMesh = meshtermRepository.findAll();
+        List<Gene> allGene = geneRepository.findAll();
+        for (Gene g : allGene) {
+            for (Meshterm m : allMesh) {
+                List<Publication> combinationPublication = publicationRepository.findByGeneIdAndMeshId(g.getGeneId(), m.getMeshId());
+                for (Publication p : combinationPublication) {
+                    assertTrue(! p.getPublicationId().equals("1"));
+                }
+            }
+        }
+
+        List<Publication> publications = publicationRepository.findAll();
+        for (Publication p : publications) {
+            assertTrue(! p.getPublicationId().equals("9")); // negative test
+
+            // positive tests: test title's ingested properly
+            if (p.getPublicationId().equals("1")) {
+                assertTrue(p.getTitle().equals("Formate assay in body fluids: application in methanol poisoning."));
+            }
+            else if (p.getPublicationId().equals("2")) {
+                assertTrue(p.getTitle().equals("Delineation of the intimate details of the backbone conformation of pyridine nucleotide coenzymes in aqueous solution."));
+            }
+            else if (p.getPublicationId().equals("8")) {
+                assertTrue(p.getTitle().equals("Comparison between procaine and isocarboxazid metabolism in vitro by a liver microsomal amidase-esterase."));
+            }
+        }
     }
 
 }
