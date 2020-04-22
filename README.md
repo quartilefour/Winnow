@@ -6,7 +6,7 @@ Gene Function Navigation Tool
 ### Local Setup
  To configure the system to start on your local machine, make sure you have docker agent running on your laptop. Local setup is orchestrated using doker-compose(https://docs.docker.com/compose/gettingstarted/).
  
- Environment consists of 3 containers.
+ Environment consists of 5 containers.
  * postgres container as db.cscie599.com running on port 5432.
  * adminer container to view the contents of the db. The container is running adminer UI at http://127.0.0.1:8090, make sure to change the Database type to postgres(defaults to mysql)
  * webapp container that runs the springboot backend app. The springboot backend app can be accessed in UI at http://127.0.0.1:8000
@@ -17,13 +17,13 @@ Gene Function Navigation Tool
  
  `cd code/winnow` followed by `./gradlew clean build`
  
- Then to build the 3 containers go to the root folder <GFN> and run the below command, it will take a few minutes the first time this command is run as it has to download a bunch of dependent images.
+ Then to build the containers go to the root folder <GFN> and run the below command, it will take a few minutes the first time this command is run as it has to download a bunch of dependent images.
  
  `docker-compose build`
  
  Alternatively you can run the helper script `build-code-containers.sh` in the root folder <GFN> which will build the code and also create all the relevant containers in a single step.
  
- Once all the images are successfully built to bring up the all the 3 containers run the command.
+ Once all the images are successfully built to bring up the all the containers run the command.
  
  `docker-compose up`
  
@@ -33,13 +33,15 @@ Gene Function Navigation Tool
  
  To tear down the setup, you can do `control + c` on the shell where the docker-compose command was run or run the command `docker-compose down` in a different shell.
  
- The containers when started using the docker-compose script use a bridge network gfn_default. To start a container outside of docker-compose but still connect to the gfn_default network start the container with the following command
+ The containers, when started using the docker-compose script, use a bridge network gfn_default. To start a container outside of docker-compose but still connect to the gfn_default network start the container with the following command
  
  `docker run --network gfn_default -p 8080:8080 -t cscie599/gs-spring-boot-docker`
  
  To start the ftpdownloader container on your local machine, create the folder `tmp-docker`, `tmp-docker/extracted`, `tmp-docker/raw` on your local machine and run the following command, please do change the location of the source folder.
  
  `docker run --network gfn_default --mount type=bind,source=<path to the folder>/tmp-docker,target=/data gfn_ftpapp.cscie99.com:latest`
+
+ Once the containers are built (or the db and adminer containers are built and you are using the springboot in local development mode, as described below), you can ingest the data in 'test-data' into the database by running http://127.0.0.1:8000/jobLauncher.html
     
 ## Code Organization
 * code/winnow/ - springboot backend app
@@ -50,7 +52,7 @@ Gene Function Navigation Tool
 * test-data/ - Contains an example file with a subset of data for each of the datasets to be ingested for the analysis.
 
 #### Java Local Environment 
-For local development, non-Docker in your editor set an additional vm option `-Dspring.profiles.active=dev` and also pass the program argument `--input.directory=<Path to test-data/extracted folder on your local machine **(do have the file seperator at the end)**>`. This would enable the server to pick up springboot application-dev.properties 
+For local development (i.e. non-Docker), in your editor set an additional vm option `-Dspring.profiles.active=dev` and also pass the program argument `--input.directory=<Path to test-data/extracted folder on your local machine **(do have the file seperator at the end)**>`. This will enable the server to pick up springboot application-dev.properties rather than application.properties.
 
 Recommendation is still to run the DB in the container. To connect to the DB running in the container, add the following entry in the `/etc/hosts` file
 
