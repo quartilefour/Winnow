@@ -29,6 +29,24 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 /**
+ * Ingester that ingests Gene data available from ncbi https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene_info.gz.
+ * <p>
+ * Columns that we ingest from the dataset as
+ * tax_id:
+ * the unique identifier provided by NCBI Taxonomy
+ * for the species or strain/isolate
+ * GeneID:
+ * the unique identifier for a gene
+ * ASN1:  geneid
+ * Symbol:
+ * the default symbol for the gene
+ * ASN1:  gene->locus
+ * description:
+ * a descriptive name for this gene
+ * type of gene:
+ * the type assigned to the gene according to the list of options
+ * provided in https://www.ncbi.nlm.nih.gov/IEB/ToolBox/CPP_DOC/lxr/source/src/objects/entrezgene/entrezgene.asn
+ *
  * @author PulkitBhanot
  */
 @Configuration
@@ -38,12 +56,17 @@ public class GeneInfoIngester extends BaseIngester {
 
     protected static final Log logger = LogFactory.getLog(GeneInfoIngester.class);
 
+    // List of files to be processed for this dataset
     @Value("file:${input.directory}${input.gene-info.file}")
     private Resource[] inputResources;
 
+    // Lines to be skipped when ingesting the dataset. This is used when resuming from a previous checkpoint.
     @Value("${input.GeneInfoIngester.skipLines:0}")
     private int linesToSkip;
 
+    /**
+     * Returns a reference of the job to represent the ingestion of the job.
+     */
     @Bean
     @Order(2)
     public Job getGeneInfoIngester() {
@@ -52,6 +75,9 @@ public class GeneInfoIngester extends BaseIngester {
                 .build();
     }
 
+    /**
+     * Returns a Step to represent all the steps involved in the ingestion of genes.
+     */
     @Bean(name = "stepGeneInfo")
     public Step stepGeneInfo() {
         return stepBuilderFactory
@@ -70,11 +96,17 @@ public class GeneInfoIngester extends BaseIngester {
                 .build();
     }
 
+    /**
+     * Returns a processor for the Genes, this is used for manipulating the Gene object
+     */
     @Bean
     public ItemProcessor<Gene, Gene> processorForGene() {
         return new DBLogProcessor();
     }
 
+    /**
+     * Returns a Reader for reading the gene information from the files.
+     */
     @Bean
     public ItemReader<Gene> readerForGene() {
         logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
@@ -88,6 +120,9 @@ public class GeneInfoIngester extends BaseIngester {
         return multiResourceItemReader;
     }
 
+    /**
+     * Returns a mapper for the row to POJO Object
+     */
     @Bean
     public LineMapper<Gene> lineMapperForGene() {
         DefaultLineMapper<Gene> lineMapper = new DefaultLineMapper<Gene>();
@@ -104,6 +139,9 @@ public class GeneInfoIngester extends BaseIngester {
         return lineMapper;
     }
 
+    /**
+     * Returns a DB item writer and uses an UpsertableJdbcBatchItemWriter to upsert the records into DB.
+     */
     @Bean
     public JdbcBatchItemWriter<Gene> writerForGene() {
         JdbcBatchItemWriter<Gene> itemWriter = new UpsertableJdbcBatchItemWriter<>();
@@ -113,9 +151,12 @@ public class GeneInfoIngester extends BaseIngester {
         return itemWriter;
     }
 
+    /**
+     * Am implementation of {@href ItemProcessor} currently it is a place holder if we want to to any manipulation on the Gene Object.
+     */
     class DBLogProcessor implements ItemProcessor<Gene, Gene> {
         public Gene process(Gene gene) throws Exception {
-           if (logger.isDebugEnabled()) {
+            if (logger.isDebugEnabled()) {
                 logger.debug("Inserting Gene : " + gene);
             }
             return gene;

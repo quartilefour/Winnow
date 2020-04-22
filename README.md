@@ -9,7 +9,7 @@ Gene Function Navigation Tool
  Environment consists of 3 containers.
  * postgres container as db.cscie599.com running on port 5432.
  * adminer container to view the contents of the db. The container is running adminer UI at http://127.0.0.1:8090, make sure to change the Database type to postgres(defaults to mysql)
- * webapp container that runs the django app. The Django app can be accessed in UI at http://127.0.0.1:8000
+ * webapp container that runs the springboot backend app. The springboot backend app can be accessed in UI at http://127.0.0.1:8000
  * ftpfiledownloader container to download ftp files from various sources.
  * bulkingestion container to insert into postgres from the compressed files downloaded to S3 by ftpfiledownloader container.
  
@@ -17,23 +17,23 @@ Gene Function Navigation Tool
  
  `cd code/winnow` followed by `./gradlew clean build`
  
- Then to build the 3 containers run the below command, it will take a few minutes the first time this command is run as it has to download a bunch of dependent images.
+ Then to build the 3 containers go to the root folder <GFN> and run the below command, it will take a few minutes the first time this command is run as it has to download a bunch of dependent images.
  
  `docker-compose build`
  
- Alternatively you can use the helper script `build-code-containers.sh` which will do the above steps for you.
+ Alternatively you can run the helper script `build-code-containers.sh` in the root folder <GFN> which will build the code and also create all the relevant containers in a single step.
  
  Once all the images are successfully built to bring up the all the 3 containers run the command.
  
  `docker-compose up`
  
- Alternatively, if you are actively working on the django app and only want to run db and adminer containers, run the command
+ Alternatively, if you are actively working on the web backend app and only want to run db and adminer containers, run the command
  
  `docker-compose up db.cscie599.com adminer.cscie599.com` 
  
  To tear down the setup, you can do `control + c` on the shell where the docker-compose command was run or run the command `docker-compose down` in a different shell.
  
- The containers when started using the docker-compose script start in a bridge network gfn_default. To start a container outside of docker-compose but still connect to the gfn_default start the container with the following command
+ The containers when started using the docker-compose script use a bridge network gfn_default. To start a container outside of docker-compose but still connect to the gfn_default network start the container with the following command
  
  `docker run --network gfn_default -p 8080:8080 -t cscie599/gs-spring-boot-docker`
  

@@ -230,7 +230,7 @@ public class PubmedXMLIngester extends BaseIngester {
             this.delegatePublicationMeshTermCSVWriter.close();
         }
     }
-    
+
     @Bean
     public ItemReader<PubmedArticle> readerForPubmed() {
         logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
@@ -285,7 +285,9 @@ public class PubmedXMLIngester extends BaseIngester {
                     }
                 }));
             } else {
-                logger.warn("No author list for article " + article.getMedlineCitation().getPMID().getID());
+                if (logger.isDebugEnabled()) {
+                    logger.debug("No author list for article " + article.getMedlineCitation().getPMID().getID());
+                }
             }
 
             if (article.getMedlineCitation() != null && article.getMedlineCitation().getMeshHeadingList() != null) {
