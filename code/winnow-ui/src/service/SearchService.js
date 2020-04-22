@@ -1,13 +1,19 @@
 /**
- * The SearchService manages the current session's search history. The search history is base64 encoded and
- * stored in a browser session variable.
+ * The SearchService manages the current session's search history and other session states.
+ *
+ * The search history is base64 encoded to save space and stored in a browser session variable.
  */
+import {SS_SH, SS_SI, QUERY_FORMATS as QF} from "../constants";
 
 /**
  * Creates initial session search history.
  */
 export const createSearchHistory = () => {
-    sessionStorage.setItem('searchHistory', Buffer.from(JSON.stringify([])).toString("base64"));
+    sessionStorage.setItem(
+        SS_SH,
+        Buffer.from(
+            JSON.stringify([])
+        ).toString("base64"));
 }
 
 /**
@@ -16,12 +22,14 @@ export const createSearchHistory = () => {
  * @return {any}
  */
 export const getSearchHistory = () => {
-    if (sessionStorage.getItem('searchHistory') === null) {
+    if (sessionStorage.getItem(SS_SH) === null) {
         createSearchHistory();
     }
-    console.info(`SearchService getSearchHistory: ${Buffer.from(sessionStorage.getItem('searchHistory'), "base64").toString("ascii")}`);
-
-    return JSON.parse(Buffer.from(sessionStorage.getItem('searchHistory'), "base64").toString("ascii"));
+    return JSON.parse(
+        Buffer.from(
+            sessionStorage.getItem(SS_SH),
+            "base64"
+        ).toString("ascii"));
 }
 
 /**
@@ -30,7 +38,6 @@ export const getSearchHistory = () => {
  * @return {{}|any}
  */
 export const getLastSearch = () => {
-    console.info(`SearchService getlastSearch: ${JSON.stringify(getSearchHistory().pop())}`);
     return getSearchHistory().pop();
 }
 
@@ -41,10 +48,12 @@ export const getLastSearch = () => {
  */
 export const addSearchHistory = (search) => {
     let searchHistory = getSearchHistory();
-    console.info(`SearchService addSearchHistory: searchHistory length: ${searchHistory.length}`);
     searchHistory.push(search);
-    console.info(`SearchService addSearchHistory: searchHistory length: ${searchHistory.length}`);
-    sessionStorage.setItem('searchHistory', Buffer.from(JSON.stringify(searchHistory)).toString("base64"));
+    sessionStorage.setItem(
+        SS_SH,
+        Buffer.from(
+            JSON.stringify(searchHistory)
+        ).toString("base64"));
 }
 
 /**
@@ -54,8 +63,90 @@ export const addSearchHistory = (search) => {
  */
 export const removeSearchHistory = (index) => {
     let searchHistory = getSearchHistory();
-    console.info(`SearchService removeSearchHistory: searchHistory length: ${searchHistory.length}`);
     searchHistory.splice(index, 1);
-    console.info(`SearchService removeSearchHistory: searchHistory length: ${searchHistory.length}`);
-    sessionStorage.setItem('searchHistory', Buffer.from(JSON.stringify(searchHistory)).toString("base64"));
+    sessionStorage.setItem(
+        SS_SH,
+        Buffer.from(
+            JSON.stringify(searchHistory)
+        ).toString("base64"));
+}
+
+
+/**
+ * Retrieves the search input type, true for batch or false for selectors.
+ *
+ * @return {boolean}
+ */
+export const getBatch = () => {
+    let useBatch = sessionStorage.getItem(
+        SS_SI
+    )
+    if (useBatch === null) {
+        setBatch(false);
+        return false;
+    }
+    return JSON.parse(useBatch);
+}
+
+/**
+ * Sets the search input type, true for batch or false for selectors.
+ *
+ * @param boolean
+ */
+export const setBatch = (boolean) => {
+    sessionStorage.setItem(
+        SS_SI,
+        boolean
+    )
+}
+
+/**
+ * Prepares a batch search query for posting to the API. Formats data for fetchSearchResults() call.
+ *
+ * @param queryFormat
+ * @param query
+ * @return {{searchQuery: {symbol: [], geneId: [], meshTreeId: [], name: [], description: [], meshId: []}}}
+ */
+export const prepareSearchQuery = (queryFormat, query) => {
+    query = query
+        .split("\n")
+        .filter((term) => {
+                return term
+            }
+        );
+
+    let data = {
+        searchQuery: {
+            geneId: [],
+            symbol: [],
+            description: [],
+            meshTreeId: [],
+            meshId: [],
+            name: []
+        }
+    }
+    switch (queryFormat) {
+        case QF.GENE_ID.value:
+            data.searchQuery.geneId = query
+            break
+        case QF.GENE_SYM.value:
+            data.searchQuery.symbol = query
+            break
+        case QF.GENE_DESC.value:
+            data.searchQuery.description = query
+            break
+        case QF.MESH_ID.value:
+            data.searchQuery.meshId = query
+            break
+        case QF.MESH_TREEID.value:
+            data.searchQuery.meshTreeId = query
+            break
+        case QF.MESH_NAME.value:
+            data.searchQuery.name = query
+            break
+        default:
+            data = null
+    }
+    console.info(`SearchService: prepareSearchQuery: ${JSON.stringify(data)}`)
+    return data;
 }

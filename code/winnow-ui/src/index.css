@@ -1,3 +1,7 @@
+html {
+    height: 100%;
+}
+
 body {
     background: linear-gradient(117deg, rgba(58, 101, 180, 1) 0%, rgba(29, 154, 253, 0.9304096638655462) 50%, rgba(69, 226, 252, 1) 100%);
     margin: 0;
@@ -9,7 +13,8 @@ body {
 }
 
 #winnow-nav {
-    box-shadow: 0px 3px 5px dimgray;
+    box-shadow: 0 3px 5px dimgray;
+    background-color: navajowhite;
 }
 
 code {
@@ -164,19 +169,29 @@ th {
     float: right;
 }
 
-#recent-search-div  table {
-    max-height: 55vh;
+.instruction {
+    margin-left: 1em;
+    font-size: small;
+    font-style: italic;
+}
+
+#recent-search-div  {
+    max-height: 60vh;
     overflow-y: auto;
 }
 
+#recent-search-div  table {
+    width: 99%;
+}
+
 .modal-header {
-    background-color: lightgoldenrodyellow;
+    background-color: navajowhite;
     box-shadow: 0 2px 5px grey;
     padding: .1rem;
 }
 
 .fa-chevron-left:hover {
-    color: lightgoldenrodyellow;
+    color: navajowhite;
 }
 
 .fa-play, .fa-share-alt, .fa-times, .fa-sign-out-alt, .fa-user {

@@ -19,10 +19,13 @@ function BookmarkTab(props) {
     const [deleteBookmark, setDeleteBookmark] = useState(null);
 
     useEffect(() => {
+        let mounted = true;
         if (deleteBookmark) {
             removeUserBookmark(deleteBookmark)
                 .then(res => {
-                    setDeleteBookmark(null);
+                    if (mounted) {
+                        setDeleteBookmark(null);
+                    }
                 })
                 .catch(err => {
                     /* TODO: Should display/flash error message */
@@ -35,9 +38,7 @@ function BookmarkTab(props) {
             }).catch(err => {
             setIsLoaded(true);
         });
-        return function () {
-
-        }
+        return () => mounted = false;
     }, [deleteBookmark]);
 
     /* Displays User's saved bookmarks, if any */

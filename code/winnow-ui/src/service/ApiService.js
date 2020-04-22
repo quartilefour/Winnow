@@ -77,12 +77,17 @@ export const removeUserBookmark = (bookmarkId) => {
  * Retrieves search results for selected Genes/MeSH terms.
  *
  * @param data
+ * @param isFile - param data is a file
  * @return {Promise<>}
  */
-export const fetchSearchResults = (data) => {
+export const fetchSearchResults = (data, isFile = false) => {
+    let url = `${C.WINNOW_API_BASE_URL}/search`
+    if (isFile) {
+        url += `/upload`
+    }
     return new Promise((resolve, reject) => {
         axios.post(
-            `${C.WINNOW_API_BASE_URL}/search`,
+            url,
             data,
             {
                 headers: getAuthHeader(),

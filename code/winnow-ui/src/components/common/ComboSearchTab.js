@@ -1,11 +1,11 @@
 import React, {Fragment, useEffect, useState} from "react";
-import {Form, Button} from "react-bootstrap";
+import {Form, Button, Alert} from "react-bootstrap";
 import Select from "react-select";
 import {fetchGenes, fetchSearchResults} from "../../service/ApiService";
 import SearchResultsDisplay from "../common/SearchResultsDisplay";
 import SearchTermUploader from "../common/SearchTermUploader";
 import PageLoader from "../common/PageLoader";
-import {addSearchHistory, getLastSearch} from "../../service/SearchService";
+import {addSearchHistory, getLastSearch, getBatch, setBatch, prepareSearchQuery} from "../../service/SearchService";
 import {MeshtermTree} from "../mesh/MeshtermTree";
 
 /**
@@ -20,41 +20,68 @@ import {MeshtermTree} from "../mesh/MeshtermTree";
  */
 function ComboSearchTab(props) {
 
+    const [activateSearch, setActivateSearch] = useState(false);
     const [selectedGenes, setSelectedGenes] = useState([]);
     const [useBatch, setUseBatch] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
     const [isMenuLoaded, setIsMenuLoaded] = useState(false);
     const [geneData, setGeneData] = useState([]);
     const [checkedTerms, setCheckedTerms] = useState([]);
+    const [batchData, setBatchData] = useState({});
+    const [batchQueryFormat, setBatchQueryFormat] = useState(null);
+    const [isFile, setIsFile] = useState(false);
     const [haveResults, setHaveResults] = useState(false);
     const [resultData, setResultData] = useState('');
+    const [error, setError] = useState('');
+    const [alertType, setAlertType] = useState('');
+    const [submitText, setSubmitText] = useState('Search');
 
     useEffect(() => {
         if (!haveResults) {
+            setUseBatch(getBatch);
             setIsLoaded(true);
             setIsMenuLoaded(true);
+            if(!useBatch && (selectedGenes.length > 0 || checkedTerms.length > 0)) {
+                setActivateSearch(true);
+            } else {
+                setActivateSearch(false);
+            }
         } else {
             /* fetchSearchResults() */
-            let search = {
-                searchQuery: {
-                    geneId: selectedGenes,
-                    symbol: [],
-                    description: [],
-                    meshId: [],
-                    meshTreeId: checkedTerms,
-                    name: []
-                },
+            let search = {}
+            if (!useBatch) {
+                search = {
+                    searchQuery: {
+                        geneId: selectedGenes,
+                        symbol: [],
+                        description: [],
+                        meshId: [],
+                        meshTreeId: checkedTerms,
+                        name: []
+                    },
+                }
+            } else {
+                if (isFile) {
+                    setSubmitText('Upload');
+                    search = batchData;
+                } else {
+                    console.info(`ComboSearch: batchQuery: ${batchQueryFormat} - ${batchData}`)
+                    search = prepareSearchQuery(batchQueryFormat, batchData);
+                }
             }
-            addSearchHistory(search);
+            addSearchHistory(search, isFile);
             fetchSearchResults(search)
                 .then(res => {
                     setResultData(res);
                     setIsLoaded(true);
                 }).catch(err => {
+                    setError("Search failed with fatal error.");
+                    setAlertType('danger');
                 setIsLoaded(true);
+                setHaveResults(false);
             });
         }
-    }, [haveResults, selectedGenes, checkedTerms]);
+    }, [haveResults, selectedGenes, checkedTerms, useBatch, batchData, batchQueryFormat, isFile]);
 
     /* Populates predictive dropdown with partial search results from API */
     function partialSearch(pattern) {
@@ -78,8 +105,9 @@ function ComboSearchTab(props) {
         setHaveResults(true);
     }
 
-    /* Toogles GUI selection and bulk imports for searches */
+    /* Toggles GUI selection and bulk imports for searches */
     function toggleBatch() {
+        setBatch(!useBatch);
         setUseBatch(!useBatch);
     }
 
@@ -96,18 +124,31 @@ function ComboSearchTab(props) {
         setCheckedTerms(checkedNodes);
     };
 
+    /* Callback for enabling search button from Batch */
+    const batchSearchState = (searchState) => {
+        setActivateSearch(searchState)
+    }
+
+    /* Callback for processing batch input */
+    const batchSearch = (batchFormat, batchData, haveFile = false) => {
+        setBatchData(batchData)
+        setBatchQueryFormat(batchFormat)
+        setIsFile(haveFile)
+    }
+
     if (isLoaded) {
         if (!haveResults) {
             if (!useBatch) {
                 return (
                     <div>
+                        <Alert variant={alertType} size="sm" show={error.length} dismissible={true}>{error}</Alert>
                         <div className="button-bar">
                             <Button onClick={toggleBatch} variant="info" size="sm">Batch Import</Button>
                             <Button
                                 onClick={executeSearch}
                                 variant="info"
                                 size="sm"
-                                disabled={selectedGenes.length === 0 && checkedTerms.length === 0}
+                                disabled={!activateSearch}
                             >Search</Button>
                         </div>
                         <Form>
@@ -129,7 +170,7 @@ function ComboSearchTab(props) {
                                     }}
                                     onChange={e => {
                                         if (e !== null) {
-                                            e.forEach((val, index) => {
+                                            e.forEach((val) => {
                                                 setSelectedGenes([...selectedGenes, val.value]);
                                             })
                                         } else {
@@ -151,11 +192,17 @@ function ComboSearchTab(props) {
             } else {
                 return (
                     <div>
+                        <Alert variant={alertType} size="sm">{error}</Alert>
                         <div className="button-bar">
                             <Button onClick={toggleBatch} variant="info" size="sm">Selector</Button>
-                            <Button onClick={null} variant="info" size="sm">Search</Button>
+                            <Button
+                                onClick={executeSearch}
+                                variant="info"
+                                size="sm"
+                                disabled={!activateSearch}
+                            >{submitText}</Button>
                         </div>
-                        <SearchTermUploader data={null} qType="gene"/>
+                        <SearchTermUploader update={batchSearch} searchable={batchSearchState}/>
                     </div>
                 )
             }

@@ -31,7 +31,6 @@ function SearchResultsDisplay(props) {
         }
         if (!haveResults) {
             setResData(props.resData);
-            sessionStorage.removeItem('mtt');
             setIsLoaded(true);
         }
         return () => {
