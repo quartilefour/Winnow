@@ -215,7 +215,7 @@ public class SearchController {
     /*
      * Validate the search body request.
      */
-    LinkedHashMap<String, Object> validate(Map<String, Object> body) {
+    public LinkedHashMap<String, Object> validate(Map<String, Object> body) {
         LinkedHashMap<String, Object> response = new LinkedHashMap<>();
         if (!(body.containsKey("searchQuery"))) {
             response.put("error", "Missing search query.");
@@ -253,10 +253,10 @@ public class SearchController {
      * Update the search query list so that the mesh tree records with empty parent ids have "." before it
      * (for example, "B50" -> ".B50") for findMeshIdsByMeshIdsOrNamesOrMeshTreeIds() method in MeshtermRepository.
      */
-    List<String> updateMeshTreeIds(List<String> meshTreeIds) {
+    public List<String> updateMeshTreeIds(List<String> meshTreeIds) {
         List<String> updatedMeshTreeIds = new ArrayList<>();
         for (String s : meshTreeIds) {
-            String[] treeId = s.toString().split("\\.");
+            String[] treeId = s.split("\\.");
             String treeParentId = "";
             String treeNodeId = treeId[treeId.length - 1];
             if (treeId.length >= 2) {
