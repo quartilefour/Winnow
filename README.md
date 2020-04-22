@@ -60,6 +60,19 @@ Recommendation is still to run the DB in the container. To connect to the DB run
 
 See [here](./code/winnow/HELP.md) for some documentation around springboot.
 
+#### Java backend module organization
+Java backend is developed as a multi module gradle project. The entire project can be imported in an editor like intellij by opening the file below and selecting the option to open as a new Project.
+
+`./code/winnow/build.gradle`
+
+Different submodules in the project are as follows
+
+* `winnow-analyser` - Springboot app that runs an in-memory analysis of preaggregated gene, mesh and gene-mesh based on the publications having genes from humans and top 30 orthologs based on number of genes from gene_orthologs dataset. This project generates the enrichment analysis based on chi-squared test.
+* `winnow-core` - Project that contains java packages for the controllers, ingesters, file downloader, entities and the views.   
+* `winnow-ftp` - Springboot app that downloads various publicly available datasets from the internet into predefined directory structure.
+* `winnow-ingest` - Springboot app that can be run to ingest base data(data that is directly available from files downloaded via internet) and the derived dagtasets post Enrichment analysis using the Chi Squared test.
+* `winnow-war` - Module that package module `winnow-core` as a war file to be deployed in some web container.
+
 ### ReactJS UI
 ```
 winnow-ui
