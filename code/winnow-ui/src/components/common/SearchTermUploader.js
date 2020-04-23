@@ -53,13 +53,14 @@ function SearchTermUploader(props) {
                             );
                         })}
                         <Form.Group>
-                            <Form.Control
+                            <Form.File
                                 id="fileUpload"
-                                type="file"
+                                label="Choose file..."
                                 onChange={(e) => {
                                     setUploadFile(e.target.files[0])
                                     console.info(uploadFile)
                                 }}
+                                custom
                             />
                         </Form.Group>
                         <Form.Group>

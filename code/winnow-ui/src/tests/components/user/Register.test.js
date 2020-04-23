@@ -1,13 +1,13 @@
 import React from 'react';
-import Login from '../../../components/user/Login';
+import Register from '../../../components/user/Register';
 import {mountWrap, shallowWrap} from "../../_helpers";
 
 
-describe('<Login />', () => {
+describe('<Register />', () => {
     let props;
     let component;
-    const wrappedShallow = () => shallowWrap(<Login {...props} />);
-    const wrappedMount = () => mountWrap(<Login {...props} />);
+    const wrappedShallow = () => shallowWrap(<Register {...props} />);
+    const wrappedMount = () => mountWrap(<Register {...props} />);
     beforeEach(() => {
         props = {
             location: { state: undefined},
@@ -22,12 +22,6 @@ describe('<Login />', () => {
         expect(wrapper).toMatchSnapshot();
     });
 
-    it('should render with defined referer', () => {
-        props.location.state = { referer: "/profile"}
-        const wrapper = wrappedShallow();
-        expect(wrapper).toMatchSnapshot();
-    })
-
     it('should have an email field', () => {
         const wrapper = wrappedShallow();
         expect(wrapper.find('FormControl[type="email"]').length).toEqual(1);
@@ -36,10 +30,7 @@ describe('<Login />', () => {
     it('should have proper props for email field', () => {
         const wrapper = wrappedShallow();
         expect(wrapper.find('FormControl[type="email"]').props()).toEqual({
-            'aria-placeholder': 'E-mail Address',
             autoComplete: "username",
-            className: "form-control",
-            id: "userEmail",
             name: "userEmail",
             onChange: expect.any(Function),
             onBlur: expect.any(Function),
@@ -51,16 +42,13 @@ describe('<Login />', () => {
 
     it('should have a password field', () => {
         const wrapper = wrappedShallow();
-        expect(wrapper.find('FormControl[type="password"]').length).toEqual(1);
+        expect(wrapper.find('FormControl[type="password"]').length).toEqual(2);
     });
 
     it('should have proper props for password field', () => {
         const wrapper = wrappedShallow();
-        expect(wrapper.find('FormControl[type="password"]').props()).toEqual({
-            'aria-placeholder': 'Password',
-            autoComplete: "current-password",
-            className: "form-control",
-            id: "userPassword",
+        expect(wrapper.find('FormControl[type="password"]').first().props()).toEqual({
+            autoComplete: "new-password",
             name: "userPassword",
             onChange: expect.any(Function),
             onBlur: expect.any(Function),

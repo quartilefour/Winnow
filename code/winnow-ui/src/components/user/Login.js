@@ -1,10 +1,11 @@
 import React, {useEffect, useState} from "react";
-import {Redirect} from "react-router-dom";
-import {Card, Form, Button, Alert} from "react-bootstrap";
-import {sendLoginCredentials} from "../../service/AuthService";
+import {Redirect, Link} from "react-router-dom";
+import {Card, Button, Form, Alert} from "react-bootstrap";
+import {sendLoginCredentials, loginSchema} from "../../service/AuthService";
 import logoImg from "../../img/logo.png";
 import {useAuth} from "../../context/auth";
 import {createSearchHistory} from "../../service/SearchService";
+import {useFormik} from "formik";
 
 /**
  * Functional component to render Login form and handle response from API.
@@ -17,8 +18,6 @@ function Login(props) {
     const [isLoggedIn, setLoggedIn] = useState(false);
     const [error, setError] = useState(null);
     const [alertType, setAlertType] = useState('');
-    const [userEmail, setUserEmail] = useState("");
-    const [userPassword, setUserPassword] = useState("");
     const {authToken, setAuthToken} = useAuth();
     const referer = (props.location.state !== undefined) ? props.location.state.referer : '/';
 
@@ -28,92 +27,110 @@ function Login(props) {
         }
     }, [authToken, isLoggedIn]);
 
+    const loginForm = useFormik({
+        initialValues: {
+            userEmail: '',
+            userPassword: '',
+        },
+        validationSchema: loginSchema,
+        onSubmit: values => {
+            postLogin(values)
+        },
+    });
+
     /* Submits user credentials to API login endpoint. */
-    function postLogin() {
-        const credentials = {userEmail: userEmail, userPassword: userPassword};
+    function postLogin(values) {
+        const credentials = {
+            userEmail: values.userEmail,
+            userPassword: values.userPassword
+        };
         sendLoginCredentials(credentials).then(res => {
             setAuthToken(res);
             createSearchHistory();
             setLoggedIn(true);
         }).catch(error => {
             setAlertType("danger");
-            setError("Invalid E-mail or password");
+            if (error.response.status === 403 || error.response.status === 409) {
+                setError("Invalid E-mail or password");
+            } else {
+                setError("Server error");
+            }
         });
     }
 
-    /* Validates user input before submitting */
-    function validateForm(e) {
-        if (e.keyCode === 13) {
-            if (userEmail !== "" && userPassword !== "") {
-                postLogin()
-            }
-        }
-    }
-
-    /* Displays Login form */
-    if (!isLoggedIn) {
-        return (
-            <div>
-                <Card
-                    border="info"
-                    className="text-center entry-form"
-                    style={{
-                        flexDirection: 'column',
-                        maxWidth: '410px',
-                        display: 'flex',
-                        margin: '10% auto',
-                        width: '50%'
-                    }}>
-                    <Card.Title>Winnow</Card.Title>
-                    <Card.Subtitle>Gene Function Navigator</Card.Subtitle>
-                    <Card.Img variant="top" src={logoImg} style={{margin: 'auto', width: '50%'}}/>
-                    <Card.Body>
-                        <Form>
-                            <Form.Group>
-                                <Form.Control
-                                    type="email"
-                                    autoComplete="username"
-                                    name="userEmail"
-                                    value={userEmail}
-                                    onChange={e => {
-                                        setUserEmail(e.target.value);
-                                    }}
-                                    onKeyUp={e => {
-                                        validateForm(e)
-                                    }}
-                                    placeholder="E-mail Address"
-                                />
-                            </Form.Group>
-                            <Form.Group>
-                                <Form.Control
-                                    type="password"
-                                    autoComplete="current-password"
-                                    name="userPassword"
-                                    value={userPassword}
-                                    onChange={e => {
-                                        setUserPassword(e.target.value);
-                                    }}
-                                    onKeyUp={e => {
-                                        validateForm(e)
-                                    }}
-                                    placeholder="Password"
-                                />
-                            </Form.Group>
-                            <Button
-                                block
-                                variant="info"
-                                onClick={postLogin}>Login</Button>
-                        </Form>
-                    </Card.Body>
-                    <Card.Footer>
-                        <Alert variant={alertType}>{error}</Alert>
-                        <a href="/register">Don't have an account?</a>
-                    </Card.Footer>
-                </Card>
-            </div>
-        )
-    /* Redirects after successful log in */
-    } else {
+    if (!isLoggedIn) { /* Displays Login form */
+        return <div>
+            <Card
+                border="info"
+                className="text-center entry-form"
+                style={{
+                    flexDirection: 'column',
+                    maxWidth: '410px',
+                    display: 'flex',
+                    margin: '10% auto',
+                    width: '50%'
+                }}>
+                <Card.Title>Winnow</Card.Title>
+                <Card.Subtitle>Gene Function Navigator</Card.Subtitle>
+                <Card.Img variant="top" src={logoImg} style={{margin: 'auto', width: '50%'}}/>
+                <Card.Body>
+                    <Form onSubmit={loginForm.handleSubmit}>
+                        <Form.Group className="form-group">
+                            <Form.Control
+                                autoComplete="username"
+                                id="userEmail"
+                                className="form-control"
+                                name="userEmail"
+                                placeholder="E-mail Address"
+                                aria-placeholder="E-mail Address"
+                                type="email"
+                                onChange={loginForm.handleChange}
+                                onBlur={loginForm.handleBlur}
+                                value={loginForm.values.userEmail}
+                            />
+                            <Alert
+                                variant="danger"
+                                show={!!(loginForm.touched.userEmail && loginForm.errors.userEmail)}
+                            >
+                                {loginForm.errors.userEmail}
+                            </Alert>
+                        </Form.Group>
+                        <Form.Group>
+                            <Form.Control
+                                autoComplete="current-password"
+                                id="userPassword"
+                                className="form-control"
+                                name="userPassword"
+                                placeholder="Password"
+                                aria-placeholder="Password"
+                                type="password"
+                                onChange={loginForm.handleChange}
+                                onBlur={loginForm.handleBlur}
+                                value={loginForm.values.userPassword}
+                            />
+                            <Alert
+                                variant="danger"
+                                show={!!(loginForm.touched.userPassword && loginForm.errors.userPassword)}
+                            >
+                                {loginForm.errors.userPassword}
+                            </Alert>
+                        </Form.Group>
+                        <Button
+                            block
+                            type="submit"
+                            variant="info"
+                        >
+                            Login
+                        </Button>
+                    </Form>
+                </Card.Body>
+                <Card.Footer>
+                    <Alert variant={alertType}>{error}</Alert>
+                    <Link to="/register" title="Register for an account">Don't have an account?</Link>
+                </Card.Footer>
+            </Card>
+        </div>
+    } else { /* Redirects after successful log in */
         return (
             <Redirect to={referer}/>
         )

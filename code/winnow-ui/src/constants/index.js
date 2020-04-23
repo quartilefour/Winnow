@@ -11,6 +11,10 @@ export const W_ENV = (currentHost === "localhost:3000")
     : 'PROD'
 export const WINNOW_API_TIMEOUT = 35000;
 export const WINNOW_TOKEN = '_winnow_token';
+export const USER_MIN_LEN = 1;
+export const USER_MAX_LEN = 300;
+export const PASS_MIN_LEN = 8;
+export const PASS_MAX_LEN = 64;
 export const SS_SH = 'searchHistory';
 export const SS_SI = 'useBatch';
 export const PUBMED_BASE_URL = 'https://pubmed.ncbi.nlm.nih.gov';

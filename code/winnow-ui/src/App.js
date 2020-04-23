@@ -31,11 +31,11 @@ function App(props) {
 
     useEffect(() => {
         fetchApiStatus()
-            .then (res => {
+            .then(() => {
                 setApiReady(true);
                 setTimeOut(0)
             })
-            .catch(err => {
+            .catch(() => {
                 setApiReady(false);
                 setTimeOut(setTimeout(fetchApiStatus, 15000))
             })
@@ -52,7 +52,14 @@ function App(props) {
             Cookies.remove(C.WINNOW_TOKEN);
             sessionStorage.clear();
         } else {
-            Cookies.set(C.WINNOW_TOKEN, data, {secure: C.W_ENV === 'PROD', sameSite: 'strict'});
+            Cookies.set(
+                C.WINNOW_TOKEN,
+                data,
+                {
+                    secure: C.W_ENV === 'PROD',
+                    sameSite: 'strict'
+                }
+            );
         }
         setAuthToken(data);
     };
@@ -78,7 +85,7 @@ function App(props) {
             </AuthContext.Provider>
         );
     } else {
-        return  (
+        return (
             <Maintenance/>
         )
     }

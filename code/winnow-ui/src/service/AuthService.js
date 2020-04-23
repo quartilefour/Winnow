@@ -5,6 +5,7 @@
 import axios from 'axios';
 import Cookies from 'js-cookie';
 import * as C from '../constants';
+import * as Yup from 'yup';
 
 /**
  * Retrieves User's profile data, scuh as name and email.
@@ -38,7 +39,7 @@ export const sendRegistration = (credentials) => {
             `${C.WINNOW_API_BASE_URL}/registration`,
             credentials,
         )
-            .then(res => {
+            .then(() => {
                 resolve("Registration Successful")
             })
             .catch(err => {
@@ -156,3 +157,47 @@ export const getAuthHeader = () => {
     let token = Cookies.get(C.WINNOW_TOKEN) ? Cookies.get(C.WINNOW_TOKEN) : null;
     return {'Authorization': `Bearer ${token}`};
 }
+
+/**
+ * Login form validation schema
+ */
+export const loginSchema = Yup.object().shape({
+    userEmail: Yup.string()
+        .trim()
+        .email('Invalid email')
+        .required('Required'),
+    userPassword: Yup.string()
+        .min(C.PASS_MIN_LEN, `Password must be at least ${C.PASS_MIN_LEN} characters`)
+        .max(C.PASS_MAX_LEN, `Password cannot be more than ${C.PASS_MAX_LEN} characters`)
+})
+
+/**
+ * Registration form validation schema
+ */
+export const registerSchema = Yup.object().shape({
+    firstName: Yup.string()
+        .trim()
+        .max(C.PASS_MAX_LEN, `Password cannot be more than ${C.PASS_MAX_LEN} characters`)
+        .min(C.USER_MIN_LEN, `Must be ${C.USER_MIN_LEN}-${C.USER_MAX_LEN} characters`)
+        .max(C.USER_MAX_LEN, `Must be ${C.USER_MIN_LEN}-${C.USER_MAX_LEN} characters`)
+        .required('Required'),
+    lastName: Yup.string()
+        .trim()
+        .min(C.USER_MIN_LEN, `Must be ${C.USER_MIN_LEN}-${C.USER_MAX_LEN} characters`)
+        .max(C.USER_MAX_LEN, `Must be ${C.USER_MIN_LEN}-${C.USER_MAX_LEN} characters`)
+        .required('Required'),
+    userEmail: Yup.string()
+        .trim()
+        .email('Invalid email')
+        .required('Required'),
+    userPassword: Yup.string()
+        .min(C.PASS_MIN_LEN, `Password must be at least ${C.PASS_MIN_LEN} characters`)
+        .max(C.PASS_MAX_LEN, `Password cannot be more than ${C.PASS_MAX_LEN} characters`)
+        .required('Required'),
+    passwordConfirm: Yup.string()
+        .required('Required')
+        .oneOf(
+            [Yup.ref('userPassword'), null],
+            'Passwords must match',
+        ),
+})

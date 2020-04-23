@@ -1,8 +1,9 @@
-import React, {useEffect, useState} from "react";
-import {Redirect} from "react-router-dom";
+import React, {useState} from "react";
+import {Link, Redirect} from "react-router-dom";
 import {Card, Form, Button, Col, Alert} from "react-bootstrap";
-import {sendRegistration} from "../../service/AuthService";
+import {registerSchema, sendRegistration} from "../../service/AuthService";
 import logoImg from "../../img/logo.png";
+import {useFormik} from "formik";
 
 /**
  * Functional component to render Registration form and handle responses from API.
@@ -16,26 +17,31 @@ function Register(props) {
     const [isRegistered, setIsRegistered] = useState(false);
     const [error, setError] = useState(null);
     const [alertType, setAlertType] = useState('');
-    const [firstName, setFirstName] = useState("");
-    const [lastName, setLastName] = useState("");
-    const [userEmail, setUserEmail] = useState("");
-    const [userPassword, setUserPassword] = useState("");
-    const [passwordConfirm, setPasswordConfirm] = useState("");
 
-    useEffect(() => {
-
-    });
+    const registrationForm = useFormik({
+        initialValues: {
+            firstName: '',
+            lastName: '',
+            userEmail: '',
+            userPassword: '',
+            passwordConfirm: ''
+        },
+        validationSchema: registerSchema,
+        onSubmit: values => {
+           postRegistration(values)
+        }
+    })
 
     /* Submits new user data to the API registration endpoint. */
-    function postRegistration() {
+    function postRegistration(values) {
         const credentials = {
-            firstName: firstName,
-            lastName: lastName,
-            userEmail: userEmail,
-            userPassword: userPassword,
-            passwordConfirm: passwordConfirm
+            firstName: values.firstName,
+            lastName: values.lastName,
+            userEmail: values.userEmail,
+            userPassword: values.userPassword,
+            passwordConfirm: values.passwordConfirm
         };
-        sendRegistration(credentials).then(res => {
+        sendRegistration(credentials).then(() => {
             setIsRegistered(true);
         })
             .catch(error => {
@@ -44,8 +50,7 @@ function Register(props) {
             });
     }
 
-    /* Displays Registration form */
-    if (!isRegistered) {
+    if (!isRegistered) { /* Displays Registration form */
         return (
             <Card
                 border="info"
@@ -61,17 +66,17 @@ function Register(props) {
                 <Card.Subtitle>Gene Function Navigator</Card.Subtitle>
                 <Card.Img variant="top" src={logoImg} style={{margin: 'auto', width: '50%'}}/>
                 <Card.Body>
-                    <Form>
+                    <Form onSubmit={registrationForm.handleSubmit}>
                         <Form.Row>
                             <Form.Group as={Col}>
                                 <Form.Control
+                                    aria-placeholder="First Name"
                                     type="text"
                                     name="firstName"
                                     autoComplete="given-name"
-                                    value={firstName}
-                                    onChange={e => {
-                                        setFirstName(e.target.value);
-                                    }}
+                                    value={registrationForm.values.firstName}
+                                    onChange={registrationForm.handleChange}
+                                    onBlur={registrationForm.handleBlur}
                                     placeholder="First Name"
                                 />
                             </Form.Group>
@@ -80,35 +85,47 @@ function Register(props) {
                                     type="text"
                                     name="lastName"
                                     autoComplete="family-name"
-                                    value={lastName}
-                                    onChange={e => {
-                                        setLastName(e.target.value);
-                                    }}
+                                    value={registrationForm.values.lastName}
+                                    onChange={registrationForm.handleChange}
+                                    onBlur={registrationForm.handleBlur}
                                     placeholder="Last Name"
                                 />
                             </Form.Group>
                         </Form.Row>
+                        <Alert
+                            variant="danger"
+                            show={!!(registrationForm.errors.firstName || registrationForm.errors.lastName)}
+                        >
+                            {registrationForm.touched.firstName && registrationForm.errors.firstName ?
+                                registrationForm.errors.firstName : null}
+                            {registrationForm.touched.lastName && registrationForm.errors.lastName ?
+                                registrationForm.errors.lastName : null}
+                        </Alert>
                         <Form.Group>
                             <Form.Control
                                 type="email"
                                 name="userEmail"
                                 autoComplete="username"
-                                value={userEmail}
-                                onChange={e => {
-                                    setUserEmail(e.target.value);
-                                }}
+                                value={registrationForm.values.userEmail}
+                                onChange={registrationForm.handleChange}
+                                onBlur={registrationForm.handleBlur}
                                 placeholder="E-mail Address"
                             />
+                            <Alert
+                                variant="danger"
+                                show={!!(registrationForm.touched.userEmail && registrationForm.errors.userEmail)}
+                            >
+                                {registrationForm.errors.userEmail}
+                            </Alert>
                         </Form.Group>
                         <Form.Group>
                             <Form.Control
                                 type="password"
                                 name="userPassword"
                                 autoComplete="new-password"
-                                value={userPassword}
-                                onChange={e => {
-                                    setUserPassword(e.target.value);
-                                }}
+                                value={registrationForm.values.userPassword}
+                                onChange={registrationForm.handleChange}
+                                onBlur={registrationForm.handleBlur}
                                 placeholder="Password"
                             />
                         </Form.Group>
@@ -117,17 +134,25 @@ function Register(props) {
                                 type="password"
                                 autoComplete="new-password"
                                 name="passwordConfirm"
-                                value={passwordConfirm}
-                                onChange={e => {
-                                    setPasswordConfirm(e.target.value);
-                                }}
+                                value={registrationForm.values.passwordConfirm}
+                                onChange={registrationForm.handleChange}
+                                onBlur={registrationForm.handleBlur}
                                 placeholder="Confirm Password"
                             />
+                            <Alert
+                                variant="danger"
+                                show={!!(registrationForm.errors.userPassword || registrationForm.errors.passwordConfirm)}
+                            >
+                                {registrationForm.touched.userPassword && registrationForm.errors.userPassword ?
+                                    registrationForm.errors.userPassword : null}
+                                {registrationForm.touched.passwordConfirm && registrationForm.errors.passwordConfirm ?
+                                    registrationForm.errors.passwordConfirm : null}
+                            </Alert>
                         </Form.Group>
                         <Button
                             block
+                            type="submit"
                             variant="info"
-                            onClick={postRegistration}
                         >
                             Register
                         </Button>
@@ -135,7 +160,7 @@ function Register(props) {
                 </Card.Body>
                 <Card.Footer>
                     <Alert variant={alertType}>{error}</Alert>
-                    <a href="/login">Already have an account?</a>
+                    <Link to="/login" title="Log in with an existing account">Already have an account?</Link>
                 </Card.Footer>
             </Card>
         )

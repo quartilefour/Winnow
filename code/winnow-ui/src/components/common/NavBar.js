@@ -33,7 +33,9 @@ const NavBar = () => {
                 .then(res => {
                     setUser(res.userEmail)
                 })
-                .catch(err => {})
+                .catch(() => {
+                    setUser('Unknown')
+                })
         }
     }, [isTokenValid, isLoggingOut, authToken, setAuthToken]);
 
@@ -78,7 +80,7 @@ const NavBar = () => {
             </Navbar>
         )
     } else {
-        return null
+        return (<Navbar/>)
     }
 
 };
