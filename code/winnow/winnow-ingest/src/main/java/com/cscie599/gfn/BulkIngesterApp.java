@@ -1,5 +1,6 @@
 package com.cscie599.gfn;
 
+import com.cscie599.gfn.service.FileService;
 import com.cscie599.gfn.service.IngestionService;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -20,6 +21,9 @@ public class BulkIngesterApp implements CommandLineRunner {
 
     @Autowired
     private IngestionService ingestionService;
+
+    @Autowired
+    private FileService fileService;
 
     // Property that determines whether the app should ingest basedata.
     @Value("${ingester.baseDataIngestion:true}")
@@ -45,6 +49,9 @@ public class BulkIngesterApp implements CommandLineRunner {
             logger.info("Starting ingestion of base data");
             response = ingestionService.ingestBaseData();
             logger.info("Completed ingestion of base data");
+            logger.info("Starting splitting of mesh_publication dataset");
+            fileService.splitAndZipFiles();
+            logger.info("Completed splitting of mesh_publication dataset");
         }
         if (derivedDataIngestion) {
             if (!inMemory) {
