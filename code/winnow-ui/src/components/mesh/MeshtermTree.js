@@ -21,7 +21,7 @@ export function MeshtermTree(props) {
     const [meshData, setMeshData] = useState({});
     const [checked, setChecked] = useState([]);
 
-    useEffect(() => {
+    React.useEffect(() => {
         /* Fetch top level MeSH term categories */
         fetchMeshtermCat()
             .then(res => {

@@ -26,7 +26,7 @@ function PubMedArticleListDisplay(props) {
      * extract gene/mesh info from listData.
      * new state var for pubmed results.
      */
-    useEffect(() => {
+    React.useEffect(() => {
         console.info(`PubMedArticleListDisplay fetching for: ${JSON.stringify(props.listData)}`);
         setListData(props.listData);
         fetchPubMedArticleList(

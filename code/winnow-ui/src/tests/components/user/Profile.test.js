@@ -1,29 +1,37 @@
 import React from 'react';
 import Profile from '../../../components/user/Profile';
 import {mountWrap, shallowWrap} from "../../_helpers";
+import {shallow} from "enzyme";
+import Login from "../../../components/user/Login";
 
 
 describe('<Profile />', () => {
     let props;
+    let wrapper;
+    let useEffect;
     let component;
+
+    const mockUseEffect = () => {
+        useEffect.mockImplementationOnce(f => f());
+    }
+
     const wrappedShallow = () => shallowWrap(<Profile {...props} />);
     const wrappedMount = () => mountWrap(<Profile {...props} />);
+
     beforeEach(() => {
-        props = {
-            location: { state: undefined},
-            userEmail: 'jonny@harvard.edu',
-            userPassword: 'Test1234!'
-        };
+        useEffect = jest.spyOn(React, "useEffect");
+        props = {};
         if (component) component.unmount();
+
+        mockUseEffect();
+        wrapper = shallow(<Profile />);
     })
 
-    test('should render with mock data in snapshot', () => {
-        const wrapper = wrappedShallow();
+    it('should render with mock data in snapshot', () => {
         expect(wrapper).toMatchSnapshot();
     });
 
     it('should have page loader is not loaded', () => {
-        const wrapper = wrappedShallow();
         expect(wrapper.find('PageLoader').length).toEqual(1);
     });
 

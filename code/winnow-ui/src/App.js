@@ -29,7 +29,7 @@ function App(props) {
     const token = Cookies.get(C.WINNOW_TOKEN) ? Cookies.get(C.WINNOW_TOKEN) : null;
     const [authToken, setAuthToken] = useState(token);
 
-    useEffect(() => {
+    React.useEffect(() => {
         fetchApiStatus()
             .then(() => {
                 setApiReady(true);

@@ -23,7 +23,7 @@ function Profile() {
     const [userNewPassword, setNewUserPassword] = useState("");
     const [newPasswordConfirm, setNewPasswordConfirm] = useState("");
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (error) {
             (error === "Success")
                 ? setAlertType("success")

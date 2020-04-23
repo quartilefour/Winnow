@@ -20,7 +20,7 @@ function GeneDetailModal(props) {
     const [error, setError] = useState(null);
     const [alertType, setAlertType] = useState('');
 
-    useEffect(() => {
+    React.useEffect(() => {
         fetchGeneDetails(props.geneid)
             .then(res => {
                 setGeneDetail(res);

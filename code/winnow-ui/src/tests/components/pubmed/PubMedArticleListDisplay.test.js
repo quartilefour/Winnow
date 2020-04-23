@@ -5,10 +5,18 @@ import {mountWrap, shallowWrap} from "../../_helpers";
 
 describe('<PubMedArticleListDisplay />', () => {
     let props;
+    let wrapper;
+    let useEffect;
     let component;
+
+    const mockUseEffect = () => {
+        useEffect.mockImplementationOnce(f => f());
+    }
+
     const wrappedShallow = () => shallowWrap(<PubMedArticleListDisplay {...props} />);
     const wrappedMount = () => mountWrap(<PubMedArticleListDisplay {...props} />);
     beforeEach(() => {
+        useEffect = jest.spyOn(React, "useEffect");
         props = {
             history: () => {},
             listData: {
@@ -19,17 +27,19 @@ describe('<PubMedArticleListDisplay />', () => {
             }
         };
         if (component) component.unmount();
+
+        mockUseEffect();
+        wrapper = shallow(<PubMedArticleListDisplay {...props} />);
     })
 
-    test('should render with mock data in snapshot', () => {
-        const wrapper = wrappedShallow();
+    it('should render with mock data in snapshot', () => {
         expect(wrapper).toMatchSnapshot();
     });
-    /*
-    it('should have progress bar', () => {
-        expect(container.find('ProgressBar').length).toEqual(1);
+    it('should have PageLoader', () => {
+        expect(wrapper.find('PageLoader').length).toEqual(1);
     });
 
+    /*
     it('should have proper props for progress bar', () => {
         expect(container.find('ProgressBar')).toHaveProp({
             animated: true,

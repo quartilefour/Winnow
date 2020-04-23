@@ -5,25 +5,37 @@ import {mountWrap, shallowWrap} from "../../_helpers";
 
 describe('<GeneDetailModal />', () => {
     let props;
+    let wrapper;
+    let useEffect;
     let component;
     const wrappedShallow = () => shallowWrap(<GeneDetailModal {...props} />);
     const wrappedMount = () => mountWrap(<GeneDetailModal {...props} />);
+
+    const mockUseEffect = () => {
+        useEffect.mockImplementationOnce(f => f());
+    }
+
     beforeEach(() => {
+        useEffect = jest.spyOn(React, "useEffect");
         props = {
             geneid: 123456789,
         };
         if (component) component.unmount();
+
+        mockUseEffect();
+        wrapper = shallow(<GeneDetailModal {...props} />);
     })
 
-    test('should render with mock data in snapshot', () => {
-        const wrapper = wrappedShallow();
+    it('should render with mock data in snapshot', () => {
+        //const wrapper = wrappedShallow();
         expect(wrapper).toMatchSnapshot();
     });
-    /*
-    it('should have progress bar', () => {
-        expect(container.find('ProgressBar').length).toEqual(1);
+
+    it('should have progress bar while loading', () => {
+        expect(wrapper.find('PageLoader').length).toEqual(1);
     });
 
+    /*
     it('should have proper props for progress bar', () => {
         expect(container.find('ProgressBar')).toHaveProp({
             animated: true,

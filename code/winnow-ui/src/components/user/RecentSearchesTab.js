@@ -18,7 +18,7 @@ function RecentSearchesTab(props) {
     const [searchHistory, setSearchHistory] = useState([]);
     const [removeSearch, setRemoveSearch] = useState(null);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (removeSearch !== null) {
            removeSearchHistory(removeSearch);
            setRemoveSearch(null);
