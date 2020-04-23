@@ -1,19 +1,44 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import {shallow} from 'enzyme';
+import {mountWrap, shallowWrap} from "../../_helpers";
 import Maintenance from '../../../components/error/Maintenance';
 
-test('should test Maintenance component', () => {
-    const wrapper = shallow(<Maintenance />);
-    expect(wrapper).toMatchSnapshot();
-});
+describe('<Maintenance {props}/>', () => {
 
-describe('<Maintenance />', () => {
-    const container = shallow(<Maintenance />);
+    let props;
+    let wrapper;
+    let useEffect;
+    let component;
+    const wrappedShallow = () => shallowWrap(<Maintenance {...props} />);
+
+    const mockUseEffect = () => {
+        useEffect.mockImplementationOnce(f => f());
+    }
+
+    beforeEach(() => {
+        useEffect = jest.spyOn(React, "useEffect");
+        props = {
+            error: 'API under going maintenance'
+        };
+        if (component) component.unmount();
+
+        mockUseEffect();
+        wrapper = shallow(<Maintenance {...props} />);
+    });
+
     it('should match the snapshot', () => {
-        expect(container.html()).toMatchSnapshot();
+        expect(wrapper.html()).toMatchSnapshot();
     });
 
-    it('should have progress bar', () => {
-        expect(container.find('Card').length).toEqual(1);
+    it('should display downtime screen', () => {
+        expect(wrapper.find('Card').length).toEqual(1);
     });
+
+    it('should render when no error is passed', () => {
+        props.error = null;
+        mockUseEffect();
+        wrapper = shallow(<Maintenance {...props} />);
+        expect(props.error).toEqual(null);
+        expect(wrapper.find('Card').length).toEqual(1);
+    })
 });

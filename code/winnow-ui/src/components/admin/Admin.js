@@ -1,8 +1,9 @@
 import React, {useEffect, useState} from 'react';
 import {Nav, Tab, Row, Col} from "react-bootstrap";
 
+/* istanbul ignore file */
 /**
- * Renders the Dashboard landing page for authenticated users.
+ * Renders the Admin dashboard landing page for admin users.
  *
  * @param props
  * @returns {*}

@@ -1,14 +1,13 @@
 import React, {useEffect, useState} from "react";
-import {Card} from "react-bootstrap";
+import {Card, Image} from "react-bootstrap";
+import Oops from "../../img/oops.png";
 
 function Error(props) {
-    const [error, setError] = useState(null);
+    const [error, setError] = useState('Page Not Found');
 
-    useEffect(() => {
-        if (props) {
-            if (props.error) {
-                setError(props.error)
-            }
+    React.useEffect(() => {
+        if (props && props.error) {
+            setError(props.error)
         }
     }, [props, setError]);
 
@@ -25,14 +24,14 @@ function Error(props) {
                 }}>
                 <Card.Header>
                     <Card.Title>
-                        Page Not Found
+                        Error
                     </Card.Title>
                     <Card.Subtitle>
-                        Error 404 Page Not Found
+                        {error}
                     </Card.Subtitle>
                 </Card.Header>
                 <Card.Body>
-                    <Card.Text>{error}</Card.Text>
+                    <Card.Text><Image src={Oops} /></Card.Text>
                 </Card.Body>
             </Card>
         </div>

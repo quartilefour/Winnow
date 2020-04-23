@@ -21,7 +21,7 @@ function Login(props) {
     const {authToken, setAuthToken} = useAuth();
     const referer = (props.location.state !== undefined) ? props.location.state.referer : '/';
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (authToken) {
             setLoggedIn(true);
         }

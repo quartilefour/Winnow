@@ -14,7 +14,7 @@ import ComboSearchTab from "../common/ComboSearchTab";
 function Dashboard(props) {
     const [currentTab, setCurrentTab] = useState('bookmarks');
 
-    useEffect(() => {
+    React.useEffect(() => {
         let storedTab = sessionStorage.getItem('dashboardTab');
         if (storedTab) {
             setCurrentTab(storedTab);

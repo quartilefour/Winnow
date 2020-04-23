@@ -6,7 +6,7 @@ import {Form, Table} from "react-bootstrap";
 import PageLoader from "../common/PageLoader";
 
 /**
- * RecentSearchesTab builds the content for user's saved search lists.
+ * BookmarkTab builds the content for user's saved search lists.
  *
  * @param props
  * @returns {*}
@@ -18,11 +18,11 @@ function BookmarkTab(props) {
     const [bookmarkData, setBookmarkData] = useState([]);
     const [deleteBookmark, setDeleteBookmark] = useState(null);
 
-    useEffect(() => {
+    React.useEffect(() => {
         let mounted = true;
         if (deleteBookmark) {
             removeUserBookmark(deleteBookmark)
-                .then(res => {
+                .then(() => {
                     if (mounted) {
                         setDeleteBookmark(null);
                     }
@@ -33,8 +33,10 @@ function BookmarkTab(props) {
         }
         fetchUserBookmarks()
             .then(res => {
-                setBookmarkData(res);
-                setIsLoaded(true);
+                if (mounted) {
+                    setBookmarkData(res);
+                    setIsLoaded(true);
+                }
             }).catch(err => {
             setIsLoaded(true);
         });

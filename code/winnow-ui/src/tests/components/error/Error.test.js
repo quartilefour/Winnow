@@ -2,18 +2,44 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import Error from '../../../components/error/Error';
 
-test('should test Error component', () => {
-    const wrapper = shallow(<Error />);
-    expect(wrapper).toMatchSnapshot();
-});
+describe('<Error {props}/>', () => {
+    let props;
+    let wrapper;
+    let useEffect;
+    let component;
 
-describe('<Error />', () => {
-    const container = shallow(<Error />);
+    const mockUseEffect = () => {
+        useEffect.mockImplementationOnce(f => f());
+    }
+
+    beforeEach(() => {
+        useEffect = jest.spyOn(React, "useEffect");
+        props = {
+            error: '404: Page Not Found!'
+        };
+        if (component) component.unmount();
+
+        mockUseEffect();
+        wrapper = shallow(<Error {...props} />);
+    });
+
     it('should match the snapshot', () => {
-        expect(container.html()).toMatchSnapshot();
+        expect(wrapper.html()).toMatchSnapshot();
     });
 
-    it('should have progress bar', () => {
-        expect(container.find('Card').length).toEqual(1);
+    it('should show error message', () => {
+        expect(wrapper.find('Card').length).toEqual(1);
     });
+
+    it('loads error', () => {
+        expect(props.error).toEqual('404: Page Not Found!');
+    })
+
+    it('should render when no error is passed', () => {
+        props.error = null;
+        mockUseEffect();
+        wrapper = shallow(<Error {...props} />);
+        expect(props.error).toEqual(null);
+        expect(wrapper.find('Card').length).toEqual(1);
+    })
 });

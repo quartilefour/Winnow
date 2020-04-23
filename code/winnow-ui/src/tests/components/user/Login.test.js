@@ -1,40 +1,54 @@
 import React from 'react';
+import * as AuthContext from "../../../context/auth";
 import Login from '../../../components/user/Login';
 import {mountWrap, shallowWrap} from "../../_helpers";
+import {shallow} from "enzyme";
 
 
-describe('<Login />', () => {
+describe('<Login {props}/>', () => {
     let props;
+    let wrapper;
+    let useEffect;
     let component;
+
     const wrappedShallow = () => shallowWrap(<Login {...props} />);
     const wrappedMount = () => mountWrap(<Login {...props} />);
+
+    const mockUseEffect = () => {
+        useEffect.mockImplementationOnce(f => f());
+    }
+
     beforeEach(() => {
+        useEffect = jest.spyOn(React, "useEffect");
         props = {
             location: { state: undefined},
             userEmail: 'jonny@harvard.edu',
             userPassword: 'Test1234!'
         };
         if (component) component.unmount();
+
+       mockUseEffect();
+       wrapper = shallow(<Login {...props} />);
+       //wrapper = wrappedShallow();
     })
 
     test('should render with mock data in snapshot', () => {
-        const wrapper = wrappedShallow();
+        //const wrapper = wrappedShallow();
         expect(wrapper).toMatchSnapshot();
     });
 
     it('should render with defined referer', () => {
         props.location.state = { referer: "/profile"}
-        const wrapper = wrappedShallow();
+        mockUseEffect();
+        wrapper = shallow(<Login {...props} />);
         expect(wrapper).toMatchSnapshot();
     })
 
     it('should have an email field', () => {
-        const wrapper = wrappedShallow();
         expect(wrapper.find('FormControl[type="email"]').length).toEqual(1);
     });
 
     it('should have proper props for email field', () => {
-        const wrapper = wrappedShallow();
         expect(wrapper.find('FormControl[type="email"]').props()).toEqual({
             'aria-placeholder': 'E-mail Address',
             autoComplete: "username",
@@ -50,12 +64,10 @@ describe('<Login />', () => {
     });
 
     it('should have a password field', () => {
-        const wrapper = wrappedShallow();
         expect(wrapper.find('FormControl[type="password"]').length).toEqual(1);
     });
 
     it('should have proper props for password field', () => {
-        const wrapper = wrappedShallow();
         expect(wrapper.find('FormControl[type="password"]').props()).toEqual({
             'aria-placeholder': 'Password',
             autoComplete: "current-password",
@@ -70,15 +82,12 @@ describe('<Login />', () => {
         });
     });
     it('should have a submit button', () => {
-        const wrapper = wrappedShallow();
         expect(wrapper.find('Button').length).toEqual(1);
     });
 
     it('should submit credentials when button is clicked', () => {
-        const wrapper = wrappedShallow();
         const loginButton = wrapper.find('Button');
         loginButton.simulate('click');
-        //expect(wrapper.find('Button').length).toEqual(1);
 
     });
 
@@ -98,5 +107,17 @@ describe('<Login />', () => {
         expect(container.find('Button').length).toEqual(1);
     });
     */
+    it('it should redirect after successful log in', () => {
+        const contextValues = {
+            authToken: 'jwttoken',
+            setAuthToken: (e) => {this.authToken = e}
+        }
+        jest.spyOn(AuthContext, 'useAuth')
+            .mockImplementation(() => contextValues);
+        mockUseEffect();
+        const wrapper = shallow(<Login {...props} />);
+        expect(props.location.state).toEqual(undefined);
+        expect(wrapper.find('Redirect').length).toEqual(1);
+    })
 });
 
