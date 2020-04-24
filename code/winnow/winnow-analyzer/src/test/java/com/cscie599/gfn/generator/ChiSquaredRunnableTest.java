@@ -12,7 +12,7 @@ import org.junit.Rule;
 import org.junit.jupiter.api.Test;
 import org.junit.rules.TemporaryFolder;
 
-import java.io.File;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -20,9 +20,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
+import java.util.zip.GZIPInputStream;
 
 /**
- *
  * @author PulkitBhanot
  */
 class ChiSquaredRunnableTest {
@@ -50,10 +50,10 @@ class ChiSquaredRunnableTest {
         folder.create();
         File outputdir = folder.newFolder();
         List<GeneRawStats> geneRawStats = Arrays.asList(new GeneRawStats(889961, 235, "3209"));
-        List<MeshtermRawStats> meshtermRawStats = Arrays.asList(new MeshtermRawStats(837743, 54574, "D000483"),new MeshtermRawStats(837743, 54574, "D000232483"));
+        List<MeshtermRawStats> meshtermRawStats = Arrays.asList(new MeshtermRawStats(837743, 54574, "D000483"), new MeshtermRawStats(837743, 54574, "D000232483"));
 
         Map<String, GeneMeshPub> cache = new HashMap<>();
-        GeneMeshPub geneMeshPub = new GeneMeshPub("3209",  "109570","D000483");
+        GeneMeshPub geneMeshPub = new GeneMeshPub("3209", "109570", "D000483");
         geneMeshPub.getCounter().incrementAndGet();
         geneMeshPub.getCounter().incrementAndGet();
         geneMeshPub.getCounter().incrementAndGet();
@@ -65,17 +65,19 @@ class ChiSquaredRunnableTest {
         t1.start();
         latch.await(30, TimeUnit.SECONDS);
         File outputFile = new File(outputdir.getAbsolutePath() + File.separator + "1.csv");
+        File outputFileZipped = new File(outputdir.getAbsolutePath() + File.separator + "1.csv.gz");
+        unzipFile(outputFileZipped, outputFile);
         CsvReader reader = new CsvReader();
         CsvContainer container = reader.read(outputFile, StandardCharsets.UTF_8);
         CsvRow row = container.getRow(0);
-        Assert.assertEquals("3209",row.getField(0));
-        Assert.assertEquals("D000483",row.getField(1));
-        Assert.assertEquals("4",row.getField(2));
-        Assert.assertEquals("231",row.getField(3));
-        Assert.assertEquals("54570",row.getField(4));
-        Assert.assertEquals("835391",row.getField(5));
-        Assert.assertEquals(8.010473D,Double.parseDouble(row.getField(6)), .0001D);
-        Assert.assertEquals(.0046507D,Double.parseDouble(row.getField(7)), .000001D);
+        Assert.assertEquals("3209", row.getField(0));
+        Assert.assertEquals("D000483", row.getField(1));
+        Assert.assertEquals("4", row.getField(2));
+        Assert.assertEquals("231", row.getField(3));
+        Assert.assertEquals("54570", row.getField(4));
+        Assert.assertEquals("835391", row.getField(5));
+        Assert.assertEquals(8.010473D, Double.parseDouble(row.getField(6)), .0001D);
+        Assert.assertEquals(.0046507D, Double.parseDouble(row.getField(7)), .000001D);
     }
 
     @Test
@@ -86,7 +88,7 @@ class ChiSquaredRunnableTest {
         List<MeshtermRawStats> meshtermRawStats = Arrays.asList(new MeshtermRawStats(837743, 54574, "D000483"));
 
         Map<String, GeneMeshPub> cache = new HashMap<>();
-        GeneMeshPub geneMeshPub = new GeneMeshPub("3209",  "109570","D000434");
+        GeneMeshPub geneMeshPub = new GeneMeshPub("3209", "109570", "D000434");
         geneMeshPub.getCounter().incrementAndGet();
         geneMeshPub.getCounter().incrementAndGet();
         geneMeshPub.getCounter().incrementAndGet();
@@ -98,17 +100,35 @@ class ChiSquaredRunnableTest {
         t1.start();
         latch.await(30, TimeUnit.SECONDS);
         File outputFile = new File(outputdir.getAbsolutePath() + File.separator + "1.csv");
+        File outputFileZipped = new File(outputdir.getAbsolutePath() + File.separator + "1.csv.gz");
+        unzipFile(outputFileZipped, outputFile);
         CsvReader reader = new CsvReader();
         CsvContainer container = reader.read(outputFile, StandardCharsets.UTF_8);
         CsvRow row = container.getRow(0);
         System.out.println(row);
-        Assert.assertEquals("3209",row.getField(0));
-        Assert.assertEquals("D000483",row.getField(1));
-        Assert.assertEquals("0",row.getField(2));
-        Assert.assertEquals("235",row.getField(3));
-        Assert.assertEquals("54574",row.getField(4));
-        Assert.assertEquals("835387",row.getField(5));
-        Assert.assertEquals(15.3517697D,Double.parseDouble(row.getField(6)), .0001D);
-        Assert.assertEquals(.0000892D,Double.parseDouble(row.getField(7)), .000001D);
+        Assert.assertEquals("3209", row.getField(0));
+        Assert.assertEquals("D000483", row.getField(1));
+        Assert.assertEquals("0", row.getField(2));
+        Assert.assertEquals("235", row.getField(3));
+        Assert.assertEquals("54574", row.getField(4));
+        Assert.assertEquals("835387", row.getField(5));
+        Assert.assertEquals(15.3517697D, Double.parseDouble(row.getField(6)), .0001D);
+        Assert.assertEquals(.0000892D, Double.parseDouble(row.getField(7)), .000001D);
+    }
+
+    private void unzipFile(File zippedFile, File extractedFile) throws IOException {
+        byte[] buffer = new byte[1024];
+
+        GZIPInputStream gzis =
+                new GZIPInputStream(new FileInputStream(zippedFile));
+
+        FileOutputStream out =
+                new FileOutputStream(extractedFile);
+        int len;
+        while ((len = gzis.read(buffer)) > 0) {
+            out.write(buffer, 0, len);
+        }
+        gzis.close();
+        out.close();
     }
 }

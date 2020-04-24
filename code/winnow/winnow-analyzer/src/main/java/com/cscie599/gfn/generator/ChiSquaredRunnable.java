@@ -12,12 +12,15 @@ import org.apache.commons.numbers.gamma.RegularizedGamma;
 import org.javatuples.Pair;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.text.DecimalFormat;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.CountDownLatch;
+import java.util.zip.GZIPOutputStream;
 
 /**
  * An implementation of {@java.lang.Runnable} that is used to compute chi squared tests between a given set of lists of genes and meshterms
@@ -53,6 +56,8 @@ public class ChiSquaredRunnable implements Runnable {
     private final CsvWriter csvWriter;
     // Decimal format for properly writing the double value and not using the inbuilt string representation that produces values having e.
     private final DecimalFormat df = new DecimalFormat("#");
+    // Output file for the zipped file
+    private final File outputZippedFile;
 
     public ChiSquaredRunnable(Pair<List<GeneRawStats>, List<MeshtermRawStats>> processPairs, CountDownLatch countDownLatch, int index, boolean includePairsWith0Publications, Map<String, GeneMeshPub> cachedGeneMeshPubStats, String outputDirectory) {
         this.processPairs = processPairs;
@@ -61,6 +66,7 @@ public class ChiSquaredRunnable implements Runnable {
         this.includePairsWith0Publications = includePairsWith0Publications;
         this.cachedGeneMeshPubStats = cachedGeneMeshPubStats;
         this.outputFile = new File(outputDirectory + File.separator + "" + index + ".csv");
+        this.outputZippedFile = new File(outputDirectory + File.separator + "" + index + ".csv.gz");
         this.csvWriter = new CsvWriter();
         df.setMaximumFractionDigits(12);
     }
@@ -111,6 +117,8 @@ public class ChiSquaredRunnable implements Runnable {
                 });
                 logger.info("Finished processing for index " + index + " timetaken " + (System.currentTimeMillis() - startTime));
             }
+            zipOutputFile();
+            logger.info("Output file zipped successfully");
         } catch (Exception ex) {
             logger.error("Unable to write to csv ", ex);
         } finally {
@@ -218,4 +226,24 @@ public class ChiSquaredRunnable implements Runnable {
         return RegularizedGamma.P.value(shape, x / scale);
     }
 
+    /**
+     * All the datasets by default are configured to be processed only as zip files.
+     * This helper method takes the csv file and zips it. It also cleansup the previous unzipped file.
+     *
+     * @throws IOException
+     */
+    void zipOutputFile() throws IOException {
+        GZIPOutputStream gzipOutputStream = new GZIPOutputStream(new FileOutputStream(this.outputZippedFile));
+        byte[] buffer = new byte[2048];
+        FileInputStream inputStream = new FileInputStream(this.outputFile);
+        int bytes_read;
+
+        while ((bytes_read = inputStream.read(buffer)) > 0) {
+            gzipOutputStream.write(buffer, 0, bytes_read);
+        }
+        inputStream.close();
+        gzipOutputStream.flush();
+        gzipOutputStream.close();
+        this.outputFile.delete();
+    }
 }
