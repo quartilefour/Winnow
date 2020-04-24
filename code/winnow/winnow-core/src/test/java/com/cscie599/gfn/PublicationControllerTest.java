@@ -9,6 +9,7 @@ import com.cscie599.gfn.entities.Gene;
 import com.cscie599.gfn.views.GeneView;
 import io.swagger.annotations.ApiOperation;
 import org.hibernate.Hibernate;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.Before;
@@ -33,6 +34,7 @@ public class PublicationControllerTest extends BaseTest {
     private static final JSONObject userJsonObject = new JSONObject();
     private static final JSONObject loginJsonObject = new JSONObject();
     private static final JSONObject expectedResultJsonObject = new JSONObject();
+    private static final JSONObject expectedEmptyResultJsonObject = new JSONObject();
 
     @Autowired
     private JobLauncherController jobLauncherController;
@@ -45,11 +47,6 @@ public class PublicationControllerTest extends BaseTest {
 
     @LocalServerPort
     private int port;
-
-    @BeforeClass
-    public static void runBeforeAllTestMethods() throws JSONException {
-
-    }
 
     @Before
     public void setUp() throws Exception {
@@ -76,10 +73,13 @@ public class PublicationControllerTest extends BaseTest {
         expectedResultJsonObject.put("geneId", "20468916");
         expectedResultJsonObject.put("meshId", "D000818");
 
+        expectedEmptyResultJsonObject.put("geneId", "20468916");
+        expectedEmptyResultJsonObject.put("meshId", "D000831");
+
         if(httpHeaders.get("Authorization") == null) {
 
             HttpEntity<String> registerRequest =
-                    new HttpEntity<String>(userJsonObject.toString(), registerHttpHeaders);
+                    new HttpEntity<>(userJsonObject.toString(), registerHttpHeaders);
 
             logger.info("Request to be posted is: \"" + registerRequest.toString() + "\"");
 
@@ -90,7 +90,7 @@ public class PublicationControllerTest extends BaseTest {
             logger.info("Registration API Response was: \"" + registerResponse.getStatusCode().toString() + "\"");
 
             HttpEntity<String> loginRequest =
-                    new HttpEntity<String>(loginJsonObject.toString(), httpHeaders);
+                    new HttpEntity<>(loginJsonObject.toString(), httpHeaders);
 
             logger.info("Request to be posted is: \"" + loginRequest.toString() + "\"");
 
@@ -105,12 +105,13 @@ public class PublicationControllerTest extends BaseTest {
     }
 
     @Test
-    public void canFindExpectedPublications() throws Exception {
+    public void didFindExpectedPublications() throws Exception {
 
         JSONObject jsonObject;
+        JSONArray jsonArray;
 
         HttpEntity<String> expectedPublicationRequest =
-                new HttpEntity<String>(expectedResultJsonObject.toString(), httpHeaders);
+                new HttpEntity<>(expectedResultJsonObject.toString(), httpHeaders);
 
         logger.info("Request to be posted is: \"" + expectedPublicationRequest.toString() + "\"");
 
@@ -122,7 +123,32 @@ public class PublicationControllerTest extends BaseTest {
 
         jsonObject = new JSONObject(expectedPublicationResponse.getBody());
         assertThat(jsonObject.has("results"));
-        assertThat(jsonObject.getJSONArray("results").length() == 2);
+        jsonArray = jsonObject.getJSONArray("results");
+        assertThat(jsonArray.length() == 2);
+        assertThat(expectedPublicationResponse.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
+    }
+
+    @Test
+    public void didFindNoPublications() throws Exception {
+
+        JSONObject jsonObject;
+        JSONArray jsonArray;
+
+        HttpEntity<String> expectedPublicationRequest =
+                new HttpEntity<>(expectedEmptyResultJsonObject.toString(), httpHeaders);
+
+        logger.info("Request to be posted is: \"" + expectedPublicationRequest.toString() + "\"");
+
+        ResponseEntity<String> expectedPublicationResponse = restTemplate.postForEntity(createURLWithPort("/api/publications"),
+                expectedPublicationRequest, String.class);
+
+        logger.info("[PublicationControllerTest - canFindExpectedPublications] API Status Response was: \"" + expectedPublicationResponse.getStatusCode().toString() + "\"");
+        logger.info("[PublicationControllerTest - canFindExpectedPublications] API Publication List was: \"" + expectedPublicationResponse.getBody() + "\"");
+
+        jsonObject = new JSONObject(expectedPublicationResponse.getBody());
+        assertThat(jsonObject.has("results"));
+        jsonArray = jsonObject.getJSONArray("results");
+        assertThat(jsonArray.length() == 0);
         assertThat(expectedPublicationResponse.getStatusCode()).isEqualByComparingTo(HttpStatus.OK);
     }
 
