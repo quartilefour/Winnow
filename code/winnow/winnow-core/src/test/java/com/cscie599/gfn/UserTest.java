@@ -77,7 +77,6 @@ public class UserTest extends BaseTest{
     @Test
     public void registeredUserCanLogin() throws Exception {
 
-        assertTrue(true);
         HttpEntity<String> registerRequest =
                 new HttpEntity<String>(user2JsonObject.toString(), loginHeaders);
 
