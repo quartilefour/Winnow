@@ -7,6 +7,7 @@ import org.springframework.batch.item.file.LineCallbackHandler;
 import org.springframework.batch.item.file.MultiResourceItemReader;
 import org.springframework.batch.item.file.ResourceAwareItemReaderItemStream;
 import org.springframework.batch.item.support.AbstractItemStreamItemReader;
+import org.springframework.core.io.FileSystemResource;
 import org.springframework.core.io.Resource;
 import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
@@ -279,12 +280,18 @@ public class SkipSupportedMultiResourceItemReader<T> extends AbstractItemStreamI
     public void setResources(Resource[] resources) {
         Assert.notNull(resources, "The resources must not be null");
         List<Resource> resourceList = new ArrayList<>();
-        for (int i = 0; i < resources.length; i++) {
-            if (!resources[i].getFilename().equalsIgnoreCase(".DS_Store") && !resources[i].getFilename().equalsIgnoreCase("_SUCCESS")) {
-                resourceList.add(resources[i]);
+        if (resources.length > 0) {
+            if (resources[0] instanceof FileSystemResource) {
+                for (int i = 0; i < resources.length; i++) {
+                    if (resources[i].getFilename() != null && !resources[i].getFilename().equalsIgnoreCase(".DS_Store") && !resources[i].getFilename().equalsIgnoreCase("_SUCCESS")) {
+                        resourceList.add(resources[i]);
+                    }
+                }
+                this.resources = resourceList.toArray(new Resource[resourceList.size()]);
+                return;
             }
         }
-        this.resources = resourceList.toArray(new Resource[resourceList.size()]);
+        this.resources = Arrays.asList(resources).toArray(new Resource[resources.length]);
     }
 
     /**
