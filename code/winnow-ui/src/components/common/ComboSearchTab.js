@@ -1,4 +1,4 @@
-import React, {Fragment, useEffect, useState} from "react";
+import React, {Fragment, useState} from "react";
 import {Form, Button, Alert} from "react-bootstrap";
 import Select from "react-select";
 import {fetchGenes, fetchSearchResults} from "../../service/ApiService";
@@ -36,7 +36,7 @@ function ComboSearchTab(props) {
     const [alertType, setAlertType] = useState('');
     const [submitText, setSubmitText] = useState('Search');
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (!haveResults) {
             setUseBatch(getBatch);
             setIsLoaded(true);

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Spinner} from "react-bootstrap";
 import 'react-super-treeview/dist/style.css';
 import {fetchMeshtermCat, fetchMeshtermNode, fetchMeshtermTree, mapMeshtermTreeData} from "../../service/ApiService";

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {Card, Image} from "react-bootstrap";
 import Oops from "../../img/oops.png";
 

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faQuestionCircle} from "@fortawesome/free-regular-svg-icons";
 import {faUser, faSignOutAlt} from "@fortawesome/free-solid-svg-icons";
@@ -22,7 +22,7 @@ const NavBar = () => {
     const [user, setUser] = useState(null);
     const [isTokenValid, setIsTokenValid] = useState(false);
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (isLoggingOut) {
             setAuthToken(null);
             setIsLoggingOut(false);

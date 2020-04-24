@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {Redirect, Link} from "react-router-dom";
 import {Card, Button, Form, Alert} from "react-bootstrap";
 import {sendLoginCredentials, loginSchema} from "../../service/AuthService";
@@ -88,6 +88,7 @@ function Login(props) {
                                 onBlur={loginForm.handleBlur}
                                 value={loginForm.values.userEmail}
                             />
+                            {/* <Form.Control.Feedback /> */}
                             <Alert
                                 variant="danger"
                                 show={!!(loginForm.touched.userEmail && loginForm.errors.userEmail)}

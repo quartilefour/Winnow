@@ -1,7 +1,6 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {Card, Alert} from "react-bootstrap";
 import logoImg from "../../img/logo.png";
-import PageLoader from "../common/PageLoader";
 
 /**
  * Renders Login form and handles response from API.

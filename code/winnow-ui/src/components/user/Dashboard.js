@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Nav, Tab, Row, Col} from "react-bootstrap";
 import BookmarkTab from "./BookmarkTab";
 import RecentSearchesTab from "./RecentSearchesTab";

@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {Form, Button, Table} from "react-bootstrap";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChevronLeft} from "@fortawesome/free-solid-svg-icons";
@@ -25,7 +25,7 @@ function SearchResultsDisplay(props) {
     const [bookmarkEnabled, setBookmarkEnabled] = useState(false);
 
 
-    useEffect(() => {
+    React.useEffect(() => {
         if (resData.results !== undefined && resData.results.length > 0) {
             setBookmarkEnabled(true);
         }
@@ -49,7 +49,6 @@ function SearchResultsDisplay(props) {
 
     if (isLoaded) {
         if (!haveResults) {
-            console.info(`SearchResultsDisplay selected: ${JSON.stringify(resData)}`);
             return (
                 <div>
                     <Form>
@@ -95,6 +94,7 @@ function SearchResultsDisplay(props) {
                                                 show={activeGeneDetail === index}
                                                 onHide={() => setActiveGeneDetail(null)}
                                                 geneid={value.geneId}
+                                                active={activeGeneDetail === index ? 1 : 0}
                                             />
                                         </td>
                                         <td>{value.symbol}</td>

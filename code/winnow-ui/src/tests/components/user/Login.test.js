@@ -1,8 +1,8 @@
 import React from 'react';
 import * as AuthContext from "../../../context/auth";
 import Login from '../../../components/user/Login';
-import {mountWrap, shallowWrap} from "../../_helpers";
-import {shallow} from "enzyme";
+import {mount, shallow} from "enzyme";
+import {mountWrap} from "../../_helpers";
 
 
 describe('<Login {props}/>', () => {
@@ -11,13 +11,11 @@ describe('<Login {props}/>', () => {
     let useEffect;
     let component;
 
-    const wrappedShallow = () => shallowWrap(<Login {...props} />);
-    const wrappedMount = () => mountWrap(<Login {...props} />);
-
     const mockUseEffect = () => {
         useEffect.mockImplementationOnce(f => f());
     }
 
+    const wrappedMount = () => mountWrap(<Login {...props} />)
     beforeEach(() => {
         useEffect = jest.spyOn(React, "useEffect");
         props = {
@@ -29,11 +27,9 @@ describe('<Login {props}/>', () => {
 
        mockUseEffect();
        wrapper = shallow(<Login {...props} />);
-       //wrapper = wrappedShallow();
     })
 
-    test('should render with mock data in snapshot', () => {
-        //const wrapper = wrappedShallow();
+    it('should render with mock data in snapshot', () => {
         expect(wrapper).toMatchSnapshot();
     });
 
@@ -86,9 +82,53 @@ describe('<Login {props}/>', () => {
     });
 
     it('should submit credentials when button is clicked', () => {
-        const loginButton = wrapper.find('Button');
-        loginButton.simulate('click');
+        wrapper.debug();
+        wrapper.find('FormControl[name="userEmail"]').simulate('change', {
+            persist: () => {},
+            target: {
+                name: 'userEmail',
+                value: 'jonny@harvard.edu'
+            }
+        })
+        wrapper.find('FormControl[name="userPassword"]').simulate('change', {
+            persist: () => {},
+            target: {
+                name: 'userPassword',
+                value: 'Test1234!'
+            }
+        })
+        expect(wrapper.find('FormControl[name="userEmail"]').props().value).toEqual('jonny@harvard.edu')
+        wrapper.find('Form').simulate('submit')
 
+    });
+
+    /*
+    test('group validation', async (done) => {
+        props.location.state = { referer: "/profile"}
+        mockUseEffect();
+        const wrappedMount = () => mountWrap(<Login {...props} />);
+        const wrapper2 = wrappedMount()
+
+        // set the inputs
+        const instance = wrapper2.find('Formik').instance();
+        const changeState = new Promise((resolve) => {
+            instance.setState({
+                values: {
+                    userEmail: 'jonny@harvard.edu',
+                    userPassword: 'Test1234!'
+                }
+            }, () => resolve())
+        });
+        await changeState;
+        const form = wrapper2.find('Form');
+        form.simulate('submit');
+        setTimeout(() => {
+            const alerts = wrapper2.find('Formik')
+                .update()
+                .find('.alert');
+            expect(alerts.length).toBe(1);
+            done();
+        });
     });
 
     /*

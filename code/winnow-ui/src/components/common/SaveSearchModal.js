@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {Modal, Form, Button, Alert} from "react-bootstrap";
 import {saveUserBookmark} from "../../service/ApiService";
 
@@ -17,7 +17,7 @@ function SaveSearchModal(props) {
     const [error, setError] = useState('');
     const [alertType, setAlertType] = useState('');
 
-    useEffect(() => {
+    React.useEffect(() => {
         setSaveEnabled(bookmarkName.length >= 1);
         if (saveBookmark) {
             saveUserBookmark({

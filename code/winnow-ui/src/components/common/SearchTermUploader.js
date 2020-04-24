@@ -1,39 +1,39 @@
-import React, {useEffect, useState} from "react";
+import React, {useState} from "react";
 import {Form} from "react-bootstrap";
 import PageLoader from "./PageLoader";
 import {QUERY_FORMATS as QF} from "../../constants";
 
 function SearchTermUploader(props) {
     const [isLoaded, setIsLoaded] = useState(false);
-    const [haveResults, setHaveResults] = useState(false);
     const [batchQueryFormat, setBatchQueryFormat] = useState('');
     const [textareaData, setTextareaData] = useState(null);
-    const [uploadFile, setUploadFile] = useState('');
+    const [uploadFile, setUploadFile] = useState(null);
 
-    useEffect(() => {
-        console.info(`SearchTermUploader: queryFormat: ${batchQueryFormat}`)
-        if (!haveResults) {
+    React.useEffect(() => {
+        if (textareaData !== null && batchQueryFormat) {
+            console.info(`SearchTermUploader: queryFormat: ${batchQueryFormat}`)
             /* Render file upload/textarea */
-            setIsLoaded(true);
-            if (uploadFile.length > 0) {
-                let data = new FormData()
-                data.append('file', uploadFile)
-                data.append('queryFormat', batchQueryFormat)
-                props.update(batchQueryFormat, data, true)
-                props.searchable(true);
-                console.info(`SearchTermUploader: file U: ${batchQueryFormat} - ${uploadFile}`)
-            } else {
-                props.searchable(textareaData !== null && batchQueryFormat);
-                props.update(batchQueryFormat, textareaData)
-                console.info(`SearchTermUploader: textarea U: ${batchQueryFormat} - ${textareaData}`)
-            }
-        } else {
-            setIsLoaded(true);
+            props.searchable(batchQueryFormat);
+            props.update(batchQueryFormat, textareaData)
+            console.info(`SearchTermUploader: textarea U: ${batchQueryFormat} - ${textareaData}`)
         }
-    }, [haveResults, props, batchQueryFormat, textareaData, uploadFile]);
+        setIsLoaded(true);
+    }, [props, batchQueryFormat, textareaData]);
+
+    React.useEffect(() => {
+        console.info(`SearchTermUploader: file U: ${batchQueryFormat} - ${JSON.stringify(uploadFile)}`)
+        if (uploadFile !== null && uploadFile.length > 0) {
+            let data = new FormData()
+            data.append('file', uploadFile)
+            data.append('queryFormat', batchQueryFormat)
+            props.update(batchQueryFormat, data, true)
+            props.searchable(true);
+            console.info(`SearchTermUploader: file U pass: ${batchQueryFormat} - ${uploadFile}`)
+        }
+        setIsLoaded(true);
+    }, [props, batchQueryFormat, uploadFile])
 
     if (isLoaded) {
-        if (!haveResults) {
             return (
                 <div>
                     <Form>
@@ -53,14 +53,15 @@ function SearchTermUploader(props) {
                             );
                         })}
                         <Form.Group>
-                            <Form.File
-                                id="fileUpload"
-                                label="Choose file..."
-                                onChange={(e) => {
+                            <Form.Control
+                                as="input"
+                                type="file"
+                                name="fileUpload"
+                                onChange={e => {
+                                    console.info(`SearchTermUploader: fileUpload <: ${e.target.files[0]}`)
                                     setUploadFile(e.target.files[0])
-                                    console.info(uploadFile)
+                                    console.info(`SearchTermUploader: fileUpload >: ${uploadFile}`)
                                 }}
-                                custom
                             />
                         </Form.Group>
                         <Form.Group>
@@ -81,11 +82,6 @@ function SearchTermUploader(props) {
                     </Form>
                 </div>
             )
-        } else {
-            return (
-                <div>Placeholder for Results</div>
-            )
-        }
     } else {
         return (
             <div><PageLoader/></div>

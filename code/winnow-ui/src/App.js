@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
 import * as C from "./constants";
 import NavBar from "./components/common/NavBar";
@@ -39,7 +39,7 @@ function App(props) {
                 setApiReady(false);
                 setTimeOut(setTimeout(fetchApiStatus, 15000))
             })
-    })
+    }, [timeOut])
     /**
      * Updates the user's JWT upon login/logout.
      *

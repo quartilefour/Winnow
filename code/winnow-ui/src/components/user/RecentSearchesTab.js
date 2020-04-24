@@ -1,4 +1,4 @@
-import React, {Fragment, useEffect, useState} from "react";
+import React, {Fragment, useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlay, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {Form, Table} from "react-bootstrap";

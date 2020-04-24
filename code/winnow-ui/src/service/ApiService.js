@@ -182,7 +182,7 @@ export const fetchMeshtermCat = () => {
 };
 
 /**
- * Retrieves MeSH term tree branch for given parent node.
+ * Retrieves MeSH term tree one level for given parent node.
  *
  * @param node
  * @return {Promise<>}

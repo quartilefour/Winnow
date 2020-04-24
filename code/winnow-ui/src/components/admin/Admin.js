@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useState} from 'react';
 import {Nav, Tab, Row, Col} from "react-bootstrap";
 
 /* istanbul ignore file */
@@ -12,7 +12,7 @@ import {Nav, Tab, Row, Col} from "react-bootstrap";
 function Admin(props) {
     const [currentTab, setCurrentTab] = useState('teams');
 
-    useEffect(() => {
+    React.useEffect(() => {
         let storedTab = sessionStorage.getItem('adminTab');
         if (storedTab) {
             console.info(`Admin: setting tab to: ${JSON.stringify(storedTab)}`);
