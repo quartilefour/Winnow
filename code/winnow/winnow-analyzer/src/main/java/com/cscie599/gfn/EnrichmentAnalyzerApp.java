@@ -45,7 +45,7 @@ public class EnrichmentAnalyzerApp implements CommandLineRunner {
     private int parallelism;
 
     // Property that determines whether chi-sqaured tests should also be done for gene-meshterm pairs with 0 publications in common.
-    @Value("${analyzer.includePairsWith0Publications:true}")
+    @Value("${analyzer.includePairsWith0Publications:false}")
     private boolean includePairsWith0Publications;
 
     // Output directory for storing the enrichment analysis tes.
@@ -113,6 +113,4 @@ public class EnrichmentAnalyzerApp implements CommandLineRunner {
         }
         return returnPairList;
     }
-
-
 }

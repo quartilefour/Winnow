@@ -148,11 +148,18 @@ After ```npm start```, a browser window should automatically open to http://loca
       `docker push 228205745268.dkr.ecr.us-east-1.amazonaws.com/cscie590:latest`
       
   - Bulk Ingestion container
-    -Setup another container repository on AWS for running the AWS job e.g `228205745268.dkr.ecr.us-east-1.amazonaws.com/cscie599-ingester`. To push the Ingestionjob image run    
+    -Setup another container repository on AWS for running the AWS job e.g `228205745268.dkr.ecr.us-east-1.amazonaws.com/cscie599-ingester`. To push the Ingestionjob container image, run    
       
       `docker tag gfn_ingesterapp.cscie99.com:latest 228205745268.dkr.ecr.us-east-1.amazonaws.com/cscie599-ingester:latest`
       
       `docker push 228205745268.dkr.ecr.us-east-1.amazonaws.com/cscie599-ingester:latest`
+
+  - Analyzer Computation container
+    -Setup another container repository on AWS for running the AWS job e.g `228205745268.dkr.ecr.us-east-1.amazonaws.com/cscie599-ingester`. To push the Analyzerjob container image, run    
+      
+      `docker tag gfn_analyzerapp.cscie99.com:latest 228205745268.dkr.ecr.us-east-1.amazonaws.com/cscie599-analyzer:latest`
+            
+      `docker push 228205745268.dkr.ecr.us-east-1.amazonaws.com/cscie599-analyzer:latest`
 
 * AWS batch setup
   - Compute Environment
