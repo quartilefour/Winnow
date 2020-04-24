@@ -12,11 +12,14 @@ import org.springframework.lang.Nullable;
 import org.springframework.util.Assert;
 import org.springframework.util.ClassUtils;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 
 /**
  * This is a copy of {@link org.springframework.batch.item.file.MultiResourceItemReader} with added support for skipping lines across multiple files.
+ *
  * @author PulkitBhanot
  */
 public class SkipSupportedMultiResourceItemReader<T> extends AbstractItemStreamItemReader<T> {
@@ -52,6 +55,7 @@ public class SkipSupportedMultiResourceItemReader<T> extends AbstractItemStreamI
     /**
      * In strict mode the reader will throw an exception on
      * {@link #open(org.springframework.batch.item.ExecutionContext)} if there are no resources to read.
+     *
      * @param strict false by default
      */
     public void setStrict(boolean strict) {
@@ -126,7 +130,7 @@ public class SkipSupportedMultiResourceItemReader<T> extends AbstractItemStreamI
 
     private T readFromDelegate() throws Exception {
         T item = delegate.read();
-        if(item instanceof ResourceAware){
+        if (item instanceof ResourceAware) {
             ((ResourceAware) item).setResource(getCurrentResource());
         }
         return item;
@@ -139,7 +143,7 @@ public class SkipSupportedMultiResourceItemReader<T> extends AbstractItemStreamI
     public void close() throws ItemStreamException {
         super.close();
 
-        if(!this.noInput) {
+        if (!this.noInput) {
             delegate.close();
         }
 
@@ -160,8 +164,7 @@ public class SkipSupportedMultiResourceItemReader<T> extends AbstractItemStreamI
             if (strict) {
                 throw new IllegalStateException(
                         "No resources to read. Set strict=false if this is not an error condition.");
-            }
-            else {
+            } else {
                 logger.warn("No resources to read. Set strict=true if this should be an error condition.");
                 noInput = true;
                 return;
@@ -180,8 +183,7 @@ public class SkipSupportedMultiResourceItemReader<T> extends AbstractItemStreamI
 
             delegate.setResource(resources[currentResource]);
             delegate.open(executionContext);
-        }
-        else {
+        } else {
             currentResource = -1;
 
             for (int i = 0; i < linesToSkip; i++) {
@@ -257,7 +259,7 @@ public class SkipSupportedMultiResourceItemReader<T> extends AbstractItemStreamI
      * the {@link ItemStream} call to update.
      *
      * @param saveState true to update ExecutionContext. False do not update
-     * ExecutionContext.
+     *                  ExecutionContext.
      */
     public void setSaveState(boolean saveState) {
         this.saveState = saveState;
@@ -265,7 +267,7 @@ public class SkipSupportedMultiResourceItemReader<T> extends AbstractItemStreamI
 
     /**
      * @param comparator used to order the injected resources, by default compares {@link Resource#getFilename()}
-     * values.
+     *                   values.
      */
     public void setComparator(Comparator<Resource> comparator) {
         this.comparator = comparator;
@@ -276,11 +278,18 @@ public class SkipSupportedMultiResourceItemReader<T> extends AbstractItemStreamI
      */
     public void setResources(Resource[] resources) {
         Assert.notNull(resources, "The resources must not be null");
-        this.resources = Arrays.asList(resources).toArray(new Resource[resources.length]);
+        List<Resource> resourceList = new ArrayList<>();
+        for (int i = 0; i < resources.length; i++) {
+            if (!resources[i].getFilename().equalsIgnoreCase(".DS_Store") && !resources[i].getFilename().equalsIgnoreCase("_SUCCESS")) {
+                resourceList.add(resources[i]);
+            }
+        }
+        this.resources = resourceList.toArray(new Resource[resourceList.size()]);
     }
 
     /**
      * Getter for the current resource.
+     *
      * @return the current resource or {@code null} if all resources have been
      * processed or the first resource has not been assigned yet.
      */
