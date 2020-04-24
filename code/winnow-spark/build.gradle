@@ -1,0 +1,47 @@
+// The build file has been referenced from https://github.com/jleetutorial/scala-spark-tutorial/blob/master/build.gradle
+
+group = 'com.cscie599.gfn'
+version = '0.0.1-SNAPSHOT'
+
+apply plugin: 'scala'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    compile group: 'org.apache.spark', name: 'spark-core_2.12', version: '2.4.4'
+    compile group: 'org.apache.spark', name: 'spark-sql_2.12', version: '2.4.4'
+
+    compile group: 'org.scala-lang', name: 'scala-library', version: '2.12.11'
+
+    // https://mvnrepository.com/artifact/io.netty/netty-all
+    compile group: 'io.netty', name: 'netty-all', version: '4.1.44.Final'
+    //compile group: 'org.scala-lang', name: 'scala-library', version: '2.11.11'
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'com.google.guava:guava:12.0.1'
+    }
+}
+
+compileScala.targetCompatibility = "1.8"
+compileScala.sourceCompatibility = "1.8"
+
+
+jar {
+    zip64 true
+    archiveName = "winnow-spark.jar"
+    from {
+        configurations.compile.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    manifest {
+        attributes 'Main-Class': 'com.cscie599.gfn.App'
+    }
+
+    exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
+
+}

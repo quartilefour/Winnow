@@ -157,3 +157,5 @@ code/winnow/gradle/caches/
 code/winnow/gradle/native/
 test-data/raw-out/
 code/winnow-ui/node_modules/
+code/winnow-spark/build
+code/winnow-spark/.gradle
