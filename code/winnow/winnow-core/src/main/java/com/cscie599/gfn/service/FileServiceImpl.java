@@ -67,6 +67,9 @@ public class FileServiceImpl implements FileService {
     }
 
     private GZIPOutputStream getFileName(AtomicInteger index) throws IOException {
+	if (!outputResource.getFile().isDirectory()) {
+            outputResource.getFile().mkdir();
+        }
         String fileName = outputResource.getFile().toString() + File.separator + "part" + index.getAndIncrement() + ".gz";
         FileOutputStream fos = new FileOutputStream(fileName);
         return new GZIPOutputStream(new BufferedOutputStream(fos));
