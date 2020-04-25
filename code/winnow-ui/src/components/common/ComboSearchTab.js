@@ -41,13 +41,13 @@ function ComboSearchTab(props) {
             setUseBatch(getBatch);
             setIsLoaded(true);
             setIsMenuLoaded(true);
-            if(!useBatch && (selectedGenes.length > 0 || checkedTerms.length > 0)) {
+            if (!useBatch && (selectedGenes.length > 0 || checkedTerms.length > 0)) {
                 setActivateSearch(true);
             } else {
                 setActivateSearch(false);
             }
         } else {
-            /* fetchSearchResults() */
+            /* fetchSearchResults() TODO: This is somehow being called multiple times when using MeshtermTree */
             let search = {}
             if (!useBatch) {
                 search = {
@@ -72,14 +72,19 @@ function ComboSearchTab(props) {
             addSearchHistory(search, isFile);
             fetchSearchResults(search)
                 .then(res => {
+                    setSelectedGenes([]);
+                    setCheckedTerms([]);
+                    sessionStorage.removeItem('mtt');
                     setResultData(res);
                     setIsLoaded(true);
-                }).catch(err => {
+                })
+                .catch(err => {
+                    console.debug(`ComboSearchTab: fetchSearchResults Error: ${err}`)
                     setError("Search failed with fatal error.");
                     setAlertType('danger');
-                setIsLoaded(true);
-                setHaveResults(false);
-            });
+                    setIsLoaded(true);
+                    setHaveResults(false);
+                });
         }
     }, [haveResults, selectedGenes, checkedTerms, useBatch, batchData, batchQueryFormat, isFile]);
 
@@ -122,6 +127,7 @@ function ComboSearchTab(props) {
     /* Callback for MeshtermTree */
     const getChecked = (checkedNodes) => {
         setCheckedTerms(checkedNodes);
+        console.info(`ComboSearchTab: getChecked: ${JSON.stringify(checkedTerms)}`);
     };
 
     /* Callback for enabling search button from Batch */
@@ -141,7 +147,7 @@ function ComboSearchTab(props) {
             if (!useBatch) {
                 return (
                     <div>
-                        <Alert variant={alertType} size="sm" show={error.length} dismissible={true}>{error}</Alert>
+                        <Alert variant={alertType} show={error.length > 0} dismissible={true}>{error}</Alert>
                         <div className="button-bar">
                             <Button onClick={toggleBatch} variant="info" size="sm">Batch Import</Button>
                             <Button

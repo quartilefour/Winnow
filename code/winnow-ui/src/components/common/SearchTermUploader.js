@@ -54,13 +54,13 @@ function SearchTermUploader(props) {
                         })}
                         <Form.Group>
                             <Form.Control
-                                as="input"
                                 type="file"
                                 name="fileUpload"
                                 onChange={e => {
-                                    console.info(`SearchTermUploader: fileUpload <: ${e.target.files[0]}`)
-                                    setUploadFile(e.target.files[0])
-                                    console.info(`SearchTermUploader: fileUpload >: ${uploadFile}`)
+                                    e.persist();
+                                    console.info(`SearchTermUploader: fileUpload <: ${JSON.stringify(e.target.files)}`);
+                                    setUploadFile(e.target.files[0]);
+                                    console.info(`SearchTermUploader: fileUpload >: ${uploadFile}`);
                                 }}
                             />
                         </Form.Group>

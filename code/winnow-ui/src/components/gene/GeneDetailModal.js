@@ -156,7 +156,7 @@ function GeneDetailModal(props) {
                 </Modal>
             );
         } else {
-            return (
+            return ( /* TODO: Display in separate modal */
                 <PageLoader/>
             )
         }

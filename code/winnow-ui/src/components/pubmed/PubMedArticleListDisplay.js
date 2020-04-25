@@ -27,6 +27,7 @@ function PubMedArticleListDisplay(props) {
      * new state var for pubmed results.
      */
     React.useEffect(() => {
+        let mounted = true;
         setListData(props.listData);
         fetchPubMedArticleList(
             {
@@ -36,15 +37,18 @@ function PubMedArticleListDisplay(props) {
                 name: props.listData.name
             })
             .then(res => {
-                setPubmedData(res);
-                setIsLoaded(true);
-                setHaveResults(true);
+                if (mounted) {
+                    setPubmedData(res);
+                    setIsLoaded(true);
+                    setHaveResults(true);
+                }
             })
             .catch(err => {
                 setError(err);
                 setAlertType('danger');
                 setIsLoaded(true);
             });
+        return () => {mounted = false};
     }, [haveResults, props, listData]);
 
     if (isLoaded) {

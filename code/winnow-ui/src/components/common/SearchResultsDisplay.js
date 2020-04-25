@@ -4,8 +4,16 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChevronLeft} from "@fortawesome/free-solid-svg-icons";
 import PubMedArticleListDisplay from "../pubmed/PubMedArticleListDisplay";
 import SaveSearchModal from "./SaveSearchModal";
+import * as C from "../../constants";
 import GeneDetailModal from "../gene/GeneDetailModal";
 import PageLoader from "./PageLoader";
+import BootstrapTable from 'react-bootstrap-table-next';
+import paginationFactory from 'react-bootstrap-table2-paginator';
+import ToolkitProvider, {CSVExport, Search} from 'react-bootstrap-table2-toolkit';
+import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
+
 
 /**
  * SearchResults displays the results of searches.
@@ -24,7 +32,6 @@ function SearchResultsDisplay(props) {
     const [activeGeneDetail, setActiveGeneDetail] = useState(null);
     const [bookmarkEnabled, setBookmarkEnabled] = useState(false);
 
-
     React.useEffect(() => {
         if (resData.results !== undefined && resData.results.length > 0) {
             setBookmarkEnabled(true);
@@ -36,6 +43,91 @@ function SearchResultsDisplay(props) {
         return () => {
         }
     }, [haveResults, props, resData, activeGeneDetail]);
+
+    /* Set up our table options and custom formatting */
+    const columns = [
+        {
+            dataField: 'index',
+            hidden: true
+        },
+        {
+            dataField: 'geneId',
+            text: 'Gene Id',
+            sort: true,
+            formatter: (cell, row) => {
+                console.info(`table2: ${row.index}`);
+                return (
+                    <Button
+                        variant="outline-info"
+                        size="sm"
+                        title={`Details for ${row.symbol}`}
+                        onClick={() => {setActiveGeneDetail(row.geneId)}}
+                    >
+                        {row.geneId}
+                    </Button>
+                )
+            }
+        },
+        {
+            dataField: 'symbol',
+            text: 'Symbol',
+            sort: true,
+            title: (cell, row) => {
+                return row.description;
+            }
+        },
+        {
+            dataField: 'name',
+            text: 'Meshterms',
+            sort: true,
+            style: {
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+            },
+            title: (cell, row) => {
+                return row.meshId;
+            }
+        },
+        {
+            dataField: 'publicationCount',
+            text: 'Publications',
+            sort: true,
+            formatter: (cell, row) => {
+                return (
+                    <Button
+                        title={`Publication list for ${row.symbol} - ${row.name}`}
+                        size="sm"
+                        variant="info"
+                        onClick={() => {
+                            executePubMedArticleListDisplay(row.index)
+                        }}
+                    >{cell}</Button>
+                )
+            }
+        },
+        {
+            dataField: 'pvalue',
+            text: 'P-value',
+            sort: true
+        }
+    ];
+    const {SearchBar} = Search;
+    const ExportCSV = (props) => {
+        const handleClick = () => {
+            props.onExport();
+        };
+        return (
+            <Button
+                variant="info"
+                size="sm"
+                onClick={handleClick}
+                disabled={!bookmarkEnabled}
+            >
+                Export
+            </Button>
+        )
+    }
 
     /* Enable display of PubMed articles associated with given result. */
     function executePubMedArticleListDisplay(index) {
@@ -52,9 +144,7 @@ function SearchResultsDisplay(props) {
             return (
                 <div>
                     <Form>
-                        <span
-                            className="exit-results"
-                        >
+                        <span className="exit-results">
                             <Button
                                 variant="outline-info"
                                 size="sm"
@@ -65,68 +155,53 @@ function SearchResultsDisplay(props) {
                             </Button>
                         </span>
                         <h3>Results</h3>
-                        <Table size="sm" striped bordered hover>
-                            <thead>
-                            <tr>
-                                <th>Gene Id</th>
-                                <th>Symbol</th>
-                                <th>Meshterm Id</th>
-                                <th>Meshterms</th>
-                                <th>Publications</th>
-                                <th>P-value</th>
-                            </tr>
-                            </thead>
-                            <tbody style={{overflow: "auto"}}>
-                            {resData.results.map((value, index) => {
-                                return (
-                                    <tr key={index}>
-                                        <td>
+                        <ToolkitProvider
+                            keyField='index'
+                            data={resData.results}
+                            columns={columns}
+                            search
+                            exportCSV={{
+                                filename: 'winnow.csv',
+                                onlyExportFiltered: true,
+                                exportAll: false
+                            }}
+                        >
+                            {
+                                props => (
+                                    <div>
+                                        <SearchBar {...props.searchProps} placeholder="Search result set..."/>
+                                        <BootstrapTable
+                                            {...props.baseProps}
+                                            pagination={
+                                                paginationFactory(C.SRD_POPTS)
+                                            }
+                                            bootstrap4
+                                            striped
+                                            condensed
+                                            hover
+                                        />
+                                        <div className="button-bar">
+                                            <ExportCSV {...props.csvProps}/>
                                             <Button
-                                                variant="outline-info"
+                                                variant="info"
                                                 size="sm"
-                                                title={`Details for ${value.symbol}`}
-                                                onClick={() => setActiveGeneDetail(index)}
+                                                disabled={!bookmarkEnabled}
+                                                onClick={() => setShowSaveSearch(true)}
                                             >
-                                                {value.geneId}
+                                                Bookmark
                                             </Button>
-                                            <GeneDetailModal
-                                                id={`gdm${index}`}
-                                                show={activeGeneDetail === index}
-                                                onHide={() => setActiveGeneDetail(null)}
-                                                geneid={value.geneId}
-                                                active={activeGeneDetail === index ? 1 : 0}
-                                            />
-                                        </td>
-                                        <td>{value.symbol}</td>
-                                        <td>{value.meshId}</td>
-                                        <td>{value.name}</td>
-                                        <td><Button
-                                            title={`Publication list for ${value.symbol} - ${value.name}`}
-                                            size="sm"
-                                            variant="info"
-                                            onClick={() => {
-                                                executePubMedArticleListDisplay(index)
-                                            }}
-                                        >{value.publicationCount}</Button></td>
-                                        <td>{value.pvalue}</td>
-                                    </tr>
-                                );
-                            })}
-                            </tbody>
-                        </Table>
-                        <div className="button-bar">
-                            <Button
-                                variant="info"
-                                size="sm"
-                                disabled={!bookmarkEnabled}
-                                onClick={() => setShowSaveSearch(true)}
-                            >Bookmark</Button>
-                            <Button
-                                variant="info"
-                                size="sm"
-                                disabled={!bookmarkEnabled}
-                            >Export</Button>
-                        </div>
+                                        </div>
+                                    </div>
+                                )
+                            }
+                        </ToolkitProvider>
+                        <GeneDetailModal
+                            id={`gdm${activeGeneDetail}`}
+                            show={activeGeneDetail !== null}
+                            onHide={() => setActiveGeneDetail(null)}
+                            geneid={activeGeneDetail}
+                            active={activeGeneDetail !== null ? 1 : 0}
+                        />
                         <SaveSearchModal
                             show={showSaveSearch}
                             onHide={() => setShowSaveSearch(false)}

@@ -133,7 +133,7 @@ th {
     position: relative;
     z-index: 1;
     border-radius: 4px;
-    height: 70vh;
+    height: 80vh;
     box-shadow: 3px 3px 5px grey;
 }
 
@@ -145,6 +145,14 @@ th {
 .super-treeview div > * {
     max-height: initial;
     overflow-y: initial;
+}
+
+.srd-tr td {
+    width: auto;
+    max-width: 400px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
 }
 
 .exit-results {
