@@ -1,5 +1,11 @@
 #!/bin/sh
-cd "code/winnow"
+
+echo " Building the offline spark app app"
+cd "code/winnow-spark"
+
+./gradlew clean build
+
+cd "../winnow"
 ./gradlew clean build
 FILE_WAR='winnow-war/build/libs/winnow-war-0.0.1-SNAPSHOT.war'
 FILE_JAR='winnow-ftp/build/libs/winnow-ftp-0.0.1-SNAPSHOT.jar'
