@@ -45,7 +45,7 @@ Gene Function Navigation Tool
     
 ## Code Organization
 * code/winnow/ - springboot backend app
-* code/ingest/ - Data ingest and compute
+* code/winnow-spark/ - Spark application to perform custom filtering and aggregations over data stored in S3
 * code/winnow-ui/ - ReactJS front end
 * deploy/local/ - Contains the files required to bring up the docker containers.
 * sql/ - Contains the SQL file with which the db container is initialized.
@@ -65,7 +65,7 @@ Java backend is developed as a multi module gradle project. The entire project c
 
 `./code/winnow/build.gradle`
 
-Different submodules in the project are as follows
+Different submodules under the winnow project are as follows
 
 * `winnow-analyser` - Springboot app that runs an in-memory analysis of preaggregated gene, mesh and gene-mesh based on the publications having genes from humans and top 30 orthologs based on number of genes from gene_orthologs dataset. This project generates the enrichment analysis based on chi-squared test.
 * `winnow-core` - Project that contains java packages for the controllers, ingesters, file downloader, entities and the views.   
