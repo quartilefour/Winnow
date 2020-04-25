@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Form, Button, Table} from "react-bootstrap";
+import {Form, Button} from "react-bootstrap";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChevronLeft} from "@fortawesome/free-solid-svg-icons";
 import PubMedArticleListDisplay from "../pubmed/PubMedArticleListDisplay";
@@ -9,7 +9,7 @@ import GeneDetailModal from "../gene/GeneDetailModal";
 import PageLoader from "./PageLoader";
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
-import ToolkitProvider, {CSVExport, Search} from 'react-bootstrap-table2-toolkit';
+import ToolkitProvider, {Search} from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
@@ -48,14 +48,15 @@ function SearchResultsDisplay(props) {
     const columns = [
         {
             dataField: 'index',
-            hidden: true
+            text: 'Index',
+            hidden: true,
+            csvExport: false
         },
         {
             dataField: 'geneId',
             text: 'Gene Id',
             sort: true,
             formatter: (cell, row) => {
-                console.info(`table2: ${row.index}`);
                 return (
                     <Button
                         variant="outline-info"
@@ -77,8 +78,13 @@ function SearchResultsDisplay(props) {
             }
         },
         {
+            dataField: 'meshId',
+            text: 'MeSH Term Id',
+            hidden: true
+        },
+        {
             dataField: 'name',
-            text: 'Meshterms',
+            text: 'MeSH Term',
             sort: true,
             style: {
                 overflow: "hidden",
@@ -161,7 +167,7 @@ function SearchResultsDisplay(props) {
                             columns={columns}
                             search
                             exportCSV={{
-                                filename: 'winnow.csv',
+                                fileName: `winnow_searchResults_${Date.now()}.csv`,
                                 onlyExportFiltered: true,
                                 exportAll: false
                             }}
@@ -173,7 +179,7 @@ function SearchResultsDisplay(props) {
                                         <BootstrapTable
                                             {...props.baseProps}
                                             pagination={
-                                                paginationFactory(C.SRD_POPTS)
+                                                paginationFactory(C.T2_POPTS)
                                             }
                                             bootstrap4
                                             striped

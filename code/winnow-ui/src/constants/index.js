@@ -29,13 +29,13 @@ export const QUERY_FORMATS = {
     MESH_TREEID: {label: 'MeSH Tree Id', value: 'meshTreeId'},
     MESH_NAME: {label: 'MeSH Term', value: 'name'}
 }
-export const SRD_POPTS = {
+export const T2_POPTS = {
     paginationSize: 3,
-    pageStartIndex: 0,
+    pageStartIndex: 1,
     // alwaysShowAllBtns: true, // Always show next and previous button
     // withFirstAndLast: false, // Hide the going to First and Last page button
-    // hideSizePerPage: true, // Hide the sizePerPage dropdown always
-    // hidePageListOnlyOnePage: true, // Hide the pagination list when only one page
+    hideSizePerPage: true, // Hide the sizePerPage dropdown always
+    hidePageListOnlyOnePage: true, // Hide the pagination list when only one page
     firstPageText: 'First',
     prePageText: 'Back',
     nextPageText: 'Next',
@@ -45,13 +45,8 @@ export const SRD_POPTS = {
     firstPageTitle: 'Next page',
     lastPageTitle: 'Last page',
     showTotal: true,
-    //paginationTotalRenderer: customTotal,
     disablePageTitle: true,
     sizePerPageList: [{
         text: '10', value: 10
-    }]//, {
-    //    text: '10', value: 10
-    //}, {
-    //    text: 'All', value: 200
-    //}]
+    }]
 }
