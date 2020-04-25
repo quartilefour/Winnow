@@ -32,8 +32,6 @@ export const QUERY_FORMATS = {
 export const T2_POPTS = {
     paginationSize: 3,
     pageStartIndex: 1,
-    // alwaysShowAllBtns: true, // Always show next and previous button
-    // withFirstAndLast: false, // Hide the going to First and Last page button
     hideSizePerPage: true, // Hide the sizePerPage dropdown always
     hidePageListOnlyOnePage: true, // Hide the pagination list when only one page
     firstPageText: 'First',

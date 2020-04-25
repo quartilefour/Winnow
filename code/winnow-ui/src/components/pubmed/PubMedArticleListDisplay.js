@@ -2,9 +2,12 @@ import React, {useState} from "react";
 import {Form, Table, Alert, Button} from "react-bootstrap";
 import {fetchPubMedArticleList} from "../../service/ApiService";
 import PageLoader from "../common/PageLoader";
-import {PUBMED_BASE_URL} from "../../constants";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {faChevronLeft} from "@fortawesome/free-solid-svg-icons";
+import {faChevronLeft, faExternalLinkAlt} from "@fortawesome/free-solid-svg-icons";
+import ToolkitProvider, {Search} from "react-bootstrap-table2-toolkit";
+import BootstrapTable from "react-bootstrap-table-next";
+import paginationFactory from "react-bootstrap-table2-paginator";
+import * as C from "../../constants";
 
 /**
  * PubMedArticleListDisplay displays a list of PubMed articles found in a previous search.
@@ -48,8 +51,130 @@ function PubMedArticleListDisplay(props) {
                 setAlertType('danger');
                 setIsLoaded(true);
             });
-        return () => {mounted = false};
+        return () => {
+            mounted = false
+        };
     }, [haveResults, props, listData]);
+
+    /* Set up our table options and custom formatting */
+    const columns = [
+        {
+            dataField: 'geneId',
+            isDummyField: true,
+            text: 'Gene Id',
+            hidden: true,
+            csvFormatter: (cell, row, rowIndex) => `${props.listData.geneId}`
+        },
+        {
+            dataField: 'meshId',
+            isDummyField: true,
+            text: 'MeSH Id',
+            hidden: true,
+            csvFormatter: (cell, row, rowIndex) => `${props.listData.meshId}`
+        },
+        {
+            dataField: 'publicationId',
+            text: 'Publication Id',
+            formatter: (cell, row) => {
+                return (
+                    <a
+                        className="pubmed-art-link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href={`${C.PUBMED_BASE_URL}/${row.publicationId}`}
+                    >
+                        {cell}
+                        <FontAwesomeIcon icon={faExternalLinkAlt} color="cornflowerblue"/>
+                    </a>
+                )
+            },
+            sort: true
+        },
+        {
+            dataField: 'pubmedUrl',
+            isDummyField: true,
+            text: 'Article URL',
+            hidden: true,
+            csvFormatter: (cell, row, rowIndex) => `${C.PUBMED_BASE_URL}/${row.publicationId}`
+        },
+        {
+            dataField: 'title',
+            text: 'Title',
+            style: {
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+            },
+            title: (cell, row) => {
+                return row.title
+            },
+            sort: true
+        },
+        {
+            dataField: 'authors',
+            text: 'Authors',
+            style: {
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+            },
+            formatter: (cell, row) => {
+                return (
+                    <span>
+                       {row.authors.map((author) => {
+                           return (
+                               author.lastName
+                           )
+                       }).join(", ")
+                       }
+                   </span>
+                )
+            },
+            title: (cell, row) => {
+                return row.authors.map((author) => {
+                    return (
+                        author.lastName
+                    )
+                }).join(", ")
+            },
+            csvFormatter: (cell, row, rowIndex) => {
+                return row.authors.map((author) => {
+                    return (
+                        author.lastName
+                    )
+                }).join(", ")
+            },
+            sort: true
+        },
+        {
+            dataField: 'completedDate',
+            text: 'Completed',
+            type: 'date',
+            sort: true
+        },
+        {
+            dataField: 'dateRevised',
+            text: 'Revised',
+            type: 'date',
+            sort: true
+        }
+    ];
+    const {SearchBar} = Search;
+    const ExportCSV = (props) => {
+        const handleClick = () => {
+            props.onExport();
+        };
+        return (
+            <Button
+                variant="info"
+                size="sm"
+                onClick={handleClick}
+                disabled={!pubmedData.results.length > 0}
+            >
+                Export
+            </Button>
+        )
+    }
 
     if (isLoaded) {
         if (error) {
@@ -77,50 +202,38 @@ function PubMedArticleListDisplay(props) {
                         </span>
                         <h3> Publications for {listData.symbol} ({listData.geneId})
                             and {listData.name} ({listData.meshId})</h3>
-                        <Table striped bordered hover>
-                            <thead>
-                            <tr>
-                                <th>Title</th>
-                                <th>Author</th>
-                                <th>Publication Date</th>
-                                <th>Publication Link</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {pubmedData.results.map((value, index) => {
-                                return (
-                                    <tr key={index}>
-                                        <td title={value.title}
-                                            style={{
-                                                border: 0,
-                                                display: "inline-block",
-                                                width: "auto",
-                                                maxWidth: "250px",
-                                                overflow: "hidden",
-                                                textOverflow: "ellipsis",
-                                                whiteSpace: "nowrap",
-                                            }}>{value.title}</td>
-                                        <td>{
-                                            value.authors.map((author) => {
-                                                return (
-                                                    author.lastName
-                                                )
-                                            }).join(", ")
-                                        }</td>
-                                        <td>{value.completedDate}</td>
-                                        <td><a
-                                            target="_blank"
-                                            rel="noopener noreferrer"
-                                            href={`${PUBMED_BASE_URL}/${value.publicationId}`}
-                                        >
-                                            PubMed Article #{value.publicationId}
-                                        </a>
-                                        </td>
-                                    </tr>
-                                );
-                            })}
-                            </tbody>
-                        </Table>
+                        <ToolkitProvider
+                            keyField='publicationId'
+                            data={pubmedData.results}
+                            columns={columns}
+                            search
+                            exportCSV={{
+                                fileName: `winnow_pubmed_${Date.now()}.csv`,
+                                onlyExportFiltered: true,
+                                exportAll: false
+                            }}
+                        >
+                            {
+                                props => (
+                                    <div>
+                                        <SearchBar {...props.searchProps} placeholder="Search article list..."/>
+                                        <BootstrapTable
+                                            {...props.baseProps}
+                                            pagination={
+                                                paginationFactory(C.T2_POPTS)
+                                            }
+                                            bootstrap4
+                                            striped
+                                            condensed
+                                            hover
+                                        />
+                                        <div className="button-bar">
+                                            <ExportCSV {...props.csvProps}/>
+                                        </div>
+                                    </div>
+                                )
+                            }
+                        </ToolkitProvider>
                     </Form>
                 </div>
             );

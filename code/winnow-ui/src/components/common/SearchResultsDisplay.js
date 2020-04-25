@@ -92,7 +92,7 @@ function SearchResultsDisplay(props) {
                 whiteSpace: "nowrap",
             },
             title: (cell, row) => {
-                return row.meshId;
+                return `${row.meshId} - ${row.name}`;
             }
         },
         {

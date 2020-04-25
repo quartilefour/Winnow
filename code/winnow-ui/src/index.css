@@ -177,6 +177,10 @@ th {
     float: right;
 }
 
+.co-gene-link .fa-external-link-alt, .pubmed-art-link .fa-external-link-alt {
+   margin-left: .5em;
+}
+
 .instruction {
     margin-left: 1em;
     font-size: small;
