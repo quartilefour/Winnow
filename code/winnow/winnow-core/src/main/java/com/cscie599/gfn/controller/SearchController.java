@@ -197,8 +197,10 @@ public class SearchController {
         } else if (!(updatedGeneIds.isEmpty()) && !(updatedMeshIds.isEmpty())) {
             geneMeshterms = geneMeshtermRepository.findByGeneIdsAndMeshIdsOrderByPValue(updatedGeneIds, updatedMeshIds);
         }
+        int i = 0;
         for (GeneMeshterm geneMeshterm : geneMeshterms) {
             geneMeshtermViews.add(new GeneMeshtermView(
+                    i++,
                     geneMeshterm.getGene().getGeneId().trim(),
                     geneMeshterm.getGene().getDescription().trim(),
                     geneMeshterm.getGene().getSymbol().trim(),
