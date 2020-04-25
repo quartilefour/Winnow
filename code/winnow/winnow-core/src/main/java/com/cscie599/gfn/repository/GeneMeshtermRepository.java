@@ -17,7 +17,7 @@ public interface GeneMeshtermRepository extends JpaRepository<GeneMeshterm, Stri
     @Query("SELECT gm FROM GeneMeshterm gm WHERE gm.geneMeshtermPK.geneId IN (:geneIds) ORDER BY gm.pValue")
     List<GeneMeshterm> findByGeneIdsOrderByPValue(List<String> geneIds);
 
-    @Query("SELECT gm FROM GeneMeshterm gm WHERE gm.geneMeshtermPK.geneId = :geneId ORDER BY gm.pValue")
+    @Query(nativeQuery = true, value = "SELECT * FROM gene_meshterm gm WHERE gm.gene_id = :geneId ORDER BY gm.p_value LIMIT 100")
     List<GeneMeshterm> findByGeneIdOrderByPValue(@Param("geneId") String geneId);
 
     @Query(nativeQuery = true, value = "SELECT * FROM gene_meshterm gm " +

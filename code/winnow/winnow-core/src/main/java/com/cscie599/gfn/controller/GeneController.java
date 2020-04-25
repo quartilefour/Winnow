@@ -6,6 +6,7 @@ import com.cscie599.gfn.entities.Gene;
 import com.cscie599.gfn.entities.GeneMeshterm;
 import com.cscie599.gfn.repository.GeneMeshtermRepository;
 import com.cscie599.gfn.repository.GeneRepository;
+import com.cscie599.gfn.views.GeneDetailCoOccuringGeneView;
 import com.cscie599.gfn.views.GeneDetailMeshtermView;
 import com.cscie599.gfn.views.GeneView;
 import io.swagger.annotations.Api;
@@ -17,6 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.*;
+import java.math.BigInteger;
 
 @RestController
 @RequestMapping("/api")
@@ -90,6 +92,20 @@ public class GeneController {
      *             "publicationCount": "publicationCount",
      *             "pvalue": "pValue"
      *         },
+     *     ],
+     *     "geneResults": [
+     *         {
+     *             "geneId": "geneId1",
+     *             "description": "geneDescription1",
+     *             "symbol": "geneSymbol1",
+     *             "publicationCount": "publicationCount"
+     *         },
+     *         {
+     *             "geneId": "geneId2",
+     *             "description": "geneDescription2",
+     *             "symbol": "geneSymbol2",
+     *             "publicationCount": "publicationCount"
+     *         },
      *     ]
      * }
      */
@@ -108,8 +124,7 @@ public class GeneController {
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
         List<GeneDetailMeshtermView> geneDetailMeshtermViews = new ArrayList<>();
-        List<GeneMeshterm> geneMeshterms = new ArrayList<>();
-        geneMeshterms = geneMeshtermRepository.findByGeneIdOrderByPValue(geneId);
+        List<GeneMeshterm> geneMeshterms = geneMeshtermRepository.findByGeneIdOrderByPValue(geneId);
         for (GeneMeshterm geneMeshterm : geneMeshterms) {
             geneDetailMeshtermViews.add(new GeneDetailMeshtermView(
                     geneMeshterm.getMeshterm().getMeshId().trim(),
@@ -117,12 +132,25 @@ public class GeneController {
                     geneMeshterm.getPublicationCount(),
                     geneMeshterm.getPValue()));
         }
-        List<Gene> coGenes = new ArrayList<>(); /* Placeholder for Gene Co-occurrence */
+        List<GeneDetailCoOccuringGeneView> geneDetailCoOccuringGeneViews = new ArrayList<>();
+        List<Object[]> genePublications = repository.findCoOccurringGeneIdsAndCountsByGeneIdOrderByCounts(geneId);
+        for (Object[] genePublication : genePublications) {
+            String coOccurringGeneId = (String) genePublication[0];
+            BigInteger count = (BigInteger) genePublication[1];
+            Gene coOccurringGene = repository.findById(coOccurringGeneId)
+                    .orElse(null);
+            assert coOccurringGene != null;
+            geneDetailCoOccuringGeneViews.add(new GeneDetailCoOccuringGeneView(
+                    coOccurringGene.getGeneId().trim(),
+                    coOccurringGene.getDescription().trim(),
+                    coOccurringGene.getSymbol().trim(),
+                    count));
+        }
         response.put("geneId", geneId);
         response.put("symbol", gene.getSymbol().trim());
         response.put("description", gene.getDescription().trim());
         response.put("meshResults", geneDetailMeshtermViews);
-        response.put("geneResults", coGenes); /* Placeholder for Gene Co-occurrence */
+        response.put("geneResults", geneDetailCoOccuringGeneViews);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 

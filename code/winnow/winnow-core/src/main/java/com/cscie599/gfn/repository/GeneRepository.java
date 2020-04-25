@@ -24,4 +24,9 @@ public interface GeneRepository extends JpaRepository<Gene, String> {
 
     @Query(nativeQuery = true, value = "SELECT gene_id FROM gene g WHERE g.gene_id IN (:geneIds) OR g.symbol IN (:symbols) OR g.description IN (:descriptions)")
     List<String> findGeneIdsByGeneIdsOrSymbolsOrDescriptions(List<String> geneIds, List<String> symbols, List<String> descriptions);
+
+    @Query(nativeQuery = true, value = "SELECT gene_id, COUNT(*) FROM gene_publication WHERE publication_id in " +
+            "(SELECT publication_id FROM gene_publication WHERE gene_id = :geneId) AND gene_id != :geneId " +
+            "GROUP BY gene_id ORDER BY COUNT DESC LIMIT 100")
+    List<Object[]> findCoOccurringGeneIdsAndCountsByGeneIdOrderByCounts(@Param("geneId") String geneId);
 }
