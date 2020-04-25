@@ -33,7 +33,7 @@ function GeneDetailModal(props) {
     React.useEffect(() => {
         let mounted = true;
         setIsActive(props.active)
-        if (isActive) {
+        if (isActive && props.geneid !== null) {
             fetchGeneDetails(props.geneid)
                 .then(res => {
                     if (mounted) {
