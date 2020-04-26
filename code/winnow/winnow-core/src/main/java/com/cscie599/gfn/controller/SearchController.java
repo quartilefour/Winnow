@@ -19,7 +19,9 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
 import java.util.*;
 
 @RestController
@@ -41,6 +43,8 @@ public class SearchController {
 
     @Autowired
     UserRepository userRepository;
+
+    private static String[] searchQueryTypes = {"geneId", "symbol", "description", "meshTreeId", "meshId", "name"};
 
     /*
      * When I click the bookmark tab,
@@ -98,7 +102,7 @@ public class SearchController {
         Search search = new Search();
         search.setCreatedBy(user);
         search.setSearchName(body.get("searchName").toString());
-        search.setSearchQuery((HashMap) body.get("searchQuery"));
+        search.setSearchQuery((HashMap<String, Object>) body.get("searchQuery"));
         search.setCreatedDate(new Date());
         search.setUpdatedAt(new Date());
         Search savedSearch = searchRepository.save(search);
@@ -178,40 +182,59 @@ public class SearchController {
         if (response.containsKey("error")) {
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
-        HashMap<String, Object> searchQuery = (HashMap) body.get("searchQuery");
-        List<String> geneIds = (ArrayList) searchQuery.get("geneId");
-        List<String> symbols = (ArrayList) searchQuery.get("symbol");
-        List<String> descriptions = (ArrayList) searchQuery.get("description");
-        List<String> meshIds = (ArrayList) searchQuery.get("meshId");
-        List<String> names = (ArrayList) searchQuery.get("name");
-        List<String> meshTreeIds = (ArrayList) searchQuery.get("meshTreeId");
-        List<String> updatedMeshTreeIds = updateMeshTreeIds(meshTreeIds);
-        List<String> updatedGeneIds = geneRepository.findGeneIdsByGeneIdsOrSymbolsOrDescriptions(geneIds, symbols, descriptions);
-        List<String> updatedMeshIds = meshtermRepository.findMeshIdsByMeshIdsOrNamesOrMeshTreeIds(meshIds, names, updatedMeshTreeIds);
-        List<GeneMeshtermView> geneMeshtermViews = new ArrayList<>();
-        List<GeneMeshterm> geneMeshterms = new ArrayList<>();
-        if (geneIds.isEmpty() && symbols.isEmpty() && descriptions.isEmpty() && !(updatedMeshIds.isEmpty())) {
-            geneMeshterms = geneMeshtermRepository.findByMeshIdsOrderByPValue(updatedMeshIds);
-        } else if (meshIds.isEmpty() && names.isEmpty() && meshTreeIds.isEmpty() && !(updatedGeneIds.isEmpty())) {
-            geneMeshterms = geneMeshtermRepository.findByGeneIdsOrderByPValue(updatedGeneIds);
-        } else if (!(updatedGeneIds.isEmpty()) && !(updatedMeshIds.isEmpty())) {
-            geneMeshterms = geneMeshtermRepository.findByGeneIdsAndMeshIdsOrderByPValue(updatedGeneIds, updatedMeshIds);
-        }
-        int i = 0;
-        for (GeneMeshterm geneMeshterm : geneMeshterms) {
-            geneMeshtermViews.add(new GeneMeshtermView(
-                    i++,
-                    geneMeshterm.getGene().getGeneId().trim(),
-                    geneMeshterm.getGene().getDescription().trim(),
-                    geneMeshterm.getGene().getSymbol().trim(),
-                    geneMeshterm.getMeshterm().getMeshId().trim(),
-                    geneMeshterm.getMeshterm().getName().trim(),
-                    geneMeshterm.getPublicationCount(),
-                    geneMeshterm.getPValue()));
-        }
-        response.put("searchQuery", searchQuery);
-        response.put("results", geneMeshtermViews);
+        HashMap<String, Object> searchQuery = (HashMap<String, Object>) body.get("searchQuery");
+        updateResponse(response, searchQuery);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /*
+     * When I upload my CSV import file of genes or MeSH terms with the search query type,
+     * POST to /search/upload
+     * Request
+     * form-data
+     * Key  | Value
+     * ---------------
+     * file | CSV file
+     * type | geneId|symbol|description|meshTreeId|meshId|name
+     */
+    @ApiOperation(value = "Search results via CSV import file upload.")
+    @PostMapping("/search/upload")
+    public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file, @RequestParam("type") String type) {
+        LinkedHashMap<String, Object> response = new LinkedHashMap<>();
+        if (!file.isEmpty()) {
+            try {
+                byte[] bytes = file.getBytes();
+                String string = new String(bytes);
+                List<String> records = new ArrayList<>(Arrays.asList(string.split("\\r?\\n")));
+                int IMPORT_MAX_NUMBER_OF_RECORDS = 1000;
+                if (records.size() > IMPORT_MAX_NUMBER_OF_RECORDS) {
+                    response.put("error", "Maximum number of records in import file exceeded " + IMPORT_MAX_NUMBER_OF_RECORDS + ".");
+                    return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+                }
+                HashMap<String, Object> searchQuery = new HashMap<>();
+                List<String> emptyList = new ArrayList<>();
+                for (String searchQueryType : searchQueryTypes) {
+                    if (searchQueryType.equals(type)) {
+                        searchQuery.put(searchQueryType, records);
+                    } else {
+                        searchQuery.put(searchQueryType, emptyList);
+                    }
+                }
+                if (!(searchQuery.containsKey(type))) {
+                    response.put("error", "Invalid search query type: " + type + ".");
+                    return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+                } else {
+                    updateResponse(response, searchQuery);
+                    return new ResponseEntity<>(response, HttpStatus.OK);
+                }
+            } catch (IOException e) {
+                response.put("error", e.getMessage());
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            }
+        } else {
+            response.put("error", "File is empty.");
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
     }
 
     /*
@@ -226,8 +249,7 @@ public class SearchController {
             response.put("error", "Invalid search query.");
             return response;
         }
-        HashMap<String, Object> searchQuery = (HashMap) body.get("searchQuery");
-        String[] searchQueryTypes = {"geneId", "symbol", "description", "meshTreeId", "meshId", "name"};
+        HashMap<String, Object> searchQuery = (HashMap<String, Object>) body.get("searchQuery");
         int count = 0;
         for (String searchQueryType : searchQueryTypes) {
             if (!(searchQuery.containsKey(searchQueryType))) {
@@ -249,6 +271,52 @@ public class SearchController {
             return response;
         }
         return response;
+    }
+
+    /*
+     * Update the response with the original search query and search results.
+     */
+    public void updateResponse(LinkedHashMap<String, Object> response, HashMap<String, Object> searchQuery) {
+        List<GeneMeshterm> geneMeshterms = getGeneMeshterms(searchQuery);
+        List<GeneMeshtermView> geneMeshtermViews = new ArrayList<>();
+        int i = 0;
+        for (GeneMeshterm geneMeshterm : geneMeshterms) {
+            geneMeshtermViews.add(new GeneMeshtermView(
+                    i++,
+                    geneMeshterm.getGene().getGeneId().trim(),
+                    geneMeshterm.getGene().getDescription().trim(),
+                    geneMeshterm.getGene().getSymbol().trim(),
+                    geneMeshterm.getMeshterm().getMeshId().trim(),
+                    geneMeshterm.getMeshterm().getName().trim(),
+                    geneMeshterm.getPublicationCount(),
+                    geneMeshterm.getPValue()));
+        }
+        response.put("searchQuery", searchQuery);
+        response.put("results", geneMeshtermViews);
+    }
+
+    /*
+     * Get the list of gene and MeSH term results based on the search query.
+     */
+    public List<GeneMeshterm> getGeneMeshterms(HashMap<String, Object> searchQuery) {
+        List<String> geneIds = (ArrayList) searchQuery.get("geneId");
+        List<String> symbols = (ArrayList) searchQuery.get("symbol");
+        List<String> descriptions = (ArrayList) searchQuery.get("description");
+        List<String> meshIds = (ArrayList) searchQuery.get("meshId");
+        List<String> names = (ArrayList) searchQuery.get("name");
+        List<String> meshTreeIds = (ArrayList) searchQuery.get("meshTreeId");
+        List<String> updatedMeshTreeIds = updateMeshTreeIds(meshTreeIds);
+        List<String> updatedGeneIds = geneRepository.findGeneIdsByGeneIdsOrSymbolsOrDescriptions(geneIds, symbols, descriptions);
+        List<String> updatedMeshIds = meshtermRepository.findMeshIdsByMeshIdsOrNamesOrMeshTreeIds(meshIds, names, updatedMeshTreeIds);
+        List<GeneMeshterm> geneMeshterms = new ArrayList<>();
+        if (geneIds.isEmpty() && symbols.isEmpty() && descriptions.isEmpty() && !(updatedMeshIds.isEmpty())) {
+            geneMeshterms = geneMeshtermRepository.findByMeshIdsOrderByPValue(updatedMeshIds);
+        } else if (meshIds.isEmpty() && names.isEmpty() && meshTreeIds.isEmpty() && !(updatedGeneIds.isEmpty())) {
+            geneMeshterms = geneMeshtermRepository.findByGeneIdsOrderByPValue(updatedGeneIds);
+        } else if (!(updatedGeneIds.isEmpty()) && !(updatedMeshIds.isEmpty())) {
+            geneMeshterms = geneMeshtermRepository.findByGeneIdsAndMeshIdsOrderByPValue(updatedGeneIds, updatedMeshIds);
+        }
+        return geneMeshterms;
     }
 
     /*

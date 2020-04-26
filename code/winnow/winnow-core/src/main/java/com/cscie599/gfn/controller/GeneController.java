@@ -161,6 +161,8 @@ public class GeneController {
         LinkedHashMap<String, Object> response = new LinkedHashMap<>();
         if (!(body.containsKey("geneId"))) {
             response.put("error", "Missing gene ID.");
+        } else if (body.get("geneId") == null) {
+            response.put("error", "Gene ID cannot be null.");
         } else if (StringUtils.isBlank(body.get("geneId").toString())) {
             response.put("error", "Gene ID cannot be blank.");
         }
