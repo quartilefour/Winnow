@@ -3,7 +3,7 @@ import {Alert, Button, Image, Modal} from "react-bootstrap";
 import PageLoader from "../common/PageLoader";
 import {fetchGeneDetails, fetchNCBIGeneDetails} from "../../service/ApiService";
 import dnaStrand from "../../img/dna-lg.png";
-import {GENEDB_BASE_URL} from "../../constants";
+import {GENEDB_BASE_URL, MESHDB_BASE_URL} from "../../constants";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faExternalLinkAlt} from "@fortawesome/free-solid-svg-icons";
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -82,6 +82,19 @@ function GeneDetailModal(props) {
                 overflow: "hidden",
                 textOverflow: "ellipsis",
                 whiteSpace: "nowrap",
+            },
+            formatter: (cell, row) => {
+                return (
+                    <a
+                        className="co-gene-link"
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        href={`${MESHDB_BASE_URL}${row.meshId}`}
+                    >
+                        {cell}
+                        <FontAwesomeIcon icon={faExternalLinkAlt} color="cornflowerblue" />
+                    </a>
+                )
             },
             title: (cell, row) => {
                 return row.meshId;

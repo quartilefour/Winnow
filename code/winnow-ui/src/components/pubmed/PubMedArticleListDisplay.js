@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Form, Table, Alert, Button} from "react-bootstrap";
+import {Form, Alert, Button} from "react-bootstrap";
 import {fetchPubMedArticleList} from "../../service/ApiService";
 import PageLoader from "../common/PageLoader";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
@@ -23,7 +23,6 @@ function PubMedArticleListDisplay(props) {
     const [pubmedData, setPubmedData] = useState('');
     const [error, setError] = useState('');
     const [alertType, setAlertType] = useState('');
-    const [haveResults, setHaveResults] = useState(false);
 
     /**
      * extract gene/mesh info from listData.
@@ -43,18 +42,18 @@ function PubMedArticleListDisplay(props) {
                 if (mounted) {
                     setPubmedData(res);
                     setIsLoaded(true);
-                    setHaveResults(true);
+                    //setHaveResults(true);
                 }
             })
             .catch(err => {
-                setError(err);
+                setError('A fatal error has occurred while fetching the Publication list.');
                 setAlertType('danger');
                 setIsLoaded(true);
             });
         return () => {
             mounted = false
         };
-    }, [haveResults, props, listData]);
+    }, [props]);
 
     /* Set up our table options and custom formatting */
     const columns = [
@@ -87,6 +86,9 @@ function PubMedArticleListDisplay(props) {
                         <FontAwesomeIcon icon={faExternalLinkAlt} color="cornflowerblue"/>
                     </a>
                 )
+            },
+            title: (cell, row) => {
+              return `View PubMed Article #${row.publicationId}`
             },
             sort: true
         },
@@ -176,19 +178,32 @@ function PubMedArticleListDisplay(props) {
         )
     }
 
+    const BackButton = () => {
+        return (
+            <span className="exit-results">
+            <Button variant="outline-info" size="sm" onClick={props.history}>
+                  <FontAwesomeIcon icon={faChevronLeft} color="cornflowerblue"/>
+                       Back
+            </Button>
+        </span>
+        )
+    }
+
     if (isLoaded) {
         if (error) {
             return (
                 <div>
                     <Alert variant={alertType}>{error}</Alert>
+                    <BackButton />
                 </div>
             )
         } else {
             return (
                 <div>
-                    <Alert variant={alertType}>{error}</Alert>
+                    <Alert variant={alertType} show={error.length > 0}>{error}</Alert>
                     <Form>
-                    <span
+                        <BackButton />
+                        {/*<span
                         className="exit-results"
                     >
                             <Button
@@ -199,7 +214,7 @@ function PubMedArticleListDisplay(props) {
                                 <FontAwesomeIcon icon={faChevronLeft} color="cornflowerblue"/>
                                 Back
                             </Button>
-                        </span>
+                        </span>*/}
                         <h3> Publications for {listData.symbol} ({listData.geneId})
                             and {listData.name} ({listData.meshId})</h3>
                         <ToolkitProvider

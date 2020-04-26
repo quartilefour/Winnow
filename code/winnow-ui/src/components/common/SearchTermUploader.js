@@ -4,39 +4,35 @@ import PageLoader from "./PageLoader";
 import {QUERY_FORMATS as QF} from "../../constants";
 
 function SearchTermUploader(props) {
-    const [isLoaded, setIsLoaded] = useState(false);
     const [batchQueryFormat, setBatchQueryFormat] = useState('');
     const [textareaData, setTextareaData] = useState(null);
     const [uploadFile, setUploadFile] = useState(null);
 
+    /**
+     * Updating parent component with data and/or searchable is creating an infinite loop.
+     */
     React.useEffect(() => {
-        if (textareaData !== null && batchQueryFormat) {
-            console.info(`SearchTermUploader: queryFormat: ${batchQueryFormat}`)
-            /* Render file upload/textarea */
-            props.searchable(batchQueryFormat);
-            props.update(batchQueryFormat, textareaData)
-            console.info(`SearchTermUploader: textarea U: ${batchQueryFormat} - ${textareaData}`)
+        if (batchQueryFormat !== '') {
+            if (uploadFile !== null && uploadFile.name.length > 0) {
+                console.info(`SearchTermUploader: uploadFile state change: ${batchQueryFormat} - ${uploadFile.name}`)
+                //let data = new FormData()
+                //data.append('file', uploadFile)
+                //data.append('queryFormat', batchQueryFormat)
+                //props.update(batchQueryFormat, data, true)
+                props.update(batchQueryFormat, uploadFile, true)
+                props.searchable(true);
+                console.info(`SearchTermUploader: file U pass: ${batchQueryFormat} - ${uploadFile.name}`)
+            } else if (textareaData !== null) {
+                props.update(batchQueryFormat, textareaData)
+                props.searchable(true);
+            }
         }
-        setIsLoaded(true);
-    }, [props, batchQueryFormat, textareaData]);
+    }, [props, batchQueryFormat, uploadFile, textareaData])
 
-    React.useEffect(() => {
-        console.info(`SearchTermUploader: file U: ${batchQueryFormat} - ${JSON.stringify(uploadFile)}`)
-        if (uploadFile !== null && uploadFile.length > 0) {
-            let data = new FormData()
-            data.append('file', uploadFile)
-            data.append('queryFormat', batchQueryFormat)
-            props.update(batchQueryFormat, data, true)
-            props.searchable(true);
-            console.info(`SearchTermUploader: file U pass: ${batchQueryFormat} - ${uploadFile}`)
-        }
-        setIsLoaded(true);
-    }, [props, batchQueryFormat, uploadFile])
-
-    if (isLoaded) {
+    if (props.active) {
             return (
                 <div>
-                    <Form>
+                    <Form id="batch-import">
                         {Object.keys(QF).map((key) => {
                             return (
                                 <Form.Check
@@ -56,11 +52,16 @@ function SearchTermUploader(props) {
                             <Form.Control
                                 type="file"
                                 name="fileUpload"
-                                onChange={e => {
-                                    e.persist();
-                                    console.info(`SearchTermUploader: fileUpload <: ${JSON.stringify(e.target.files)}`);
-                                    setUploadFile(e.target.files[0]);
-                                    console.info(`SearchTermUploader: fileUpload >: ${uploadFile}`);
+                                onChange={(e) => {
+                                    const { target } = e
+                                    if (target.value.length > 0) {
+                                        setUploadFile(target.files[0])
+                                    } else {
+                                        target.reset();
+                                    }
+                                    console.info(`SearchTermUploader: fileUpload <: ${e.currentTarget.files[0].name}`);
+                                    setUploadFile(e.currentTarget.files[0]);
+                                    //console.info(`SearchTermUploader: fileUpload >: ${uploadFile.name}`);
                                 }}
                             />
                         </Form.Group>
@@ -77,6 +78,7 @@ function SearchTermUploader(props) {
                                     console.info(`SearchTermUploader: textarea: ${JSON.stringify(value)}`)
                                     setTextareaData(value);
                                 }}
+                                disabled={uploadFile !== null}
                             />
                         </Form.Group>
                     </Form>

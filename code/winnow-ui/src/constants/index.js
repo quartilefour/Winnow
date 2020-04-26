@@ -19,6 +19,7 @@ export const SS_SH = 'searchHistory';
 export const SS_SI = 'useBatch';
 export const PUBMED_BASE_URL = 'https://pubmed.ncbi.nlm.nih.gov';
 export const GENEDB_BASE_URL = 'https://www.ncbi.nlm.nih.gov/gene';
+export const MESHDB_BASE_URL = 'https://www.ncbi.nlm.nih.gov/mesh?term=';
 export const NCBI_API_BASE = 'https://eutils.ncbi.nlm.nih.gov/entrez/eutils';
 export const NCBI_API_TOKEN = 'be6a6f419f4f31e609e53403ecb4c0c92b08';
 export const QUERY_FORMATS = {

@@ -111,7 +111,7 @@ export const prepareSearchQuery = (queryFormat, query) => {
     query = query
         .split("\n")
         .filter((term) => {
-                return term
+                return term.trim()
             }
         );
 

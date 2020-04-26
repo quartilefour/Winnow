@@ -33,16 +33,16 @@ function SearchResultsDisplay(props) {
     const [bookmarkEnabled, setBookmarkEnabled] = useState(false);
 
     React.useEffect(() => {
-        if (resData.results !== undefined && resData.results.length > 0) {
-            setBookmarkEnabled(true);
-        }
-        if (!haveResults) {
+        if (!haveResults) { /* Display search results with Links to Gene details & Pub list */
             setResData(props.resData);
+            if (props.resData.results !== undefined && props.resData.results.length > 0) {
+                setBookmarkEnabled(true);
+            }
             setIsLoaded(true);
         }
-        return () => {
-        }
-    }, [haveResults, props, resData, activeGeneDetail]);
+        //return () => {
+        //}
+    }, [haveResults, props, activeGeneDetail]);
 
     /* Set up our table options and custom formatting */
     const columns = [
@@ -146,7 +146,7 @@ function SearchResultsDisplay(props) {
     }
 
     if (isLoaded) {
-        if (!haveResults) {
+        if (!haveResults) { /* Display Gene/MeSH Combination search results */
             return (
                 <div>
                     <Form>
@@ -216,9 +216,10 @@ function SearchResultsDisplay(props) {
                     </Form>
                 </div>
             );
-        } else {
+        } else { /* Display PubMed Article List for selected Gene-MeSH combination */
             return (
-                <div><PubMedArticleListDisplay listData={resData.results[selectedIndex]} history={returnToResults}/>
+                <div>
+                    <PubMedArticleListDisplay listData={resData.results[selectedIndex]} history={returnToResults}/>
                 </div>
             )
         }

@@ -37,6 +37,7 @@ function ComboSearchTab(props) {
     const [submitText, setSubmitText] = useState('Search');
 
     React.useEffect(() => {
+        console.info(`ComboSearchTab: haveResults = ${haveResults}`)
         if (!haveResults) {
             setUseBatch(getBatch);
             setIsLoaded(true);
@@ -48,7 +49,7 @@ function ComboSearchTab(props) {
             }
         } else {
             if (resultData === '') { /* data is not loaded */
-                let search = {}
+                let search
                 if (!useBatch) { /* Dropdown & Checkboxes */
                     search = {
                         searchQuery: {
@@ -61,9 +62,14 @@ function ComboSearchTab(props) {
                         },
                     }
                 } else { /* Batch import */
+                    console.info(`ComboSearch: batchQuery mode`)
                     if (isFile) { /* File upload */
+                        console.info(`ComboSearch: batchQuery mode: have file: ${batchData.name}`)
                         setSubmitText('Upload');
-                        search = batchData;
+                        const data = new FormData()
+                        data.append('file', batchData)
+                        data.append('queryFormat', batchQueryFormat)
+                        search = data;
                     } else { /* textarea */
                         console.info(`ComboSearch: batchQuery: ${batchQueryFormat} - ${batchData}`)
                         search = prepareSearchQuery(batchQueryFormat, batchData);
@@ -88,20 +94,20 @@ function ComboSearchTab(props) {
                     });
             }
         }
-    }, [haveResults, selectedGenes, checkedTerms, useBatch, batchData, batchQueryFormat, isFile]);
+    }, [haveResults, selectedGenes, checkedTerms, useBatch, batchData, batchQueryFormat, isFile, resultData]);
 
     /* Populates predictive dropdown with partial search results from API */
     function partialSearch(pattern) {
         fetchGenes(pattern)
             .then(res => {
-                let mappedData = res.map((gene, index) => {
+                let mappedData = res.map((gene) => {
                     return {
                         value: gene.geneId,
-                        label: `(${gene.symbol}) ${gene.description}`
+                        label: `${gene.geneId} | ${gene.symbol} | ${gene.description}`
                     };
                 });
                 setGeneData(mappedData);
-            }).catch(err => {
+            }).catch(() => {
             setGeneData([]);
         });
     }
@@ -146,7 +152,7 @@ function ComboSearchTab(props) {
 
     if (isLoaded) {
         if (!haveResults) {
-            if (!useBatch) {
+            if (!useBatch) { /* Displays Gene Dropdown & Meshterm Checkboxes */
                 return (
                     <div>
                         <Alert variant={alertType} show={error.length > 0} dismissible={true}>{error}</Alert>
@@ -197,10 +203,10 @@ function ComboSearchTab(props) {
                         </Fragment>
                     </div>
                 );
-            } else {
+            } else { /* Display batch import textarea and file upload */
                 return (
                     <div>
-                        <Alert variant={alertType} size="sm">{error}</Alert>
+                        <Alert variant={alertType} show={error.length > 0} dismissible={true}>{error}</Alert>
                         <div className="button-bar">
                             <Button onClick={toggleBatch} variant="info" size="sm">Selector</Button>
                             <Button
@@ -210,7 +216,7 @@ function ComboSearchTab(props) {
                                 disabled={!activateSearch}
                             >{submitText}</Button>
                         </div>
-                        <SearchTermUploader update={batchSearch} searchable={batchSearchState}/>
+                        <SearchTermUploader active={useBatch} update={batchSearch} searchable={batchSearchState}/>
                     </div>
                 )
             }
