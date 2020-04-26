@@ -10,10 +10,11 @@ import java.util.List;
 @Repository
 public interface PublicationRepository extends JpaRepository<Publication, String> {
 
-    @Query("SELECT p FROM Publication p " +
-            "INNER JOIN GenePublication gp on p.publicationId = gp.genePublicationPK.publicationId " +
-            "INNER JOIN PublicationMeshterm pm on p.publicationId = pm.publicationMeshtermPK.publicationId " +
-            "WHERE gp.genePublicationPK.geneId = :geneId AND pm.publicationMeshtermPK.meshId = :meshId")
+    @Query(nativeQuery = true, value ="SELECT * FROM publication p " +
+            "INNER JOIN gene_publication gp ON p.publication_id = gp.publication_id " +
+            "INNER JOIN publication_meshterm pm ON p.publication_id = pm.publication_id " +
+            "WHERE gp.gene_id IN (:geneId, (SELECT other_gene_id FROM gene_gene WHERE gene_id = :geneId)) " +
+            "AND pm.mesh_id = :meshId")
     List<Publication> findByGeneIdAndMeshId(String geneId, String meshId);
 
 }
