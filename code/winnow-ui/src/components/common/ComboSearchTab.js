@@ -47,44 +47,46 @@ function ComboSearchTab(props) {
                 setActivateSearch(false);
             }
         } else {
-            /* fetchSearchResults() TODO: This is somehow being called multiple times when using MeshtermTree */
-            let search = {}
-            if (!useBatch) {
-                search = {
-                    searchQuery: {
-                        geneId: selectedGenes,
-                        symbol: [],
-                        description: [],
-                        meshId: [],
-                        meshTreeId: checkedTerms,
-                        name: []
-                    },
+            if (resultData === '') { /* data is not loaded */
+                let search = {}
+                if (!useBatch) { /* Dropdown & Checkboxes */
+                    search = {
+                        searchQuery: {
+                            geneId: selectedGenes,
+                            symbol: [],
+                            description: [],
+                            meshId: [],
+                            meshTreeId: checkedTerms,
+                            name: []
+                        },
+                    }
+                } else { /* Batch import */
+                    if (isFile) { /* File upload */
+                        setSubmitText('Upload');
+                        search = batchData;
+                    } else { /* textarea */
+                        console.info(`ComboSearch: batchQuery: ${batchQueryFormat} - ${batchData}`)
+                        search = prepareSearchQuery(batchQueryFormat, batchData);
+                    }
                 }
-            } else {
-                if (isFile) {
-                    setSubmitText('Upload');
-                    search = batchData;
-                } else {
-                    console.info(`ComboSearch: batchQuery: ${batchQueryFormat} - ${batchData}`)
-                    search = prepareSearchQuery(batchQueryFormat, batchData);
-                }
+                console.debug(`ComboSearchTab: calling fetchSearchResults`)
+                addSearchHistory(search, isFile);
+                fetchSearchResults(search)
+                    .then(res => {
+                        setResultData(res);
+                        setSelectedGenes([]);
+                        setCheckedTerms([]);
+                        sessionStorage.removeItem('mtt');
+                        setIsLoaded(true);
+                    })
+                    .catch(err => {
+                        console.debug(`ComboSearchTab: fetchSearchResults Error: ${err}`)
+                        setHaveResults(false);
+                        setError("Search failed with fatal error.");
+                        setAlertType('danger');
+                        setIsLoaded(true);
+                    });
             }
-            addSearchHistory(search, isFile);
-            fetchSearchResults(search)
-                .then(res => {
-                    setSelectedGenes([]);
-                    setCheckedTerms([]);
-                    sessionStorage.removeItem('mtt');
-                    setResultData(res);
-                    setIsLoaded(true);
-                })
-                .catch(err => {
-                    console.debug(`ComboSearchTab: fetchSearchResults Error: ${err}`)
-                    setError("Search failed with fatal error.");
-                    setAlertType('danger');
-                    setIsLoaded(true);
-                    setHaveResults(false);
-                });
         }
     }, [haveResults, selectedGenes, checkedTerms, useBatch, batchData, batchQueryFormat, isFile]);
 
