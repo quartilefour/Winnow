@@ -86,8 +86,8 @@ public class PublicationController {
             List<HashMap> authors = new ArrayList<>();
             for (PublicationAuthor publicationAuthor : publicationAuthors) {
                 HashMap<String, String> author = new HashMap<String, String>();
-                author.put("foreName", publicationAuthor.getAuthor().getForeName().trim());
-                author.put("lastName", publicationAuthor.getAuthor().getLastName().trim());
+                author.put("foreName", publicationAuthor.getAuthor().getForeName());
+                author.put("lastName", publicationAuthor.getAuthor().getLastName());
                 authors.add(author);
             }
             publicationViews.add(new PublicationView(
