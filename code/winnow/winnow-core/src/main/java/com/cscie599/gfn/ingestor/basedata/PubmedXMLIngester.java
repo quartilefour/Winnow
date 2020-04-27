@@ -314,11 +314,13 @@ public class PubmedXMLIngester extends BaseIngester {
     private void updateDates(Publication publication, PubmedArticle pubmedArticle) {
         if (pubmedArticle.getMedlineCitation().getDateCompleted() != null) {
             PubmedArticle.DateCompleted dateCompleted = pubmedArticle.getMedlineCitation().getDateCompleted();
-            publication.setCompletedDate(new Date(Integer.parseInt(dateCompleted.getYear()), Integer.parseInt(dateCompleted.getMonth()), Integer.parseInt(dateCompleted.getDay())));
+            Date date = new GregorianCalendar(Integer.parseInt(dateCompleted.getYear()), Integer.parseInt(dateCompleted.getMonth()) - 1, Integer.parseInt(dateCompleted.getDay())).getTime();
+            publication.setCompletedDate(date);
         }
         if (pubmedArticle.getMedlineCitation().getDateRevised() != null) {
             PubmedArticle.DateRevised dateRevised = pubmedArticle.getMedlineCitation().getDateRevised();
-            publication.setDateRevised(new Date(Integer.parseInt(dateRevised.getYear()), Integer.parseInt(dateRevised.getMonth()), Integer.parseInt(dateRevised.getDay())));
+            Date date = new GregorianCalendar(Integer.parseInt(dateRevised.getYear()), Integer.parseInt(dateRevised.getMonth()) - 1, Integer.parseInt(dateRevised.getDay())).getTime();
+            publication.setDateRevised(date);
         }
     }
 }
