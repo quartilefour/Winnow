@@ -6,6 +6,7 @@ import logoImg from "../../img/logo.png";
 import {useAuth} from "../../context/auth";
 import {createSearchHistory} from "../../service/SearchService";
 import {useFormik} from "formik";
+import {parseAPIError} from "../../service/ApiService";
 
 /**
  * Functional component to render Login form and handle response from API.
@@ -44,16 +45,18 @@ function Login(props) {
             userEmail: values.userEmail,
             userPassword: values.userPassword
         };
-        sendLoginCredentials(credentials).then(res => {
+        sendLoginCredentials(credentials)
+            .then(res => {
             setAuthToken(res);
             createSearchHistory();
             setLoggedIn(true);
-        }).catch(error => {
+        })
+            .catch(error => {
             setAlertType("danger");
             if (error.response.status === 403 || error.response.status === 409) {
-                setError("Invalid E-mail or password");
+                setError(`Invalid E-mail or password`);
             } else {
-                setError("Server error");
+                setError(`Server error: ${parseAPIError(error)}`);
             }
         });
     }
@@ -126,8 +129,10 @@ function Login(props) {
                     </Form>
                 </Card.Body>
                 <Card.Footer>
-                    <Alert variant={alertType}>{error}</Alert>
-                    <Link to="/register" title="Register for an account">Don't have an account?</Link>
+                    <Alert variant={alertType} show={error.length > 0}>{error}</Alert>
+                    <Link to="/register" title="Register for an account">
+                        Don't have an account?
+                    </Link>
                 </Card.Footer>
             </Card>
         </div>

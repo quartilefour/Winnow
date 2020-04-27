@@ -1,7 +1,7 @@
 import React, {Fragment, useState} from "react";
 import {Form, Button, Alert} from "react-bootstrap";
 import Select from "react-select";
-import {fetchGenes, fetchSearchResults} from "../../service/ApiService";
+import {fetchGenes, fetchSearchResults, parseAPIError} from "../../service/ApiService";
 import SearchResultsDisplay from "../common/SearchResultsDisplay";
 import SearchTermUploader from "../common/SearchTermUploader";
 import PageLoader from "../common/PageLoader";
@@ -84,10 +84,10 @@ function ComboSearchTab(props) {
                         sessionStorage.removeItem('mtt');
                         setIsLoaded(true);
                     })
-                    .catch(err => {
-                        console.debug(`ComboSearchTab: fetchSearchResults Error: ${err}`)
+                    .catch(error => {
+                        console.debug(`ComboSearchTab: fetchSearchResults Error: ${error}`)
                         setHaveResults(false);
-                        setError("Search failed with fatal error.");
+                        setError(`Search failed with fatal error.\n${parseAPIError(error)}`);
                         setAlertType('danger');
                         setIsLoaded(true);
                     });
@@ -106,9 +106,10 @@ function ComboSearchTab(props) {
                     };
                 });
                 setGeneData(mappedData);
-            }).catch(() => {
-            setGeneData([]);
-        });
+            })
+            .catch(() => {
+                setGeneData([]);
+            });
     }
 
     /* Submits search criteria to API */
@@ -148,7 +149,7 @@ function ComboSearchTab(props) {
         setBatchQueryFormat(batchFormat)
         setIsFile(haveFile)
         if (haveFile) {
-           setSubmitText('Upload')
+            setSubmitText('Upload')
         }
     }
 

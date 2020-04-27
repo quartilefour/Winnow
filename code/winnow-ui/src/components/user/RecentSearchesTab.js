@@ -5,7 +5,7 @@ import {Alert} from "react-bootstrap";
 import PageLoader from "../common/PageLoader";
 import {getSearchHistory, removeSearchHistory} from "../../service/SearchService";
 import SearchResultsDisplay from "../common/SearchResultsDisplay";
-import {fetchSearchResults} from "../../service/ApiService";
+import {fetchSearchResults, parseAPIError} from "../../service/ApiService";
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import ToolkitProvider, {Search} from 'react-bootstrap-table2-toolkit';
@@ -38,6 +38,7 @@ function RecentSearchesTab(props) {
                 setRemoveSearch(null);
             }
             setSearchHistory(getSearchHistory().map((search, index) => {
+                /* Adds unique index column for the table add-on */
                 return {
                     index: index,
                     searchQuery: search
@@ -137,9 +138,9 @@ function RecentSearchesTab(props) {
                 setHaveResults(true);
                 setIsLoaded(true);
             })
-            .catch(err => {
-                console.debug(`RecentSearchesTab: executeSearch Error: ${err}`)
-                setError("Search failed with fatal error.");
+            .catch(error => {
+                console.debug(`RecentSearchesTab: executeSearch Error: ${error}`)
+                setError(`Search failed with fatal error.\n${parseAPIError(error)}`);
                 setAlertType('danger');
                 setIsLoaded(true);
                 setHaveResults(false);

@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlay, faShareAlt, faTimes} from "@fortawesome/free-solid-svg-icons";
-import {fetchSearchResults, fetchUserBookmarks, removeUserBookmark} from "../../service/ApiService";
+import {fetchSearchResults, fetchUserBookmarks, parseAPIError, removeUserBookmark} from "../../service/ApiService";
 import {Alert} from "react-bootstrap";
 import PageLoader from "../common/PageLoader";
 import SearchResultsDisplay from "../common/SearchResultsDisplay";
@@ -40,8 +40,9 @@ function BookmarkTab(props) {
                             setDeleteBookmark(null);
                         }
                     })
-                    .catch(() => {
-                        setError(`An error occurred while trying to delete bookmark #${deleteBookmark}`)
+                    .catch((error) => {
+                        setError(`An error occurred while trying to delete bookmark #${deleteBookmark}\n/ 
+                        ${parseAPIError(error)}`)
                         setAlertType('danger')
                     });
             }
@@ -51,11 +52,12 @@ function BookmarkTab(props) {
                         setBookmarkData(res);
                         setIsLoaded(true);
                     }
-                }).catch(() => {
-                setError(`An error occurred while retrieving your bookmarks.`)
-                setAlertType('danger')
-                setIsLoaded(true);
-            });
+                })
+                .catch((error) => {
+                    setError(`An error occurred while retrieving your bookmarks.\n${parseAPIError(error)}`)
+                    setAlertType('danger')
+                    setIsLoaded(true);
+                });
         }
         return () => {
             mounted = false
@@ -167,9 +169,9 @@ function BookmarkTab(props) {
                 setHaveResults(true);
                 setIsLoaded(true);
             })
-            .catch(err => {
-                console.debug(`BookmarkTab: executeSearch Error: ${err}`)
-                setError("Search failed with fatal error.");
+            .catch(error => {
+                console.debug(`BookmarkTab: executeSearch Error: ${error}`)
+                setError(`Search failed with fatal error.\n${parseAPIError(error)}`);
                 setAlertType('danger');
                 setIsLoaded(true);
                 setHaveResults(false);

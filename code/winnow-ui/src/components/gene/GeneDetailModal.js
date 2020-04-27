@@ -1,7 +1,7 @@
 import React, {useState} from 'react';
 import {Alert, Button, Image, Modal} from "react-bootstrap";
 import PageLoader from "../common/PageLoader";
-import {fetchGeneDetails, fetchNCBIGeneDetails} from "../../service/ApiService";
+import {fetchGeneDetails, fetchNCBIGeneDetails, parseAPIError} from "../../service/ApiService";
 import dnaStrand from "../../img/dna-lg.png";
 import {GENEDB_BASE_URL, MESHDB_BASE_URL} from "../../constants";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
@@ -43,15 +43,15 @@ function GeneDetailModal(props) {
                                 setGeneDetailNCBI(ncbiRes.result[props.geneid]);
                                 setIsLoaded(true);
                             })
-                            .catch(err => {
-                                console.debug(`NCBI gene(${props.geneid}): ${err}`)
-                                setError(err)
+                            .catch(error => {
+                                console.debug(`NCBI gene(${props.geneid}): ${error}`)
+                                setError(`Error fetching gene details from NCBI.\n${parseAPIError(error)}`)
                                 setAlertType('danger')
                             })
                     }
                 })
-                .catch(err => {
-                    setError(err);
+                .catch(error => {
+                    setError(`Error fetching Gene Details.\n${parseAPIError(error)}`);
                     setAlertType('danger');
                 })
         }
@@ -217,7 +217,7 @@ function GeneDetailModal(props) {
                                 fluid
                             />
                         </Modal.Title>
-                        <Alert variant={alertType}>{error}</Alert>
+                        <Alert variant={alertType} show={error.length > 0}>{error}</Alert>
                     </Modal.Header>
                     <Modal.Body>
                         <div>
@@ -226,11 +226,13 @@ function GeneDetailModal(props) {
                             <h5 className="gene-detail-index">
                                 {geneDetail.geneId} - &nbsp;
                                 <a
+                                    className="co-gene-link"
                                     target="_blank"
                                     rel="noopener noreferrer"
                                     href={`${GENEDB_BASE_URL}/${geneDetail.geneId}`}
                                 >
                                     {geneDetailNCBI.genomicinfo[0].chraccver}
+                                    <FontAwesomeIcon icon={faExternalLinkAlt} color="cornflowerblue" />
                                 </a>
                             </h5>
                         </div>

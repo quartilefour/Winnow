@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Form, Alert, Button} from "react-bootstrap";
-import {fetchPubMedArticleList} from "../../service/ApiService";
+import {fetchPubMedArticleList, parseAPIError} from "../../service/ApiService";
 import PageLoader from "../common/PageLoader";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faChevronLeft, faExternalLinkAlt} from "@fortawesome/free-solid-svg-icons";
@@ -42,11 +42,11 @@ function PubMedArticleListDisplay(props) {
                 if (mounted) {
                     setPubmedData(res);
                     setIsLoaded(true);
-                    //setHaveResults(true);
                 }
             })
-            .catch(err => {
-                setError('A fatal error has occurred while fetching the Publication list.');
+            .catch(error => {
+                setError(`A fatal error has occurred while fetching the Publication list.\n/
+                ${parseAPIError(error)}`);
                 setAlertType('danger');
                 setIsLoaded(true);
             });
@@ -203,18 +203,6 @@ function PubMedArticleListDisplay(props) {
                     <Alert variant={alertType} show={error.length > 0}>{error}</Alert>
                     <Form>
                         <BackButton />
-                        {/*<span
-                        className="exit-results"
-                    >
-                            <Button
-                                variant="outline-info"
-                                size="sm"
-                                onClick={props.history}
-                            >
-                                <FontAwesomeIcon icon={faChevronLeft} color="cornflowerblue"/>
-                                Back
-                            </Button>
-                        </span>*/}
                         <h3> Publications for {listData.symbol} ({listData.geneId})
                             and {listData.name} ({listData.meshId})</h3>
                         <ToolkitProvider

@@ -4,6 +4,7 @@ import {Card, Form, Button, Col, Alert} from "react-bootstrap";
 import {registerSchema, sendRegistration} from "../../service/AuthService";
 import logoImg from "../../img/logo.png";
 import {useFormik} from "formik";
+import {parseAPIError} from "../../service/ApiService";
 
 /**
  * Functional component to render Registration form and handle responses from API.
@@ -28,7 +29,7 @@ function Register(props) {
         },
         validationSchema: registerSchema,
         onSubmit: values => {
-           postRegistration(values)
+            postRegistration(values)
         }
     })
 
@@ -41,12 +42,17 @@ function Register(props) {
             userPassword: values.userPassword,
             passwordConfirm: values.passwordConfirm
         };
-        sendRegistration(credentials).then(() => {
-            setIsRegistered(true);
-        })
+        sendRegistration(credentials)
+            .then(() => {
+                setIsRegistered(true);
+            })
             .catch(error => {
                 setAlertType("danger");
-                setError(error.toString());
+                if (error.response.status === 409) {
+                    setError(`${error.response.data}`);
+                } else {
+                    setError(`Server error: ${parseAPIError(error)}`);
+                }
             });
     }
 
@@ -159,8 +165,10 @@ function Register(props) {
                     </Form>
                 </Card.Body>
                 <Card.Footer>
-                    <Alert variant={alertType}>{error}</Alert>
-                    <Link to="/login" title="Log in with an existing account">Already have an account?</Link>
+                    <Alert variant={alertType} show={error.length > 0}>{error}</Alert>
+                    <Link to="/login" title="Log in with an existing account">
+                        Already have an account?
+                    </Link>
                 </Card.Footer>
             </Card>
         )

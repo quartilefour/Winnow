@@ -4,6 +4,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faUser} from "@fortawesome/free-solid-svg-icons";
 import {fetchProfileData, sendChangePassword, sendProfileUpdate} from "../../service/AuthService";
 import PageLoader from "../common/PageLoader";
+import {parseAPIError} from "../../service/ApiService";
 
 /**
  * Functional component to render User Profile form.
@@ -35,10 +36,11 @@ function Profile() {
                 setLastName(res.lastName);
                 setUserEmail(res.userEmail);
                 setIsLoaded(true);
-            }).catch(err => {
-            setError(err);
-            setIsLoaded(true);
-        });
+            })
+            .catch(error => {
+                setError(`Error retrieving profile.\n${parseAPIError(error)}`);
+                setIsLoaded(true);
+            });
     }, [error, alertType]);
 
     /* Updates user name and/or email */
@@ -49,13 +51,13 @@ function Profile() {
             userEmail: userEmail
         };
         sendProfileUpdate(userInfo)
-            .then(res => {
+            .then(() => {
                 setAlertType("success");
                 setError("Profile successfully updated.")
             })
-            .catch(err => {
+            .catch(error => {
                 setAlertType("danger");
-                setError(err);
+                setError(`Profile update error.\n${parseAPIError(error)}`);
             });
     }
 
@@ -66,13 +68,13 @@ function Profile() {
             passwordConfirm: newPasswordConfirm
         };
         sendChangePassword(credentials)
-            .then(res => {
+            .then(() => {
                 setAlertType("success");
                 setError("Password successfully changed.")
             })
-            .catch(err => {
+            .catch(error => {
                 setAlertType("danger");
-                setError(err)
+                setError(`Password change error.\n${parseAPIError(error)}`)
             });
     }
 
@@ -228,7 +230,7 @@ function Profile() {
                         </Form>
                     </Card.Body>
                     <Card.Footer>
-                        <Alert variant={alertType}>{error}</Alert>
+                        <Alert variant={alertType} show={error.length > 0}>{error}</Alert>
                     </Card.Footer>
                 </Tab.Container>
             </Card>

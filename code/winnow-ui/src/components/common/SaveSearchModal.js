@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {Modal, Form, Button, Alert} from "react-bootstrap";
-import {saveUserBookmark} from "../../service/ApiService";
+import {parseAPIError, saveUserBookmark} from "../../service/ApiService";
 
 /**
  * Functional component to save a User's current search as a bookmark.
@@ -30,8 +30,8 @@ function SaveSearchModal(props) {
                     setSaveBookmark(false);
                     props.onHide()
                 })
-                .catch(err => {
-                    setError(err);
+                .catch(error => {
+                    setError(`Could not save bookmark.\n${parseAPIError(error)}`);
                     setAlertType('danger')
                 })
         }
@@ -46,7 +46,7 @@ function SaveSearchModal(props) {
         >
             <Modal.Header closeButton>
                 <Modal.Title>Save Search</Modal.Title>
-                <Alert variant={alertType} size="sm">{error}</Alert>
+                <Alert variant={alertType} show={error.length > 0}>{error}</Alert>
             </Modal.Header>
             <Modal.Body>
                 <div>{props.searchdata.results.length} record(s)</div>
