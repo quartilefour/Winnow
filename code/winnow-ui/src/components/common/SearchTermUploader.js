@@ -8,9 +8,6 @@ function SearchTermUploader(props) {
     const [textareaData, setTextareaData] = useState(null);
     const [uploadFile, setUploadFile] = useState(null);
 
-    /**
-     * Updating parent component with data and/or searchable is creating an infinite loop.
-     */
     React.useEffect(() => {
         if (batchQueryFormat !== '') {
             if (uploadFile !== null && uploadFile.name.length > 0) {
