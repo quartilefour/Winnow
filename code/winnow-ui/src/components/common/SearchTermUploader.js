@@ -8,26 +8,40 @@ function SearchTermUploader(props) {
     const [textareaData, setTextareaData] = useState(null);
     const [uploadFile, setUploadFile] = useState(null);
 
-    /**
-     * Updating parent component with data and/or searchable is creating an infinite loop.
-     */
     React.useEffect(() => {
         if (batchQueryFormat !== '') {
             if (uploadFile !== null && uploadFile.name.length > 0) {
                 console.info(`SearchTermUploader: uploadFile state change: ${batchQueryFormat} - ${uploadFile.name}`)
-                //let data = new FormData()
-                //data.append('file', uploadFile)
-                //data.append('queryFormat', batchQueryFormat)
-                //props.update(batchQueryFormat, data, true)
-                props.update(batchQueryFormat, uploadFile, true)
                 props.searchable(true);
                 console.info(`SearchTermUploader: file U pass: ${batchQueryFormat} - ${uploadFile.name}`)
             } else if (textareaData !== null) {
-                props.update(batchQueryFormat, textareaData)
                 props.searchable(true);
             }
         }
-    }, [props, batchQueryFormat, uploadFile, textareaData])
+    })
+
+    function handleChange(e) {
+        console.info(`SearchTermUploader: handleChange(): ${e.name}`)
+        switch(e.name) {
+            case 'fileUpload':
+                setUploadFile(e.files[0])
+                props.update(batchQueryFormat, e.files[0], true)
+                break;
+            case 'textArea':
+                setTextareaData(e.value)
+                props.update(batchQueryFormat, e.value)
+                break;
+            case 'queryFormat':
+                setBatchQueryFormat(e.value)
+                if (uploadFile !== null && uploadFile.name.length > 0) {
+                    props.update(e.value, uploadFile, true)
+                } else if (textareaData !== null) {
+                    props.update(e.value, textareaData)
+                }
+                break
+            default:
+        }
+    }
 
     if (props.active) {
             return (
@@ -43,7 +57,7 @@ function SearchTermUploader(props) {
                                     name="queryFormat"
                                     value={QF[key].value}
                                     onChange={(e) => {
-                                        setBatchQueryFormat(e.currentTarget.value)
+                                        handleChange(e.currentTarget)
                                     }}
                                 />
                             );
@@ -53,15 +67,7 @@ function SearchTermUploader(props) {
                                 type="file"
                                 name="fileUpload"
                                 onChange={(e) => {
-                                    const { target } = e
-                                    if (target.value.length > 0) {
-                                        setUploadFile(target.files[0])
-                                    } else {
-                                        target.reset();
-                                    }
-                                    console.info(`SearchTermUploader: fileUpload <: ${e.currentTarget.files[0].name}`);
-                                    setUploadFile(e.currentTarget.files[0]);
-                                    //console.info(`SearchTermUploader: fileUpload >: ${uploadFile.name}`);
+                                    handleChange(e.currentTarget)
                                 }}
                             />
                         </Form.Group>
@@ -72,12 +78,12 @@ function SearchTermUploader(props) {
                             </Form.Label>
                             <Form.Control
                                 as={"textarea"}
+                                name="textArea"
                                 rows={"10"}
                                 onChange={(e) => {
-                                    let value = e.target.value;
-                                    console.info(`SearchTermUploader: textarea: ${JSON.stringify(value)}`)
-                                    setTextareaData(value);
+                                    handleChange(e.currentTarget)
                                 }}
+                                placeholder={`Cystic Fibrosis\nMultiple Endocrine Neoplasia Type 2a`}
                                 disabled={uploadFile !== null}
                             />
                         </Form.Group>

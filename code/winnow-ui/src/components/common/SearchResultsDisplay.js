@@ -40,8 +40,6 @@ function SearchResultsDisplay(props) {
             }
             setIsLoaded(true);
         }
-        //return () => {
-        //}
     }, [haveResults, props, activeGeneDetail]);
 
     /* Set up our table options and custom formatting */

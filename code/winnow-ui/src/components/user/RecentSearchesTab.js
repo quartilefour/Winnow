@@ -1,11 +1,18 @@
-import React, {Fragment, useState} from "react";
+import React, {useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faPlay, faTimes} from "@fortawesome/free-solid-svg-icons";
-import {Alert, Form, Table} from "react-bootstrap";
+import {faPlay, faShareAlt, faTimes} from "@fortawesome/free-solid-svg-icons";
+import {Alert} from "react-bootstrap";
 import PageLoader from "../common/PageLoader";
 import {getSearchHistory, removeSearchHistory} from "../../service/SearchService";
 import SearchResultsDisplay from "../common/SearchResultsDisplay";
 import {fetchSearchResults} from "../../service/ApiService";
+import BootstrapTable from 'react-bootstrap-table-next';
+import paginationFactory from 'react-bootstrap-table2-paginator';
+import ToolkitProvider, {Search} from 'react-bootstrap-table2-toolkit';
+import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
+import * as C from "../../constants";
 
 /**
  * RecentSearchesTab builds the content for user's saved search lists.
@@ -30,7 +37,12 @@ function RecentSearchesTab(props) {
                 removeSearchHistory(removeSearch);
                 setRemoveSearch(null);
             }
-            setSearchHistory(getSearchHistory());
+            setSearchHistory(getSearchHistory().map((search, index) => {
+                return {
+                    index: index,
+                    searchQuery: search
+                }
+            }));
             setIsLoaded(true);
         }
     }, [removeSearch, setSearchHistory, haveResults]);
@@ -39,6 +51,82 @@ function RecentSearchesTab(props) {
     function returnToSelection() {
         setHaveResults(false);
     }
+
+    /* Set up our table options and custom formatting */
+    const columns = [
+        {
+            dataField: 'index',
+            text: '#',
+            style: {
+                width: '20px'
+            },
+            formatter: (cell, row) => {
+                return row.index + 1;
+            },
+            headerStyle: () => {
+                return { width: "10%" };
+            },
+            sort: true
+        },
+        {
+            dataField: 'searchQuery',
+            text: 'Terms',
+            style: {
+                width: "auto",
+                maxWidth: "400px",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+            },
+            formatter: (cell, row) => {
+                return JSON.stringify(row.searchQuery)
+            },
+            title: (cell, row) => {
+                return JSON.stringify(row.searchQuery)
+            }
+        },
+        {
+            dataField: 'action',
+            isDummyField: true,
+            text: 'Action',
+            align: 'center',
+            headerAlign: 'center',
+            headerStyle: () => {
+                return { width: "20%" };
+            },
+            formatter: (cell, row) => {
+                return (
+                    <span>
+                    <FontAwesomeIcon
+                        className="searchActions"
+                        icon={faPlay}
+                        color="darkgreen"
+                        title="Execute Search"
+                        onClick={() => {
+                            executeSearch(row.searchQuery)
+                        }}
+                    />
+                <FontAwesomeIcon
+                    className="searchActions"
+                    icon={faShareAlt}
+                    color="cornflowerblue"
+                    title="Share Search"
+                />
+                <FontAwesomeIcon
+                    className="searchActions"
+                    icon={faTimes}
+                    color="maroon"
+                    title="Delete Search"
+                    onClick={() => {
+                        setRemoveSearch(row.index)
+                    }}
+                />
+                </span>
+                )
+            }
+        }
+    ]
+    const {SearchBar} = Search;
 
     /* Submits search criteria to API */
     function executeSearch(searchQuery) {
@@ -62,60 +150,33 @@ function RecentSearchesTab(props) {
     if (isLoaded) {
         if (!haveResults) {
             return (
-                <div id="recent-search-div">
-                    <Fragment>
-                        <Form>
-                            <Table size="sm" striped bordered hover>
-                                <thead>
-                                <tr>
-                                    <th>#</th>
-                                    <th>Terms</th>
-                                    <th>Actions</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {searchHistory.map((search, index) => {
-                                    return (
-                                        <tr key={index}>
-                                            <td>{index + 1}</td>
-                                            <td
-                                                style={{
-                                                    width: "auto",
-                                                    maxWidth: "550px",
-                                                    overflow: "hidden",
-                                                    textOverflow: "ellipsis",
-                                                    whiteSpace: "nowrap",
-                                                }}
-                                            >
-                                                {JSON.stringify(search.searchQuery)}
-                                            </td>
-                                            <td>
-                                                <FontAwesomeIcon
-                                                    className="searchActions"
-                                                    icon={faPlay}
-                                                    color="darkgreen"
-                                                    title="Execute Search"
-                                                    onClick={(e) => {
-                                                        executeSearch(search)
-                                                    }}
-                                                />
-                                                <FontAwesomeIcon
-                                                    className="searchActions"
-                                                    icon={faTimes}
-                                                    color="maroon"
-                                                    title="Delete Search"
-                                                    onClick={(e) => {
-                                                        setRemoveSearch(index)
-                                                    }}
-                                                />
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                                </tbody>
-                            </Table>
-                        </Form>
-                    </Fragment>
+                <div>
+                    <ToolkitProvider
+                        keyField='searchId'
+                        data={searchHistory}
+                        columns={columns}
+                        search={{
+                            searchFormatted: true
+                        }}
+                    >
+                        {
+                            props => (
+                                <div>
+                                    <SearchBar {...props.searchProps} placeholder="Search recent..."/>
+                                    <BootstrapTable
+                                        {...props.baseProps}
+                                        pagination={
+                                            paginationFactory(C.T2_POPTS)
+                                        }
+                                        bootstrap4
+                                        striped
+                                        condensed
+                                        hover
+                                    />
+                                </div>
+                            )
+                        }
+                    </ToolkitProvider>
                 </div>
             );
         } else {

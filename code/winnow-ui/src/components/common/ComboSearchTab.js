@@ -44,8 +44,7 @@ function ComboSearchTab(props) {
             setIsMenuLoaded(true);
             if (!useBatch && (selectedGenes.length > 0 || checkedTerms.length > 0)) {
                 setActivateSearch(true);
-            } else {
-                setActivateSearch(false);
+                console.info(`ComboSearchTab: !haveResults: activeSearch: ${true}`)
             }
         } else {
             if (resultData === '') { /* data is not loaded */
@@ -64,11 +63,11 @@ function ComboSearchTab(props) {
                 } else { /* Batch import */
                     console.info(`ComboSearch: batchQuery mode`)
                     if (isFile) { /* File upload */
-                        console.info(`ComboSearch: batchQuery mode: have file: ${batchData.name}`)
+                        console.info(`ComboSearch: batchQuery mode: have file: ${batchQueryFormat} - ${batchData.name}`)
                         setSubmitText('Upload');
                         const data = new FormData()
                         data.append('file', batchData)
-                        data.append('queryFormat', batchQueryFormat)
+                        data.append('type', batchQueryFormat)
                         search = data;
                     } else { /* textarea */
                         console.info(`ComboSearch: batchQuery: ${batchQueryFormat} - ${batchData}`)
@@ -77,7 +76,7 @@ function ComboSearchTab(props) {
                 }
                 console.debug(`ComboSearchTab: calling fetchSearchResults`)
                 addSearchHistory(search, isFile);
-                fetchSearchResults(search)
+                fetchSearchResults(search, isFile)
                     .then(res => {
                         setResultData(res);
                         setSelectedGenes([]);
@@ -148,6 +147,9 @@ function ComboSearchTab(props) {
         setBatchData(batchData)
         setBatchQueryFormat(batchFormat)
         setIsFile(haveFile)
+        if (haveFile) {
+           setSubmitText('Upload')
+        }
     }
 
     if (isLoaded) {

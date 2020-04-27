@@ -1,10 +1,17 @@
-import React, {Fragment, useState} from "react";
+import React, {useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlay, faShareAlt, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {fetchSearchResults, fetchUserBookmarks, removeUserBookmark} from "../../service/ApiService";
-import {Alert, Form, Table} from "react-bootstrap";
+import {Alert} from "react-bootstrap";
 import PageLoader from "../common/PageLoader";
 import SearchResultsDisplay from "../common/SearchResultsDisplay";
+import BootstrapTable from 'react-bootstrap-table-next';
+import paginationFactory from 'react-bootstrap-table2-paginator';
+import ToolkitProvider, {Search} from 'react-bootstrap-table2-toolkit';
+import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
+import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
+import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
+import * as C from "../../constants";
 
 /**
  * BookmarkTab builds the content for user's saved search lists.
@@ -33,8 +40,9 @@ function BookmarkTab(props) {
                             setDeleteBookmark(null);
                         }
                     })
-                    .catch(err => {
-                        /* TODO: Should display/flash error message */
+                    .catch(() => {
+                        setError(`An error occurred while trying to delete bookmark #${deleteBookmark}`)
+                        setAlertType('danger')
                     });
             }
             fetchUserBookmarks()
@@ -43,7 +51,9 @@ function BookmarkTab(props) {
                         setBookmarkData(res);
                         setIsLoaded(true);
                     }
-                }).catch(err => {
+                }).catch(() => {
+                setError(`An error occurred while retrieving your bookmarks.`)
+                setAlertType('danger')
                 setIsLoaded(true);
             });
         }
@@ -51,6 +61,97 @@ function BookmarkTab(props) {
             mounted = false
         };
     }, [deleteBookmark, haveResults]);
+
+    /* Set up our table options and custom formatting */
+    const columns = [
+        {
+            dataField: 'searchId',
+            hidden: true
+        },
+        {
+            dataField: 'searchName',
+            text: 'Label',
+            title: (cell, row) => {
+                return row.searchId
+            },
+            sort: true
+        },
+        {
+            dataField: 'searchQuery',
+            text: 'Terms',
+            style: {
+                width: "auto",
+                maxWidth: "400px",
+                overflow: "hidden",
+                textOverflow: "ellipsis",
+                whiteSpace: "nowrap",
+            },
+            formatter: (cell, row) => {
+                return JSON.stringify(row.searchQuery)
+            },
+            title: (cell, row) => {
+                return JSON.stringify(row.searchQuery)
+            }
+        },
+        {
+            dataField: 'createdDate',
+            text: 'Created',
+            sort: true,
+            type: 'date',
+            formatter: (cell, row) => {
+                return new Intl.DateTimeFormat("en-US", {
+                    year: "numeric",
+                    month: "long",
+                    day: "numeric",
+                    hour12: false,
+                    hour: "numeric",
+                    minute: "numeric",
+                    second: "numeric",
+                    timeZoneName: "short"
+                }).format(new Date(Date.parse(row.createdDate)))
+
+            }
+        },
+        {
+            dataField: 'action',
+            isDummyField: true,
+            text: 'Action',
+            align: 'center',
+            headerAlign: 'center',
+            formatter: (cell, row) => {
+                return (
+                    <span>
+                    <FontAwesomeIcon
+                        className="searchActions"
+                        icon={faPlay}
+                        color="darkgreen"
+                        title="Execute Search"
+                        onClick={() => {
+                            executeSearch(row)
+                        }}
+                    />
+                <FontAwesomeIcon
+                    className="searchActions"
+                    icon={faShareAlt}
+                    color="cornflowerblue"
+                    title="Share Search"
+                />
+                <FontAwesomeIcon
+                    className="searchActions"
+                    icon={faTimes}
+                    color="maroon"
+                    title="Delete Search"
+                    onClick={() => {
+                        setDeleteBookmark(row.searchId)
+                    }}
+                />
+                </span>
+                )
+            }
+        }
+    ]
+
+    const {SearchBar} = Search;
 
     /* Returns to selection from results display */
     function returnToSelection() {
@@ -83,77 +184,32 @@ function BookmarkTab(props) {
                     <Alert variant={alertType} show={error.length > 0}>
                         {error}
                     </Alert>
-                    <Fragment>
-                        <Form>
-                            <Table size="sm" striped bordered hover>
-                                <thead>
-                                <tr>
-                                    <th>Label</th>
-                                    <th>Terms</th>
-                                    <th>Created</th>
-                                    <th>Actions</th>
-                                </tr>
-                                </thead>
-                                <tbody>
-                                {bookmarkData.map((bookmark) => {
-                                    return (
-                                        <tr key={bookmark.searchId}>
-                                            <td>{bookmark.searchName}</td>
-                                            <td
-                                                style={{
-                                                    width: "auto",
-                                                    maxWidth: "400px",
-                                                    overflow: "hidden",
-                                                    textOverflow: "ellipsis",
-                                                    whiteSpace: "nowrap",
-                                                }}
-                                                title={JSON.stringify(bookmark.searchQuery)}
-                                            >
-                                                {JSON.stringify(bookmark.searchQuery)}
-                                            </td>
-                                            <td>{new Intl.DateTimeFormat("en-US", {
-                                                year: "numeric",
-                                                month: "long",
-                                                day: "numeric",
-                                                hour12: false,
-                                                hour: "numeric",
-                                                minute: "numeric",
-                                                second: "numeric",
-                                                timeZoneName: "short"
-                                            }).format(new Date(Date.parse(bookmark.createdDate)))}</td>
-                                            <td>
-                                                <FontAwesomeIcon
-                                                    className="searchActions"
-                                                    icon={faPlay}
-                                                    color="darkgreen"
-                                                    title="Execute Search"
-                                                    onClick={(e) => {
-                                                        executeSearch(bookmark)
-                                                    }}
-                                                />
-                                                <FontAwesomeIcon
-                                                    className="searchActions"
-                                                    icon={faShareAlt}
-                                                    color="cornflowerblue"
-                                                    title="Share Search"
-                                                />
-                                                <FontAwesomeIcon
-                                                    className="searchActions"
-                                                    icon={faTimes}
-                                                    color="maroon"
-                                                    title="Delete Search"
-                                                    onClick={(e) => {
-                                                        setDeleteBookmark(bookmark.searchId)
-                                                    }}
-                                                />
-                                            </td>
-                                        </tr>
-                                    );
-                                })}
-                                </tbody>
-                            </Table>
-                        </Form>
-                    </Fragment>
+                    <ToolkitProvider
+                        keyField='searchId'
+                        data={bookmarkData}
+                        columns={columns}
+                        search={{
+                            searchFormatted: true
+                        }}
+                    >
+                        {
+                            props => (
+                                <div>
+                                    <SearchBar {...props.searchProps} placeholder="Search bookmarks..."/>
+                                    <BootstrapTable
+                                        {...props.baseProps}
+                                        pagination={
+                                            paginationFactory(C.T2_POPTS)
+                                        }
+                                        bootstrap4
+                                        striped
+                                        condensed
+                                        hover
+                                    />
+                                </div>
+                            )
+                        }
+                    </ToolkitProvider>
                 </div>
             );
         } else {

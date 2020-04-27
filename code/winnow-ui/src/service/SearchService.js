@@ -45,15 +45,18 @@ export const getLastSearch = () => {
  * Adds search to the end of the session search history.
  *
  * @param search - JSON search object.
+ * @param isFile - boolean (do not add to search history if input is file)
  */
-export const addSearchHistory = (search) => {
-    let searchHistory = getSearchHistory();
-    searchHistory.push(search);
-    sessionStorage.setItem(
-        SS_SH,
-        Buffer.from(
-            JSON.stringify(searchHistory)
-        ).toString("base64"));
+export const addSearchHistory = (search, isFile) => {
+    if (!isFile) {
+        let searchHistory = getSearchHistory();
+        searchHistory.push(search);
+        sessionStorage.setItem(
+            SS_SH,
+            Buffer.from(
+                JSON.stringify(searchHistory)
+            ).toString("base64"));
+    }
 }
 
 /**
