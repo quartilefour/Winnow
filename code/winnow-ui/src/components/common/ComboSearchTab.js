@@ -127,8 +127,10 @@ function ComboSearchTab(props) {
     /* Returns to selection from results display */
     function returnToSelection() {
         let lastSearch = getLastSearch();
-        setSelectedGenes(lastSearch.searchQuery.geneId)
-        setCheckedTerms(lastSearch.searchQuery.meshTreeId)
+        if (lastSearch !== undefined && lastSearch !== null) {
+            setSelectedGenes(lastSearch.searchQuery.geneId)
+            setCheckedTerms(lastSearch.searchQuery.meshTreeId)
+        }
         setHaveResults(false);
     }
 

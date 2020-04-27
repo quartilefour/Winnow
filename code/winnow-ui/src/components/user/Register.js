@@ -16,7 +16,7 @@ import {parseAPIError} from "../../service/ApiService";
 function Register(props) {
 
     const [isRegistered, setIsRegistered] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState('');
     const [alertType, setAlertType] = useState('');
 
     const registrationForm = useFormik({

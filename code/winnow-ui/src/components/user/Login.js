@@ -17,7 +17,7 @@ import {parseAPIError} from "../../service/ApiService";
  */
 function Login(props) {
     const [isLoggedIn, setLoggedIn] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState('');
     const [alertType, setAlertType] = useState('');
     const {authToken, setAuthToken} = useAuth();
     const referer = (props.location.state !== undefined) ? props.location.state.referer : '/';
