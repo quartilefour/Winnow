@@ -14,7 +14,7 @@ body {
 
 #winnow-nav {
     box-shadow: 0 3px 5px dimgray;
-    background-color: navajowhite;
+    background-color: antiquewhite;
 }
 
 code {
@@ -197,7 +197,7 @@ th {
 }
 
 .modal-header {
-    background-color: navajowhite;
+    background-color: antiquewhite;
     box-shadow: 0 2px 5px grey;
     padding: .1rem;
 }

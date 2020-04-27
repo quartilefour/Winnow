@@ -164,11 +164,12 @@ export const getAuthHeader = () => {
 export const loginSchema = Yup.object().shape({
     userEmail: Yup.string()
         .trim()
-        .email('Invalid email')
-        .required('Required'),
+        .email(`Invalid email\n`)
+        .required(`E-mail address required\n`),
     userPassword: Yup.string()
-        .min(C.PASS_MIN_LEN, `Password must be at least ${C.PASS_MIN_LEN} characters`)
-        .max(C.PASS_MAX_LEN, `Password cannot be more than ${C.PASS_MAX_LEN} characters`)
+        .min(C.PASS_MIN_LEN, `Password must be at least ${C.PASS_MIN_LEN} characters\n`)
+        .max(C.PASS_MAX_LEN, `Password cannot be more than ${C.PASS_MAX_LEN} characters\n`)
+        .required(`Password required\n`),
 })
 
 /**
@@ -177,27 +178,64 @@ export const loginSchema = Yup.object().shape({
 export const registerSchema = Yup.object().shape({
     firstName: Yup.string()
         .trim()
-        .max(C.PASS_MAX_LEN, `Password cannot be more than ${C.PASS_MAX_LEN} characters`)
-        .min(C.USER_MIN_LEN, `Must be ${C.USER_MIN_LEN}-${C.USER_MAX_LEN} characters`)
-        .max(C.USER_MAX_LEN, `Must be ${C.USER_MIN_LEN}-${C.USER_MAX_LEN} characters`)
-        .required('Required'),
+        .min(C.USER_MIN_LEN, `Must be ${C.USER_MIN_LEN}-${C.USER_MAX_LEN} characters\n`)
+        .max(C.USER_MAX_LEN, `Must be ${C.USER_MIN_LEN}-${C.USER_MAX_LEN} characters\n`)
+        .required(`First name required\n`),
     lastName: Yup.string()
         .trim()
-        .min(C.USER_MIN_LEN, `Must be ${C.USER_MIN_LEN}-${C.USER_MAX_LEN} characters`)
-        .max(C.USER_MAX_LEN, `Must be ${C.USER_MIN_LEN}-${C.USER_MAX_LEN} characters`)
-        .required('Required'),
+        .min(C.USER_MIN_LEN, `Must be ${C.USER_MIN_LEN}-${C.USER_MAX_LEN} characters\n`)
+        .max(C.USER_MAX_LEN, `Must be ${C.USER_MIN_LEN}-${C.USER_MAX_LEN} characters\n`)
+        .required(`Last name required\n`),
     userEmail: Yup.string()
         .trim()
-        .email('Invalid email')
-        .required('Required'),
+        .email(`Invalid email\n`)
+        .required(`E-mail address required\n`),
     userPassword: Yup.string()
-        .min(C.PASS_MIN_LEN, `Password must be at least ${C.PASS_MIN_LEN} characters`)
-        .max(C.PASS_MAX_LEN, `Password cannot be more than ${C.PASS_MAX_LEN} characters`)
-        .required('Required'),
+        .min(C.PASS_MIN_LEN, `Password must be at least ${C.PASS_MIN_LEN} characters\n`)
+        .max(C.PASS_MAX_LEN, `Password cannot be more than ${C.PASS_MAX_LEN} characters\n`)
+        .required(`Password required\n`),
     passwordConfirm: Yup.string()
-        .required('Required')
+        .required(`Password confirmation required\n`)
         .oneOf(
             [Yup.ref('userPassword'), null],
-            'Passwords must match',
+            `Passwords must match\n`,
+        ),
+})
+
+/**
+ * Profile update form validation schema
+ */
+export const profileSchema = Yup.object().shape({
+    firstName: Yup.string()
+        .trim()
+        .min(C.USER_MIN_LEN, `Must be ${C.USER_MIN_LEN}-${C.USER_MAX_LEN} characters\n`)
+        .max(C.USER_MAX_LEN, `Must be ${C.USER_MIN_LEN}-${C.USER_MAX_LEN} characters\n`)
+        .required(`First name required\n`),
+    lastName: Yup.string()
+        .trim()
+        .min(C.USER_MIN_LEN, `Must be ${C.USER_MIN_LEN}-${C.USER_MAX_LEN} characters\n`)
+        .max(C.USER_MAX_LEN, `Must be ${C.USER_MIN_LEN}-${C.USER_MAX_LEN} characters\n`)
+        .required(`Last name required\n`),
+    userEmail: Yup.string()
+        .trim()
+        .email(`Invalid email\n`)
+        .required(`E-mail address required\n`),
+})
+
+/**
+ * Password change form validation schema
+ */
+export const passwordSchema = Yup.object().shape({
+    userPassword: Yup.string()
+        .required(`Current password required\n`),
+    userPasswordNew: Yup.string()
+        .min(C.PASS_MIN_LEN, `Password must be at least ${C.PASS_MIN_LEN} characters\n`)
+        .max(C.PASS_MAX_LEN, `Password cannot be more than ${C.PASS_MAX_LEN} characters\n`)
+        .required(`New password required\n`),
+    passwordConfirm: Yup.string()
+        .required(`Password confirmation required\n`)
+        .oneOf(
+            [Yup.ref('userPasswordNew'), null],
+            `Passwords must match\n`,
         ),
 })

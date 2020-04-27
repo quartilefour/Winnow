@@ -2,8 +2,15 @@ import React, {useState} from 'react';
 import {Card, Form, Col, Button, Nav, Tab, Alert} from 'react-bootstrap';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
 import {faUser} from "@fortawesome/free-solid-svg-icons";
-import {fetchProfileData, sendChangePassword, sendProfileUpdate} from "../../service/AuthService";
+import {
+    fetchProfileData,
+    sendChangePassword,
+    sendProfileUpdate,
+    profileSchema,
+    passwordSchema
+} from "../../service/AuthService";
 import PageLoader from "../common/PageLoader";
+import {useFormik} from "formik";
 import {parseAPIError} from "../../service/ApiService";
 
 /**
@@ -15,21 +22,13 @@ import {parseAPIError} from "../../service/ApiService";
 function Profile() {
 
     const [isLoaded, setIsLoaded] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState('');
     const [alertType, setAlertType] = useState('');
     const [firstName, setFirstName] = useState("");
     const [lastName, setLastName] = useState("");
     const [userEmail, setUserEmail] = useState("");
-    const [userCurrentPassword, setCurrentUserPassword] = useState("");
-    const [userNewPassword, setNewUserPassword] = useState("");
-    const [newPasswordConfirm, setNewPasswordConfirm] = useState("");
 
     React.useEffect(() => {
-        if (error) {
-            (error === "Success")
-                ? setAlertType("success")
-                : setAlertType("danger")
-        }
         fetchProfileData()
             .then(res => {
                 setFirstName(res.firstName);
@@ -41,14 +40,39 @@ function Profile() {
                 setError(`Error retrieving profile.\n${parseAPIError(error)}`);
                 setIsLoaded(true);
             });
-    }, [error, alertType]);
+    });
 
-    /* Updates user name and/or email */
-    function updateProfile() {
-        const userInfo = {
+    const profileForm = useFormik({
+        enableReinitialize: true,
+        initialValues: {
             firstName: firstName,
             lastName: lastName,
-            userEmail: userEmail
+            userEmail: userEmail,
+        },
+        validationSchema: profileSchema,
+        onSubmit: values => {
+            updateProfile(values)
+        }
+    })
+
+    const passwordForm = useFormik({
+        initialValues: {
+            userPassword: '',
+            userPasswordNew: '',
+            passwordConfirm: ''
+        },
+        validationSchema: passwordSchema,
+        onSubmit: values => {
+            changePassword(values)
+        }
+    })
+
+    /* Updates user name and/or email */
+    function updateProfile(values) {
+        const userInfo = {
+            firstName: values.firstName,
+            lastName: values.lastName,
+            userEmail: values.userEmail
         };
         sendProfileUpdate(userInfo)
             .then(() => {
@@ -62,10 +86,11 @@ function Profile() {
     }
 
     /* Changes user password */
-    function changePassword() {
+    function changePassword(values) {
         const credentials = {
-            userPassword: userNewPassword,
-            passwordConfirm: newPasswordConfirm
+            userPassword: values.userPassword,
+            userPasswordNew: values.userPasswordNew,
+            passwordConfirm: values.passwordConfirm
         };
         sendChangePassword(credentials)
             .then(() => {
@@ -80,7 +105,7 @@ function Profile() {
 
     /* Resets form entry errors */
     function resetError() {
-        setError(null);
+        setError('');
         setAlertType('');
     }
 
@@ -116,9 +141,9 @@ function Profile() {
                         </Nav>
                     </Card.Header>
                     <Card.Body>
-                        <Form>
-                            <Tab.Content>
-                                <Tab.Pane eventKey="profile" id="profile">
+                        <Tab.Content>
+                            <Tab.Pane eventKey="profile" id="profile">
+                                <Form onSubmit={profileForm.handleSubmit}>
                                     <Form.Group>
                                         <Form.Row>
                                             <Col>
@@ -126,10 +151,9 @@ function Profile() {
                                                     type="text"
                                                     name="firstName"
                                                     autoComplete="given-name"
-                                                    value={firstName}
-                                                    onChange={e => {
-                                                        setFirstName(e.target.value);
-                                                    }}
+                                                    value={profileForm.values.firstName}
+                                                    onChange={profileForm.handleChange}
+                                                    onBlur={profileForm.handleBlur}
                                                     placeholder="First Name"
                                                 />
                                             </Col>
@@ -138,31 +162,44 @@ function Profile() {
                                                     type="text"
                                                     autoComplete="family-name"
                                                     name="lastName"
-                                                    value={lastName}
-                                                    onChange={e => {
-                                                        setLastName(e.target.value);
-                                                    }}
+                                                    value={profileForm.values.lastName}
+                                                    onChange={profileForm.handleChange}
+                                                    onBlur={profileForm.handleBlur}
                                                     placeholder="Last Name"
                                                 />
                                             </Col>
                                         </Form.Row>
+                                        <Alert
+                                            variant="danger"
+                                            show={!!(profileForm.errors.firstName || profileForm.errors.lastName)}
+                                        >
+                                            {profileForm.touched.firstName && profileForm.errors.firstName ?
+                                                profileForm.errors.firstName : null}
+                                            {profileForm.touched.lastName && profileForm.errors.lastName ?
+                                                profileForm.errors.lastName : null}
+                                        </Alert>
                                         <Form.Row>
                                             <Col>
                                                 <Form.Control
                                                     type="email"
                                                     autoComplete="username"
                                                     name="userEmail"
-                                                    value={userEmail ? userEmail : undefined}
-                                                    onChange={e => {
-                                                        setUserEmail(e.target.value);
-                                                    }}
+                                                    value={profileForm.values.userEmail}
+                                                    onChange={profileForm.handleChange}
+                                                    onBlur={profileForm.handleBlur}
                                                     placeholder="E-mail Address"
                                                 />
                                             </Col>
+                                            <Alert
+                                                variant="danger"
+                                                show={!!(profileForm.touched.userEmail && profileForm.errors.userEmail)}
+                                            >
+                                                {profileForm.errors.userEmail}
+                                            </Alert>
                                         </Form.Row>
                                         <Button
                                             block
-                                            onClick={updateProfile}
+                                            type="submit"
                                             disabled={false}
                                             variant="info"
                                             size="sm"
@@ -170,19 +207,20 @@ function Profile() {
                                             Update Profile
                                         </Button>
                                     </Form.Group>
-                                </Tab.Pane>
-                                <Tab.Pane eventKey="password" id="password">
+                                </Form>
+                            </Tab.Pane>
+                            <Tab.Pane eventKey="password" id="password">
+                                <Form onSubmit={passwordForm.handleSubmit}>
                                     <Form.Group>
                                         <Form.Row>
                                             <Col>
                                                 <Form.Control
                                                     type="password"
                                                     autoComplete="current-password"
-                                                    name="userPasswordOld"
-                                                    value={userCurrentPassword}
-                                                    onChange={e => {
-                                                        setCurrentUserPassword(e.target.value);
-                                                    }}
+                                                    name="userPassword"
+                                                    value={passwordForm.values.userPassword}
+                                                    onChange={passwordForm.handleChange}
+                                                    onBlur={passwordForm.handleBlur}
                                                     placeholder="Current Password"
                                                 />
                                             </Col>
@@ -192,11 +230,10 @@ function Profile() {
                                                 <Form.Control
                                                     type="password"
                                                     autoComplete="new-password"
-                                                    name="userPassword"
-                                                    value={userNewPassword}
-                                                    onChange={e => {
-                                                        setNewUserPassword(e.target.value);
-                                                    }}
+                                                    name="userPasswordNew"
+                                                    value={passwordForm.values.userPasswordNew}
+                                                    onChange={passwordForm.handleChange}
+                                                    onBlur={passwordForm.handleBlur}
                                                     placeholder="New Password"
                                                 />
                                             </Col>
@@ -207,17 +244,27 @@ function Profile() {
                                                     type="password"
                                                     autoComplete="new-password"
                                                     name="passwordConfirm"
-                                                    value={newPasswordConfirm}
-                                                    onChange={e => {
-                                                        setNewPasswordConfirm(e.target.value);
-                                                    }}
+                                                    value={passwordForm.values.passwordConfirm}
+                                                    onChange={passwordForm.handleChange}
+                                                    onBlur={passwordForm.handleBlur}
                                                     placeholder="Confirm New Password"
                                                 />
                                             </Col>
                                         </Form.Row>
+                                        <Alert
+                                            variant="danger"
+                                            show={!!(passwordForm.errors.userPassword || passwordForm.errors.userPasswordNew || passwordForm.errors.passwordConfirm)}
+                                        >
+                                            {passwordForm.touched.userPassword && passwordForm.errors.userPassword ?
+                                                passwordForm.errors.userPassword : null}
+                                            {passwordForm.touched.userPasswordNew && passwordForm.errors.userPasswordNew ?
+                                                passwordForm.errors.userPasswordNew : null}
+                                            {passwordForm.touched.passwordConfirm && passwordForm.errors.passwordConfirm ?
+                                                passwordForm.errors.passwordConfirm : null}
+                                        </Alert>
                                         <Button
                                             block
-                                            onClick={changePassword}
+                                            type="submit"
                                             disabled={false}
                                             variant="info"
                                             size="sm"
@@ -225,9 +272,9 @@ function Profile() {
                                             Change Password
                                         </Button>
                                     </Form.Group>
-                                </Tab.Pane>
-                            </Tab.Content>
-                        </Form>
+                                </Form>
+                            </Tab.Pane>
+                        </Tab.Content>
                     </Card.Body>
                     <Card.Footer>
                         <Alert variant={alertType} show={error.length > 0}>{error}</Alert>

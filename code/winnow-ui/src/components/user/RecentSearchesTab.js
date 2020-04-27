@@ -153,7 +153,7 @@ function RecentSearchesTab(props) {
             return (
                 <div>
                     <ToolkitProvider
-                        keyField='searchId'
+                        keyField='index'
                         data={searchHistory}
                         columns={columns}
                         search={{

@@ -27,7 +27,7 @@ function GeneDetailModal(props) {
     const [geneDetailNCBI, setGeneDetailNCBI] = useState('');
     const [isActive, setIsActive] = useState(false);
     const [isLoaded, setIsLoaded] = useState(false);
-    const [error, setError] = useState(null);
+    const [error, setError] = useState('');
     const [alertType, setAlertType] = useState('');
 
     React.useEffect(() => {
