@@ -9,19 +9,17 @@ function SearchTermUploader(props) {
     const [uploadFile, setUploadFile] = useState(null);
 
     React.useEffect(() => {
-        if (batchQueryFormat !== '') {
-            if (uploadFile !== null && uploadFile.name.length > 0) {
-                console.info(`SearchTermUploader: uploadFile state change: ${batchQueryFormat} - ${uploadFile.name}`)
-                props.searchable(true);
-                console.info(`SearchTermUploader: file U pass: ${batchQueryFormat} - ${uploadFile.name}`)
-            } else if (textareaData !== null) {
-                props.searchable(true);
-            }
+        if (batchQueryFormat !== ''
+            && (
+                (uploadFile !== null && uploadFile.name.length > 0)
+                || textareaData !== null
+            )
+        ) {
+            props.searchable(true);
         }
     })
 
     function handleChange(e) {
-        console.info(`SearchTermUploader: handleChange(): ${e.name}`)
         switch(e.name) {
             case 'fileUpload':
                 setUploadFile(e.files[0])

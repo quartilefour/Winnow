@@ -37,14 +37,12 @@ function ComboSearchTab(props) {
     const [submitText, setSubmitText] = useState('Search');
 
     React.useEffect(() => {
-        console.info(`ComboSearchTab: haveResults = ${haveResults}`)
         if (!haveResults) {
             setUseBatch(getBatch);
             setIsLoaded(true);
             setIsMenuLoaded(true);
             if (!useBatch && (selectedGenes.length > 0 || checkedTerms.length > 0)) {
                 setActivateSearch(true);
-                console.info(`ComboSearchTab: !haveResults: activeSearch: ${true}`)
             }
         } else {
             if (resultData === '') { /* data is not loaded */
@@ -61,23 +59,22 @@ function ComboSearchTab(props) {
                         },
                     }
                 } else { /* Batch import */
-                    console.info(`ComboSearch: batchQuery mode`)
                     if (isFile) { /* File upload */
-                        console.info(`ComboSearch: batchQuery mode: have file: ${batchQueryFormat} - ${batchData.name}`)
                         setSubmitText('Upload');
                         const data = new FormData()
                         data.append('file', batchData)
                         data.append('type', batchQueryFormat)
                         search = data;
                     } else { /* textarea */
-                        console.info(`ComboSearch: batchQuery: ${batchQueryFormat} - ${batchData}`)
                         search = prepareSearchQuery(batchQueryFormat, batchData);
                     }
                 }
-                console.debug(`ComboSearchTab: calling fetchSearchResults`)
                 addSearchHistory(search, isFile);
                 fetchSearchResults(search, isFile)
                     .then(res => {
+                        if (isFile) { /* For files, add query to searchHistory only after it's been validated. */
+                            addSearchHistory(res.searchQuery)
+                        }
                         setResultData(res);
                         setSelectedGenes([]);
                         setCheckedTerms([]);
@@ -85,7 +82,6 @@ function ComboSearchTab(props) {
                         setIsLoaded(true);
                     })
                     .catch(error => {
-                        console.debug(`ComboSearchTab: fetchSearchResults Error: ${error}`)
                         setHaveResults(false);
                         setError(`Search failed with fatal error.\n${parseAPIError(error)}`);
                         setAlertType('danger');
