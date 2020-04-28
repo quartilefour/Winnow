@@ -22,7 +22,9 @@ import java.util.concurrent.TimeUnit;
 
 import static org.powermock.api.mockito.PowerMockito.when;
 
-
+/**
+ * @author PulkitBhanot
+ */
 @RunWith(PowerMockRunner.class)
 @PrepareForTest(fullyQualifiedNames = "com.cscie599.gfn.ftp.downloader.*")
 class FTPFileDownloadRunnableTest {
