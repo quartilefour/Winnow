@@ -95,8 +95,8 @@ public class GeneRelationshipIngester extends BaseIngester {
     public LineMapper<GeneGroup> lineMapperForGeneGroup() {
         DefaultLineMapper<GeneGroup> lineMapper = new DefaultLineMapper<GeneGroup>();
         DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer(DelimitedLineTokenizer.DELIMITER_TAB);
-        lineTokenizer.setNames(new String[]{"geneId", "relationship", "otherGeneId"});
-        lineTokenizer.setIncludedFields(new int[]{1, 2, 4});
+        lineTokenizer.setNames(new String[]{"taxId", "geneId", "relationship", "otherTaxId", "otherGeneId"});
+        lineTokenizer.setIncludedFields(new int[]{0, 1, 2, 3, 4});
         BeanWrapperFieldSetMapper<GeneGroup> fieldSetMapper = new BeanWrapperFieldSetMapper<GeneGroup>();
         fieldSetMapper.setStrict(true);
         fieldSetMapper.setDistanceLimit(1);
@@ -120,7 +120,7 @@ public class GeneRelationshipIngester extends BaseIngester {
     public JdbcBatchItemWriter<GeneGene> writerForGeneToGene() {
         JdbcBatchItemWriter<GeneGene> itemWriter = new UpsertableJdbcBatchItemWriter<GeneGene>();
         itemWriter.setDataSource(dataSource);
-        itemWriter.setSql("INSERT INTO gene_gene (gene_id, other_gene_id,relationship_id) VALUES (:geneGenePK.geneId, :geneGenePK.otherGeneId,:geneGenePK.relationshipId) ON CONFLICT DO NOTHING RETURNING gene_id");
+        itemWriter.setSql("INSERT INTO gene_gene (tax_id, gene_id, other_gene_id, other_tax_id, relationship_id) VALUES (:geneGenePK.taxId, :geneGenePK.geneId, :geneGenePK.otherGeneId, :geneGenePK.otherTaxId, :geneGenePK.relationshipId) ON CONFLICT DO NOTHING RETURNING gene_id");
         itemWriter.setItemSqlParameterSourceProvider(new BeanPropertyItemSqlParameterSourceProvider<GeneGene>());
         return itemWriter;
     }
@@ -137,7 +137,9 @@ public class GeneRelationshipIngester extends BaseIngester {
             returnList.add(geneRelationship);
             GeneGenePK geneGenePK = new GeneGenePK();
             geneGenePK.setGeneId(geneGroup.getGeneId());
+            geneGenePK.setTaxId(geneGroup.getTaxId());
             geneGenePK.setOtherGeneId(geneGroup.getOtherGeneId());
+            geneGenePK.setOtherTaxId(geneGroup.getOtherTaxId());
             geneGenePK.setRelationshipId(geneRelationship.getRelationshipId());
             if (logger.isDebugEnabled()) {
                 logger.debug("Inserting geneGenePK : " + geneGenePK);
@@ -162,7 +164,7 @@ public class GeneRelationshipIngester extends BaseIngester {
             List<GeneRelationship> geneRelationships = new ArrayList<>();
             List<GeneGene> geneToGene = new ArrayList<>();
             items.forEach(sublist -> {
-                ((List)sublist).forEach(item -> {
+                ((List) sublist).forEach(item -> {
                     if (item.getClass().equals(GeneRelationship.class)) {
                         geneRelationships.add((GeneRelationship) item);
                     } else if (item.getClass().equals(GeneGene.class)) {

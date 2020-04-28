@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -91,32 +92,34 @@ public class IngestionExtractedTest extends BaseTest {
         assertEquals(MeshtermIngestor.DATE_FORMAT.format(new Date(154080000000L)), meshtermTree.getMeshterm().getDateCreated().toString());
         assertEquals(MeshtermIngestor.DATE_FORMAT.format(new Date(1025679600000L)), meshtermTree.getMeshterm().getDateRevised().toString());
 
+        List<Integer> taxIdArray = Arrays.asList(new Integer(9606));
+
         // publication tests, positive tests
         assertEquals("Publication count", publicationRepository.findAll().size(), 9);
-        assertEquals("Publications for Gene-Meshterm", publicationRepository.findByGeneIdAndMeshId("5692769", "D000313").size(), 1);
-        assertEquals("Publications for Gene-Meshterm", publicationRepository.findByGeneIdAndMeshId("8655736", "D000818").size(), 2);
-        assertEquals("Publications for Gene-Meshterm", publicationRepository.findByGeneIdAndMeshId("8655733", "D000818").size(), 2);
-        assertTrue(publicationRepository.findByGeneIdAndMeshId("5692769", "D000313").get(0).getPublicationId().equals("7"));
-        assertTrue(publicationRepository.findByGeneIdAndMeshId("8655733", "D006801").get(0).getPublicationId().equals("3"));
+        assertEquals("Publications for Gene-Meshterm", publicationRepository.findByGeneIdAndMeshId("5692769", "D000313",taxIdArray).size(), 1);
+        assertEquals("Publications for Gene-Meshterm", publicationRepository.findByGeneIdAndMeshId("8655736", "D000818",taxIdArray).size(), 2);
+        assertEquals("Publications for Gene-Meshterm", publicationRepository.findByGeneIdAndMeshId("8655733", "D000818",taxIdArray).size(), 2);
+        assertTrue(publicationRepository.findByGeneIdAndMeshId("5692769", "D000313",taxIdArray).get(0).getPublicationId().equals("7"));
+        assertTrue(publicationRepository.findByGeneIdAndMeshId("8655733", "D006801",taxIdArray).get(0).getPublicationId().equals("3"));
 
         // negative test: valid gene_id, not ingested for publications
-        assertTrue(publicationRepository.findByGeneIdAndMeshId("1", "D000313").isEmpty());
+        assertTrue(publicationRepository.findByGeneIdAndMeshId("1", "D000313",taxIdArray).isEmpty());
 
         // negative test: invalid gene_id, not ingested
-        assertTrue(publicationRepository.findByGeneIdAndMeshId("A", "D000313").isEmpty());
+        assertTrue(publicationRepository.findByGeneIdAndMeshId("A", "D000313",taxIdArray).isEmpty());
 
         // negative test: valid mesh_id, not ingested for publications
-        assertTrue(publicationRepository.findByGeneIdAndMeshId("1246509", "D000001").isEmpty());
+        assertTrue(publicationRepository.findByGeneIdAndMeshId("1246509", "D000001",taxIdArray).isEmpty());
 
         // negative test: invalid mesh_id, not ingested
-        assertTrue(publicationRepository.findByGeneIdAndMeshId("1246509", "D000000").isEmpty());
+        assertTrue(publicationRepository.findByGeneIdAndMeshId("1246509", "D000000",taxIdArray).isEmpty());
 
         // no genes were ingested for publication id == 1, so no queries to 'findByGeneIdAndMeshId' should contain PMID '1'
         List<Meshterm> allMesh = meshtermRepository.findAll();
         List<Gene> allGene = geneRepository.findAll();
         for (Gene g : allGene) {
             for (Meshterm m : allMesh) {
-                List<Publication> combinationPublication = publicationRepository.findByGeneIdAndMeshId(g.getGeneId(), m.getMeshId());
+                List<Publication> combinationPublication = publicationRepository.findByGeneIdAndMeshId(g.getGeneId(), m.getMeshId(),taxIdArray);
                 for (Publication p : combinationPublication) {
                     assertTrue(! p.getPublicationId().equals("1"));
                 }

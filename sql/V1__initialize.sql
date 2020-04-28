@@ -104,10 +104,12 @@ CREATE TABLE "meshterm_tree" (
 );
 
 CREATE TABLE "gene_gene" (
+  "tax_id" Integer,
   "gene_id" varchar (20) REFERENCES gene (gene_id),
   "other_gene_id" varchar (20) REFERENCES gene (gene_id),
+  "other_tax_id"  Integer,
   "relationship_id" varchar(50) REFERENCES gene_relationship (relationship_id),
-  PRIMARY KEY ("gene_id", "other_gene_id", "relationship_id")
+  PRIMARY KEY ("tax_id", "gene_id", "other_tax_id", "other_gene_id", "relationship_id")
 );
 
 CREATE TABLE "user_search_sharing"

@@ -47,8 +47,8 @@ public class GeneGene implements Serializable {
         this.geneGenePK = geneGenePK;
     }
 
-    public GeneGene(String geneId, String otherGeneId, String relationshipId) {
-        this.geneGenePK = new GeneGenePK(geneId, otherGeneId, relationshipId);
+    public GeneGene(int taxId, String geneId, String otherGeneId, int otherTaxId, String relationshipId) {
+        this.geneGenePK = new GeneGenePK(taxId, geneId, otherGeneId, otherTaxId, relationshipId);
     }
 
     public GeneGenePK getGeneGenePK() {
@@ -105,7 +105,7 @@ public class GeneGene implements Serializable {
 
     @Override
     public String toString() {
-        return "com.cscie599.gfn.entities.GeneGene[ geneGenePK=" + geneGenePK + " ]";
+        return "com.cscie599.gfn.GeneGene[ geneGenePK=" + geneGenePK + " ]";
     }
-    
+
 }
