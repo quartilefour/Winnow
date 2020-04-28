@@ -1,5 +1,6 @@
 package com.cscie599.gfn.ftp.downloader;
 
+import com.google.common.annotations.VisibleForTesting;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.net.ftp.FTPClient;
@@ -50,7 +51,7 @@ public class FTPFileDownloadRunnable implements Runnable {
         this(ftpServerURL, ftpFilePath, fileName, localFilePath, FTP_USERNAME, FTP_USERPASS, latch, extractedFileLocation, extractFiles);
     }
 
-    public FTPFileDownloadRunnable(String ftpServerURL, String ftpFilePath, String fileName, String localFilePath, String username, String password, CountDownLatch latch, String extractedFileLocation, boolean extractFiles) {
+    FTPFileDownloadRunnable(String ftpServerURL, String ftpFilePath, String fileName, String localFilePath, String username, String password, CountDownLatch latch, String extractedFileLocation, boolean extractFiles) {
         this.ftpServerURL = ftpServerURL;
         this.ftpFilePath = ftpFilePath;
         this.fileName = fileName;
@@ -83,7 +84,7 @@ public class FTPFileDownloadRunnable implements Runnable {
             String filePath = this.ftpFilePath + File.separator + this.fileName + FTP_FILEEXTENSION;
             int iteration = 0;
             do {
-                ftpClient = new FTPClient();
+                ftpClient = getFtpClient();
                 try {
                     logger.info("Running for iteration " + iteration);
                     iteration++;
@@ -137,6 +138,11 @@ public class FTPFileDownloadRunnable implements Runnable {
         } catch (Exception e) {
             logger.error("Unable to successfully complete the processing of file " + fileName, e);
         }
+    }
+
+    @VisibleForTesting
+    FTPClient getFtpClient(){
+        return new FTPClient();
     }
 }
 
