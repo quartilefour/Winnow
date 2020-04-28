@@ -69,7 +69,6 @@ public class HTTPGeneOntologyDownloadRunnable implements Runnable {
                                 60000);
                         if (extractContent) {
                             FileUtils.copyFile(new File(rawFolderLocation + File.separator + fileName), new File(extractedFolderLocation + File.separator + fileName));
-
                         }
                     } catch (IOException e) {
                         logger.error("Unable to successfully download file");
