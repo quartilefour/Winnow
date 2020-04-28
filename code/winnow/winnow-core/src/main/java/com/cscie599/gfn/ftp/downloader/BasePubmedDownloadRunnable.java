@@ -5,6 +5,9 @@ import org.apache.commons.net.ftp.FTPClient;
 import java.io.IOException;
 import java.util.concurrent.CountDownLatch;
 
+/**
+ * @author PulkitBhanot
+ */
 public abstract class BasePubmedDownloadRunnable implements Runnable {
 
     protected final String ftpServerURL;

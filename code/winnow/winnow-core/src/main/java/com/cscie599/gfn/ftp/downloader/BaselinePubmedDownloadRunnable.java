@@ -109,7 +109,7 @@ public class BaselinePubmedDownloadRunnable extends BasePubmedDownloadRunnable i
             }
             logger.info("Marking job as finished successfully");
         } catch (Exception ex) {
-            logger.error("Unable to complete processing of files " + fileName);
+            logger.error("Unable to complete processing of files " + fileName, ex);
         } finally {
             latch.countDown();
         }
