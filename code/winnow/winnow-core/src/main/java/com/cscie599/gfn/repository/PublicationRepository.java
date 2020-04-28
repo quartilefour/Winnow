@@ -13,9 +13,8 @@ public interface PublicationRepository extends JpaRepository<Publication, String
             "p.publication_id, p.completed_date, p.date_revised, p.title FROM publication p " +
             "INNER JOIN gene_publication gp ON p.publication_id = gp.publication_id " +
             "INNER JOIN publication_meshterm pm ON p.publication_id = pm.publication_id " +
-            "WHERE gp.gene_id IN ((select other_gene_id from gene_gene where gene_id = :geneId) " +
-            "UNION DISTINCT (select gene_id from gene_gene where other_gene_id = :geneId)" +
-            "UNION DISTINCT (select gene_id from gene where gene_id = :geneId)) AND pm.mesh_id = :meshId")
-    List<Publication> findByGeneIdAndMeshId(String geneId, String meshId);
+            "WHERE gp.gene_id IN ((select other_gene_id from gene_gene where gene_id = :geneId and other_tax_id in (:taxIdList)) " +
+            "UNION DISTINCT (select :geneId as gene_id)) AND pm.mesh_id = :meshId")
+    List<Publication> findByGeneIdAndMeshId(String geneId, String meshId, List<Integer> taxIdList);
 
 }

@@ -7,17 +7,30 @@ import com.cscie599.gfn.repository.PublicationRepository;
 import com.cscie599.gfn.views.PublicationView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.Resource;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.apache.commons.lang3.StringUtils;
+
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.util.*;
 
 @RestController
 @RequestMapping("/api")
 @Api(value = "Searches", description = "Operations pertaining to publications in Gene Function Navigation")
 public class PublicationController {
+
+    protected static final Log logger = LogFactory.getLog(PublicationController.class);
+
+    // List of ortholog taxIds to be used for fetching publications.
+    private List<Integer> taxIdsToProcess;
 
     @Autowired
     PublicationRepository publicationRepository;
@@ -80,7 +93,7 @@ public class PublicationController {
         String geneId = body.get("geneId").toString();
         String meshId = body.get("meshId").toString();
         List<PublicationView> publicationViews = new ArrayList<>();
-        List<Publication> publications = publicationRepository.findByGeneIdAndMeshId(geneId, meshId);
+        List<Publication> publications = publicationRepository.findByGeneIdAndMeshId(geneId, meshId, taxIdsToProcess);
         for (Publication publication : publications) {
             Collection<PublicationAuthor> publicationAuthors = publication.getPublicationAuthorCollection();
             List<HashMap> authors = new ArrayList<>();
@@ -101,6 +114,24 @@ public class PublicationController {
         response.put("meshId", meshId);
         response.put("results", publicationViews);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    @Value("classpath:filtered_taxids.properties")
+    public void setResourceFile(Resource resourceFile) {
+        taxIdsToProcess = new ArrayList<>(40);
+        if (resourceFile.exists()) {
+            try {
+                BufferedReader br = new BufferedReader(new InputStreamReader(resourceFile.getInputStream()));
+                String line = br.readLine();
+                while (line != null) {
+                    taxIdsToProcess.add(Integer.parseInt(line.trim()));
+                    line = br.readLine();
+                }
+            } catch (IOException e) {
+                logger.error("Unable to read the file with publications to be skipped");
+            }
+        }
+        logger.info("taxIdsToProcess has been initialized with " + taxIdsToProcess);
     }
 
     /*
