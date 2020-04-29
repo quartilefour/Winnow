@@ -17,11 +17,10 @@ import * as C from "../../constants";
 /**
  * RecentSearchesTab builds the content for user's saved search lists.
  *
- * @param props
  * @returns {*}
  * @constructor
  */
-function RecentSearchesTab(props) {
+function RecentSearchesTab() {
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [searchHistory, setSearchHistory] = useState([]);
@@ -37,13 +36,7 @@ function RecentSearchesTab(props) {
                 removeSearchHistory(removeSearch);
                 setRemoveSearch(null);
             }
-            setSearchHistory(getSearchHistory().map((search, index) => {
-                /* Adds unique index column for the table add-on */
-                return {
-                    index: index,
-                    searchQuery: search
-                }
-            }));
+            setSearchHistory(getSearchHistory());
             setIsLoaded(true);
         }
     }, [removeSearch, setSearchHistory, haveResults]);

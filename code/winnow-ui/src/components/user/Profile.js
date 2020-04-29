@@ -1,7 +1,5 @@
 import React, {useState} from 'react';
 import {Card, Form, Col, Button, Nav, Tab, Alert} from 'react-bootstrap';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome'
-import {faUser} from "@fortawesome/free-solid-svg-icons";
 import profileImg from "../../img/profile-dna.png";
 import {
     fetchProfileData,
@@ -13,7 +11,6 @@ import {
 import PageLoader from "../common/PageLoader";
 import {useFormik} from "formik";
 import {parseAPIError} from "../../service/ApiService";
-import logoImg from "../../img/logo.png";
 
 /**
  * Functional component to render User Profile form.
@@ -125,12 +122,6 @@ function Profile() {
                     width: '50%'
                 }}>
                 <Card.Title>User Profile</Card.Title>
-                {/*<FontAwesomeIcon
-                    icon={faUser}
-                    color="cornflowerblue"
-                    size="6x"
-                    style={{margin: '10px auto', width: '50%'}}
-                />*/}
                 <Card.Img variant="top" src={profileImg} style={{margin: 'auto', width: '50%'}}/>
                 <Tab.Container defaultActiveKey="profile" onSelect={resetError}>
                     <Card.Header>

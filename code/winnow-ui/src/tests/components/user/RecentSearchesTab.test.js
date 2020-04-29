@@ -30,8 +30,8 @@ describe('<RecentSearchesTab {props}/>', () => {
         expect(wrapper.html()).toMatchSnapshot();
     });
 
-    it('should show RecentSearches Form', () => {
-        expect(wrapper.find('Form').length).toEqual(1);
+    it('should show RecentSearches Table', () => {
+        expect(wrapper.find('div').length).toEqual(1);
     });
 
 /*

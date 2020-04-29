@@ -1,15 +1,19 @@
 import React from 'react';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+import {act} from "react-dom/test-utils";
+import {WINNOW_API_BASE_URL} from "../../../constants";
 import Profile from '../../../components/user/Profile';
 import {mountWrap, shallowWrap} from "../../_helpers";
-import {shallow} from "enzyme";
-import Login from "../../../components/user/Login";
-
+import {mount, shallow} from "enzyme";
 
 describe('<Profile />', () => {
     let props;
     let wrapper;
     let useEffect;
     let component;
+
+    const response = {"userEmail": "jonny@harvard.edu", "firstName": "John", "lastName": "Harvard"};
 
     const mockUseEffect = () => {
         useEffect.mockImplementationOnce(f => f());
@@ -24,7 +28,7 @@ describe('<Profile />', () => {
         if (component) component.unmount();
 
         mockUseEffect();
-        wrapper = shallow(<Profile />);
+        wrapper = shallow(<Profile/>);
     })
 
     it('should render with mock data in snapshot', () => {
@@ -35,6 +39,33 @@ describe('<Profile />', () => {
         expect(wrapper.find('PageLoader').length).toEqual(1);
     });
 
+    it('should get mock profile data', async () => {
+        const mockfBM = new MockAdapter(axios);
+        mockfBM
+            .onGet(`${WINNOW_API_BASE_URL}/profile`)
+            .reply(200, response);
+        const c = mount(<Profile/>);
+        await act(async () => {
+            await Promise.resolve(c);
+            await new Promise(resolve => setImmediate(resolve));
+            c.update()
+        });
+        //console.log(c.debug());
+    });
+
+    it('should get mock profile error', async () => {
+        const mockfBM = new MockAdapter(axios);
+        mockfBM
+            .onGet(`${WINNOW_API_BASE_URL}/profile`)
+            .reply(500, "Internal server error");
+        const c = mount(<Profile/>);
+        await act(async () => {
+            await Promise.resolve(c);
+            await new Promise(resolve => setImmediate(resolve));
+            c.update()
+        });
+        //console.log(c.debug());
+    });
     /*
     it('should have an email field', () => {
         const wrapper = wrappedShallow();

@@ -1,22 +1,44 @@
 import React from 'react';
 import { shallow } from 'enzyme';
+import MockAdapter from "axios-mock-adapter";
+import axios from "axios";
+import {WINNOW_API_BASE_URL} from "../../../constants";
+import {act} from "react-dom/test-utils";
 import SearchTermUploader from '../../../components/common/SearchTermUploader';
 
-test('should test SearchTermUploader component', () => {
-    const wrapper = shallow(<SearchTermUploader />);
-    expect(wrapper).toMatchSnapshot();
-});
-
 describe('<SearchTermUploader />', () => {
-    const container = shallow(<SearchTermUploader />);
+    let props;
+    let wrapper;
+    let useEffect;
+    let component;
+
+    const mockUseEffect = () => {
+        useEffect.mockImplementationOnce(f => f());
+    }
+
+    beforeEach(() => {
+        useEffect = jest.spyOn(React, "useEffect");
+        props = {
+            active: true,
+            searchable: true,
+        };
+        if (component) component.unmount();
+
+        mockUseEffect();
+        wrapper = shallow(<SearchTermUploader {...props} />);
+    })
+
     it('should match the snapshot', () => {
-        expect(container.html()).toMatchSnapshot();
+        expect(wrapper).toMatchSnapshot();
     });
 
-    /*
     it('should have progress bar', () => {
-        expect(container.find('ProgressBar').length).toEqual(1);
+        props.active = false;
+        mockUseEffect();
+        wrapper = shallow(<SearchTermUploader {...props} />);
+        expect(wrapper.find('PageLoader').length).toEqual(1);
     });
+    /*
 
     it('should have proper props for progress bar', () => {
         expect(container.find('ProgressBar')).toHaveProp({

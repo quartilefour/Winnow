@@ -1,20 +1,37 @@
-import React, {useEffect} from 'react';
+import React from 'react';
 import NavBar from '../../../components/common/NavBar';
 import {mountWrap, shallowWrap} from "../../_helpers";
 import {mount, shallow} from "enzyme";
 import * as AuthContext from "../../../context/auth";
 import ReactDOM from "react-dom";
 import {act} from "react-dom/test-utils";
-
-const mockUseEffect = () => {
-    useEffect.mockImplementationOnce(f => f());
-};
+import BookmarkTab from "../../../components/user/BookmarkTab";
 
 describe('<NavBar />', () => {
+    let props;
+    let wrapper;
+    let useEffect;
+    let component;
+
+    const response = {"userEmail": "jonny@harvard.edu", "firstName": "John", "lastName": "Harvard"};
+
+    const mockUseEffect = () => {
+        useEffect.mockImplementationOnce(f => f());
+    }
+
+    beforeEach(() => {
+        useEffect = jest.spyOn(React, "useEffect");
+        props = {};
+        if (component) component.unmount();
+
+        mockUseEffect();
+        wrapper = shallow(<NavBar/>);
+    });
+
     it ('it should have empty Navbar if not logged in', () => {
-        const wrapper = shallow(<NavBar />);
-        expect(wrapper.find('Navbar').length).toEqual(1);
-        expect(wrapper.find('NavbarBrand').length).toEqual(0);
+        const w = shallow(<NavBar />);
+        expect(w.find('Navbar').length).toEqual(1);
+        expect(w.find('NavbarBrand').length).toEqual(0);
     })
 
     it('it should have Navbar Brand if logged in', () => {
@@ -24,8 +41,8 @@ describe('<NavBar />', () => {
         }
         jest.spyOn(AuthContext, 'useAuth')
             .mockImplementation(() => contextValues);
-        const wrapper = shallow(<NavBar />);
-        expect(wrapper.find('NavbarBrand').length).toEqual(1);
+        const w = shallow(<NavBar />);
+        expect(w.find('NavbarBrand').length).toEqual(1);
     })
 
     it('it should call logout', () => {
@@ -35,11 +52,11 @@ describe('<NavBar />', () => {
        }
        jest.spyOn(AuthContext, 'useAuth')
            .mockImplementation(() => contextValues);
-       const wrapper = shallow(<NavBar />);
-       const logoutLink = wrapper.find('NavLink[href="#"]');
+       const w = shallow(<NavBar />);
+       const logoutLink = w.find('NavLink[href="#"]');
        expect(logoutLink.length).toEqual(1);
        logoutLink.simulate('click');
-       // expect(wrapper.find('NavbarBrand').length).toEqual(0);
+       // expect(w.find('NavbarBrand').length).toEqual(0);
     })
 });
 

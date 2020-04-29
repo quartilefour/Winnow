@@ -1,6 +1,12 @@
 import React from 'react';
+import {BrowserRouter as Router} from "react-router-dom";
 import Register from '../../../components/user/Register';
+import axios from 'axios';
+import MockAdapter from 'axios-mock-adapter';
+import {act} from "react-dom/test-utils";
+import {WINNOW_API_BASE_URL} from "../../../constants";
 import {mountWrap, shallowWrap} from "../../_helpers";
+import {mount} from "enzyme";
 
 
 describe('<Register />', () => {
@@ -68,6 +74,20 @@ describe('<Register />', () => {
         loginButton.simulate('click');
         //expect(wrapper.find('Button').length).toEqual(1);
 
+    });
+
+    it('should get mock profile data', async () => {
+        const mockfBM = new MockAdapter(axios);
+        mockfBM
+            .onPost(`${WINNOW_API_BASE_URL}/registration`)
+            .reply(201, "Account created");
+        const c = mount(<Router><Register/></Router>)
+        await act(async () => {
+            await Promise.resolve(c);
+            await new Promise(resolve => setImmediate(resolve));
+            c.update()
+        });
+        //console.log(c.debug());
     });
 
     /*

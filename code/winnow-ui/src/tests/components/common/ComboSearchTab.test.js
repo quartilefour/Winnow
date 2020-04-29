@@ -1,16 +1,33 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import {shallow} from 'enzyme';
+import MockAdapter from "axios-mock-adapter";
+import axios from "axios";
+import {WINNOW_API_BASE_URL} from "../../../constants";
+import {act} from "react-dom/test-utils";
 import ComboSearchTab from '../../../components/common/ComboSearchTab';
 
-test('should test ComboSearchTab component', () => {
-    const wrapper = shallow(<ComboSearchTab />);
-    expect(wrapper).toMatchSnapshot();
-});
-
 describe('<ComboSearchTab />', () => {
-    const container = shallow(<ComboSearchTab />);
+    let props;
+    let wrapper;
+    let useEffect;
+    let component;
+
+    const mockUseEffect = () => {
+        useEffect.mockImplementationOnce(f => f());
+    }
+
+    beforeEach(() => {
+        useEffect = jest.spyOn(React, "useEffect");
+        props = {};
+
+        if (component) component.unmount();
+
+        mockUseEffect();
+        wrapper = shallow(<ComboSearchTab {...props}/>);
+    });
+
     it('should match the snapshot', () => {
-        expect(container.html()).toMatchSnapshot();
+        expect(wrapper.html()).toMatchSnapshot();
     });
 
     /*

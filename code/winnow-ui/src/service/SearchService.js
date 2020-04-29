@@ -29,7 +29,13 @@ export const getSearchHistory = () => {
         Buffer.from(
             sessionStorage.getItem(SS_SH),
             "base64"
-        ).toString("ascii"));
+        ).toString("ascii")).map((search, index) => {
+        /* Adds unique index column for the table add-on */
+        return {
+            index: index,
+            searchQuery: search
+        }
+    });
 }
 
 /**
