@@ -11,10 +11,10 @@ import java.util.List;
 @Repository
 public interface GeneMeshtermRepository extends JpaRepository<GeneMeshterm, String> {
 
-    @Query("SELECT gm FROM GeneMeshterm gm WHERE gm.geneMeshtermPK.meshId IN (:meshIds) ORDER BY gm.pValue")
+    @Query(nativeQuery = true, value = "SELECT * FROM gene_meshterm gm WHERE gm.mesh_id IN (:meshIds) ORDER BY gm.p_value LIMIT 100")
     List<GeneMeshterm> findByMeshIdsOrderByPValue(List<String> meshIds);
 
-    @Query("SELECT gm FROM GeneMeshterm gm WHERE gm.geneMeshtermPK.geneId IN (:geneIds) ORDER BY gm.pValue")
+    @Query(nativeQuery = true, value = "SELECT * FROM gene_meshterm gm WHERE gm.gene_id IN (:geneIds) ORDER BY gm.p_value LIMIT 100")
     List<GeneMeshterm> findByGeneIdsOrderByPValue(List<String> geneIds);
 
     @Query(nativeQuery = true, value = "SELECT * FROM gene_meshterm gm WHERE gm.gene_id = :geneId ORDER BY gm.p_value LIMIT 100")
