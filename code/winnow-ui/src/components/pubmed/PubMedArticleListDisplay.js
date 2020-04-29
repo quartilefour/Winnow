@@ -30,26 +30,31 @@ function PubMedArticleListDisplay(props) {
      */
     React.useEffect(() => {
         let mounted = true;
-        setListData(props.listData);
-        fetchPubMedArticleList(
-            {
-                geneId: props.listData.geneId,
-                meshId: props.listData.meshId,
-                symbol: props.listData.symbol,
-                name: props.listData.name
-            })
-            .then(res => {
-                if (mounted) {
-                    setPubmedData(res);
-                    setIsLoaded(true);
-                }
-            })
-            .catch(error => {
-                setError(`A fatal error has occurred while fetching the Publication list.\n/
+        if (props.listData === undefined || props.listData === null) {
+            setError('An error occurred while receiving the data from the search results.');
+            setAlertType('danger');
+        } else {
+            setListData(props.listData);
+            fetchPubMedArticleList(
+                {
+                    geneId: props.listData.geneId,
+                    meshId: props.listData.meshId,
+                    symbol: props.listData.symbol,
+                    name: props.listData.name
+                })
+                .then(res => {
+                    if (mounted) {
+                        setPubmedData(res);
+                        setIsLoaded(true);
+                    }
+                })
+                .catch(error => {
+                    setError(`A fatal error has occurred while fetching the Publication list.\n/
                 ${parseAPIError(error)}`);
-                setAlertType('danger');
-                setIsLoaded(true);
-            });
+                    setAlertType('danger');
+                    setIsLoaded(true);
+                });
+        }
         return () => {
             mounted = false
         };

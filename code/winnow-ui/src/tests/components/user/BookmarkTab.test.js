@@ -97,8 +97,8 @@ describe('<BookmarkTab {props}/>', () => {
     });
 
     it('should get some mock data', async () => {
-        const mockfBM = new MockAdapter(axios);
-        mockfBM
+        const mock = new MockAdapter(axios);
+        mock
             .onGet(`${WINNOW_API_BASE_URL}/bookmarks`)
             .reply(200, response);
         const c = mount(<BookmarkTab/>);

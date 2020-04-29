@@ -132,6 +132,7 @@ function ComboSearchTab(props) {
 
     /* Callback for MeshtermTree */
     const getChecked = (checkedNodes) => {
+        console.log(`inside ComboSearchTab getChecked ${JSON.stringify(checkedNodes)}`);
         setCheckedTerms(checkedNodes);
         console.info(`ComboSearchTab: getChecked: ${JSON.stringify(checkedTerms)}`);
     };
@@ -197,6 +198,7 @@ function ComboSearchTab(props) {
                                 />
                             </Fragment>
                         </Form>
+                        <div className="separator">Check MeSH Terms below</div>
                         <Fragment>
                             <div id="meshterm-tree">
                                 <MeshtermTree callback={getChecked}/>

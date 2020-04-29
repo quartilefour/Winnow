@@ -24,7 +24,7 @@
     ```
   - Coverage Reports
   
-    [./coverage/lcov-report/index.html](./coverage/lcov-report/index.html)
+    `./coverage/lcov-report/index.html`
 * Run
     ```shell script
     npm install

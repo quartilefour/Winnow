@@ -201,12 +201,40 @@ describe('<GeneDetailModal />', () => {
     });
 
     it('should get some mock data', async () => {
-        const mockfBM = new MockAdapter(axios);
-        mockfBM
+        const mock = new MockAdapter(axios);
+        mock
             .onPost(`${WINNOW_API_BASE_URL}/genes`)
             .reply(200, response)
-            .onGet(`${NCBI_API_BASE}/esummary.fcgi`)
+            .onGet(new RegExp(`${NCBI_API_BASE}/esummary.fcgi*`))
             .reply(200, ncbiResponse);
+        const c = mount(<GeneDetailModal {...props}/>);
+        await act(async () => {
+            await Promise.resolve(c);
+            await new Promise(resolve => setImmediate(resolve));
+            c.update()
+        });
+    });
+
+    it('should get NCBI error', async () => {
+        const mock = new MockAdapter(axios);
+        mock
+            .onPost(`${WINNOW_API_BASE_URL}/genes`)
+            .reply(200, response)
+            .onGet(new RegExp(`${NCBI_API_BASE}/esummary.fcgi*`))
+            .reply(500, "Internal server error");
+        const c = mount(<GeneDetailModal {...props}/>);
+        await act(async () => {
+            await Promise.resolve(c);
+            await new Promise(resolve => setImmediate(resolve));
+            c.update()
+        });
+    });
+
+    it('should get fetchGeneDetails error', async () => {
+        const mock = new MockAdapter(axios);
+        mock
+            .onPost(`${WINNOW_API_BASE_URL}/genes`)
+            .reply(500, "Internal server error");
         const c = mount(<GeneDetailModal {...props}/>);
         await act(async () => {
             await Promise.resolve(c);
@@ -219,15 +247,6 @@ describe('<GeneDetailModal />', () => {
     it('should have proper props for progress bar', () => {
         expect(container.find('ProgressBar')).toHaveProp({
             animated: true,
-        });
-        expect(container.find('ProgressBar')).toHaveProp({
-            now: 100,
-        });
-        expect(container.find('ProgressBar')).toHaveProp({
-            variant: "info",
-        });
-        expect(container.find('ProgressBar')).toHaveProp({
-            label: 'Loading...',
         });
     });
      */

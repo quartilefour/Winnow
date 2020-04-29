@@ -84,12 +84,20 @@ describe('<SaveSearchModal />', () => {
     });
 
     it('should get some mock data', async () => {
-        const mockfBM = new MockAdapter(axios);
-        mockfBM
+        //mockUseEffect();
+        const mock = new MockAdapter(axios);
+        mock
             .onPost(`${WINNOW_API_BASE_URL}/bookmarks`)
             .reply(200, "Saved bookmark");
         const c = mount(<SaveSearchModal {...props}/>);
         await act(async () => {
+            const bmInput = wrapper.find('FormControl[id="bm-input"]');
+            expect(bmInput.length).toEqual(1);
+            bmInput.simulate('change', {target: {value: 'BM 1'}});
+            const saveButton = wrapper.find('Button').last();
+            saveButton.simulate('click')
+            mockUseEffect();
+            mockUseEffect();
             await Promise.resolve(c);
             await new Promise(resolve => setImmediate(resolve));
             c.update()
@@ -97,7 +105,14 @@ describe('<SaveSearchModal />', () => {
     });
 
     it('should have input for bookmark', () => {
-        expect(wrapper.find('FormControl[id="bm-input"]').length).toEqual(1);
+        const bmInput = wrapper.find('FormControl[id="bm-input"]');
+        expect(bmInput.length).toEqual(1);
+
+        bmInput.simulate('change', {target: {value: 'BM 1'}});
+        const saveButton = wrapper.find('Button').last();
+        saveButton.simulate('click')
+        mockUseEffect();
+        mockUseEffect();
     });
     /*
 

@@ -1,8 +1,13 @@
 import React from 'react';
+import {BrowserRouter as Router} from "react-router-dom";
 import * as AuthContext from "../../../context/auth";
 import Login from '../../../components/user/Login';
 import {mount, shallow} from "enzyme";
 import {mountWrap} from "../../_helpers";
+import MockAdapter from "axios-mock-adapter";
+import axios from "axios";
+import {WINNOW_API_BASE_URL} from "../../../constants";
+import {act} from "react-dom/test-utils";
 
 
 describe('<Login {props}/>', () => {
@@ -15,18 +20,21 @@ describe('<Login {props}/>', () => {
         useEffect.mockImplementationOnce(f => f());
     }
 
-    const wrappedMount = () => mountWrap(<Login {...props} />)
+    const loginResponseHeaders = {
+        authorization: 'Bearer jwttoken'
+        }
+
     beforeEach(() => {
         useEffect = jest.spyOn(React, "useEffect");
         props = {
-            location: { state: undefined},
+            location: {state: undefined},
             userEmail: 'jonny@harvard.edu',
             userPassword: 'Test1234!'
         };
         if (component) component.unmount();
 
-       mockUseEffect();
-       wrapper = shallow(<Login {...props} />);
+        mockUseEffect();
+        wrapper = shallow(<Login {...props} />);
     })
 
     it('should render with mock data in snapshot', () => {
@@ -34,7 +42,7 @@ describe('<Login {props}/>', () => {
     });
 
     it('should render with defined referer', () => {
-        props.location.state = { referer: "/profile"}
+        props.location.state = {referer: "/profile"}
         mockUseEffect();
         wrapper = shallow(<Login {...props} />);
         expect(wrapper).toMatchSnapshot();
@@ -81,24 +89,36 @@ describe('<Login {props}/>', () => {
         expect(wrapper.find('Button').length).toEqual(1);
     });
 
-    it('should submit credentials when button is clicked', () => {
-        wrapper.debug();
-        wrapper.find('FormControl[name="userEmail"]').simulate('change', {
-            persist: () => {},
-            target: {
-                name: 'userEmail',
-                value: 'jonny@harvard.edu'
-            }
-        })
-        wrapper.find('FormControl[name="userPassword"]').simulate('change', {
-            persist: () => {},
-            target: {
-                name: 'userPassword',
-                value: 'Test1234!'
-            }
-        })
-        expect(wrapper.find('FormControl[name="userEmail"]').props().value).toEqual('jonny@harvard.edu')
-        wrapper.find('Form').simulate('submit')
+    it('should submit credentials when button is clicked', async () => {
+        const mock = new MockAdapter(axios);
+        mock
+            .onPost(`${WINNOW_API_BASE_URL}/login`)
+            .reply(200, '', loginResponseHeaders);
+        const c = mount(<Router><Login {...props}/></Router>)
+        await act(async () => {
+            await Promise.resolve(c);
+            await new Promise(resolve => setImmediate(resolve));
+            c.update()
+        });
+            c.find('FormControl[name="userEmail"]').simulate('change', {
+                persist: () => {
+                },
+                target: {
+                    name: 'userEmail',
+                    value: 'jonny@harvard.edu'
+                }
+            })
+            c.find('FormControl[name="userPassword"]').simulate('change', {
+                persist: () => {
+                },
+                target: {
+                    name: 'userPassword',
+                    value: 'Test1234!'
+                }
+            })
+            expect(c.find('FormControl[name="userEmail"]').props().value).toEqual('jonny@harvard.edu')
+            c.find('Form').simulate('submit')
+        //c.debug();
 
     });
 
@@ -150,7 +170,9 @@ describe('<Login {props}/>', () => {
     it('it should redirect after successful log in', () => {
         const contextValues = {
             authToken: 'jwttoken',
-            setAuthToken: (e) => {this.authToken = e}
+            setAuthToken: (e) => {
+                this.authToken = e
+            }
         }
         jest.spyOn(AuthContext, 'useAuth')
             .mockImplementation(() => contextValues);

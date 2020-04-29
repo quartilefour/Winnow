@@ -77,8 +77,8 @@ describe('<Register />', () => {
     });
 
     it('should get mock profile data', async () => {
-        const mockfBM = new MockAdapter(axios);
-        mockfBM
+        const mock = new MockAdapter(axios);
+        mock
             .onPost(`${WINNOW_API_BASE_URL}/registration`)
             .reply(201, "Account created");
         const c = mount(<Router><Register/></Router>)

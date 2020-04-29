@@ -137,6 +137,26 @@ th {
     box-shadow: 3px 3px 5px grey;
 }
 
+.separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #888;
+    font-style: italic;
+}
+
+.separator::before, .separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #888;
+}
+.separator::before {
+    margin-right: .25em;
+}
+.separator::after {
+    margin-left: .25em;
+}
+
 .super-treeview {
     max-height: 55vh;
     overflow-y: auto;
