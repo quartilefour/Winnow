@@ -5,9 +5,7 @@ html {
 body {
     background: linear-gradient(117deg, rgba(58, 101, 180, 1) 0%, rgba(29, 154, 253, 0.9304096638655462) 50%, rgba(69, 226, 252, 1) 100%);
     margin: 0;
-    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+    font-family: Montserrat;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 }
