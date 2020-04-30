@@ -16,7 +16,7 @@ services:
       - db.cscie599.com
     ports:
       - 8090:8080
-  webapp:
+  webapp.cscie599.com:
     build:
       context: ./
       dockerfile: ./deploy/local/webapp/Dockerfile
