@@ -39,23 +39,43 @@ describe('<Profile />', () => {
         expect(wrapper.find('PageLoader').length).toEqual(1);
     });
 
-    it('should get mock profile data', async () => {
-        const mockfBM = new MockAdapter(axios);
-        mockfBM
+    it('should submit mock profile data', async () => {
+        const mock = new MockAdapter(axios);
+        mock
             .onGet(`${WINNOW_API_BASE_URL}/profile`)
-            .reply(200, response);
+            .reply(200, response)
+            .onPatch(`${WINNOW_API_BASE_URL}/profile`)
+            .reply(200, {})
         const c = mount(<Profile/>);
         await act(async () => {
             await Promise.resolve(c);
             await new Promise(resolve => setImmediate(resolve));
             c.update()
+            c.find('Form').first().simulate('submit')
+        });
+        //console.log(c.debug());
+    });
+
+    it('should get mock password data', async () => {
+        const mock = new MockAdapter(axios);
+        mock
+            .onGet(`${WINNOW_API_BASE_URL}/profile`)
+            .reply(200, response)
+            .onPatch(`${WINNOW_API_BASE_URL}/profile`)
+            .reply(200, {})
+        const c = mount(<Profile/>);
+        await act(async () => {
+            await Promise.resolve(c);
+            await new Promise(resolve => setImmediate(resolve));
+            c.update()
+            c.find('Form').last().simulate('submit')
         });
         //console.log(c.debug());
     });
 
     it('should get mock profile error', async () => {
-        const mockfBM = new MockAdapter(axios);
-        mockfBM
+        const mock = new MockAdapter(axios);
+        mock
             .onGet(`${WINNOW_API_BASE_URL}/profile`)
             .reply(500, "Internal server error");
         const c = mount(<Profile/>);

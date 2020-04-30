@@ -1,7 +1,6 @@
 import React from 'react';
 import {mount, shallow} from 'enzyme';
 import GeneDetailModal from '../../../components/gene/GeneDetailModal';
-import {mountWrap, shallowWrap} from "../../_helpers";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import {NCBI_API_BASE, WINNOW_API_BASE_URL} from "../../../constants";
@@ -172,14 +171,21 @@ describe('<GeneDetailModal />', () => {
     };
 
 
-    const wrappedShallow = () => shallowWrap(<GeneDetailModal {...props} />);
-    const wrappedMount = () => mountWrap(<GeneDetailModal {...props} />);
-
     const mockUseEffect = () => {
         useEffect.mockImplementationOnce(f => f());
     }
 
     beforeEach(() => {
+        jest.mock('react-bootstrap-table2-toolkit', () => {
+            return {
+                ToolkitProvider: 'ToolkitProvider',
+            };
+        });
+        jest.mock('react-bootstrap-table-next', () => {
+            return {
+                BootstrapTable: 'BootstrapTable',
+            };
+        });
         useEffect = jest.spyOn(React, "useEffect");
         props = {
             active: true,
@@ -192,7 +198,6 @@ describe('<GeneDetailModal />', () => {
     })
 
     it('should render with mock data in snapshot', () => {
-        //const wrapper = wrappedShallow();
         expect(wrapper).toMatchSnapshot();
     });
 
@@ -212,6 +217,9 @@ describe('<GeneDetailModal />', () => {
             await Promise.resolve(c);
             await new Promise(resolve => setImmediate(resolve));
             c.update()
+            const csvExportM = c.find('Button')
+            //expect(csvExportM.length).toEqual(1);
+            //console.log(c.debug())
         });
     });
 

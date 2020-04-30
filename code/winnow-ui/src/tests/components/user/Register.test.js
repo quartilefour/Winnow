@@ -5,36 +5,36 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import {act} from "react-dom/test-utils";
 import {WINNOW_API_BASE_URL} from "../../../constants";
-import {mountWrap, shallowWrap} from "../../_helpers";
-import {mount} from "enzyme";
+import {mount, shallow} from "enzyme";
 
 
 describe('<Register />', () => {
     let props;
+    let wrapper;
+    let useEffect;
     let component;
-    const wrappedShallow = () => shallowWrap(<Register {...props} />);
-    const wrappedMount = () => mountWrap(<Register {...props} />);
+
+    const mockUseEffect = () => {
+        useEffect.mockImplementationOnce(f => f());
+    }
+
     beforeEach(() => {
-        props = {
-            location: { state: undefined},
-            userEmail: 'jonny@harvard.edu',
-            userPassword: 'Test1234!'
-        };
+        useEffect = jest.spyOn(React, "useEffect");
+        props = {};
         if (component) component.unmount();
+        mockUseEffect();
+        wrapper = shallow(<Register {...props} />)
     })
 
-    test('should render with mock data in snapshot', () => {
-        const wrapper = wrappedShallow();
+    it('should render with mock data in snapshot', () => {
         expect(wrapper).toMatchSnapshot();
     });
 
     it('should have an email field', () => {
-        const wrapper = wrappedShallow();
         expect(wrapper.find('FormControl[type="email"]').length).toEqual(1);
     });
 
     it('should have proper props for email field', () => {
-        const wrapper = wrappedShallow();
         expect(wrapper.find('FormControl[type="email"]').props()).toEqual({
             autoComplete: "username",
             name: "userEmail",
@@ -47,12 +47,10 @@ describe('<Register />', () => {
     });
 
     it('should have a password field', () => {
-        const wrapper = wrappedShallow();
         expect(wrapper.find('FormControl[type="password"]').length).toEqual(2);
     });
 
     it('should have proper props for password field', () => {
-        const wrapper = wrappedShallow();
         expect(wrapper.find('FormControl[type="password"]').first().props()).toEqual({
             autoComplete: "new-password",
             name: "userPassword",
@@ -63,32 +61,71 @@ describe('<Register />', () => {
             value: ''
         });
     });
+
     it('should have a submit button', () => {
-        const wrapper = wrappedShallow();
         expect(wrapper.find('Button').length).toEqual(1);
     });
 
-    it('should submit credentials when button is clicked', () => {
-        const wrapper = wrappedShallow();
-        const loginButton = wrapper.find('Button');
-        loginButton.simulate('click');
-        //expect(wrapper.find('Button').length).toEqual(1);
-
-    });
-
-    it('should get mock profile data', async () => {
+    it('should submit credentials when button is clicked', async () => {
         const mock = new MockAdapter(axios);
         mock
             .onPost(`${WINNOW_API_BASE_URL}/registration`)
-            .reply(201, "Account created");
-        const c = mount(<Router><Register/></Router>)
+            .reply(201, '')
+        const c = mount(<Router><Register {...props}/></Router>)
         await act(async () => {
             await Promise.resolve(c);
             await new Promise(resolve => setImmediate(resolve));
+            c.find('FormControl[name="firstName"]').simulate('change', {
+                persist: () => {
+                },
+                target: {
+                    name: 'firstName',
+                    value: 'Jonny'
+                }
+            })
+            c.find('FormControl[name="lastName"]').simulate('change', {
+                persist: () => {
+                },
+                target: {
+                    name: 'lastName',
+                    value: 'Harvard'
+                }
+            })
+            c.find('FormControl[name="userEmail"]').simulate('change', {
+                persist: () => {
+                },
+                target: {
+                    name: 'userEmail',
+                    value: 'jonny@harvard.edu'
+                }
+            })
+            c.find('FormControl[name="userPassword"]').simulate('change', {
+                persist: () => {
+                },
+                target: {
+                    name: 'userPassword',
+                    value: 'Test1234!'
+                }
+            })
+            c.find('FormControl[name="passwordConfirm"]').simulate('change', {
+                persist: () => {
+                },
+                target: {
+                    name: 'passwordConfirm',
+                    value: 'Test1234!'
+                }
+            })
+            expect(c.find('FormControl[name="firstName"]').props().value).toEqual('Jonny')
+            expect(c.find('FormControl[name="lastName"]').props().value).toEqual('Harvard')
+            expect(c.find('FormControl[name="userEmail"]').props().value).toEqual('jonny@harvard.edu')
+            c.find('Form').simulate('submit')
+
             c.update()
+            mock.reset()
         });
-        //console.log(c.debug());
+
     });
+
 
     /*
     it('button click changes submits form', async () => {
@@ -108,3 +145,82 @@ describe('<Register />', () => {
     */
 });
 
+describe('<Register /> with existing email', () => {
+    let props;
+    let wrapper;
+    let useEffect;
+    let component;
+
+    const mockUseEffect = () => {
+        useEffect.mockImplementationOnce(f => f());
+    }
+
+    beforeEach(() => {
+        useEffect = jest.spyOn(React, "useEffect");
+        props = {};
+        if (component) component.unmount();
+        mockUseEffect();
+        wrapper = shallow(<Register {...props} />)
+    })
+
+    it('should submit credentials with existing email when button is clicked', async () => {
+        const mock = new MockAdapter(axios);
+        mock
+            .onPost(`${WINNOW_API_BASE_URL}/registration`)
+            .reply(409, { error: 'E-mail address already registered'})
+        const c = mount(<Router><Register {...props}/></Router>)
+        await act(async () => {
+            await Promise.resolve(c);
+            await new Promise(resolve => setImmediate(resolve));
+            c.find('FormControl[name="firstName"]').simulate('change', {
+                persist: () => {
+                },
+                target: {
+                    name: 'firstName',
+                    value: 'Jonny'
+                }
+            })
+            c.find('FormControl[name="lastName"]').simulate('change', {
+                persist: () => {
+                },
+                target: {
+                    name: 'lastName',
+                    value: 'Harvard'
+                }
+            })
+            c.find('FormControl[name="userEmail"]').simulate('change', {
+                persist: () => {
+                },
+                target: {
+                    name: 'userEmail',
+                    value: 'jonny@harvard.edu'
+                }
+            })
+            c.find('FormControl[name="userPassword"]').simulate('change', {
+                persist: () => {
+                },
+                target: {
+                    name: 'userPassword',
+                    value: 'Test1234!'
+                }
+            })
+            c.find('FormControl[name="passwordConfirm"]').simulate('change', {
+                persist: () => {
+                },
+                target: {
+                    name: 'passwordConfirm',
+                    value: 'Test1234!'
+                }
+            })
+            expect(c.find('FormControl[name="firstName"]').props().value).toEqual('Jonny')
+            expect(c.find('FormControl[name="lastName"]').props().value).toEqual('Harvard')
+            expect(c.find('FormControl[name="userEmail"]').props().value).toEqual('jonny@harvard.edu')
+            c.find('Form').simulate('submit')
+
+            //console.log(c.debug());
+            c.update()
+            mock.reset()
+        });
+
+    });
+});

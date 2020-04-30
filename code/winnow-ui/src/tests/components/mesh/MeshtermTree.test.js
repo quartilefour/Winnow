@@ -138,13 +138,22 @@ describe('<MeshtermTree {props}/>', () => {
             await Promise.resolve(c);
             await new Promise(resolve => setImmediate(resolve));
             c.update()
+            //console.log(`I want to see: ${c.debug()}`)
+
+            const t = c.find('div[className="super-treeview-triangle-btn super-treeview-triangle-btn-right"]')
+            console.log(`cat nodes: ${t.length}`)
+            t.last().simulate('click')
+            c.update()
+            //console.log(`I want to see: ${c.debug()}`)
+            const cNode = c.find('input[id="C"]').parent();
+            expect(cNode.is('div')).toEqual(true)
+            //console.log(`parent node contents: ${JSON.stringify(c.find('input[id="C"]'))}`)
+            expect(cNode.find('div').length).toEqual(1);
         });
 
-        const cNode = c.find('input[id="C"]');
-        expect(cNode.length).toEqual(1);
 
-        cNode.simulate('click', {target: {checked: false, isExpanded: true}})
-        console.log(c.debug())
+        //cNode.simulate('click')
+        //console.log(c.debug())
 
     });
 });

@@ -12,21 +12,21 @@ describe('<ComboSearchTab />', () => {
     let useEffect;
     let component;
 
-    const selectData =[
+    const selectData = [
         {
-            "geneId":"100188774",
-            "description":"Deafness, cataract, retinitis pigmentosa, and sperm abnormalities",
-            "symbol":"DFCTRPS"
+            "geneId": "100188774",
+            "description": "Deafness, cataract, retinitis pigmentosa, and sperm abnormalities",
+            "symbol": "DFCTRPS"
         },
         {
-            "geneId":"100189019",
-            "description":"tRNA-Pro (anticodon AGG) 2-1",
-            "symbol":"TRP-AGG2-1"
+            "geneId": "100189019",
+            "description": "tRNA-Pro (anticodon AGG) 2-1",
+            "symbol": "TRP-AGG2-1"
         },
         {
-            "geneId":"100189020",
-            "description":"tRNA-Pro (anticodon AGG) 1-1",
-            "symbol":"TRP-AGG1-1"
+            "geneId": "100189020",
+            "description": "tRNA-Pro (anticodon AGG) 1-1",
+            "symbol": "TRP-AGG1-1"
         }
     ]
 
@@ -64,10 +64,10 @@ describe('<ComboSearchTab />', () => {
         expect(geneSelect.length).toEqual(1);
 
         geneSelect.simulate('inputChange', {keyCode: 80})
-        geneSelect.simulate('inputChange', [{keyCode: 84},{keyCode: 82}])
+        geneSelect.simulate('inputChange', [{keyCode: 84}, {keyCode: 82}])
 
         geneSelect.simulate('change', null)
-        geneSelect.simulate('change', [{ label: 'TRP-AGG1-1', value: "100189020"}])
+        geneSelect.simulate('change', [{label: 'TRP-AGG1-1', value: "100189020"}])
         //console.log(wrapper.debug())
     });
 
@@ -78,16 +78,23 @@ describe('<ComboSearchTab />', () => {
             .reply(200, selectData)
             .onPost(`${WINNOW_API_BASE_URL}/search`)
             .reply(200, selectData)
-        const button = wrapper.find('Button');
-        expect(button.length).toEqual(2);
+        const c = mount(<ComboSearchTab {...props}/>);
+        await act(async () => {
+            await Promise.resolve(c);
+            await new Promise(resolve => setImmediate(resolve));
+            const button = wrapper.find('Button');
+            expect(button.length).toEqual(2);
 
-        //console.log(wrapper.debug())
-        const geneSelect = wrapper.find('StateManager');
-        expect(geneSelect.length).toEqual(1);
+            //console.log(wrapper.debug())
+            const geneSelect = wrapper.find('StateManager');
+            expect(geneSelect.length).toEqual(1);
 
-        geneSelect.simulate('inputChange', [{keyCode: 84},{keyCode: 82}])
-        geneSelect.simulate('change', [{ label: 'TRP-AGG1-1', value: "100189020"}])
-        button.last().simulate('click');
+            geneSelect.simulate('inputChange', [{keyCode: 84}, {keyCode: 82}])
+            geneSelect.simulate('change', [{label: 'TRP-AGG1-1', value: "100189020"}])
+            button.last().simulate('click');
+            mockUseEffect()
+            c.update()
+        });
 
         //mockUseEffect();
         /*props.hasResults = true;

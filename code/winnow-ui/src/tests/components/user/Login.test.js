@@ -3,7 +3,6 @@ import {BrowserRouter as Router} from "react-router-dom";
 import * as AuthContext from "../../../context/auth";
 import Login from '../../../components/user/Login';
 import {mount, shallow} from "enzyme";
-import {mountWrap} from "../../_helpers";
 import MockAdapter from "axios-mock-adapter";
 import axios from "axios";
 import {WINNOW_API_BASE_URL} from "../../../constants";
@@ -22,7 +21,7 @@ describe('<Login {props}/>', () => {
 
     const loginResponseHeaders = {
         authorization: 'Bearer jwttoken'
-        }
+    }
 
     beforeEach(() => {
         useEffect = jest.spyOn(React, "useEffect");
@@ -85,6 +84,7 @@ describe('<Login {props}/>', () => {
             value: ''
         });
     });
+
     it('should have a submit button', () => {
         expect(wrapper.find('Button').length).toEqual(1);
     });
@@ -100,73 +100,27 @@ describe('<Login {props}/>', () => {
             await new Promise(resolve => setImmediate(resolve));
             c.update()
         });
-            c.find('FormControl[name="userEmail"]').simulate('change', {
-                persist: () => {
-                },
-                target: {
-                    name: 'userEmail',
-                    value: 'jonny@harvard.edu'
-                }
-            })
-            c.find('FormControl[name="userPassword"]').simulate('change', {
-                persist: () => {
-                },
-                target: {
-                    name: 'userPassword',
-                    value: 'Test1234!'
-                }
-            })
-            expect(c.find('FormControl[name="userEmail"]').props().value).toEqual('jonny@harvard.edu')
-            c.find('Form').simulate('submit')
-        //c.debug();
-
-    });
-
-    /*
-    test('group validation', async (done) => {
-        props.location.state = { referer: "/profile"}
-        mockUseEffect();
-        const wrappedMount = () => mountWrap(<Login {...props} />);
-        const wrapper2 = wrappedMount()
-
-        // set the inputs
-        const instance = wrapper2.find('Formik').instance();
-        const changeState = new Promise((resolve) => {
-            instance.setState({
-                values: {
-                    userEmail: 'jonny@harvard.edu',
-                    userPassword: 'Test1234!'
-                }
-            }, () => resolve())
-        });
-        await changeState;
-        const form = wrapper2.find('Form');
-        form.simulate('submit');
-        setTimeout(() => {
-            const alerts = wrapper2.find('Formik')
-                .update()
-                .find('.alert');
-            expect(alerts.length).toBe(1);
-            done();
-        });
-    });
-
-    /*
-    it('button click changes submits form', async () => {
-        // cache button element
-        const button = container.find('Button').last();
-        const eventMock = {
+        c.find('FormControl[name="userEmail"]').simulate('change', {
+            persist: () => {
+            },
             target: {
-                onClick: function () {
-                    return true
-                }
+                name: 'userEmail',
+                value: 'jonny@harvard.edu'
             }
-        };
-        // pass mocked event object
-        //await button.onSubmit(eventMock);
-        expect(container.find('Button').length).toEqual(1);
+        })
+        c.find('FormControl[name="userPassword"]').simulate('change', {
+            persist: () => {
+            },
+            target: {
+                name: 'userPassword',
+                value: 'Test1234!'
+            }
+        })
+        expect(c.find('FormControl[name="userEmail"]').props().value).toEqual('jonny@harvard.edu')
+        c.find('Form').simulate('submit')
+
     });
-    */
+
     it('it should redirect after successful log in', () => {
         const contextValues = {
             authToken: 'jwttoken',

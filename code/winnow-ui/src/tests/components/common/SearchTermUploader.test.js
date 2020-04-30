@@ -21,6 +21,7 @@ describe('<SearchTermUploader />', () => {
         props = {
             active: true,
             searchable: true,
+            update: jest.fn().mockResolvedValue({})
         };
         if (component) component.unmount();
 
@@ -30,6 +31,28 @@ describe('<SearchTermUploader />', () => {
 
     it('should match the snapshot', () => {
         expect(wrapper).toMatchSnapshot();
+    });
+
+    it('should have queryFormat radio buttons', () => {
+        expect(wrapper.find('FormCheck').length).toEqual(6);
+    });
+
+    it('should have Mesh name radio button', () => {
+        const meshtermButton = wrapper.find('FormCheck[value="name"]')
+        expect(meshtermButton.length).toEqual(1);
+        meshtermButton.simulate('change', {currentTarget: {name: "queryFormat", value:"name", checked: true}})
+    });
+
+    it('should have textarea', () => {
+        const textArea = wrapper.find('FormControl[name="textArea"]')
+        expect(textArea.length).toEqual(1);
+        textArea.simulate('change', {currentTarget: {name: "textArea", value:"Cystic Fibrosis"}})
+    });
+
+    it('should have file upload', () => {
+        const fileUpload = wrapper.find('FormControl[type="file"]')
+        expect(fileUpload.length).toEqual(1);
+        fileUpload.simulate('change', {currentTarget: {name: "fileUpload", files: [{name: "terms.csv"}]}})
     });
 
     it('should have progress bar', () => {

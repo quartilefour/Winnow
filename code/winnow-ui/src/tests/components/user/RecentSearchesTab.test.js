@@ -1,11 +1,8 @@
 import React from 'react';
-import { shallow } from 'enzyme';
+import { mount, shallow } from 'enzyme';
 import RecentSearchesTab from '../../../components/user/RecentSearchesTab';
+import {getSearchHistory} from "../../../service/SearchService";
 
-test('should test RecentSearchesTab component', () => {
-    const wrapper = shallow(<RecentSearchesTab />);
-    expect(wrapper).toMatchSnapshot();
-});
 
 describe('<RecentSearchesTab {props}/>', () => {
     let props;
@@ -13,12 +10,21 @@ describe('<RecentSearchesTab {props}/>', () => {
     let useEffect;
     let component;
 
+    const searchHistory = [
+        {
+            "index": 0,
+            "searchQuery":{"geneId":["285550"],"symbol":[],"description":[],"meshId":[],"meshTreeId":[],"name":[]}
+        }
+    ]
+
     const mockUseEffect = () => {
         useEffect.mockImplementationOnce(f => f());
     }
 
+
     beforeEach(() => {
         useEffect = jest.spyOn(React, "useEffect");
+
         props = {};
         if (component) component.unmount();
 
@@ -34,17 +40,24 @@ describe('<RecentSearchesTab {props}/>', () => {
         expect(wrapper.find('div').length).toEqual(1);
     });
 
-/*
-    it('loads error', () => {
-        expect(props.error).toEqual('404: Page Not Found!');
+    it('loads', () => {
+        const c = mount(<RecentSearchesTab {...props} />)
+        c.update()
+        jest.mock(getSearchHistory(), () => {return [{
+            "index": 0,
+            "searchQuery":{"geneId":["285550"],"symbol":[],"description":[],"meshId":[],"meshTreeId":[],"name":[]}
+        }]})
+        mockUseEffect()
+        console.log(`RST: ${c.debug()}`)
     })
 
-    it('should render when no error is passed', () => {
-        props.error = null;
-        mockUseEffect();
-        wrapper = shallow(<RecentSearchesTab {...props} />);
-        expect(props.error).toEqual(null);
-        expect(wrapper.find('Card').length).toEqual(1);
-    })
- */
+    /*
+        it('should render when no error is passed', () => {
+            props.error = null;
+            mockUseEffect();
+            wrapper = shallow(<RecentSearchesTab {...props} />);
+            expect(props.error).toEqual(null);
+            expect(wrapper.find('Card').length).toEqual(1);
+        })
+     */
 });
