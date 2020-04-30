@@ -1,6 +1,7 @@
 package com.cscie599.gfn.entities;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Set;
 
 @Entity
@@ -8,7 +9,7 @@ import java.util.Set;
 @NamedQueries({
         @NamedQuery(name = "Role.findAll", query = "SELECT r FROM Role r")
 })
-public class Role {
+public class Role implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "role_id", nullable = false)
