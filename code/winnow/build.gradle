@@ -1,6 +1,7 @@
 plugins {
 	id 'org.springframework.boot' version '2.2.5.RELEASE'
 	id 'io.spring.dependency-management' version '1.0.9.RELEASE'
+	id "com.github.spotbugs" version "4.0.8"
 }
 
 subprojects {
@@ -9,6 +10,7 @@ subprojects {
 	apply plugin: 'org.springframework.boot'
 	apply plugin: 'jacoco'
 	apply plugin: 'idea'
+	apply plugin: "com.github.spotbugs"
 
 	group = 'com.cscie599.gfn'
 	version = '0.0.1-SNAPSHOT'
@@ -97,4 +99,21 @@ subprojects {
 		sourceDirectories.from = files(sourceSets.main.allSource.srcDirs)
 	}
 	test.finalizedBy(jacocoTestReport)
+
+	spotbugs {
+		toolVersion = '4.0.0'
+		effort = "max"
+		reportLevel = 'high'
+		ignoreFailures = project.findProperty('ignoreBugs') != null
+	}
+
+	spotbugsMain {
+		reports {
+			html {
+				enabled = true
+				destination = file("$buildDir/reports/spotbugs/main/spotbugs.html")
+				stylesheet = 'fancy-hist.xsl'
+			}
+		}
+	}
 }
