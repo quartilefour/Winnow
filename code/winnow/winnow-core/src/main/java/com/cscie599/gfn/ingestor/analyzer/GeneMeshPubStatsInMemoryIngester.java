@@ -27,6 +27,8 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 
+import java.util.Arrays;
+
 /**
  * @author PulkitBhanot
  */
@@ -74,7 +76,7 @@ public class GeneMeshPubStatsInMemoryIngester extends BaseIngester {
 
     @Bean
     public ItemReader<GeneMeshPub> readerForGeneMeshPubStats() {
-        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
+        logger.info("Reading resource: " + Arrays.toString(inputResources) + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
         SkipSupportedMultiResourceItemReader<GeneMeshPub> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<>();
         multiResourceItemReader.setResources(inputResources);
         multiResourceItemReader.setStrict(false);

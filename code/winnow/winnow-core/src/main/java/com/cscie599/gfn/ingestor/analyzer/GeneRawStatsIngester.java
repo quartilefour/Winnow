@@ -32,6 +32,7 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -89,7 +90,7 @@ public class GeneRawStatsIngester extends BaseIngester {
 
     @Bean
     public ItemReader<GeneRawStats> readerForGeneRawStats() {
-        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
+        logger.info("Reading resource: " + Arrays.toString(inputResources) + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
         SkipSupportedMultiResourceItemReader<GeneRawStats> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<>();
         multiResourceItemReader.setResources(inputResources);
         multiResourceItemReader.setStrict(false);
