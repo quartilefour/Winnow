@@ -87,7 +87,7 @@ public class EnrichmentAnalyzerApp implements CommandLineRunner {
                 executorService.submit(new ChiSquaredRunnable(partitionedPairs.get(i), countDownLatch, i, includePairsWith0Publications, inMemoryCache.getCachedGeneMeshPubStats(), outputResource.getURI().getPath()));
             }
             countDownLatch.await(60, TimeUnit.MINUTES);
-            if (response) {
+            if (response && countDownLatch.getCount() == 0) {
                 System.exit(0);
             } else {
                 System.exit(1);
