@@ -9,7 +9,7 @@ Gene Function Navigation Tool
  Environment consists of 5 containers.
  * postgres container as db.cscie599.com running on port 5432.
  * adminer container to view the contents of the db. The container is running adminer UI at http://127.0.0.1:8090, make sure to change the Database type to postgres(defaults to mysql)
- * webapp container that runs the springboot backend app. The springboot backend app can be accessed in UI at http://127.0.0.1:8000
+ * webapp container that runs the springboot backend app. The springboot backend app can be accessed in UI at http://127.0.0.1:8080
  * ftpfiledownloader container to download ftp files from various sources.
  * bulkingestion container to insert into postgres from the compressed files downloaded to S3 by ftpfiledownloader container.
  
@@ -41,7 +41,7 @@ Gene Function Navigation Tool
  
  `docker run --network gfn_default --mount type=bind,source=<path to the folder>/tmp-docker,target=/data gfn_ftpapp.cscie99.com:latest`
 
- Once the containers are built (or the db and adminer containers are built and you are using the springboot in local development mode, as described below), you can ingest the data in 'test-data' into the database by running http://127.0.0.1:8000/jobLauncher.html
+ Once the containers are built (or the db and adminer containers are built and you are using the springboot in local development mode, as described below), you can ingest the data in 'test-data' into the database by running http://127.0.0.1:8080/jobLauncher.html
     
 ## Code Organization
 * code/winnow/ - springboot backend app
