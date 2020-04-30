@@ -38,13 +38,13 @@ function Dashboard(props) {
                     <Col sm={2} id="dashboard-outer-tabs">
                         <Nav id="dashboard-tabs" variant="tabs" className="flex-column">
                             <Nav.Item>
-                                <Nav.Link eventKey="bookmarks">Bookmarks</Nav.Link>
+                                <Nav.Link eventKey="bookmarks">BOOKMARKS</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="search">Search</Nav.Link>
+                                <Nav.Link eventKey="search">SEARCH</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
-                                <Nav.Link eventKey="search-history">Recent Searches</Nav.Link>
+                                <Nav.Link eventKey="search-history">RECENT SEARCHES</Nav.Link>
                             </Nav.Item>
                         </Nav>
                     </Col>
