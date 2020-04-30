@@ -23,6 +23,8 @@ import static org.junit.Assert.fail;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Comparator;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -58,15 +60,18 @@ public class SkipSupportedMultiResourceItemReaderIntegrationTests {
     private ExecutionContext ctx = new ExecutionContext();
 
     // test input spans several resources
-    private Resource r1 = new ByteArrayResource("1\n2\n3\n".getBytes());
+    private Resource r1 = new ByteArrayResource("1\n2\n3\n".getBytes(StandardCharsets.UTF_8.name()));
 
-    private Resource r2 = new ByteArrayResource("4\n5\n".getBytes());
+    private Resource r2 = new ByteArrayResource("4\n5\n".getBytes(StandardCharsets.UTF_8.name()));
 
-    private Resource r3 = new ByteArrayResource("".getBytes());
+    private Resource r3 = new ByteArrayResource("".getBytes(StandardCharsets.UTF_8.name()));
 
-    private Resource r4 = new ByteArrayResource("6\n".getBytes());
+    private Resource r4 = new ByteArrayResource("6\n".getBytes(StandardCharsets.UTF_8.name()));
 
-    private Resource r5 = new ByteArrayResource("7\n8\n".getBytes());
+    private Resource r5 = new ByteArrayResource("7\n8\n".getBytes(StandardCharsets.UTF_8.name()));
+
+    public SkipSupportedMultiResourceItemReaderIntegrationTests() throws UnsupportedEncodingException {
+    }
 
     /**
      * Setup the tested reader to read from the test resources.
@@ -326,11 +331,11 @@ public class SkipSupportedMultiResourceItemReaderIntegrationTests {
      * Resources are ordered according to injected comparator.
      */
     @Test
-    public void testResourceOrderingWithCustomComparator() {
+    public void testResourceOrderingWithCustomComparator() throws UnsupportedEncodingException {
 
-        Resource r1 = new ByteArrayResource("".getBytes(), "b");
-        Resource r2 = new ByteArrayResource("".getBytes(), "a");
-        Resource r3 = new ByteArrayResource("".getBytes(), "c");
+        Resource r1 = new ByteArrayResource("".getBytes(StandardCharsets.UTF_8.name()), "b");
+        Resource r2 = new ByteArrayResource("".getBytes(StandardCharsets.UTF_8.name()), "a");
+        Resource r3 = new ByteArrayResource("".getBytes(StandardCharsets.UTF_8.name()), "c");
 
         Resource[] resources = new Resource[] { r1, r2, r3 };
 
@@ -433,6 +438,7 @@ public class SkipSupportedMultiResourceItemReaderIntegrationTests {
             }
 
             @Override
+            @Nullable
             public String getDescription() {
                 return null;
             }
@@ -466,6 +472,7 @@ public class SkipSupportedMultiResourceItemReaderIntegrationTests {
             }
 
             @Override
+            @Nullable
             public String getDescription() {
                 return null;
             }
@@ -503,6 +510,7 @@ public class SkipSupportedMultiResourceItemReaderIntegrationTests {
             }
 
             @Override
+            @Nullable
             public String getDescription() {
                 return null;
             }

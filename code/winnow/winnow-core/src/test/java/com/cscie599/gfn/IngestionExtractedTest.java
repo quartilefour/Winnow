@@ -9,6 +9,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -24,6 +25,8 @@ import static org.junit.Assert.assertTrue;
         "input.directory=./src/test/resources/test-data/extracted/"
 })
 public class IngestionExtractedTest extends BaseTest {
+
+    private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
 
     @Autowired
     IngestionService ingestionService;
@@ -79,8 +82,8 @@ public class IngestionExtractedTest extends BaseTest {
         assertEquals(1, meshtermList.size());
         assertEquals("D009124", meshtermList.get(0).getMeshId());
         assertEquals("Muscle Proteins", meshtermList.get(0).getName());
-        assertEquals(" Date create for meshTerm", MeshtermIngestor.DATE_FORMAT.format(new Date(915177600000L)), meshtermList.get(0).getDateCreated().toString());
-        assertEquals(" Date revised for meshTerm", MeshtermIngestor.DATE_FORMAT.format(new Date(1120114800000L)), meshtermList.get(0).getDateRevised().toString());
+        assertEquals(" Date create for meshTerm", DATE_FORMAT.format(new Date(915177600000L)), meshtermList.get(0).getDateCreated().toString());
+        assertEquals(" Date revised for meshTerm", DATE_FORMAT.format(new Date(1120114800000L)), meshtermList.get(0).getDateRevised().toString());
 
         assertEquals("Meshterm tree count", meshtermTreeRepository.findAll().size(), 99);
         MeshtermTree meshtermTree = meshtermTreeRepository.findByTreeNodeId("187").get(0);
@@ -89,8 +92,8 @@ public class IngestionExtractedTest extends BaseTest {
         assertEquals("187", meshtermTree.getMeshtermTreePK().getTreeNodeId());
         assertEquals("Hemerythrin", meshtermTree.getMeshterm().getName());
         assertEquals("D006422", meshtermTree.getMeshterm().getMeshId());
-        assertEquals(MeshtermIngestor.DATE_FORMAT.format(new Date(154080000000L)), meshtermTree.getMeshterm().getDateCreated().toString());
-        assertEquals(MeshtermIngestor.DATE_FORMAT.format(new Date(1025679600000L)), meshtermTree.getMeshterm().getDateRevised().toString());
+        assertEquals(DATE_FORMAT.format(new Date(154080000000L)), meshtermTree.getMeshterm().getDateCreated().toString());
+        assertEquals(DATE_FORMAT.format(new Date(1025679600000L)), meshtermTree.getMeshterm().getDateRevised().toString());
 
         List<Integer> taxIdArray = Arrays.asList(new Integer(9606));
 

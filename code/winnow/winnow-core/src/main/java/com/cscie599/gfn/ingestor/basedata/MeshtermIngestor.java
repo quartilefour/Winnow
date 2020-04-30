@@ -41,7 +41,6 @@ import java.util.List;
 @EnableAutoConfiguration
 public class MeshtermIngestor extends BaseIngester {
 
-    public static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
     protected static final Log logger = LogFactory.getLog(MeshtermIngestor.class);
 
     @Value("file:${input.directory}${input.meshsub.file}")
@@ -157,6 +156,8 @@ public class MeshtermIngestor extends BaseIngester {
      * create a MeshtermTreePK and MeshtermTree.
      */
     class DBMeshProcessor implements ItemProcessor<DescriptorRecord, List<Object>> {
+        public final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+
         public List<Object> process(DescriptorRecord descriptorRecord) throws Exception {
             List<Object> returnList = new ArrayList<>();
             DescriptorRecord record = ((DescriptorRecord) descriptorRecord);

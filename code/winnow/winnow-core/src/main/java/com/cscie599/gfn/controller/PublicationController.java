@@ -20,6 +20,7 @@ import org.apache.commons.lang3.StringUtils;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @RestController
@@ -121,7 +122,7 @@ public class PublicationController {
         taxIdsToProcess = new ArrayList<>(40);
         if (resourceFile.exists()) {
             try {
-                BufferedReader br = new BufferedReader(new InputStreamReader(resourceFile.getInputStream()));
+                BufferedReader br = new BufferedReader(new InputStreamReader(resourceFile.getInputStream(), StandardCharsets.UTF_8.name()));
                 String line = br.readLine();
                 while (line != null) {
                     taxIdsToProcess.add(Integer.parseInt(line.trim()));

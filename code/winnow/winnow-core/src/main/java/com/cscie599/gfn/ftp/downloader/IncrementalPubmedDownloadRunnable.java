@@ -111,7 +111,7 @@ public class IncrementalPubmedDownloadRunnable extends BasePubmedDownloadRunnabl
                 }
             }
             logger.info("Marking job as finished successfully");
-        } catch (Exception ex) {
+        } catch (IOException ex) {
             logger.error("Unable to complete processing of files " + fileName);
         } finally {
             latch.countDown();

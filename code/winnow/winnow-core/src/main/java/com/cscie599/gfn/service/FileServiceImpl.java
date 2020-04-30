@@ -1,17 +1,17 @@
 package com.cscie599.gfn.service;
 
 
-import com.cscie599.gfn.ingestor.basedata.PubmedXMLIngester;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.Resource;
 import org.springframework.stereotype.Service;
 
-import java.io.*;
-import java.nio.file.Path;
-import java.util.ArrayList;
-import java.util.List;
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.Scanner;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.zip.GZIPOutputStream;
@@ -39,7 +39,7 @@ public class FileServiceImpl implements FileService {
     @Value("file:${output.directory}${output.pubmed_meshterm_csv_gz.file}")
     private Resource outputResource;
 
-    byte[] newLineBytes = new String("\r\n").getBytes();
+    byte[] newLineBytes = new String("\r\n").getBytes(StandardCharsets.UTF_8);
 
     @Override
     public void splitAndZipFiles() throws IOException {
@@ -47,9 +47,9 @@ public class FileServiceImpl implements FileService {
         AtomicInteger index = new AtomicInteger(0);
         GZIPOutputStream gzipOS = getFileName(index);
         try {
-            Scanner scanner = new Scanner(inputResource.getFile());
+            Scanner scanner = new Scanner(inputResource.getFile(),StandardCharsets.UTF_8.name());
             while (scanner.hasNextLine()) {
-                gzipOS.write(scanner.nextLine().getBytes());
+                gzipOS.write(scanner.nextLine().getBytes(StandardCharsets.UTF_8));
                 gzipOS.write(newLineBytes);
                 lineCount++;
                 if (lineCount % linesPerFile == 0) {

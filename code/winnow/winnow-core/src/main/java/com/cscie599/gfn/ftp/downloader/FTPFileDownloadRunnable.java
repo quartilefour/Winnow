@@ -42,7 +42,7 @@ public class FTPFileDownloadRunnable implements Runnable {
     private final static String FTP_USERPASS = "";
     private final static String FTP_FILEEXTENSION = ".gz";
     //date format to be appended to the file
-    private final static SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMDDhhmmss");
+    private final SimpleDateFormat sdf = new SimpleDateFormat("YYYYMMDDhhmmss");
     byte[] buffer = new byte[1024];
 
     private boolean extractContent;

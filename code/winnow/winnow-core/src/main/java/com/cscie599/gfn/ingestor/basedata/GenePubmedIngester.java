@@ -31,6 +31,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
 import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
@@ -58,7 +59,7 @@ public class GenePubmedIngester extends BaseIngester {
         publicationToSkip = new HashSet<>();
         if (resourceFile.exists()) {
             try {
-                BufferedReader br = new BufferedReader(new InputStreamReader(resourceFile.getInputStream()));
+                BufferedReader br = new BufferedReader(new InputStreamReader(resourceFile.getInputStream(), StandardCharsets.UTF_8.name()));
                 String line = br.readLine();
                 while (line != null) {
                     publicationToSkip.add(line.trim());

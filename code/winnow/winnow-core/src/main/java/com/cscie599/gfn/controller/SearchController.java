@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 @RestController
@@ -204,7 +205,7 @@ public class SearchController {
         if (!file.isEmpty()) {
             try {
                 byte[] bytes = file.getBytes();
-                String string = new String(bytes);
+                String string = new String(bytes, StandardCharsets.UTF_8.name());
                 List<String> records = new ArrayList<>(Arrays.asList(string.split("\\r?\\n")));
                 int IMPORT_MAX_NUMBER_OF_RECORDS = 1000;
                 if (records.size() > IMPORT_MAX_NUMBER_OF_RECORDS) {
