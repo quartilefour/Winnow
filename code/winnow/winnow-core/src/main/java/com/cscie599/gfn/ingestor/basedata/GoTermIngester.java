@@ -115,7 +115,7 @@ public class GoTermIngester extends BaseIngester {
     @Bean
     public ItemReader<Root> readerForGoTerm() {
         //https://stackoverflow.com/questions/55791452/unmarshalling-with-jackson-the-json-input-stream-must-start-with-an-array-of-js
-        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
+        logger.info("Reading resource: " + Arrays.toString(inputResources) + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
         CustomJsonItemReader<Root> delegate = new CustomJsonItemReader<>();
         JacksonJsonObjectReader<Root> objectReader = new JacksonJsonObjectReader<>(Root.class);
         ObjectMapper objectMapper = new ObjectMapper();

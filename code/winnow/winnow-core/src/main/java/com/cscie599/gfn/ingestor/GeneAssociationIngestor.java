@@ -26,6 +26,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import java.util.Arrays;
+
 @Configuration
 @EnableBatchProcessing
 @EnableAutoConfiguration
@@ -71,7 +73,7 @@ public class GeneAssociationIngestor extends BaseIngester {
 
     @Bean
     public ItemReader readerForGeneAssociation() {
-        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
+        logger.info("Reading resource: " + Arrays.toString(inputResources) + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
         SkipSupportedMultiResourceItemReader<GeneAssociation> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<GeneAssociation>();
         multiResourceItemReader.setResources(inputResources);
         FlatFileItemReader<GeneAssociation> itemReader = new FlatFileItemReader<GeneAssociation>();

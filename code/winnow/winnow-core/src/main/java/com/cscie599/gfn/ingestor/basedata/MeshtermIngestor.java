@@ -32,6 +32,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -132,7 +133,7 @@ public class MeshtermIngestor extends BaseIngester {
 
     @Bean
     public ItemReader<DescriptorRecord> readerForMeshterm() {
-        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
+        logger.info("Reading resource: " + Arrays.toString(inputResources) + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
         SkipSupportedMultiResourceItemReader<DescriptorRecord> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<DescriptorRecord>();
         multiResourceItemReader.setResources(inputResources);
         multiResourceItemReader.setStrict(true);

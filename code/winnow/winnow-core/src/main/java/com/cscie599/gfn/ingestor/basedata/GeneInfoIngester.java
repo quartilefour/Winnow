@@ -28,6 +28,8 @@ import org.springframework.core.annotation.Order;
 import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import java.util.Arrays;
+
 /**
  * Ingester that ingests Gene data available from ncbi https://ftp.ncbi.nlm.nih.gov/gene/DATA/gene_info.gz.
  * <p>
@@ -109,7 +111,7 @@ public class GeneInfoIngester extends BaseIngester {
      */
     @Bean
     public ItemReader<Gene> readerForGene() {
-        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
+        logger.info("Reading resource: " + Arrays.toString(inputResources) + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
         SkipSupportedMultiResourceItemReader<Gene> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<>();
         multiResourceItemReader.setResources(inputResources);
         multiResourceItemReader.setStrict(true);

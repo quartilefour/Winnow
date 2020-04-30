@@ -31,6 +31,7 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.EmptyResultDataAccessException;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -81,7 +82,7 @@ public class GeneRelationshipIngester extends BaseIngester {
 
     @Bean
     public ItemReader<GeneGroup> readerForGeneGroup() {
-        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName());
+        logger.info("Reading resource: " + Arrays.toString(inputResources) + " for " + this.getClass().getName());
         SkipSupportedMultiResourceItemReader<GeneGroup> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<GeneGroup>();
         multiResourceItemReader.setResources(inputResources);
         FlatFileItemReader<GeneGroup> itemReader = new FlatFileItemReader<GeneGroup>();

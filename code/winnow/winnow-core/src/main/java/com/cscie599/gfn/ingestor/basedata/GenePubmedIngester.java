@@ -31,6 +31,7 @@ import org.springframework.dao.EmptyResultDataAccessException;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.util.Arrays;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -102,7 +103,7 @@ public class GenePubmedIngester extends BaseIngester {
 
     @Bean
     public ItemReader<GenePublicationPK> readerForGenePubmed() {
-        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
+        logger.info("Reading resource: " + Arrays.toString(inputResources) + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
         SkipSupportedMultiResourceItemReader<GenePublicationPK> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<GenePublicationPK>();
         multiResourceItemReader.setResources(inputResources);
         FlatFileItemReader<GenePublicationPK> itemReader = new FlatFileItemReader<GenePublicationPK>();

@@ -29,6 +29,8 @@ import org.springframework.core.io.Resource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.EmptyResultDataAccessException;
 
+import java.util.Arrays;
+
 @Configuration
 @EnableBatchProcessing
 @EnableAutoConfiguration
@@ -85,7 +87,7 @@ public class GeneGoTermIngester extends BaseIngester {
 
     @Bean
     public ItemReader<GeneGotermPK> readerForGeneGotermPK() {
-        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
+        logger.info("Reading resource: " + Arrays.toString(inputResources) + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
         SkipSupportedMultiResourceItemReader<GeneGotermPK> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<GeneGotermPK>();
         multiResourceItemReader.setResources(inputResources);
         multiResourceItemReader.setStrict(true);

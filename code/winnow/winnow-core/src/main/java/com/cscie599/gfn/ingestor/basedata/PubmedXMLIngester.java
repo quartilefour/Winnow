@@ -233,7 +233,7 @@ public class PubmedXMLIngester extends BaseIngester {
 
     @Bean
     public ItemReader<PubmedArticle> readerForPubmed() {
-        logger.info("Reading resource: " + inputResources + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
+        logger.info("Reading resource: " + Arrays.toString(inputResources) + " for " + this.getClass().getName() + " with linesToSkip configured with " + linesToSkip);
         SkipSupportedMultiResourceItemReader<PubmedArticle> multiResourceItemReader = new SkipSupportedMultiResourceItemReader<PubmedArticle>();
         multiResourceItemReader.setResources(inputResources);
 
