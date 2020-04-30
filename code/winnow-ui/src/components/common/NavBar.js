@@ -48,14 +48,14 @@ const NavBar = () => {
         return (
             <Navbar id="winnow-nav" expand="md">
                 <Navbar.Brand as={Link} to="/">
-                    <img
-                        alt={"Winnow Logo"}
-                        src={logoImg}
-                        width="30"
-                        height="30"
-                        className="d-inline-block align-top"
-                    />{' '}
-                    Winnow</Navbar.Brand>
+
+                    W<img
+                    alt={"Winnow Logo"}
+                    src={logoImg}
+                    width="30"
+                    height="30"
+                    className="d-inline-block align-top"
+                />N N O W</Navbar.Brand>
                 <Navbar.Toggle aria-controls="basic-navbar-nav"/>
                 <Navbar.Collapse id="basic-navbar-nav">
                     <Nav className="mr-auto">
