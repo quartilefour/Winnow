@@ -3,7 +3,7 @@ services:
   db.cscie599.com:
     build:
       context: ./      
-      dockerfile: ./deploy/local/sql/Dockerfile
+      dockerfile: deploy/containers/postgres/Dockerfile
     ports:
       - 5432:5432
     volumes:
@@ -11,7 +11,7 @@ services:
   adminer.cscie599.com:
     build:
       context: ./
-      dockerfile: ./deploy/local/adminer/Dockerfile
+      dockerfile: deploy/containers/adminer/Dockerfile
     depends_on:
       - db.cscie599.com
     ports:
@@ -19,7 +19,7 @@ services:
   webapp.cscie599.com:
     build:
       context: ./
-      dockerfile: ./deploy/local/webapp/Dockerfile
+      dockerfile: deploy/containers/webapp/Dockerfile
     depends_on:
       - db.cscie599.com
     command: ["/wait-for-it.sh", "db.cscie599.com:5432", "--timeout=120", "--strict","--", "catalina.sh","run"]

@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo " Building the offline spark app app"
+echo " Building the offline spark app"
 cd "code/winnow-spark"
 
 ./gradlew clean build
@@ -45,12 +45,12 @@ docker-compose build
 
 echo "Building the winnow-ftp docker image "
 
-docker build -f ./deploy/local/ftpapp/Dockerfile --label winnow-ftpapp -t gfn_ftpapp.cscie99.com code/winnow/winnow-ftp
+docker build -f ./deploy/containers/data-downloader/Dockerfile --label winnow-downloader -t gfn_ftpapp.cscie99.com code/winnow/winnow-ftp
 
 echo "Building the winnow-ingester docker image "
 
-docker build -f ./deploy/local/ingestionapp/Dockerfile --label winnow-ftpapp -t gfn_ingesterapp.cscie99.com code/winnow/winnow-ingest
+docker build -f ./deploy/containers/data-ingestor/Dockerfile --label winnow-ingestor -t gfn_ingesterapp.cscie99.com code/winnow/winnow-ingest
 
 echo "Building the winnow-analyzer docker image "
 
-docker build -f ./deploy/local/analyzerapp/Dockerfile --label winnow-analyzerapp -t gfn_analyzerapp.cscie99.com code/winnow/winnow-analyzer
+docker build -f ./deploy/containers/data-analyzer/Dockerfile --label winnow-analyzer -t gfn_analyzerapp.cscie99.com code/winnow/winnow-analyzer

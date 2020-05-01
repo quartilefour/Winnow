@@ -1,7 +1,7 @@
 package com.cscie599.gfn.ingestor.derived;
 
 import com.cscie599.gfn.entities.GeneMeshtermPK;
-import com.cscie599.gfn.importer.geneMeshterm.GeneMeshterm;
+import com.cscie599.gfn.importer.genemeshterm.GeneMeshterm;
 import com.cscie599.gfn.ingestor.BaseIngester;
 import com.cscie599.gfn.ingestor.GZResourceAwareItemReaderItemStream;
 import com.cscie599.gfn.ingestor.IngeterUtil;

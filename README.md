@@ -6,13 +6,14 @@ Gene Function Navigation Tool
 ### Local Setup
  To configure the system to start on your local machine, make sure you have docker agent running on your laptop. Local setup is orchestrated using doker-compose(https://docs.docker.com/compose/gettingstarted/).
  
- Environment consists of 5 containers.
+ Environment consists of 6 containers.
  * postgres container as db.cscie599.com running on port 5432.
  * adminer container to view the contents of the db. The container is running adminer UI at http://127.0.0.1:8090, make sure to change the Database type to postgres(defaults to mysql)
  * webapp container that runs the springboot backend app. The springboot backend app can be accessed in UI at http://127.0.0.1:8080
- * ftpfiledownloader container to download ftp files from various sources.
- * bulkingestion container to insert into postgres from the compressed files downloaded to S3 by ftpfiledownloader container.
- 
+ * data-downloader container to download ftp/http files from various sources as compressed/uncompressed files.
+ * data-ingestor container to insert data to postgres from the compressed/uncompressed files downloaded to S3 by data-downloader container.
+ * data-analyzer container that analyzes each gene and meshterm pair using inmemory datastructures and performs chi-squared computation for the pair. The computation step can be customized to run for all the possible gene meshterm pairs or only those that have appeared in a common publication.
+
  To start all the containers we first need to build them. (All the docker-compose commands should be run from the directory which has docker-compose.yml file). The webapp container requires the java code to be compiled and packaged as a war file. You can either build the war file explicitly by running the following commands
  
  `cd code/winnow` followed by `./gradlew clean build`
@@ -27,6 +28,8 @@ Gene Function Navigation Tool
  
  `docker-compose up`
  
+ At this point you can populate dummy datasets into the database. To ingest dummy datasets open a web browser and access the URL http://127.0.0.1:8080/jobLauncher.html
+ 
  Alternatively, if you are actively working on the web backend app and only want to run db and adminer containers, run the command
  
  `docker-compose up db.cscie599.com adminer.cscie599.com` 
@@ -35,14 +38,15 @@ Gene Function Navigation Tool
  
  The containers, when started using the docker-compose script, use a bridge network gfn_default. To start a container outside of docker-compose but still connect to the gfn_default network start the container with the following command
  
- `docker run --network gfn_default -p 8080:8080 -t cscie599/gs-spring-boot-docker`
+ `docker run --network gfn_default -p <portmappings> -t <container-name> <argument list>`
  
- To start the ftpdownloader container on your local machine, create the folder `tmp-docker`, `tmp-docker/extracted`, `tmp-docker/raw` on your local machine and run the following command, please do change the location of the source folder.
- 
- `docker run --network gfn_default --mount type=bind,source=<path to the folder>/tmp-docker,target=/data gfn_ftpapp.cscie99.com:latest`
+ To start the data-downloader container on your local machine 
+ 1. First make sure the database container is running by following the instructions above, 
+ 2. Create the folder `tmp-docker`, `tmp-docker/extracted`, `tmp-docker/raw` on your local machine. 
+ 3. And run the following command, please do change the location of the source and the target folder.
 
- Once the containers are built (or the db and adminer containers are built and you are using the springboot in local development mode, as described below), you can ingest the data in 'test-data' into the database by running http://127.0.0.1:8080/jobLauncher.html
-    
+ `docker run --network gfn_default --mount type=bind,source=<path to the folder>/tmp-docker,target=/data gfn_ftpapp.cscie99.com:latest`
+  
 ## Code Organization
 * code/winnow/ - springboot backend app
 * code/winnow-spark/ - Spark application to perform custom filtering and aggregations over data stored in S3

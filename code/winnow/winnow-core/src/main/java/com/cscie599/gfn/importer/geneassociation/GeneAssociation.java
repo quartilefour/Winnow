@@ -1,8 +1,8 @@
-package com.cscie599.gfn.importer.geneMeshterm;
+package com.cscie599.gfn.importer.geneassociation;
 
-public class GeneMeshterm {
+public class GeneAssociation {
     String geneId;
-    String meshId;
+    String otherGeneId;
     String pValue;
     String publicationCount;
 
@@ -14,12 +14,12 @@ public class GeneMeshterm {
         this.geneId = geneId;
     }
 
-    public String getMeshId() {
-        return meshId;
+    public String getOtherGeneId() {
+        return otherGeneId;
     }
 
-    public void setMeshId(String meshId) {
-        this.meshId = meshId;
+    public void setOtherGeneId(String otherGeneId) {
+        this.otherGeneId = otherGeneId;
     }
 
     public String getpValue() {
@@ -40,11 +40,12 @@ public class GeneMeshterm {
 
     @Override
     public String toString() {
-        return "GeneMeshterm{" +
+        return "GeneAssociation{" +
                 "geneId='" + geneId + '\'' +
-                ", meshId='" + meshId + '\'' +
+                ", otherGeneId='" + otherGeneId + '\'' +
                 ", pValue='" + pValue + '\'' +
                 ", publicationCount='" + publicationCount + '\'' +
                 '}';
     }
 }
+

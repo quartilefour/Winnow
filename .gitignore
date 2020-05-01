@@ -21,7 +21,7 @@ __pycache__/
 # C extensions
 *.so
 
-# exclude the db folder.
+# exclude the postgres data folder.
 postgres-data/
 
 # Distribution / packaging

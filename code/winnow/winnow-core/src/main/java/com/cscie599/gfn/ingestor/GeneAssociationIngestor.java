@@ -1,7 +1,7 @@
 package com.cscie599.gfn.ingestor;
 
 import com.cscie599.gfn.entities.GeneAssociationPK;
-import com.cscie599.gfn.importer.geneAssociation.GeneAssociation;
+import com.cscie599.gfn.importer.geneassociation.GeneAssociation;
 import com.cscie599.gfn.ingestor.reader.SkipSupportedMultiResourceItemReader;
 import com.cscie599.gfn.ingestor.writer.UpsertableJdbcBatchItemWriter;
 import org.apache.commons.logging.Log;
