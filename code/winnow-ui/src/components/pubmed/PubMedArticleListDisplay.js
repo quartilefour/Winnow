@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import PropTypes from 'prop-types';
 import {Form, Alert, Button} from "react-bootstrap";
 import {fetchPubMedArticleList, parseAPIError} from "../../service/ApiService";
 import PageLoader from "../common/PageLoader";
@@ -17,6 +18,11 @@ import * as C from "../../constants";
  * @constructor
  */
 function PubMedArticleListDisplay(props) {
+
+    PubMedArticleListDisplay.propTypes = {
+        history: PropTypes.func,
+        listData: PropTypes.object
+    }
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [listData, setListData] = useState('');

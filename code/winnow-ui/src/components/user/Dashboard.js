@@ -7,11 +7,10 @@ import ComboSearchTab from "../common/ComboSearchTab";
 /**
  * Renders the Dashboard landing page for authenticated users.
  *
- * @param props
  * @returns {*}
  * @constructor
  */
-function Dashboard(props) {
+function Dashboard() {
     const [currentTab, setCurrentTab] = useState('bookmarks');
 
     React.useEffect(() => {

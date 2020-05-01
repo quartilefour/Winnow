@@ -1,7 +1,7 @@
 ![Winnow](./src/img/logo.png)
 # Winnow UI
 ## ReactJS
-
+* NodeJS v12
 * Code Base: `code/winnow-ui`
 * Structure Overview:
     ```
@@ -15,6 +15,7 @@
 
 ### Local
 * Dependencies
+  - `node` version 12.xx.xx
   - `winnow-core` application needs to be running to provide API endpoints.
 * Tests
   - Run Test Suite
@@ -71,3 +72,7 @@
   - Set Alternate Domain Names (CNAMEs) to your chosen fully qualified domain name (FQDN)
   - Set SSL Certificate to the certificate matching the FQDN above.
   - Click Create Distribution to create the distribution.
+
+
+### UI Design & Code
+* JSON.stringify is used in labels and titles to display nested Object data.

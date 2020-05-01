@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import PropTypes from 'prop-types';
 import {Redirect, Link} from "react-router-dom";
 import {Card, Button, Form, Alert} from "react-bootstrap";
 import {sendLoginCredentials, loginSchema} from "../../service/AuthService";
@@ -16,6 +17,11 @@ import {parseAPIError} from "../../service/ApiService";
  * @constructor
  */
 function Login(props) {
+
+    Login.propTypes = {
+        location: PropTypes.object
+    }
+
     const [isLoggedIn, setLoggedIn] = useState(false);
     const [error, setError] = useState('');
     const [alertType, setAlertType] = useState('');

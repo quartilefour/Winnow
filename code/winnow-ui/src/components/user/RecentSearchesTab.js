@@ -32,11 +32,17 @@ function RecentSearchesTab() {
 
     React.useEffect(() => {
         if (!haveResults) {
-            if (removeSearch !== null) {
+            if (removeSearch !== null) { /* Remove recent search from session history */
                 removeSearchHistory(removeSearch);
                 setRemoveSearch(null);
             }
-            setSearchHistory(getSearchHistory());
+            setSearchHistory(getSearchHistory().map((search, index) => {
+                /* Adds unique index column for the table add-on */
+                return {
+                    index: index,
+                    searchQuery: search
+                }
+            }));
             setIsLoaded(true);
         }
     }, [removeSearch, setSearchHistory, haveResults]);
@@ -58,7 +64,7 @@ function RecentSearchesTab() {
                 return row.index + 1;
             },
             headerStyle: () => {
-                return { width: "10%" };
+                return {width: "10%"};
             },
             sort: true
         },
@@ -86,7 +92,7 @@ function RecentSearchesTab() {
             align: 'center',
             headerAlign: 'center',
             headerStyle: () => {
-                return { width: "20%" };
+                return {width: "20%"};
             },
             formatter: (cell, row) => {
                 return (

@@ -1,4 +1,5 @@
 import React, {useState} from "react";
+import PropTypes from 'prop-types';
 import {Form, Button} from "react-bootstrap";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChevronLeft} from "@fortawesome/free-solid-svg-icons";
@@ -23,6 +24,11 @@ import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.m
  * @constructor
  */
 function SearchResultsDisplay(props) {
+
+   SearchResultsDisplay.propTypes = {
+       resData: PropTypes.object,
+       history: PropTypes.func
+   }
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [resData, setResData] = useState('');

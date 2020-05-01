@@ -44,7 +44,6 @@ describe('<RecentSearchesTab {props}/>', () => {
         const c = mount(<RecentSearchesTab {...props} />)
         c.update()
         jest.mock(getSearchHistory(), () => {return [{
-            "index": 0,
             "searchQuery":{"geneId":["285550"],"symbol":[],"description":[],"meshId":[],"meshTreeId":[],"name":[]}
         }]})
         mockUseEffect()

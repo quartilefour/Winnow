@@ -16,11 +16,10 @@ import * as C from "../../constants";
 /**
  * BookmarkTab builds the content for user's saved search lists.
  *
- * @param props
  * @returns {*}
  * @constructor
  */
-function BookmarkTab(props) {
+function BookmarkTab() {
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [bookmarkData, setBookmarkData] = useState([]);

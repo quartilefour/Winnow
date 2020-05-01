@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import PropTypes from 'prop-types';
 import {Alert, Button, Image, Modal} from "react-bootstrap";
 import PageLoader from "../common/PageLoader";
 import {fetchGeneDetails, fetchNCBIGeneDetails, parseAPIError} from "../../service/ApiService";
@@ -22,6 +23,14 @@ import * as C from "../../constants";
  * @constructor
  */
 function GeneDetailModal(props) {
+
+    GeneDetailModal.propTypes = {
+        active: PropTypes.number,
+        geneid: PropTypes.string,
+        id: PropTypes.string,
+        onHide: PropTypes.func,
+        show: PropTypes.bool
+    }
 
     const [geneDetail, setGeneDetail] = useState({});
     const [geneDetailNCBI, setGeneDetailNCBI] = useState('');

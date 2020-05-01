@@ -1,8 +1,14 @@
 import React, {useState} from "react";
+import PropTypes from 'prop-types';
 import {Card, Image} from "react-bootstrap";
 import Oops from "../../img/oops.png";
 
 function Error(props) {
+
+    Error.propTypes = {
+        error: PropTypes.string
+    }
+
     const [error, setError] = useState('Page Not Found');
 
     React.useEffect(() => {

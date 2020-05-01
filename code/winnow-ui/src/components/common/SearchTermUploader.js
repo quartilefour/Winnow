@@ -1,9 +1,17 @@
 import React, {useState} from "react";
+import PropTypes from 'prop-types';
 import {Form} from "react-bootstrap";
 import PageLoader from "./PageLoader";
 import {QUERY_FORMATS as QF} from "../../constants";
 
 function SearchTermUploader(props) {
+
+    SearchTermUploader.propTypes = {
+        active: PropTypes.bool,
+        searchable: PropTypes.func,
+        update: PropTypes.func
+    }
+
     const [batchQueryFormat, setBatchQueryFormat] = useState('');
     const [textareaData, setTextareaData] = useState(null);
     const [uploadFile, setUploadFile] = useState(null);

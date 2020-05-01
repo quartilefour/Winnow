@@ -1,25 +1,14 @@
-import React, {useState} from "react";
-import {Card, Alert} from "react-bootstrap";
+import React from "react";
+import {Card} from "react-bootstrap";
 import logoImg from "../../img/logo.png";
 
 /**
  * Renders Login form and handles response from API.
  *
- * @param props
  * @returns {*}
  * @constructor
  */
-function Maintenance(props) {
-    const [error, setError] = useState(null);
-    const [alertType, setAlertType] = useState('');
-
-    React.useEffect(() => {
-        if (props.error) {
-            setError(props.error);
-            setAlertType('danger');
-        }
-    }, [props]);
-
+function Maintenance() {
     return (
         <div>
             <Card
@@ -38,9 +27,6 @@ function Maintenance(props) {
                 <Card.Body>
                     Winnow API is currently unavailable.
                 </Card.Body>
-                <Card.Footer>
-                    <Alert variant={alertType}>{error}</Alert>
-                </Card.Footer>
             </Card>
         </div>
     )

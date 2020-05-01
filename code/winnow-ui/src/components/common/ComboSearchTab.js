@@ -1,4 +1,4 @@
-import React, {Fragment, useState} from "react";
+import React, {useState} from "react";
 import {Form, Button, Alert} from "react-bootstrap";
 import Select from "react-select";
 import {fetchGenes, fetchSearchResults, parseAPIError} from "../../service/ApiService";
@@ -14,11 +14,10 @@ import {MeshtermTree} from "../mesh/MeshtermTree";
  * Select - https://react-select.com/props
  * Checkbox Tree - See MeshtermTree.js
  *
- * @param props
  * @returns {*}
  * @constructor
  */
-function ComboSearchTab(props) {
+function ComboSearchTab() {
 
     const [activateSearch, setActivateSearch] = useState(false);
     const [selectedGenes, setSelectedGenes] = useState([]);
@@ -168,7 +167,7 @@ function ComboSearchTab(props) {
                             >Search</Button>
                         </div>
                         <Form>
-                            <Fragment>
+                            <>
                                 <Select
                                     isClearable
                                     isSearchable
@@ -196,14 +195,14 @@ function ComboSearchTab(props) {
                                     }}
                                     options={geneData}
                                 />
-                            </Fragment>
+                            </>
                         </Form>
                         <div className="separator">Check MeSH Terms below</div>
-                        <Fragment>
+                        <>
                             <div id="meshterm-tree">
                                 <MeshtermTree callback={getChecked}/>
                             </div>
-                        </Fragment>
+                        </>
                     </div>
                 );
             } else { /* Display batch import textarea and file upload */

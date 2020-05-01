@@ -1,15 +1,22 @@
 import React, {useState} from "react";
+import PropTypes from 'prop-types';
 import {Modal, Form, Button, Alert} from "react-bootstrap";
 import {parseAPIError, saveUserBookmark} from "../../service/ApiService";
 
 /**
- * Functional component to save a User's current search as a bookmark.
+ * Functional modal component to save a User's current search as a bookmark.
  *
  * @param props
  * @return {*}
  * @constructor
  */
 function SaveSearchModal(props) {
+
+    SaveSearchModal.propTypes = {
+        searchData: PropTypes.object,
+        show: PropTypes.bool,
+        onHide: PropTypes.func
+    }
 
     const [bookmarkName, setBookmarkName] = useState('');
     const [saveEnabled, setSaveEnabled] = useState(false);
@@ -18,7 +25,7 @@ function SaveSearchModal(props) {
     const [alertType, setAlertType] = useState('');
 
     React.useEffect(() => {
-        setSaveEnabled(bookmarkName.length >= 1);
+        setSaveEnabled(bookmarkName.length > 0);
         if (saveBookmark) {
             saveUserBookmark({
                 searchName: bookmarkName.slice(0, 19),
@@ -26,7 +33,7 @@ function SaveSearchModal(props) {
                 queryType: props.searchdata.queryType,
                 queryFormat: props.searchdata.queryFormat
             })
-                .then(res => {
+                .then(() => {
                     setSaveBookmark(false);
                     props.onHide()
                 })

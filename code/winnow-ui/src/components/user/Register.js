@@ -9,11 +9,10 @@ import {parseAPIError} from "../../service/ApiService";
 /**
  * Functional component to render Registration form and handle responses from API.
  *
- * @param props
  * @returns {*}
  * @constructor
  */
-function Register(props) {
+function Register() {
 
     const [isRegistered, setIsRegistered] = useState(false);
     const [error, setError] = useState('');

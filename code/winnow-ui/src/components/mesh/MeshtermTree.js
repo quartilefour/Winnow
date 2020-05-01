@@ -1,4 +1,5 @@
 import React, {useState} from 'react';
+import PropTypes from 'prop-types';
 import {Spinner} from "react-bootstrap";
 import 'react-super-treeview/dist/style.css';
 import {fetchMeshtermCat, fetchMeshtermNode, fetchMeshtermTree, mapMeshtermTreeData} from "../../service/ApiService";
@@ -17,6 +18,11 @@ import PageLoader from "../common/PageLoader";
  */
 
 export function MeshtermTree(props) {
+
+    MeshtermTree.propTypes = {
+        callback: PropTypes.func
+    }
+
     const [isLoaded, setIsLoaded] = useState(false);
     const [meshData, setMeshData] = useState({});
     const [checked, setChecked] = useState([]);
