@@ -1,7 +1,8 @@
 import React, {useState} from "react";
 import PropTypes from 'prop-types';
 import {Modal, Form, Button, Alert} from "react-bootstrap";
-import {parseAPIError, saveUserBookmark} from "../../service/ApiService";
+import {callAPI, parseAPIError} from "../../service/ApiService";
+import {API_RESOURCES} from "../../constants";
 
 /**
  * Functional modal component to save a User's current search as a bookmark.
@@ -18,6 +19,8 @@ function SaveSearchModal(props) {
         onHide: PropTypes.func
     }
 
+    const {POST_BOOKMARKS} = API_RESOURCES;
+
     const [bookmarkName, setBookmarkName] = useState('');
     const [saveEnabled, setSaveEnabled] = useState(false);
     const [saveBookmark, setSaveBookmark] = useState(false);
@@ -27,7 +30,7 @@ function SaveSearchModal(props) {
     React.useEffect(() => {
         setSaveEnabled(bookmarkName.length > 0);
         if (saveBookmark) {
-            saveUserBookmark({
+            callAPI(POST_BOOKMARKS, {
                 searchName: bookmarkName.slice(0, 19),
                 searchQuery: props.searchdata.searchQuery,
                 queryType: props.searchdata.queryType,
@@ -42,7 +45,7 @@ function SaveSearchModal(props) {
                     setAlertType('danger')
                 })
         }
-    }, [props, saveBookmark, bookmarkName]);
+    }, [POST_BOOKMARKS, props, saveBookmark, bookmarkName]);
 
     return (
         <Modal

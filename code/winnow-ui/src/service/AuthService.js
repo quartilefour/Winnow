@@ -13,18 +13,12 @@ import * as Yup from 'yup';
  * @return {Promise<>}
  */
 export const fetchProfileData = () => {
-    return new Promise((resolve, reject) => {
-        axios.get(
-            `${C.WINNOW_API_BASE_URL}/profile`,
-            {
-                headers: getAuthHeader()
-            }
-        )
-            .then(res => {
-                resolve(res.data);
-            })
-            .catch(err => reject(err));
-    });
+    return axios.get(
+        `${C.WINNOW_API_BASE_URL}/profile`,
+        {
+            headers: getAuthHeader()
+        }
+    )
 };
 
 /**
@@ -34,21 +28,10 @@ export const fetchProfileData = () => {
  * @return {Promise<>}
  */
 export const sendRegistration = (credentials) => {
-    return new Promise((resolve, reject) => {
-        axios.post(
-            `${C.WINNOW_API_BASE_URL}/registration`,
-            credentials,
-        )
-            .then(() => {
-                resolve("Registration Successful")
-            })
-            .catch(err => {
-                if (err.response.status === 409) {
-                    reject(err.response.data.error)
-                }
-                reject(err)
-            });
-    });
+    return axios.post(
+        `${C.WINNOW_API_BASE_URL}/registration`,
+        credentials,
+    )
 };
 
 /**
@@ -58,16 +41,10 @@ export const sendRegistration = (credentials) => {
  * @return {Promise<>}
  */
 export const sendLoginCredentials = (credentials) => {
-    return new Promise((resolve, reject) => {
-        axios.post(
-            `${C.WINNOW_API_BASE_URL}/login`,
-            credentials,
-        )
-            .then(res => {
-                resolve(res.headers['authorization'].split(' ')[1]);
-            })
-            .catch(err => reject(err));
-    });
+    return axios.post(
+        `${C.WINNOW_API_BASE_URL}/login`,
+        credentials,
+    )
 };
 
 /**
@@ -78,19 +55,13 @@ export const sendLoginCredentials = (credentials) => {
  * @returns {Promise<>}
  */
 export const sendProfileUpdate = (userInfo) => {
-    return new Promise((resolve, reject) => {
-        axios.patch(
-            `${C.WINNOW_API_BASE_URL}/profile`,
-            userInfo,
-            {
-                headers: getAuthHeader(),
-            }
-        )
-            .then(res => {
-                resolve(res.data)
-            })
-            .catch(err => reject(err));
-    });
+    return axios.patch(
+        `${C.WINNOW_API_BASE_URL}/profile`,
+        userInfo,
+        {
+            headers: getAuthHeader(),
+        }
+    )
 };
 
 /**
@@ -100,19 +71,13 @@ export const sendProfileUpdate = (userInfo) => {
  * @return {Promise<>}
  */
 export const sendChangePassword = (credentials) => {
-    return new Promise((resolve, reject) => {
-        axios.put(
-            `${C.WINNOW_API_BASE_URL}/profile`,
-            credentials,
-            {
-                headers: getAuthHeader(),
-            }
-        )
-            .then(res => {
-                resolve(res.data)
-            })
-            .catch(err => reject(err));
-    });
+    return axios.put(
+        `${C.WINNOW_API_BASE_URL}/profile`,
+        credentials,
+        {
+            headers: getAuthHeader(),
+        }
+    )
 };
 
 /**

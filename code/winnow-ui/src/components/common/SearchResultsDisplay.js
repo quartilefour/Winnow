@@ -119,6 +119,10 @@ function SearchResultsDisplay(props) {
         {
             dataField: 'pvalue',
             text: 'P-value',
+            type: 'number',
+            formatter: (cell, row) => {
+                return parseFloat(row.pvalue).toPrecision(4)
+            },
             sort: true
         }
     ];
@@ -210,7 +214,7 @@ function SearchResultsDisplay(props) {
                             show={activeGeneDetail !== null}
                             onHide={() => setActiveGeneDetail(null)}
                             geneid={activeGeneDetail}
-                            active={activeGeneDetail !== null ? 1 : 0}
+                            active={(activeGeneDetail !== null) ? 1 : 0}
                         />
                         <SaveSearchModal
                             show={showSaveSearch}

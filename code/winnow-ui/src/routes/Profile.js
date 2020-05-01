@@ -30,9 +30,9 @@ function Profile() {
     React.useEffect(() => {
         fetchProfileData()
             .then(res => {
-                setFirstName(res.firstName);
-                setLastName(res.lastName);
-                setUserEmail(res.userEmail);
+                setFirstName(res.data.firstName);
+                setLastName(res.data.lastName);
+                setUserEmail(res.data.userEmail);
                 setIsLoaded(true);
             })
             .catch(error => {

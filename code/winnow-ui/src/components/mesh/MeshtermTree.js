@@ -2,10 +2,14 @@ import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import {Spinner} from "react-bootstrap";
 import 'react-super-treeview/dist/style.css';
-import {fetchMeshtermCat, fetchMeshtermNode, fetchMeshtermTree, mapMeshtermTreeData} from "../../service/ApiService";
+import {
+    callAPI,
+    parseAPIError
+} from "../../service/ApiService";
 import cloneDeep from "lodash/cloneDeep";
 import SuperTreeview from "react-super-treeview";
 import PageLoader from "../common/PageLoader";
+import {API_RESOURCES} from "../../constants";
 
 /**
  * Dynamically generates MeSH term tree
@@ -23,15 +27,17 @@ export function MeshtermTree(props) {
         callback: PropTypes.func
     }
 
+    const {GET_MESH_CAT, GET_MESH_PARENT, GET_MESH_NODE} = API_RESOURCES;
+
     const [isLoaded, setIsLoaded] = useState(false);
     const [meshData, setMeshData] = useState({});
     const [checked, setChecked] = useState([]);
 
     React.useEffect(() => {
         /* Fetch top level MeSH term categories */
-        fetchMeshtermCat()
+        callAPI(GET_MESH_CAT)
             .then(res => {
-                let mappedData = res.map((mesh, index) => {
+                let mappedData = res.data.map((mesh, index) => {
                     return {
                         children: [],
                         id: mesh.categoryId,
@@ -42,10 +48,37 @@ export function MeshtermTree(props) {
                 });
                 setMeshData(mappedData);
                 setIsLoaded(true);
-            }).catch(err => {
-            setIsLoaded(true);
+            })
+            .catch(error => {
+                console.debug(`Search failed with fatal error.\n${parseAPIError(error)}`);
+                setIsLoaded(true);
+            });
+    }, [GET_MESH_CAT]);
+
+    /**
+     * Helper function to map MeSH term data to tree view node.
+     *
+     * @param data - JSON object of MeSH term.
+     * @param node - Tree view node.
+     * @param depth - Tree view depth.
+     * @return JSON object of Tree node to insert.
+     */
+    const mapMeshtermTreeData = (data, node, depth) => {
+        return data.map((mesh, index) => {
+            let id = (depth > 0)
+                ? `${mesh.treeParentId}.${mesh.treeNodeId}`
+                : `${mesh.treeParentId}${mesh.treeNodeId}`;
+            return {
+                children: [],
+                id: id,
+                isChecked: node.isChecked,
+                meshIndex: `${node.meshIndex}:${index}`,
+                meshId: mesh.meshId,
+                hasChild: mesh.hasChild,
+                name: `${mesh.meshName} [${id}]`,
+            };
         });
-    }, []);
+    };
 
     /* Recursive function to find proper parent and add fetched children */
     function navigateNode(indices, updatedData, mappedData) {
@@ -102,12 +135,12 @@ export function MeshtermTree(props) {
             //console.log(`inside getAllChildren, node has child`);
             if (depth === 0) {
                 //console.log(`inside getAllChildren, node has child and depth === 0`);
-                fetchMeshtermNode(node.id)
+                callAPI(GET_MESH_NODE, node.id)
                     .then(res => {
                         //console.log(`inside getAllChildren node id ${JSON.stringify(res)}`);
 
                         // all the children
-                        let newNodes = getNewNode(mapMeshtermTreeData(res, node, depth));
+                        let newNodes = getNewNode(mapMeshtermTreeData(res.data, node, depth));
                         node.children = newNodes;
                         expandAllNodes(node, depth);
                         //console.log(`node ${node.id} has children ${JSON.stringify(node.children)}`);
@@ -122,10 +155,10 @@ export function MeshtermTree(props) {
                     console.log(`MeshtermTree Error: ${JSON.stringify(err)}`);
                 })
             } else {
-                fetchMeshtermTree(node.id)
+                callAPI(GET_MESH_PARENT, node.id)
                     .then(res => {
                         //console.log(`inside leaf getAllChildren for ${node.id}`);
-                        let newNodes = getNewNode(mapMeshtermTreeData(res, node, depth));
+                        let newNodes = getNewNode(mapMeshtermTreeData(res.data, node, depth));
                         node.children = newNodes;
                         //console.log(`node ${node.id} has children ${JSON.stringify(node.children)}`);
                         newNodes.forEach((node) => {
@@ -171,17 +204,17 @@ export function MeshtermTree(props) {
             node.isChildrenLoading = true;
 
             if (depth === 0) {
-                fetchMeshtermNode(node.id)
+                callAPI(GET_MESH_NODE, node.id)
                     .then(res => {
-                        insertChildNodes(node, depth, mapMeshtermTreeData(res, node, depth));
+                        insertChildNodes(node, depth, mapMeshtermTreeData(res.data, node, depth));
                     }).catch(err => {
                     console.debug(`MeshtermTree Error: ${err}`);
                     console.debug(`MeshtermTree Error: ${JSON.stringify(err)}`);
                 })
             } else {
-                fetchMeshtermTree(node.id)
+                callAPI(GET_MESH_PARENT, node.id)
                     .then(res => {
-                        insertChildNodes(node, depth, mapMeshtermTreeData(res, node, depth));
+                        insertChildNodes(node, depth, mapMeshtermTreeData(res.data, node, depth));
                     }).catch(err => {
                     console.debug(`MeshtermTree Error: ${err}`);
                     console.debug(`MeshtermTree Error: ${JSON.stringify(err)}`);
@@ -206,7 +239,7 @@ export function MeshtermTree(props) {
                 isExpandable={(node, depth) => {
                     return node.hasChild;
                 }}
-                onCheckToggleCb={(nodes, depth)=> {
+                onCheckToggleCb={(nodes, depth) => {
                     //console.debug(`MeshtermTree checkToggle: ${JSON.stringify(nodes)}`);
                     const checkState = nodes[0].isChecked;
                     nodes[0].isExpanded = checkState;

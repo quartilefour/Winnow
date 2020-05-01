@@ -2,9 +2,9 @@ import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import {Alert, Button, Image, Modal} from "react-bootstrap";
 import PageLoader from "../common/PageLoader";
-import {fetchGeneDetails, fetchNCBIGeneDetails, parseAPIError} from "../../service/ApiService";
+import {callAPI, parseAPIError} from "../../service/ApiService";
 import dnaStrand from "../../img/dna-lg.png";
-import {GENEDB_BASE_URL, MESHDB_BASE_URL} from "../../constants";
+import {API_RESOURCES, GENEDB_BASE_URL, MESHDB_BASE_URL} from "../../constants";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faExternalLinkAlt} from "@fortawesome/free-solid-svg-icons";
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -32,9 +32,11 @@ function GeneDetailModal(props) {
         show: PropTypes.bool
     }
 
+    const {GET_GENE_DETAIL, NCBI_GENE_DETAIL} = API_RESOURCES;
+
     const [geneDetail, setGeneDetail] = useState({});
     const [geneDetailNCBI, setGeneDetailNCBI] = useState('');
-    const [isActive, setIsActive] = useState(false);
+    const [isActive, setIsActive] = useState(0);
     const [isLoaded, setIsLoaded] = useState(false);
     const [error, setError] = useState('');
     const [alertType, setAlertType] = useState('');
@@ -43,13 +45,13 @@ function GeneDetailModal(props) {
         let mounted = true;
         setIsActive(props.active)
         if (isActive && props.geneid !== null) {
-            fetchGeneDetails(props.geneid)
+            callAPI(GET_GENE_DETAIL, props.geneid)
                 .then(res => {
                     if (mounted) {
-                        setGeneDetail(res);
-                        fetchNCBIGeneDetails(props.geneid)
+                        setGeneDetail(res.data);
+                        callAPI(NCBI_GENE_DETAIL, props.geneid)
                             .then(ncbiRes => {
-                                setGeneDetailNCBI(ncbiRes.result[props.geneid]);
+                                setGeneDetailNCBI(ncbiRes.data.result[props.geneid]);
                                 setIsLoaded(true);
                             })
                             .catch(error => {
@@ -67,7 +69,7 @@ function GeneDetailModal(props) {
         return () => {
             mounted = false
         };
-    }, [props, isActive]);
+    }, [GET_GENE_DETAIL, NCBI_GENE_DETAIL, props, isActive]);
 
     /* Set up our table options and custom formatting */
     const columnsMesh = [
@@ -240,8 +242,12 @@ function GeneDetailModal(props) {
                                     rel="noopener noreferrer"
                                     href={`${GENEDB_BASE_URL}/${geneDetail.geneId}`}
                                 >
-                                    {geneDetailNCBI.genomicinfo[0].chraccver}
-                                    <FontAwesomeIcon icon={faExternalLinkAlt} color="cornflowerblue" />
+                                    {
+                                        (geneDetailNCBI.genomicinfo[0] !== undefined)
+                                            ? geneDetailNCBI.genomicinfo[0].chraccver
+                                            : null
+                                    }
+                                    <FontAwesomeIcon icon={faExternalLinkAlt} color="cornflowerblue"/>
                                 </a>
                             </h5>
                         </div>

@@ -1,12 +1,13 @@
 import React, {useState} from "react";
 import {Form, Button, Alert} from "react-bootstrap";
 import Select from "react-select";
-import {fetchGenes, fetchSearchResults, parseAPIError} from "../../service/ApiService";
+import {callAPI, parseAPIError} from "../../service/ApiService";
 import SearchResultsDisplay from "../common/SearchResultsDisplay";
 import SearchTermUploader from "../common/SearchTermUploader";
 import PageLoader from "../common/PageLoader";
 import {addSearchHistory, getLastSearch, getBatch, setBatch, prepareSearchQuery} from "../../service/SearchService";
 import {MeshtermTree} from "../mesh/MeshtermTree";
+import {API_RESOURCES} from "../../constants";
 
 /**
  * ComboSearchTab builds the content for Gene Auto-complete Select and MesH Checkbox tree.
@@ -18,6 +19,8 @@ import {MeshtermTree} from "../mesh/MeshtermTree";
  * @constructor
  */
 function ComboSearchTab() {
+
+    const {GET_GENES, POST_QUERY, POST_QUERY_FILE} = API_RESOURCES;
 
     const [activateSearch, setActivateSearch] = useState(false);
     const [selectedGenes, setSelectedGenes] = useState([]);
@@ -69,12 +72,13 @@ function ComboSearchTab() {
                     }
                 }
                 addSearchHistory(search, isFile);
-                fetchSearchResults(search, isFile)
+                //fetchSearchResults(search, isFile)
+                callAPI((isFile) ? POST_QUERY_FILE : POST_QUERY, search)
                     .then(res => {
                         if (isFile) { /* For files, add query to searchHistory only after it's been validated. */
-                            addSearchHistory(res.searchQuery)
+                            addSearchHistory(res.data.searchQuery)
                         }
-                        setResultData(res);
+                        setResultData(res.data);
                         setSelectedGenes([]);
                         setCheckedTerms([]);
                         sessionStorage.removeItem('mtt');
@@ -88,13 +92,25 @@ function ComboSearchTab() {
                     });
             }
         }
-    }, [haveResults, selectedGenes, checkedTerms, useBatch, batchData, batchQueryFormat, isFile, resultData]);
+    }, [
+        POST_QUERY,
+        POST_QUERY_FILE,
+        haveResults,
+        selectedGenes,
+        checkedTerms,
+        useBatch,
+        batchData,
+        batchQueryFormat,
+        isFile,
+        resultData
+    ]);
 
     /* Populates predictive dropdown with partial search results from API */
     function partialSearch(pattern) {
-        fetchGenes(pattern)
+        //fetchGenes(pattern)
+        callAPI(GET_GENES, pattern)
             .then(res => {
-                let mappedData = res.map((gene) => {
+                let mappedData = res.data.map((gene) => {
                     return {
                         value: gene.geneId,
                         label: `${gene.geneId} | ${gene.symbol} | ${gene.description}`

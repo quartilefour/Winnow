@@ -31,7 +31,7 @@ const NavBar = () => {
             setIsTokenValid(true);
             fetchProfileData()
                 .then(res => {
-                    setUser(res.userEmail)
+                    setUser(res.data.userEmail)
                 })
                 .catch(() => {
                     setUser('Unknown')
@@ -44,44 +44,40 @@ const NavBar = () => {
         setIsLoggingOut(true);
     }
 
-    if (authToken) {
-        return (
-            <Navbar id="winnow-nav" expand="md">
-                <Navbar.Brand as={Link} to="/">
-
-                    W<img
-                    alt={"Winnow Logo"}
-                    src={logoImg}
-                    width="30"
-                    height="30"
-                    className="d-inline-block align-top"
-                />N N O W</Navbar.Brand>
-                <Navbar.Toggle aria-controls="basic-navbar-nav"/>
-                <Navbar.Collapse id="basic-navbar-nav">
-                    <Nav className="mr-auto">
-                        <Nav.Link as={Link} to="/">Dashboard</Nav.Link>
-                        {/* <Nav.Link as={Link} to="/admin">Admin</Nav.Link> */}
-                    </Nav>
-                    <Nav.Link as={Link} to='/support'>
-                        <FontAwesomeIcon icon={faQuestionCircle} color="cornflowerblue" title="Help" />
+    if (authToken) return (
+        <Navbar id="winnow-nav" expand="md">
+            <Navbar.Brand as={Link} to="/">
+                W<img
+                alt={"Winnow Logo"}
+                src={logoImg}
+                width="30"
+                height="30"
+                className="d-inline-block align-top"
+            />N N O W</Navbar.Brand>
+            <Navbar.Toggle aria-controls="basic-navbar-nav"/>
+            <Navbar.Collapse id="basic-navbar-nav">
+                <Nav className="mr-auto">
+                    <Nav.Link as={Link} to="/">Dashboard</Nav.Link>
+                    {/* <Nav.Link as={Link} to="/admin">Admin</Nav.Link> */}
+                </Nav>
+                <Nav.Link as={Link} to='/support'>
+                    <FontAwesomeIcon icon={faQuestionCircle} color="cornflowerblue" title="Help"/>
+                </Nav.Link>
+                <Nav.Link as={Link} to='/profile'>
+                    <FontAwesomeIcon icon={faUser} color="cornflowerblue" title="Profile"/>
+                </Nav.Link>
+                <Nav.Item>
+                    ({user})
+                </Nav.Item>
+                <Nav>
+                    <Nav.Link href="#" onClick={logOut} title="Log Out">
+                        <FontAwesomeIcon icon={faSignOutAlt} color="cornflowerblue" title="Log Out"/>
                     </Nav.Link>
-                    <Nav.Link as={Link} to='/profile'>
-                        <FontAwesomeIcon icon={faUser} color="cornflowerblue" title="Profile" />
-                    </Nav.Link>
-                    <Nav.Item>
-                        ({user})
-                    </Nav.Item>
-                    <Nav>
-                        <Nav.Link href="#" onClick={logOut} title="Log Out">
-                            <FontAwesomeIcon icon={faSignOutAlt} color="cornflowerblue" title="Log Out" />
-                        </Nav.Link>
-                    </Nav>
-                </Navbar.Collapse>
-            </Navbar>
-        )
-    } else {
-        return (<Navbar/>)
-    }
+                </Nav>
+            </Navbar.Collapse>
+        </Navbar>
+    )
+    return (<Navbar/>)
 
 };
 

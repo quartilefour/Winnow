@@ -53,18 +53,18 @@ function Login(props) {
         };
         sendLoginCredentials(credentials)
             .then(res => {
-            setAuthToken(res);
-            createSearchHistory();
-            setLoggedIn(true);
-        })
+                setAuthToken(res.headers['authorization'].split(' ')[1]);
+                createSearchHistory();
+                setLoggedIn(true);
+            })
             .catch(error => {
-            setAlertType("danger");
-            if (error.response.status === 403 || error.response.status === 409) {
-                setError(`Invalid E-mail or password`);
-            } else {
-                setError(`Server error: ${parseAPIError(error)}`);
-            }
-        });
+                setAlertType("danger");
+                if (error.response.status === 403 || error.response.status === 409) {
+                    setError(`Invalid E-mail or password`);
+                } else {
+                    setError(`Server error: ${parseAPIError(error)}`);
+                }
+            });
     }
 
     if (!isLoggedIn) { /* Displays Login form */

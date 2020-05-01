@@ -1,6 +1,5 @@
 import React, {useState} from 'react';
 import {BrowserRouter as Router, Switch, Route} from "react-router-dom";
-import * as C from "./constants";
 import NavBar from "./components/common/NavBar";
 import Login from "./routes/Login";
 import Register from "./routes/Register";
@@ -12,34 +11,39 @@ import Profile from "./routes/Profile";
 import Support from "./routes/Support";
 import Admin from "./routes/Admin";
 import Error from "./routes/Error";
-import {fetchApiStatus} from "./service/ApiService";
+import {callAPI} from "./service/ApiService";
 import Maintenance from "./components/error/Maintenance";
+import {API_RESOURCES, W_ENV, WINNOW_API_TIMEOUT, WINNOW_TOKEN} from "./constants";
 
 /**
  * Renders the User Interface to the Winnow application.
  *
- * @param props
  * @returns {*}
  * @constructor
  */
-function App(props) {
+function App() {
+
+    const {GET_API_STATUS} = API_RESOURCES;
+
     const [apiReady, setApiReady] = useState(false);
     const [timeOut, setTimeOut] = useState(0)
     /* Authentication stateful objects */
-    const token = Cookies.get(C.WINNOW_TOKEN) ? Cookies.get(C.WINNOW_TOKEN) : null;
+    const token = Cookies.get(WINNOW_TOKEN) ? Cookies.get(WINNOW_TOKEN) : null;
     const [authToken, setAuthToken] = useState(token);
 
     React.useEffect(() => {
-        fetchApiStatus()
+        /* Check to see if API is available. */
+        callAPI(GET_API_STATUS)
             .then(() => {
                 setApiReady(true);
                 setTimeOut(0)
             })
             .catch(() => {
                 setApiReady(false);
-                setTimeOut(setTimeout(fetchApiStatus, 15000))
+                setTimeOut(setTimeout(callAPI, WINNOW_API_TIMEOUT / 2))
             })
-    }, [timeOut])
+    }, [GET_API_STATUS, timeOut])
+
     /**
      * Updates the user's JWT upon login/logout.
      *
@@ -49,14 +53,14 @@ function App(props) {
      */
     const setToken = (data) => {
         if (data === null) {
-            Cookies.remove(C.WINNOW_TOKEN);
+            Cookies.remove(WINNOW_TOKEN);
             sessionStorage.clear();
         } else {
             Cookies.set(
-                C.WINNOW_TOKEN,
+                WINNOW_TOKEN,
                 data,
                 {
-                    secure: C.W_ENV === 'PROD',
+                    secure: W_ENV === 'PROD',
                     sameSite: 'strict'
                 }
             );
@@ -65,30 +69,26 @@ function App(props) {
     };
 
     /* Displays application when API is available */
-    if (apiReady) {
-        return (
-            <AuthContext.Provider value={{authToken, setAuthToken: setToken}}>
-                <Router>
-                    <div>
-                        <NavBar/>
-                        <Switch>
-                            <Route path="/login" component={Login}/>
-                            <Route path="/register" component={Register}/>
-                            <PrivateRoute path="/profile" component={Profile}/>
-                            <PrivateRoute path="/support" component={Support}/>
-                            <PrivateRoute exact path="/" component={Dashboard}/>
-                            <PrivateRoute path="/admin" component={Admin}/>
-                            <PrivateRoute component={Error}/>
-                        </Switch>
-                    </div>
-                </Router>
-            </AuthContext.Provider>
-        );
-    } else {
-        return (
-            <Maintenance/>
-        )
-    }
+    if (apiReady) return (
+        <AuthContext.Provider value={{authToken, setAuthToken: setToken}}>
+            <Router>
+                <div>
+                    <NavBar/>
+                    <Switch>
+                        <Route path="/login" component={Login}/>
+                        <Route path="/register" component={Register}/>
+                        <PrivateRoute path="/profile" component={Profile}/>
+                        <PrivateRoute path="/support" component={Support}/>
+                        <PrivateRoute exact path="/" component={Dashboard}/>
+                        <PrivateRoute path="/admin" component={Admin}/>
+                        <PrivateRoute component={Error}/>
+                    </Switch>
+                </div>
+            </Router>
+        </AuthContext.Provider>
+    );
+
+    return (<Maintenance/>)
 }
 
 export default App;

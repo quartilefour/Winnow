@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlay, faShareAlt, faTimes} from "@fortawesome/free-solid-svg-icons";
-import {fetchSearchResults, fetchUserBookmarks, parseAPIError, removeUserBookmark} from "../../service/ApiService";
+import {callAPI, parseAPIError} from "../../service/ApiService";
 import {Alert} from "react-bootstrap";
 import PageLoader from "../common/PageLoader";
 import SearchResultsDisplay from "../common/SearchResultsDisplay";
@@ -11,7 +11,7 @@ import ToolkitProvider, {Search} from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
-import * as C from "../../constants";
+import {API_RESOURCES, T2_POPTS} from "../../constants";
 
 /**
  * BookmarkTab builds the content for user's saved search lists.
@@ -20,6 +20,7 @@ import * as C from "../../constants";
  * @constructor
  */
 function BookmarkTab() {
+    const {DELETE_BOOKMARKS, GET_BOOKMARKS, POST_QUERY} = API_RESOURCES
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [bookmarkData, setBookmarkData] = useState([]);
@@ -33,7 +34,7 @@ function BookmarkTab() {
         let mounted = true;
         if (!haveResults) {
             if (deleteBookmark) {
-                removeUserBookmark(deleteBookmark)
+                callAPI(DELETE_BOOKMARKS, deleteBookmark)
                     .then(() => {
                         if (mounted) {
                             setDeleteBookmark(null);
@@ -45,10 +46,10 @@ function BookmarkTab() {
                         setAlertType('danger')
                     });
             }
-            fetchUserBookmarks()
+            callAPI(GET_BOOKMARKS)
                 .then(res => {
                     if (mounted) {
-                        setBookmarkData(res);
+                        setBookmarkData(res.data);
                         setIsLoaded(true);
                     }
                 })
@@ -61,7 +62,7 @@ function BookmarkTab() {
         return () => {
             mounted = false
         };
-    }, [deleteBookmark, haveResults]);
+    }, [DELETE_BOOKMARKS, GET_BOOKMARKS, deleteBookmark, haveResults]);
 
     /* Set up our table options and custom formatting */
     const columns = [
@@ -162,9 +163,9 @@ function BookmarkTab() {
     /* Submits search criteria to API */
     function executeSearch(searchQuery) {
         setIsLoaded(false);
-        fetchSearchResults(searchQuery)
+        callAPI(POST_QUERY, searchQuery)
             .then(res => {
-                setResultData(res);
+                setResultData(res.data);
                 setHaveResults(true);
                 setIsLoaded(true);
             })
@@ -200,7 +201,7 @@ function BookmarkTab() {
                                     <BootstrapTable
                                         {...props.baseProps}
                                         pagination={
-                                            paginationFactory(C.T2_POPTS)
+                                            paginationFactory(T2_POPTS)
                                         }
                                         bootstrap4
                                         striped

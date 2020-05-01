@@ -1,14 +1,14 @@
 import React, {useState} from "react";
 import PropTypes from 'prop-types';
 import {Form, Alert, Button} from "react-bootstrap";
-import {fetchPubMedArticleList, parseAPIError} from "../../service/ApiService";
+import {callAPI, parseAPIError} from "../../service/ApiService";
 import PageLoader from "../common/PageLoader";
 import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
 import {faChevronLeft, faExternalLinkAlt} from "@fortawesome/free-solid-svg-icons";
 import ToolkitProvider, {Search} from "react-bootstrap-table2-toolkit";
 import BootstrapTable from "react-bootstrap-table-next";
 import paginationFactory from "react-bootstrap-table2-paginator";
-import * as C from "../../constants";
+import {API_RESOURCES, PUBMED_BASE_URL, T2_POPTS} from "../../constants";
 
 /**
  * PubMedArticleListDisplay displays a list of PubMed articles found in a previous search.
@@ -23,6 +23,8 @@ function PubMedArticleListDisplay(props) {
         history: PropTypes.func,
         listData: PropTypes.object
     }
+
+    const {GET_ARTICLES} = API_RESOURCES;
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [listData, setListData] = useState('');
@@ -41,7 +43,7 @@ function PubMedArticleListDisplay(props) {
             setAlertType('danger');
         } else {
             setListData(props.listData);
-            fetchPubMedArticleList(
+            callAPI(GET_ARTICLES,
                 {
                     geneId: props.listData.geneId,
                     meshId: props.listData.meshId,
@@ -50,7 +52,7 @@ function PubMedArticleListDisplay(props) {
                 })
                 .then(res => {
                     if (mounted) {
-                        setPubmedData(res);
+                        setPubmedData(res.data);
                         setIsLoaded(true);
                     }
                 })
@@ -64,7 +66,7 @@ function PubMedArticleListDisplay(props) {
         return () => {
             mounted = false
         };
-    }, [props]);
+    }, [GET_ARTICLES, props]);
 
     /* Set up our table options and custom formatting */
     const columns = [
@@ -91,7 +93,7 @@ function PubMedArticleListDisplay(props) {
                         className="pubmed-art-link"
                         target="_blank"
                         rel="noopener noreferrer"
-                        href={`${C.PUBMED_BASE_URL}/${row.publicationId}`}
+                        href={`${PUBMED_BASE_URL}/${row.publicationId}`}
                     >
                         {cell}
                         <FontAwesomeIcon icon={faExternalLinkAlt} color="cornflowerblue"/>
@@ -108,7 +110,7 @@ function PubMedArticleListDisplay(props) {
             isDummyField: true,
             text: 'Article URL',
             hidden: true,
-            csvFormatter: (cell, row, rowIndex) => `${C.PUBMED_BASE_URL}/${row.publicationId}`
+            csvFormatter: (cell, row, rowIndex) => `${PUBMED_BASE_URL}/${row.publicationId}`
         },
         {
             dataField: 'title',
@@ -234,7 +236,7 @@ function PubMedArticleListDisplay(props) {
                                         <BootstrapTable
                                             {...props.baseProps}
                                             pagination={
-                                                paginationFactory(C.T2_POPTS)
+                                                paginationFactory(T2_POPTS)
                                             }
                                             bootstrap4
                                             striped

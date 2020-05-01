@@ -5,7 +5,7 @@ import {Alert} from "react-bootstrap";
 import PageLoader from "../common/PageLoader";
 import {getSearchHistory, removeSearchHistory} from "../../service/SearchService";
 import SearchResultsDisplay from "../common/SearchResultsDisplay";
-import {fetchSearchResults, parseAPIError} from "../../service/ApiService";
+import {callAPI, parseAPIError} from "../../service/ApiService";
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import ToolkitProvider, {Search} from 'react-bootstrap-table2-toolkit';
@@ -13,6 +13,7 @@ import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.c
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
 import * as C from "../../constants";
+import {API_RESOURCES} from "../../constants";
 
 /**
  * RecentSearchesTab builds the content for user's saved search lists.
@@ -21,6 +22,8 @@ import * as C from "../../constants";
  * @constructor
  */
 function RecentSearchesTab() {
+
+    const {POST_QUERY} = API_RESOURCES;
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [searchHistory, setSearchHistory] = useState([]);
@@ -131,9 +134,10 @@ function RecentSearchesTab() {
     /* Submits search criteria to API */
     function executeSearch(searchQuery) {
         setIsLoaded(false);
-        fetchSearchResults(searchQuery)
+        //fetchSearchResults(searchQuery)
+        callAPI(POST_QUERY, searchQuery)
             .then(res => {
-                setResultData(res);
+                setResultData(res.data);
                 setHaveResults(true);
                 setIsLoaded(true);
             })

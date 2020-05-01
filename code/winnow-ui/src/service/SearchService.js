@@ -111,6 +111,16 @@ export const setBatch = (boolean) => {
  * @return {{searchQuery: {symbol: [], geneId: [], meshTreeId: [], name: [], description: [], meshId: []}}}
  */
 export const prepareSearchQuery = (queryFormat, query) => {
+    const {
+        GENE_ID,
+        GENE_SYM,
+        GENE_DESC,
+        MESH_ID,
+        MESH_TREEID,
+        MESH_NAME
+    } = QF;
+
+    /* Parse batch import textarea query */
     query = query
         .split("\n")
         .filter((term) => {
@@ -129,27 +139,26 @@ export const prepareSearchQuery = (queryFormat, query) => {
         }
     }
     switch (queryFormat) {
-        case QF.GENE_ID.value:
+        case GENE_ID.value:
             data.searchQuery.geneId = query
             break
-        case QF.GENE_SYM.value:
+        case GENE_SYM.value:
             data.searchQuery.symbol = query
             break
-        case QF.GENE_DESC.value:
+        case GENE_DESC.value:
             data.searchQuery.description = query
             break
-        case QF.MESH_ID.value:
+        case MESH_ID.value:
             data.searchQuery.meshId = query
             break
-        case QF.MESH_TREEID.value:
+        case MESH_TREEID.value:
             data.searchQuery.meshTreeId = query
             break
-        case QF.MESH_NAME.value:
+        case MESH_NAME.value:
             data.searchQuery.name = query
             break
         default:
             data = null
     }
-    console.info(`SearchService: prepareSearchQuery: ${JSON.stringify(data)}`)
     return data;
 }
