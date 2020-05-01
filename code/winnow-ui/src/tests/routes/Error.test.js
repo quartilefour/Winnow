@@ -1,6 +1,6 @@
 import React from 'react';
-import { shallow } from 'enzyme';
-import Error from '../../../components/error/Error';
+import {shallow} from 'enzyme';
+import Error from '../../routes/Error';
 
 describe('<Error {props}/>', () => {
     let props;

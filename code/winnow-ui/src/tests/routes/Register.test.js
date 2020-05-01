@@ -1,10 +1,10 @@
 import React from 'react';
 import {BrowserRouter as Router} from "react-router-dom";
-import Register from '../../../components/user/Register';
+import Register from '../../routes/Register';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import {act} from "react-dom/test-utils";
-import {WINNOW_API_BASE_URL} from "../../../constants";
+import {WINNOW_API_BASE_URL} from "../../constants";
 import {mount, shallow} from "enzyme";
 
 

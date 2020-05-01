@@ -50,12 +50,15 @@ export function MeshtermTree(props) {
     /* Recursive function to find proper parent and add fetched children */
     function navigateNode(indices, updatedData, mappedData) {
         let index = parseInt(indices.shift());
-        if (indices.length === 0) {
-            updatedData[index].isChildrenLoading = false;
-            updatedData[index].isExpanded = true;
-            updatedData[index].children = mappedData;
-        } else {
-           navigateNode(indices, updatedData[index].children, mappedData);
+        if (updatedData !== undefined && updatedData[index] !== undefined) {
+            if (indices.length === 0) {
+                updatedData[index].isChildrenLoading = false;
+                updatedData[index].isExpanded = true;
+                updatedData[index].children = mappedData;
+            } else {
+                //console.log(`calling navigateNode with updatedData ${JSON.stringify(updatedData[index].children)}`);
+                navigateNode(indices, updatedData[index].children, mappedData);
+            }
         }
     }
 
@@ -71,24 +74,122 @@ export function MeshtermTree(props) {
     /* Updated session object with checked MeSH tree terms and updates parent component */
     function updatesCheckedNodes(node) {
         if (node && node.id !== null) {
-            let sscn = sessionStorage.getItem('mtt');
-            if (node.isChecked) {
-                console.debug(`MeshtermTree updateCN node ${node.meshId} checked`);
-                setChecked([...checked, node.meshId]);
-                if (sscn === null) {
-                    sessionStorage.setItem('mtt', `${node.id}`)
+            //console.log(`updating state for ${node.id}`);
+            if (node && node.id !== null) {
+                let sscn = sessionStorage.getItem('mtt');
+                if (node.isChecked && !checked.includes(`${node.meshId}`)) {
+                    //console.debug(`MeshtermTree updateCN node ${node.meshId} checked`);
+                    setChecked([...checked, node.meshId]);
+                    if (sscn === null) {
+                        sessionStorage.setItem('mtt', `${node.id}`)
+                    } else {
+                        sessionStorage.setItem('mtt', `${sscn},${node.id}`)
+                    }
                 } else {
-                    sessionStorage.setItem('mtt', `${sscn},${node.id}`)
+                    let sscnArray = sscn.split(",");
+                    //console.debug(`MeshtermTree updateCN node ${node.meshId} unchecked`);
+                    setChecked(checked.filter(term => term !== node.meshId));
+                    sessionStorage.setItem('mtt', `${sscnArray.filter(term => term !== node.id)}`)
                 }
-            } else {
-                let sscnArray = sscn.split(",");
-                console.debug(`MeshtermTree updateCN node ${node.meshId} unchecked`);
-                setChecked(checked.filter(term => term !== node.meshId));
-                sessionStorage.setItem('mtt', `${sscnArray.filter(term => term !== node.id)}`)
+                props.callback([...new Set(sessionStorage.getItem('mtt').split(','))])
             }
-            props.callback(sessionStorage.getItem('mtt').split(','))
         }
     }
+
+    function getAllChildren(node, depth) {
+        //console.log(`inside getAllChildren ${JSON.stringify(node)} depth ${depth}`);
+        if (node.hasChild) {
+            //console.log(`inside getAllChildren, node has child`);
+            if (depth === 0) {
+                //console.log(`inside getAllChildren, node has child and depth === 0`);
+                fetchMeshtermNode(node.id)
+                    .then(res => {
+                        //console.log(`inside getAllChildren node id ${JSON.stringify(res)}`);
+
+                        // all the children
+                        let newNodes = getNewNode(mapMeshtermTreeData(res, node, depth));
+                        node.children = newNodes;
+                        expandAllNodes(node, depth);
+                        //console.log(`node ${node.id} has children ${JSON.stringify(node.children)}`);
+                        newNodes.forEach((node) => {
+                            //console.log(`newNode for ${node.id} is ${JSON.stringify(node)}`);
+                            //console.log(`newNode is ${JSON.stringify(node)}`);
+                            getAllChildren(node, depth + 1);
+                            return node;
+                        })
+                    }).catch(err => {
+                    console.log(`MeshtermTree Error: ${err}`);
+                    console.log(`MeshtermTree Error: ${JSON.stringify(err)}`);
+                })
+            } else {
+                fetchMeshtermTree(node.id)
+                    .then(res => {
+                        //console.log(`inside leaf getAllChildren for ${node.id}`);
+                        let newNodes = getNewNode(mapMeshtermTreeData(res, node, depth));
+                        node.children = newNodes;
+                        //console.log(`node ${node.id} has children ${JSON.stringify(node.children)}`);
+                        newNodes.forEach((node) => {
+                            //console.log(`newNode for ${node.id} is ${JSON.stringify(node)}`);
+                            //console.log(`newNode is ${JSON.stringify(node)}`);
+                            getAllChildren(node, depth + 1);
+                            return node;
+                        })
+                    }).catch(err => {
+                    console.log(`MeshtermTree Error: ${err}`);
+                    console.log(`MeshtermTree Error: ${JSON.stringify(err)}`);
+                })
+            }
+        }
+        return node;
+    }
+
+    function getNewNode(mappedData) {
+        if (mappedData) {
+            let newNodes = []
+            //console.log(`mappedData exists ${JSON.stringify(mappedData)}`);
+            // create actual nodes for the new data, so that we can find their children next
+            for (let i = 0; i < mappedData.length; i = i + 1) {
+                newNodes[i] = {
+                    "children": [],
+                    "id": mappedData[i].id,
+                    "isChecked": mappedData[i].isChecked,
+                    "isExpanded": mappedData[i].isChecked,
+                    "meshIndex": `${mappedData[i].meshIndex}:${i}`,
+                    "meshId": mappedData[i].meshId,
+                    "hasChild": mappedData[i].hasChild,
+                    "name": `${mappedData[i].name} [${i}]`,
+                };
+                updatesCheckedNodes(newNodes[i]);
+            }
+            return newNodes;
+        }
+    }
+
+    function expandAllNodes(node, depth) {
+        if (node.isExpanded === true) {
+            //console.debug(`MeshtermTree expanding: ${node.name}`);
+            node.isChildrenLoading = true;
+
+            if (depth === 0) {
+                fetchMeshtermNode(node.id)
+                    .then(res => {
+                        insertChildNodes(node, depth, mapMeshtermTreeData(res, node, depth));
+                    }).catch(err => {
+                    console.debug(`MeshtermTree Error: ${err}`);
+                    console.debug(`MeshtermTree Error: ${JSON.stringify(err)}`);
+                })
+            } else {
+                fetchMeshtermTree(node.id)
+                    .then(res => {
+                        insertChildNodes(node, depth, mapMeshtermTreeData(res, node, depth));
+                    }).catch(err => {
+                    console.debug(`MeshtermTree Error: ${err}`);
+                    console.debug(`MeshtermTree Error: ${JSON.stringify(err)}`);
+                })
+            }
+        }
+    }
+
 
     /* Displays MeSH term tree, dynamically populating/removing children as expanded/collapsed */
     if (isLoaded) {
@@ -96,9 +197,6 @@ export function MeshtermTree(props) {
             <SuperTreeview
                 loadingElement={<Spinner animation="border" size="sm" variant="info"/>}
                 data={meshData}
-                onChange={(e) => {
-                    console.info(`MeshtermTree onChange fired`);
-                }}
                 onUpdateCb={(updatedData) => {
                     setMeshData(updatedData);
                 }}
@@ -108,47 +206,46 @@ export function MeshtermTree(props) {
                 isExpandable={(node, depth) => {
                     return node.hasChild;
                 }}
-                onCheckToggleCb={(nodes, depth)=>{
-                    console.debug(`MeshtermTree checkToggle: ${JSON.stringify(nodes)}`);
+                onCheckToggleCb={(nodes, depth)=> {
+                    //console.debug(`MeshtermTree checkToggle: ${JSON.stringify(nodes)}`);
                     const checkState = nodes[0].isChecked;
+                    nodes[0].isExpanded = checkState;
 
-                    applyCheckStateTo(nodes);
 
                     /* Recursively checks/unchecks immediate children */
-                    function applyCheckStateTo(nodes){
-                        nodes.forEach((node)=>{
-                            node.isChecked = checkState;
-                             updatesCheckedNodes(node);
-                            if(node.children){
-                                applyCheckStateTo(node.children);
-                            }
+                    //console.debug(`MeshtermTree checkToggle: ${JSON.stringify(nodes)}`);
+
+                    applyCheckStateToAllNodes(nodes, depth);
+
+                    // expand all the nodes under the top checked node
+                    expandAllNodes(nodes[0], depth);
+
+                    function applyCheckStateToAllNodes(nodes, depth) {
+                        nodes.forEach((node) => {
+                            applyCheckStateTo(node, depth);
                         })
                     }
-                }}
-                onExpandToggleCb={(node, depth) => {
-                    if (node.isExpanded === true) {
-                        console.debug(`MeshtermTree expanding: ${node.name}`);
-                        node.isChildrenLoading = true;
 
-                        if (depth === 0) {
-                            fetchMeshtermNode(node.id)
-                                .then(res => {
-                                    insertChildNodes(node, depth, mapMeshtermTreeData(res, node, depth));
-                                }).catch(err => {
-                                console.debug(`MeshtermTree Error: ${err}`);
-                                console.debug(`MeshtermTree Error: ${JSON.stringify(err)}`);
-                            })
-                        } else {
-                            fetchMeshtermTree(node.id)
-                                .then(res => {
-                                    insertChildNodes(node, depth, mapMeshtermTreeData(res, node, depth));
-                                }).catch(err => {
-                                console.debug(`MeshtermTree Error: ${err}`);
-                                console.debug(`MeshtermTree Error: ${JSON.stringify(err)}`);
-                            })
+
+                    /* Recursively checks/unchecks immediate children */
+                    function applyCheckStateTo(node, depth) {
+                        node.isChecked = checkState;
+                        //console.log(`check state is ${node.isChecked}`);
+                        if (node.hasChild) {
+                            let allChildren = getAllChildren(node, depth);
+                            updatesCheckedNodes(node);
+                            if (allChildren.children) {
+                                allChildren.children.forEach((node) => {
+                                    applyCheckStateTo(node, depth + 1);
+                                })
+                            }
                         }
                     }
                 }}
+                onExpandToggleCb={(node, depth) => {
+                    expandAllNodes(node, depth);
+                }}
+
             />
         )
     } else {

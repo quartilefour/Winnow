@@ -1,8 +1,8 @@
 import React, {useState} from 'react';
 import {Nav, Tab, Row, Col} from "react-bootstrap";
-import BookmarkTab from "./BookmarkTab";
-import RecentSearchesTab from "./RecentSearchesTab";
-import ComboSearchTab from "../common/ComboSearchTab";
+import BookmarkTab from "../components/user/BookmarkTab";
+import RecentSearchesTab from "../components/user/RecentSearchesTab";
+import ComboSearchTab from "../components/common/ComboSearchTab";
 
 /**
  * Renders the Dashboard landing page for authenticated users.

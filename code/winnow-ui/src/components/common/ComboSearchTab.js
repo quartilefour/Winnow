@@ -131,9 +131,9 @@ function ComboSearchTab() {
 
     /* Callback for MeshtermTree */
     const getChecked = (checkedNodes) => {
-        console.log(`inside ComboSearchTab getChecked ${JSON.stringify(checkedNodes)}`);
+        //console.log(`inside ComboSearchTab getChecked ${JSON.stringify(checkedNodes)}`);
         setCheckedTerms(checkedNodes);
-        console.info(`ComboSearchTab: getChecked: ${JSON.stringify(checkedTerms)}`);
+        //console.info(`ComboSearchTab: getChecked: ${JSON.stringify(checkedTerms)}`);
     };
 
     /* Callback for enabling search button from Batch */

@@ -1,7 +1,7 @@
 import React, {useState} from "react";
 import PropTypes from 'prop-types';
 import {Card, Image} from "react-bootstrap";
-import Oops from "../../img/oops.png";
+import Oops from "../img/oops.png";
 
 function Error(props) {
 

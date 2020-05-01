@@ -2,12 +2,12 @@ import React, {useState} from "react";
 import PropTypes from 'prop-types';
 import {Redirect, Link} from "react-router-dom";
 import {Card, Button, Form, Alert} from "react-bootstrap";
-import {sendLoginCredentials, loginSchema} from "../../service/AuthService";
-import logoImg from "../../img/logo.png";
-import {useAuth} from "../../context/auth";
-import {createSearchHistory} from "../../service/SearchService";
+import {sendLoginCredentials, loginSchema} from "../service/AuthService";
+import logoImg from "../img/logo.png";
+import {useAuth} from "../context/auth";
+import {createSearchHistory} from "../service/SearchService";
 import {useFormik} from "formik";
-import {parseAPIError} from "../../service/ApiService";
+import {parseAPIError} from "../service/ApiService";
 
 /**
  * Functional component to render Login form and handle response from API.

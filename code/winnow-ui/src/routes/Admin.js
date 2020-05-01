@@ -5,25 +5,23 @@ import {Nav, Tab, Row, Col} from "react-bootstrap";
 /**
  * Renders the Admin dashboard landing page for admin users.
  *
- * @param props
  * @returns {*}
  * @constructor
  */
-function Admin(props) {
+function Admin() {
     const [currentTab, setCurrentTab] = useState('teams');
 
     React.useEffect(() => {
         let storedTab = sessionStorage.getItem('adminTab');
         if (storedTab) {
-            console.info(`Admin: setting tab to: ${JSON.stringify(storedTab)}`);
             setCurrentTab(storedTab);
         }
     }, [currentTab]);
+
     return (
         <div className="main-tab-holder">
             <Tab.Container activeKey={currentTab} className="tab-container" onSelect={
                 (e) => {
-                    console.info(`Selecting Admin tab: ${e}`);
                     sessionStorage.setItem('adminTab', e);
                     setCurrentTab(e)
                 }

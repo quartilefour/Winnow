@@ -1,10 +1,10 @@
 import React, {useState} from "react";
 import {Link, Redirect} from "react-router-dom";
 import {Card, Form, Button, Col, Alert} from "react-bootstrap";
-import {registerSchema, sendRegistration} from "../../service/AuthService";
-import logoImg from "../../img/logo.png";
+import {registerSchema, sendRegistration} from "../service/AuthService";
+import logoImg from "../img/logo.png";
 import {useFormik} from "formik";
-import {parseAPIError} from "../../service/ApiService";
+import {parseAPIError} from "../service/ApiService";
 
 /**
  * Functional component to render Registration form and handle responses from API.

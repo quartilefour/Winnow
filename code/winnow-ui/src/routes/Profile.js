@@ -1,16 +1,16 @@
 import React, {useState} from 'react';
 import {Card, Form, Col, Button, Nav, Tab, Alert} from 'react-bootstrap';
-import profileImg from "../../img/profile-dna.png";
+import profileImg from "../img/profile-dna.png";
 import {
     fetchProfileData,
     sendChangePassword,
     sendProfileUpdate,
     profileSchema,
     passwordSchema
-} from "../../service/AuthService";
-import PageLoader from "../common/PageLoader";
+} from "../service/AuthService";
+import PageLoader from "../components/common/PageLoader";
 import {useFormik} from "formik";
-import {parseAPIError} from "../../service/ApiService";
+import {parseAPIError} from "../service/ApiService";
 
 /**
  * Functional component to render User Profile form.

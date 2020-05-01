@@ -2,9 +2,9 @@ import React from 'react';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import {act} from "react-dom/test-utils";
-import {WINNOW_API_BASE_URL} from "../../../constants";
-import Profile from '../../../components/user/Profile';
-import {mountWrap, shallowWrap} from "../../_helpers";
+import {WINNOW_API_BASE_URL} from "../../constants";
+import Profile from '../../routes/Profile';
+import {mountWrap, shallowWrap} from "../_helpers";
 import {mount, shallow} from "enzyme";
 
 describe('<Profile />', () => {
