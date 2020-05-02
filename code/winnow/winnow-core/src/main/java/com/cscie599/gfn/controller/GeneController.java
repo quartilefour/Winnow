@@ -1,7 +1,6 @@
 package com.cscie599.gfn.controller;
 
 
-import com.cscie599.gfn.controller.exceptions.GeneNotFoundException;
 import com.cscie599.gfn.entities.Gene;
 import com.cscie599.gfn.entities.GeneMeshterm;
 import com.cscie599.gfn.repository.GeneMeshtermRepository;
@@ -26,21 +25,10 @@ import java.math.BigInteger;
 public class GeneController {
 
     @Autowired
-    GeneRepository repository;
+    GeneRepository geneRepository;
 
     @Autowired
     GeneMeshtermRepository geneMeshtermRepository;
-
-    @ApiOperation(value = "View a list of genes", response = List.class)
-    @GetMapping("/genes")
-    public List<GeneView> findAll() {
-        List<Gene> genes = repository.findAll();
-        List<GeneView> geneViews = new ArrayList<>();
-        for (Gene gene : genes) {
-            geneViews.add(new GeneView(gene.getGeneId(), gene.getDescription(), gene.getSymbol()));
-        }
-        return geneViews;
-    }
 
     @ApiOperation(value = "Catch empty search")
     @GetMapping("/genes/search/")
@@ -51,20 +39,12 @@ public class GeneController {
     @ApiOperation(value = "Get genes whose id, symbol or description contain 'pattern'")
     @GetMapping("/genes/search/{pattern}")
     public List<GeneView> findAllContaining(@PathVariable String pattern) {
-        List<Gene> genes = repository.findAllContaining(pattern.toLowerCase());
+        List<Gene> genes = geneRepository.findAllContaining(pattern.toLowerCase());
         List<GeneView> geneViews = new ArrayList<>();
         for (Gene gene : genes) {
             geneViews.add(new GeneView(gene.getGeneId(),gene.getDescription(), gene.getSymbol()));
         }
         return geneViews;
-    }
-
-    @ApiOperation(value = "View one gene")
-    @GetMapping("/genes/{id:[0-9]+}")
-    GeneView one(@PathVariable String id) {
-        Gene gene = repository.findById(id)
-                .orElseThrow(() -> new GeneNotFoundException(id));
-        return new GeneView(gene.getGeneId(), gene.getDescription(), gene.getSymbol());
     }
 
     /*
@@ -109,20 +89,23 @@ public class GeneController {
      *     ]
      * }
      */
-    @ApiOperation(value = "View gene detail including MeSH terms enriched for gene.")
+    @ApiOperation(value = "View gene detail including MeSH terms enriched for gene and co-occurring genes.")
     @PostMapping("/genes")
     public ResponseEntity<?> getGeneDetail(@RequestBody Map<String, Object> body) {
+        // Validate the request body before proceeding with the request
         LinkedHashMap<String, Object> response = validate(body);
         if (response.containsKey("error")) {
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
+        // Retrieve the gene from the db if it exists
         String geneId = body.get("geneId").toString();
-        Gene gene = repository.findById(geneId)
+        Gene gene = geneRepository.findById(geneId)
                 .orElse(null);
         if (gene == null) {
             response.put("error", "Gene not found.");
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
+        // Get all the MeSH terms, publication counts, and p-values associated with the gene
         List<GeneDetailMeshtermView> geneDetailMeshtermViews = new ArrayList<>();
         List<GeneMeshterm> geneMeshterms = geneMeshtermRepository.findByGeneIdOrderByPValue(geneId);
         for (GeneMeshterm geneMeshterm : geneMeshterms) {
@@ -132,20 +115,19 @@ public class GeneController {
                     geneMeshterm.getPublicationCount(),
                     geneMeshterm.getPValue()));
         }
+        // Get all the genes that co-occur with the gene and publication counts
         List<GeneDetailCoOccuringGeneView> geneDetailCoOccuringGeneViews = new ArrayList<>();
-        List<Object[]> genePublications = repository.findCoOccurringGeneIdsAndCountsByGeneIdOrderByCounts(geneId);
+        List<Object[]> genePublications = geneRepository.findCoOccurringGeneIdsAndCountsByGeneIdOrderByCounts(geneId);
         for (Object[] genePublication : genePublications) {
             String coOccurringGeneId = (String) genePublication[0];
             BigInteger count = (BigInteger) genePublication[1];
-            Gene coOccurringGene = repository.findById(coOccurringGeneId)
-                    .orElse(null);
-            assert coOccurringGene != null;
-            geneDetailCoOccuringGeneViews.add(new GeneDetailCoOccuringGeneView(
+            geneRepository.findById(coOccurringGeneId).ifPresent(coOccurringGene -> geneDetailCoOccuringGeneViews.add(new GeneDetailCoOccuringGeneView(
                     coOccurringGene.getGeneId().trim(),
                     coOccurringGene.getDescription().trim(),
                     coOccurringGene.getSymbol().trim(),
-                    count));
+                    count)));
         }
+        // Return the detail of the gene along with the MeSH terms and co-occurring gene results
         response.put("geneId", geneId);
         response.put("symbol", gene.getSymbol().trim());
         response.put("description", gene.getDescription().trim());
@@ -155,7 +137,7 @@ public class GeneController {
     }
 
     /*
-     * Validate the search body request.
+     * Validate the body request for getting the gene detail.
      */
     LinkedHashMap<String, Object> validate(Map<String, Object> body) {
         LinkedHashMap<String, Object> response = new LinkedHashMap<>();
