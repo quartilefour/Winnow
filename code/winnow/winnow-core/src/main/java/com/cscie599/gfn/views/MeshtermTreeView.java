@@ -1,14 +1,23 @@
 package com.cscie599.gfn.views;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.util.*;
 
 public class MeshtermTreeView implements Comparable{
+    @JsonProperty("i")
     private String meshId;
+    @JsonProperty("p")
     private String treeParentId;
+    @JsonProperty("t")
     private String treeNodeId;
+    @JsonProperty("n")
     private String meshName;
+    @JsonProperty("f")
     private String fullNodeId;
+    @JsonProperty("h")
     private boolean hasChild;
+    @JsonProperty("c")
     private Set<MeshtermTreeView> childNodes;
     public MeshtermTreeView(String meshId, String treeParentId, String treeNodeId, String meshName, boolean hasChild) {
         this.meshId = meshId.trim();
