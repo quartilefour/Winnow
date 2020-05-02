@@ -20,8 +20,8 @@ describe('<SearchTermUploader />', () => {
         useEffect = jest.spyOn(React, "useEffect");
         props = {
             active: true,
-            searchable: true,
-            update: jest.fn().mockResolvedValue({})
+            searchable: jest.fn(),
+            update: jest.fn().mockReturnValue({})
         };
         if (component) component.unmount();
 

@@ -11,13 +11,39 @@
     ├── package-lock.json   Package dependencies
     ├── public              Static content
     └── src                 Application code
+        ├── components      Custom React components
+        ├── constants       Winnow constants
+        ├── context         Auth context
+        ├── img             Images
+        ├── routes          Winnow entry points
+        ├── service         Winnow application services
+        └── tests           Application tests
     ```
 
 ### Local
 * Dependencies
   - `node` version 12.xx.xx
   - `winnow-core` application needs to be running to provide API endpoints.
+  - Browser support:
+    
+    | Browser | Version | Support |
+    | :------- | :-------: | :-------: |
+    | Chrome | &ge;48 | &#10004; |
+    | Edge | &ge;44 | &#10004; |
+    | Firefox | &ge;72 | &#10004; |
+    | Internet Explorer | Any | &#10008; |
+    | Opera | &ge; 12 | &#10004; |
+    | Safari | &ge; 13 | &#10004; |
+    Browser detection script from: [SO](https://stackoverflow.com/questions/52736265/can-i-render-warning-message-if-users-browser-is-not-supported)
+    
 * Tests
+  - Test Deployed Build bundle
+    ```shell script
+      npm -g install serve
+      npm run build
+      serve -s build
+    ```
+    The build bundle will be served at http://localhost:5000/
   - Run Test Suite
     ```shell script
       npm install
@@ -72,7 +98,3 @@
   - Set Alternate Domain Names (CNAMEs) to your chosen fully qualified domain name (FQDN)
   - Set SSL Certificate to the certificate matching the FQDN above.
   - Click Create Distribution to create the distribution.
-
-
-### UI Design & Code
-* JSON.stringify is used in labels and titles to display nested Object data.

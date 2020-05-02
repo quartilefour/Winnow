@@ -17,7 +17,7 @@ import {
  * options to passed to the axios AJAX request.
  *
  * @param resource - API resource endpoint
- * @param data
+ * @param data - Data to be passed to the API
  * @return {Promise<>}
  */
 export const callAPI = (resource, data = '') => {

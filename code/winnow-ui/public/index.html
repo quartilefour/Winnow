@@ -15,8 +15,64 @@
     <link rel="mask-icon" href="%PUBLIC_URL%/safari-pinned-tab.svg" color="#5bbad5">
     <meta name="msapplication-TileColor" content="#da532c">
     <meta name="theme-color" content="#ffffff">
-    <link rel="stylesheet" type="text/css" href="https://fonts.googleapis.com/css?family=PT+Serif|Open+Sans:300,400,600,700,800">
+    <link rel="stylesheet" type="text/css"
+          href="https://fonts.googleapis.com/css?family=PT+Serif|Open+Sans:300,400,600,700,800">
     <title>Winnow</title>
+    <script type="text/javascript">
+      function get_browser() {
+        var ua = navigator.userAgent, tem,
+                M = ua.match(/(opera|chrome|safari|firefox|msie|trident(?=\/))\/?\s*(\d+)/i) || [];
+        if (/trident/i.test(M[1])) {
+          tem = /\brv[ :]+(\d+)/g.exec(ua) || [];
+          return {name: 'IE', version: (tem[1] || '')};
+        }
+        if (M[1] === 'Chrome') {
+          tem = ua.match(/\bOPR\/(\d+)/)
+          if (tem != null) {
+            return {name: 'Opera', version: tem[1]};
+          }
+        }
+        if (window.navigator.userAgent.indexOf("Edge") > -1) {
+          tem = ua.match(/\Edge\/(\d+)/)
+          if (tem != null) {
+            return {name: 'Edge', version: tem[1]};
+          }
+        }
+        M = M[2] ? [M[1], M[2]] : [navigator.appName, navigator.appVersion, '-?'];
+        if ((tem = ua.match(/version\/(\d+)/i)) != null) {
+          M.splice(1, 1, tem[1]);
+        }
+        return {
+          name: M[0],
+          version: +M[1]
+        };
+      }
+
+      var browser = get_browser()
+
+      function isSupported(browser) {
+        var supported = false;
+        console.log(browser.name + ' : ' + browser.version);
+        if (browser.name === "Chrome" && browser.version >= 48) {
+          supported = true;
+        } else if (browser.name === "Firefox" && browser.version >= 72) {
+          supported = true;
+        } else if (browser.name === "MSIE" || browser.name === "IE") {
+          supported = false;
+        } else if (browser.name === "Edge" && browser.version >= 44) {
+          supported = true;
+        } else if (browser.name === "Opera" && browser.version >= 12) {
+          supported = true;
+        } else if (browser.name === "Safari" && browser.version >= 13) {
+          supported = true;
+        }
+        return supported;
+      }
+
+      if (!isSupported(browser)) {
+        document.write("<h1 style='background: #7abaff; text-align: center'>This browser is outdated/unsupported, please switch to a modern browser.</h1>")
+      }
+    </script>
   </head>
   <body>
     <noscript>You need to enable JavaScript to run this app.</noscript>

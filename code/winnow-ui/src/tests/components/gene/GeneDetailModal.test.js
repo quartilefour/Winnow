@@ -13,7 +13,7 @@ describe('<GeneDetailModal />', () => {
     let component;
 
     const response = {
-        "geneId": "7169",
+        "geneId": "7171",
         "symbol": "TPM2",
         "description": "tropomyosin 2",
         "meshResults": [{
@@ -176,7 +176,7 @@ describe('<GeneDetailModal />', () => {
     }
 
     beforeEach(() => {
-        jest.mock('react-bootstrap-table2-toolkit', () => {
+        /*jest.mock('react-bootstrap-table2-toolkit', () => {
             return {
                 ToolkitProvider: 'ToolkitProvider',
             };
@@ -185,11 +185,12 @@ describe('<GeneDetailModal />', () => {
             return {
                 BootstrapTable: 'BootstrapTable',
             };
-        });
+        });*/
         useEffect = jest.spyOn(React, "useEffect");
         props = {
-            active: true,
-            geneid: 7169,
+            active: 1,
+            geneid: '7171',
+            show: 1,
         };
         if (component) component.unmount();
 
@@ -208,7 +209,7 @@ describe('<GeneDetailModal />', () => {
     it('should get some mock data', async () => {
         const mock = new MockAdapter(axios);
         mock
-            .onPost(`${WINNOW_API_BASE_URL}/genes`)
+            .onPost(`${WINNOW_API_BASE_URL}/genes/`)
             .reply(200, response)
             .onGet(new RegExp(`${NCBI_API_BASE}/esummary.fcgi*`))
             .reply(200, ncbiResponse);
@@ -216,10 +217,12 @@ describe('<GeneDetailModal />', () => {
         await act(async () => {
             await Promise.resolve(c);
             await new Promise(resolve => setImmediate(resolve));
+            mockUseEffect()
             c.update()
-            const csvExportM = c.find('Button')
-            //expect(csvExportM.length).toEqual(1);
-            //console.log(c.debug())
+            console.log(`GeneDetail: ${c.debug()}`)
+            const csvExportM = c.find('ExportCSVMesh')
+            expect(csvExportM.length).toEqual(1);
+            //csvExportM.simulate('click')
         });
     });
 
