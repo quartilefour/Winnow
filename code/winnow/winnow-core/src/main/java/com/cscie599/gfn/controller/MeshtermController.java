@@ -71,6 +71,9 @@ public class MeshtermController {
         return meshTermTreeView.get();
     }
 
+    public void invalidate(){
+        meshTermTreeView.set(null);
+    }
     /**
      * Returns a collection of nested objects of {@href MeshtermTreeView} from the passed in query result and the category list.
      */
