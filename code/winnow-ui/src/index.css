@@ -20,6 +20,15 @@ code {
     monospace;
 }
 
+.faq-button {
+    width: 100%;
+    font-weight: bold;
+}
+
+.text-title {
+    font-weight: bold;
+}
+
 .entry-form {
     box-shadow: 3px 3px 5px grey;
 }
