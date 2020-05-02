@@ -72,7 +72,6 @@ function ComboSearchTab() {
                     }
                 }
                 addSearchHistory(search, isFile);
-                //fetchSearchResults(search, isFile)
                 callAPI((isFile) ? POST_QUERY_FILE : POST_QUERY, search)
                     .then(res => {
                         if (isFile) { /* For files, add query to searchHistory only after it's been validated. */
@@ -107,7 +106,6 @@ function ComboSearchTab() {
 
     /* Populates predictive dropdown with partial search results from API */
     function partialSearch(pattern) {
-        //fetchGenes(pattern)
         callAPI(GET_GENES, pattern)
             .then(res => {
                 let mappedData = res.data.map((gene) => {
@@ -169,7 +167,7 @@ function ComboSearchTab() {
 
     if (isLoaded) {
         if (!haveResults) {
-            if (!useBatch) { /* Displays Gene Dropdown & Meshterm Checkboxes */
+            if (!useBatch)  /* Displays Gene Dropdown & Meshterm Checkboxes */
                 return (
                     <div>
                         <Alert variant={alertType} show={error.length > 0} dismissible={true}>{error}</Alert>
@@ -221,27 +219,24 @@ function ComboSearchTab() {
                         </>
                     </div>
                 );
-            } else { /* Display batch import textarea and file upload */
-                return (
-                    <div>
-                        <Alert variant={alertType} show={error.length > 0} dismissible={true}>{error}</Alert>
-                        <div className="button-bar">
-                            <Button onClick={toggleBatch} variant="info" size="sm">Selector</Button>
-                            <Button
-                                onClick={executeSearch}
-                                variant="info"
-                                size="sm"
-                                disabled={!activateSearch}
-                            >{submitText}</Button>
-                        </div>
-                        <SearchTermUploader active={useBatch} update={batchSearch} searchable={batchSearchState}/>
+            return ( /* Display batch import textarea and file upload */
+                <div>
+                    <Alert variant={alertType} show={error.length > 0} dismissible={true}>{error}</Alert>
+                    <div className="button-bar">
+                        <Button onClick={toggleBatch} variant="info" size="sm">Selector</Button>
+                        <Button
+                            onClick={executeSearch}
+                            variant="info"
+                            size="sm"
+                            disabled={!activateSearch}
+                        >{submitText}</Button>
                     </div>
-                )
-            }
+                    <SearchTermUploader active={useBatch} update={batchSearch} searchable={batchSearchState}/>
+                </div>
+            )
         } else {
-            /* Display search results retrieved from API */
-            return (
-                <SearchResultsDisplay resData={resultData} history={returnToSelection}/>
+            return ( /* Display search results retrieved from API */
+                <SearchResultsDisplay resultData={resultData} history={returnToSelection}/>
             )
         }
     } else {

@@ -109,178 +109,173 @@ function Profile() {
     }
 
     /* Displays current Profile data once loaded from API */
-    if (isLoaded) {
-        return (
-            <Card
-                border="info"
-                className="text-center tab entry-form"
-                style={{
-                    flexDirection: 'column',
-                    maxWidth: '410px',
-                    display: 'flex',
-                    margin: '10% auto',
-                    width: '50%'
-                }}>
-                <Card.Title>User Profile</Card.Title>
-                <Card.Img variant="top" src={profileImg} style={{margin: 'auto', width: '50%'}}/>
-                <Tab.Container defaultActiveKey="profile" onSelect={resetError}>
-                    <Card.Header>
-                        <Nav variant="tabs" fill>
-                            <Nav.Item>
-                                <Nav.Link eventKey="profile">Profile</Nav.Link>
-                            </Nav.Item>
-                            <Nav.Item>
-                                <Nav.Link eventKey="password">Password</Nav.Link>
-                            </Nav.Item>
-                        </Nav>
-                    </Card.Header>
-                    <Card.Body>
-                        <Tab.Content>
-                            <Tab.Pane eventKey="profile" id="profile">
-                                <Form onSubmit={profileForm.handleSubmit}>
-                                    <Form.Group>
-                                        <Form.Row>
-                                            <Col>
-                                                <Form.Control
-                                                    type="text"
-                                                    name="firstName"
-                                                    autoComplete="given-name"
-                                                    value={profileForm.values.firstName}
-                                                    onChange={profileForm.handleChange}
-                                                    onBlur={profileForm.handleBlur}
-                                                    placeholder="First Name"
-                                                />
-                                            </Col>
-                                            <Col>
-                                                <Form.Control
-                                                    type="text"
-                                                    autoComplete="family-name"
-                                                    name="lastName"
-                                                    value={profileForm.values.lastName}
-                                                    onChange={profileForm.handleChange}
-                                                    onBlur={profileForm.handleBlur}
-                                                    placeholder="Last Name"
-                                                />
-                                            </Col>
-                                        </Form.Row>
+    if (isLoaded) return (
+        <Card
+            border="info"
+            className="text-center tab entry-form"
+            style={{
+                flexDirection: 'column',
+                maxWidth: '410px',
+                display: 'flex',
+                margin: '10% auto',
+                width: '50%'
+            }}>
+            <Card.Title>User Profile</Card.Title>
+            <Card.Img variant="top" src={profileImg} style={{margin: 'auto', width: '50%'}}/>
+            <Tab.Container defaultActiveKey="profile" onSelect={resetError}>
+                <Card.Header>
+                    <Nav variant="tabs" fill>
+                        <Nav.Item>
+                            <Nav.Link eventKey="profile">Profile</Nav.Link>
+                        </Nav.Item>
+                        <Nav.Item>
+                            <Nav.Link eventKey="password">Password</Nav.Link>
+                        </Nav.Item>
+                    </Nav>
+                </Card.Header>
+                <Card.Body>
+                    <Tab.Content>
+                        <Tab.Pane eventKey="profile" id="profile">
+                            <Form onSubmit={profileForm.handleSubmit}>
+                                <Form.Group>
+                                    <Form.Row>
+                                        <Col>
+                                            <Form.Control
+                                                type="text"
+                                                name="firstName"
+                                                autoComplete="given-name"
+                                                value={profileForm.values.firstName}
+                                                onChange={profileForm.handleChange}
+                                                onBlur={profileForm.handleBlur}
+                                                placeholder="First Name"
+                                            />
+                                        </Col>
+                                        <Col>
+                                            <Form.Control
+                                                type="text"
+                                                autoComplete="family-name"
+                                                name="lastName"
+                                                value={profileForm.values.lastName}
+                                                onChange={profileForm.handleChange}
+                                                onBlur={profileForm.handleBlur}
+                                                placeholder="Last Name"
+                                            />
+                                        </Col>
+                                    </Form.Row>
+                                    <Alert
+                                        variant="danger"
+                                        show={!!(profileForm.errors.firstName || profileForm.errors.lastName)}
+                                    >
+                                        {profileForm.touched.firstName && profileForm.errors.firstName ?
+                                            profileForm.errors.firstName : null}
+                                        {profileForm.touched.lastName && profileForm.errors.lastName ?
+                                            profileForm.errors.lastName : null}
+                                    </Alert>
+                                    <Form.Row>
+                                        <Col>
+                                            <Form.Control
+                                                type="email"
+                                                autoComplete="username"
+                                                name="userEmail"
+                                                value={profileForm.values.userEmail}
+                                                onChange={profileForm.handleChange}
+                                                onBlur={profileForm.handleBlur}
+                                                placeholder="E-mail Address"
+                                            />
+                                        </Col>
                                         <Alert
                                             variant="danger"
-                                            show={!!(profileForm.errors.firstName || profileForm.errors.lastName)}
+                                            show={!!(profileForm.touched.userEmail && profileForm.errors.userEmail)}
                                         >
-                                            {profileForm.touched.firstName && profileForm.errors.firstName ?
-                                                profileForm.errors.firstName : null}
-                                            {profileForm.touched.lastName && profileForm.errors.lastName ?
-                                                profileForm.errors.lastName : null}
+                                            {profileForm.errors.userEmail}
                                         </Alert>
-                                        <Form.Row>
-                                            <Col>
-                                                <Form.Control
-                                                    type="email"
-                                                    autoComplete="username"
-                                                    name="userEmail"
-                                                    value={profileForm.values.userEmail}
-                                                    onChange={profileForm.handleChange}
-                                                    onBlur={profileForm.handleBlur}
-                                                    placeholder="E-mail Address"
-                                                />
-                                            </Col>
-                                            <Alert
-                                                variant="danger"
-                                                show={!!(profileForm.touched.userEmail && profileForm.errors.userEmail)}
-                                            >
-                                                {profileForm.errors.userEmail}
-                                            </Alert>
-                                        </Form.Row>
-                                        <Button
-                                            block
-                                            type="submit"
-                                            disabled={false}
-                                            variant="info"
-                                            size="sm"
-                                        >
-                                            Update Profile
-                                        </Button>
-                                    </Form.Group>
-                                </Form>
-                            </Tab.Pane>
-                            <Tab.Pane eventKey="password" id="password">
-                                <Form onSubmit={passwordForm.handleSubmit}>
-                                    <Form.Group>
-                                        <Form.Row>
-                                            <Col>
-                                                <Form.Control
-                                                    type="password"
-                                                    autoComplete="current-password"
-                                                    name="userPassword"
-                                                    value={passwordForm.values.userPassword}
-                                                    onChange={passwordForm.handleChange}
-                                                    onBlur={passwordForm.handleBlur}
-                                                    placeholder="Current Password"
-                                                />
-                                            </Col>
-                                        </Form.Row>
-                                        <Form.Row>
-                                            <Col>
-                                                <Form.Control
-                                                    type="password"
-                                                    autoComplete="new-password"
-                                                    name="userPasswordNew"
-                                                    value={passwordForm.values.userPasswordNew}
-                                                    onChange={passwordForm.handleChange}
-                                                    onBlur={passwordForm.handleBlur}
-                                                    placeholder="New Password"
-                                                />
-                                            </Col>
-                                        </Form.Row>
-                                        <Form.Row>
-                                            <Col>
-                                                <Form.Control
-                                                    type="password"
-                                                    autoComplete="new-password"
-                                                    name="passwordConfirm"
-                                                    value={passwordForm.values.passwordConfirm}
-                                                    onChange={passwordForm.handleChange}
-                                                    onBlur={passwordForm.handleBlur}
-                                                    placeholder="Confirm New Password"
-                                                />
-                                            </Col>
-                                        </Form.Row>
-                                        <Alert
-                                            variant="danger"
-                                            show={!!(passwordForm.errors.userPassword || passwordForm.errors.userPasswordNew || passwordForm.errors.passwordConfirm)}
-                                        >
-                                            {passwordForm.touched.userPassword && passwordForm.errors.userPassword ?
-                                                passwordForm.errors.userPassword : null}
-                                            {passwordForm.touched.userPasswordNew && passwordForm.errors.userPasswordNew ?
-                                                passwordForm.errors.userPasswordNew : null}
-                                            {passwordForm.touched.passwordConfirm && passwordForm.errors.passwordConfirm ?
-                                                passwordForm.errors.passwordConfirm : null}
-                                        </Alert>
-                                        <Button
-                                            block
-                                            type="submit"
-                                            disabled={false}
-                                            variant="info"
-                                            size="sm"
-                                        >
-                                            Change Password
-                                        </Button>
-                                    </Form.Group>
-                                </Form>
-                            </Tab.Pane>
-                        </Tab.Content>
-                    </Card.Body>
-                    <Card.Footer>
-                        <Alert variant={alertType} show={error.length > 0}>{error}</Alert>
-                    </Card.Footer>
-                </Tab.Container>
-            </Card>
-        )
-    } else {
-        return (
-            <div><PageLoader/></div>
-        )
-    }
+                                    </Form.Row>
+                                    <Button
+                                        block
+                                        type="submit"
+                                        disabled={false}
+                                        variant="info"
+                                        size="sm"
+                                    >
+                                        Update Profile
+                                    </Button>
+                                </Form.Group>
+                            </Form>
+                        </Tab.Pane>
+                        <Tab.Pane eventKey="password" id="password">
+                            <Form onSubmit={passwordForm.handleSubmit}>
+                                <Form.Group>
+                                    <Form.Row>
+                                        <Col>
+                                            <Form.Control
+                                                type="password"
+                                                autoComplete="current-password"
+                                                name="userPassword"
+                                                value={passwordForm.values.userPassword}
+                                                onChange={passwordForm.handleChange}
+                                                onBlur={passwordForm.handleBlur}
+                                                placeholder="Current Password"
+                                            />
+                                        </Col>
+                                    </Form.Row>
+                                    <Form.Row>
+                                        <Col>
+                                            <Form.Control
+                                                type="password"
+                                                autoComplete="new-password"
+                                                name="userPasswordNew"
+                                                value={passwordForm.values.userPasswordNew}
+                                                onChange={passwordForm.handleChange}
+                                                onBlur={passwordForm.handleBlur}
+                                                placeholder="New Password"
+                                            />
+                                        </Col>
+                                    </Form.Row>
+                                    <Form.Row>
+                                        <Col>
+                                            <Form.Control
+                                                type="password"
+                                                autoComplete="new-password"
+                                                name="passwordConfirm"
+                                                value={passwordForm.values.passwordConfirm}
+                                                onChange={passwordForm.handleChange}
+                                                onBlur={passwordForm.handleBlur}
+                                                placeholder="Confirm New Password"
+                                            />
+                                        </Col>
+                                    </Form.Row>
+                                    <Alert
+                                        variant="danger"
+                                        show={!!(passwordForm.errors.userPassword || passwordForm.errors.userPasswordNew || passwordForm.errors.passwordConfirm)}
+                                    >
+                                        {passwordForm.touched.userPassword && passwordForm.errors.userPassword ?
+                                            passwordForm.errors.userPassword : null}
+                                        {passwordForm.touched.userPasswordNew && passwordForm.errors.userPasswordNew ?
+                                            passwordForm.errors.userPasswordNew : null}
+                                        {passwordForm.touched.passwordConfirm && passwordForm.errors.passwordConfirm ?
+                                            passwordForm.errors.passwordConfirm : null}
+                                    </Alert>
+                                    <Button
+                                        block
+                                        type="submit"
+                                        disabled={false}
+                                        variant="info"
+                                        size="sm"
+                                    >
+                                        Change Password
+                                    </Button>
+                                </Form.Group>
+                            </Form>
+                        </Tab.Pane>
+                    </Tab.Content>
+                </Card.Body>
+                <Card.Footer>
+                    <Alert variant={alertType} show={error.length > 0}>{error}</Alert>
+                </Card.Footer>
+            </Tab.Container>
+        </Card>
+    )
+    return (<div><PageLoader/></div>)
 }
 
 export default Profile;

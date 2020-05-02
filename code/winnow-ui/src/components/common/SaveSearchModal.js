@@ -14,10 +14,12 @@ import {API_RESOURCES} from "../../constants";
 function SaveSearchModal(props) {
 
     SaveSearchModal.propTypes = {
-        searchData: PropTypes.object,
+        searchdata: PropTypes.object,
         show: PropTypes.bool,
         onHide: PropTypes.func
     }
+
+    const {onHide, searchdata} = props;
 
     const {POST_BOOKMARKS} = API_RESOURCES;
 
@@ -32,20 +34,20 @@ function SaveSearchModal(props) {
         if (saveBookmark) {
             callAPI(POST_BOOKMARKS, {
                 searchName: bookmarkName.slice(0, 19),
-                searchQuery: props.searchdata.searchQuery,
-                queryType: props.searchdata.queryType,
-                queryFormat: props.searchdata.queryFormat
+                searchQuery: searchdata.searchQuery,
+                queryType: searchdata.queryType,
+                queryFormat: searchdata.queryFormat
             })
                 .then(() => {
                     setSaveBookmark(false);
-                    props.onHide()
+                    onHide()
                 })
                 .catch(error => {
                     setError(`Could not save bookmark.\n${parseAPIError(error)}`);
                     setAlertType('danger')
                 })
         }
-    }, [POST_BOOKMARKS, props, saveBookmark, bookmarkName]);
+    }, [POST_BOOKMARKS, onHide, searchdata, saveBookmark, bookmarkName]);
 
     return (
         <Modal
@@ -59,7 +61,7 @@ function SaveSearchModal(props) {
                 <Alert variant={alertType} show={error.length > 0}>{error}</Alert>
             </Modal.Header>
             <Modal.Body>
-                <div>{props.searchdata.results.length} record(s)</div>
+                <div>{searchdata.results.length} record(s)</div>
                 <Form>
                     <Form.Group>
                         <Form.Label>Bookmark Name</Form.Label>
@@ -74,7 +76,7 @@ function SaveSearchModal(props) {
                 </Form>
             </Modal.Body>
             <Modal.Footer>
-                <Button variant="secondary" size="sm" onClick={props.onHide}>
+                <Button variant="secondary" size="sm" onClick={onHide}>
                     Cancel
                 </Button>
                 <Button

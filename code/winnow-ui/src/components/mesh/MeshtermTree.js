@@ -27,6 +27,8 @@ export function MeshtermTree(props) {
         callback: PropTypes.func
     }
 
+    const {callback} = props;
+
     const {GET_MESH_CAT, GET_MESH_PARENT, GET_MESH_NODE} = API_RESOURCES;
 
     const [isLoaded, setIsLoaded] = useState(false);
@@ -124,7 +126,7 @@ export function MeshtermTree(props) {
                     setChecked(checked.filter(term => term !== node.meshId));
                     sessionStorage.setItem('mtt', `${sscnArray.filter(term => term !== node.id)}`)
                 }
-                props.callback([...new Set(sessionStorage.getItem('mtt').split(','))])
+                callback([...new Set(sessionStorage.getItem('mtt').split(','))])
             }
         }
     }
@@ -225,65 +227,60 @@ export function MeshtermTree(props) {
 
 
     /* Displays MeSH term tree, dynamically populating/removing children as expanded/collapsed */
-    if (isLoaded) {
-        return (
-            <SuperTreeview
-                loadingElement={<Spinner animation="border" size="sm" variant="info"/>}
-                data={meshData}
-                onUpdateCb={(updatedData) => {
-                    setMeshData(updatedData);
-                }}
-                isDeletable={(node, depth) => {
-                    return false;
-                }}
-                isExpandable={(node, depth) => {
-                    return node.hasChild;
-                }}
-                onCheckToggleCb={(nodes, depth) => {
-                    //console.debug(`MeshtermTree checkToggle: ${JSON.stringify(nodes)}`);
-                    const checkState = nodes[0].isChecked;
-                    nodes[0].isExpanded = checkState;
+    if (isLoaded) return (
+        <SuperTreeview
+            loadingElement={<Spinner animation="border" size="sm" variant="info"/>}
+            data={meshData}
+            onUpdateCb={(updatedData) => {
+                setMeshData(updatedData);
+            }}
+            isDeletable={(node, depth) => {
+                return false;
+            }}
+            isExpandable={(node, depth) => {
+                return node.hasChild;
+            }}
+            onCheckToggleCb={(nodes, depth) => {
+                //console.debug(`MeshtermTree checkToggle: ${JSON.stringify(nodes)}`);
+                const checkState = nodes[0].isChecked;
+                nodes[0].isExpanded = checkState;
 
 
-                    /* Recursively checks/unchecks immediate children */
-                    //console.debug(`MeshtermTree checkToggle: ${JSON.stringify(nodes)}`);
+                /* Recursively checks/unchecks immediate children */
+                //console.debug(`MeshtermTree checkToggle: ${JSON.stringify(nodes)}`);
 
-                    applyCheckStateToAllNodes(nodes, depth);
+                applyCheckStateToAllNodes(nodes, depth);
 
-                    // expand all the nodes under the top checked node
-                    expandAllNodes(nodes[0], depth);
+                // expand all the nodes under the top checked node
+                expandAllNodes(nodes[0], depth);
 
-                    function applyCheckStateToAllNodes(nodes, depth) {
-                        nodes.forEach((node) => {
-                            applyCheckStateTo(node, depth);
-                        })
-                    }
+                function applyCheckStateToAllNodes(nodes, depth) {
+                    nodes.forEach((node) => {
+                        applyCheckStateTo(node, depth);
+                    })
+                }
 
 
-                    /* Recursively checks/unchecks immediate children */
-                    function applyCheckStateTo(node, depth) {
-                        node.isChecked = checkState;
-                        //console.log(`check state is ${node.isChecked}`);
-                        if (node.hasChild) {
-                            let allChildren = getAllChildren(node, depth);
-                            updatesCheckedNodes(node);
-                            if (allChildren.children) {
-                                allChildren.children.forEach((node) => {
-                                    applyCheckStateTo(node, depth + 1);
-                                })
-                            }
+                /* Recursively checks/unchecks immediate children */
+                function applyCheckStateTo(node, depth) {
+                    node.isChecked = checkState;
+                    //console.log(`check state is ${node.isChecked}`);
+                    if (node.hasChild) {
+                        let allChildren = getAllChildren(node, depth);
+                        updatesCheckedNodes(node);
+                        if (allChildren.children) {
+                            allChildren.children.forEach((node) => {
+                                applyCheckStateTo(node, depth + 1);
+                            })
                         }
                     }
-                }}
-                onExpandToggleCb={(node, depth) => {
-                    expandAllNodes(node, depth);
-                }}
+                }
+            }}
+            onExpandToggleCb={(node, depth) => {
+                expandAllNodes(node, depth);
+            }}
 
-            />
-        )
-    } else {
-        return (
-            <div><PageLoader/></div>
-        )
-    }
+        />
+    )
+    return (<div><PageLoader/></div>)
 }

@@ -4,6 +4,8 @@ import {faPlay, faShareAlt, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {callAPI, parseAPIError} from "../../service/ApiService";
 import {Alert} from "react-bootstrap";
 import PageLoader from "../common/PageLoader";
+import Moment from 'react-moment';
+import 'moment-timezone';
 import SearchResultsDisplay from "../common/SearchResultsDisplay";
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
@@ -89,10 +91,12 @@ function BookmarkTab() {
                 whiteSpace: "nowrap",
             },
             formatter: (cell, row) => {
-                return JSON.stringify(row.searchQuery)
+                //return JSON.stringify(row.searchQuery)
+                return prettySearch(row.searchQuery)
             },
             title: (cell, row) => {
-                return JSON.stringify(row.searchQuery)
+                //return JSON.stringify(row.searchQuery)
+                return prettySearch(row.searchQuery)
             }
         },
         {
@@ -101,7 +105,12 @@ function BookmarkTab() {
             sort: true,
             type: 'date',
             formatter: (cell, row) => {
-                return new Intl.DateTimeFormat("en-US", {
+                return <Moment
+                    date={row.createdDate}
+                    format="YYYY-MMM-DD HH:MM:SS"
+                    interval={0}
+                />
+                /*return new Intl.DateTimeFormat("en-US", {
                     year: "numeric",
                     month: "long",
                     day: "numeric",
@@ -110,7 +119,7 @@ function BookmarkTab() {
                     minute: "numeric",
                     second: "numeric",
                     timeZoneName: "short"
-                }).format(new Date(Date.parse(row.createdDate)))
+                }).format(new Date(Date.parse(row.createdDate)))*/
 
             }
         },
@@ -153,6 +162,16 @@ function BookmarkTab() {
         }
     ]
 
+    const prettySearch = (query) => {
+        let ps = ''
+        Object.keys(query).forEach((key) => {
+            if (query[key].length > 0) {
+                ps = `${ps}${key}: ${query[key].join(',')}\n`
+            }
+        })
+        return ps
+    }
+
     const {SearchBar} = Search;
 
     /* Returns to selection from results display */
@@ -180,18 +199,17 @@ function BookmarkTab() {
 
     /* Displays User's saved bookmarks, if any */
     if (isLoaded) {
-        if (!haveResults) {
-            return (
-                <div>
-                    <Alert variant={alertType} show={error.length > 0}>
-                        {error}
-                    </Alert>
-                    <ToolkitProvider
-                        keyField='searchId'
-                        data={bookmarkData}
-                        columns={columns}
-                        search={{
-                            searchFormatted: true
+        if (!haveResults) return (
+            <div>
+                <Alert variant={alertType} show={error.length > 0}>
+                    {error}
+                </Alert>
+                <ToolkitProvider
+                    keyField='searchId'
+                    data={bookmarkData}
+                    columns={columns}
+                    search={{
+                        searchFormatted: true
                         }}
                     >
                         {
@@ -211,24 +229,19 @@ function BookmarkTab() {
                                 </div>
                             )
                         }
-                    </ToolkitProvider>
-                </div>
-            );
-        } else {
-            /* Display search results retrieved from API */
-            return (
-                <div>
-                    <Alert variant={alertType} show={error.length > 0}>
-                        {error}
-                    </Alert>
-                    <SearchResultsDisplay resData={resultData} history={returnToSelection}/>
-                </div>
-            )
-        }
-    } else {
-        return (
-            <div><PageLoader/></div>
+                </ToolkitProvider>
+            </div>
         )
+        return ( /* Display search results retrieved from API */
+            <div>
+                <Alert variant={alertType} show={error.length > 0}>
+                    {error}
+                </Alert>
+                <SearchResultsDisplay resultData={resultData} history={returnToSelection}/>
+            </div>
+        )
+    } else {
+        return (<div><PageLoader/></div>)
     }
 }
 

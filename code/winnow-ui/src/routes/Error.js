@@ -6,16 +6,20 @@ import Oops from "../img/oops.png";
 function Error(props) {
 
     Error.propTypes = {
-        error: PropTypes.string
+        errorMessage: PropTypes.string
     }
+
+    Error.defaultProps = {
+        errorMessage: ''
+    }
+
+    const {errorMessage} = props;
 
     const [error, setError] = useState('Page Not Found');
 
     React.useEffect(() => {
-        if (props && props.error) {
-            setError(props.error)
-        }
-    }, [props, setError]);
+        setError(errorMessage)
+    }, [errorMessage]);
 
     return (
         <div>

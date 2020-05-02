@@ -12,7 +12,7 @@ import ToolkitProvider, {Search} from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
-import * as C from "../../constants";
+import {T2_POPTS} from "../../constants";
 import {API_RESOURCES} from "../../constants";
 
 /**
@@ -134,7 +134,6 @@ function RecentSearchesTab() {
     /* Submits search criteria to API */
     function executeSearch(searchQuery) {
         setIsLoaded(false);
-        //fetchSearchResults(searchQuery)
         callAPI(POST_QUERY, searchQuery)
             .then(res => {
                 setResultData(res.data);
@@ -152,25 +151,24 @@ function RecentSearchesTab() {
 
     /* Displays user's recent session searches */
     if (isLoaded) {
-        if (!haveResults) {
-            return (
-                <div>
-                    <ToolkitProvider
-                        keyField='index'
-                        data={searchHistory}
-                        columns={columns}
-                        search={{
-                            searchFormatted: true
-                        }}
-                    >
-                        {
+        if (!haveResults) return (
+            <div>
+                <ToolkitProvider
+                    keyField='index'
+                    data={searchHistory}
+                    columns={columns}
+                    search={{
+                        searchFormatted: true
+                    }}
+                >
+                    {
                             props => (
                                 <div>
                                     <SearchBar {...props.searchProps} placeholder="Search recent..."/>
                                     <BootstrapTable
                                         {...props.baseProps}
                                         pagination={
-                                            paginationFactory(C.T2_POPTS)
+                                            paginationFactory(T2_POPTS)
                                         }
                                         bootstrap4
                                         striped
@@ -179,25 +177,20 @@ function RecentSearchesTab() {
                                     />
                                 </div>
                             )
-                        }
-                    </ToolkitProvider>
-                </div>
-            );
-        } else {
-            /* Display search results retrieved from API */
-            return (
-                <div>
-                    <Alert variant={alertType} show={error.length > 0}>
-                        {error}
-                    </Alert>
-                    <SearchResultsDisplay resData={resultData} history={returnToSelection}/>
-                </div>
-            )
-        }
-    } else {
-        return (
-            <div><PageLoader/></div>
+                    }
+                </ToolkitProvider>
+            </div>
         )
+        return ( /* Display search results retrieved from API */
+            <div>
+                <Alert variant={alertType} show={error.length > 0}>
+                    {error}
+                </Alert>
+                <SearchResultsDisplay resultData={resultData} history={returnToSelection}/>
+            </div>
+        )
+    } else {
+        return (<div><PageLoader/></div>)
     }
 }
 

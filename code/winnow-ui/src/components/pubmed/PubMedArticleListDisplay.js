@@ -24,10 +24,12 @@ function PubMedArticleListDisplay(props) {
         listData: PropTypes.object
     }
 
+    const {history, listData} = props;
+
     const {GET_ARTICLES} = API_RESOURCES;
 
     const [isLoaded, setIsLoaded] = useState(false);
-    const [listData, setListData] = useState('');
+    const [publicationData, setPublicationData] = useState('');
     const [pubmedData, setPubmedData] = useState('');
     const [error, setError] = useState('');
     const [alertType, setAlertType] = useState('');
@@ -38,17 +40,17 @@ function PubMedArticleListDisplay(props) {
      */
     React.useEffect(() => {
         let mounted = true;
-        if (props.listData === undefined || props.listData === null) {
+        if (listData === undefined || listData === null) {
             setError('An error occurred while receiving the data from the search results.');
             setAlertType('danger');
         } else {
-            setListData(props.listData);
+            setPublicationData(listData);
             callAPI(GET_ARTICLES,
                 {
-                    geneId: props.listData.geneId,
-                    meshId: props.listData.meshId,
-                    symbol: props.listData.symbol,
-                    name: props.listData.name
+                    geneId: listData.geneId,
+                    meshId: listData.meshId,
+                    symbol: listData.symbol,
+                    name: listData.name
                 })
                 .then(res => {
                     if (mounted) {
@@ -66,7 +68,7 @@ function PubMedArticleListDisplay(props) {
         return () => {
             mounted = false
         };
-    }, [GET_ARTICLES, props]);
+    }, [GET_ARTICLES, listData]);
 
     /* Set up our table options and custom formatting */
     const columns = [
@@ -75,14 +77,14 @@ function PubMedArticleListDisplay(props) {
             isDummyField: true,
             text: 'Gene Id',
             hidden: true,
-            csvFormatter: (cell, row, rowIndex) => `${props.listData.geneId}`
+            csvFormatter: (cell, row, rowIndex) => `${listData.geneId}`
         },
         {
             dataField: 'meshId',
             isDummyField: true,
             text: 'MeSH Id',
             hidden: true,
-            csvFormatter: (cell, row, rowIndex) => `${props.listData.meshId}`
+            csvFormatter: (cell, row, rowIndex) => `${listData.meshId}`
         },
         {
             dataField: 'publicationId',
@@ -194,7 +196,7 @@ function PubMedArticleListDisplay(props) {
     const BackButton = () => {
         return (
             <span className="exit-results">
-            <Button variant="outline-info" size="sm" onClick={props.history}>
+            <Button variant="outline-info" size="sm" onClick={history}>
                   <FontAwesomeIcon icon={faChevronLeft} color="cornflowerblue"/>
                        Back
             </Button>
@@ -203,21 +205,19 @@ function PubMedArticleListDisplay(props) {
     }
 
     if (isLoaded) {
-        if (error) {
-            return (
-                <div>
-                    <Alert variant={alertType}>{error}</Alert>
-                    <BackButton />
-                </div>
-            )
-        } else {
+        if (error) return (
+            <div>
+                <Alert variant={alertType}>{error}</Alert>
+                <BackButton/>
+            </div>
+        )
             return (
                 <div>
                     <Alert variant={alertType} show={error.length > 0}>{error}</Alert>
                     <Form>
-                        <BackButton />
-                        <h3> Publications for {listData.symbol} ({listData.geneId})
-                            and {listData.name} ({listData.meshId})</h3>
+                        <BackButton/>
+                        <h3> Publications for {publicationData.symbol} ({publicationData.geneId})
+                            and {publicationData.name} ({publicationData.meshId})</h3>
                         <ToolkitProvider
                             keyField='publicationId'
                             data={pubmedData.results}
@@ -252,12 +252,9 @@ function PubMedArticleListDisplay(props) {
                         </ToolkitProvider>
                     </Form>
                 </div>
-            );
-        }
+            )
     } else {
-        return (
-            <div><PageLoader/></div>
-        )
+        return (<div><PageLoader/></div>)
     }
 }
 

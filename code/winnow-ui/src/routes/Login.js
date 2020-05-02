@@ -22,11 +22,13 @@ function Login(props) {
         location: PropTypes.object
     }
 
+    const {location} = props;
+
     const [isLoggedIn, setLoggedIn] = useState(false);
     const [error, setError] = useState('');
     const [alertType, setAlertType] = useState('');
     const {authToken, setAuthToken} = useAuth();
-    const referer = (props.location.state !== undefined) ? props.location.state.referer : '/';
+    const referer = (location.state !== undefined) ? location.state.referer : '/';
 
     React.useEffect(() => {
         if (authToken) {
@@ -67,8 +69,9 @@ function Login(props) {
             });
     }
 
-    if (!isLoggedIn) { /* Displays Login form */
-        return <div>
+    /* Displays Login form */
+    if (!isLoggedIn) return (
+        <div>
             <Card
                 border="info"
                 className="text-center entry-form"
@@ -142,11 +145,10 @@ function Login(props) {
                 </Card.Footer>
             </Card>
         </div>
-    } else { /* Redirects after successful log in */
-        return (
-            <Redirect to={referer}/>
-        )
-    }
+    )
+    return ( /* Redirects after successful log in */
+        <Redirect to={referer}/>
+    )
 }
 
 export default Login;

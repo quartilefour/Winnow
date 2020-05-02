@@ -2,32 +2,42 @@ import React from 'react';
 import { shallow } from 'enzyme';
 import PageLoader from '../../../components/common/PageLoader';
 
-test('should test PageLoader component', () => {
-    const wrapper = shallow(<PageLoader />);
-    expect(wrapper).toMatchSnapshot();
-});
 
 describe('<PageLoader />', () => {
-    const container = shallow(<PageLoader />);
+    let props;
+    let wrapper;
+    let component;
+
+    beforeEach(() => {
+        props = {
+            message: 'Loading...',
+            now: 100,
+            varient: 'info'
+        };
+        if (component) component.unmount();
+
+        wrapper = shallow(<PageLoader {...props}/>);
+    });
+
     it('should match the snapshot', () => {
-        expect(container.html()).toMatchSnapshot();
+        expect(wrapper.html()).toMatchSnapshot();
     });
 
     it('should have progress bar', () => {
-        expect(container.find('ProgressBar').length).toEqual(1);
+        expect(wrapper.find('ProgressBar').length).toEqual(1);
     });
 
     it('should have proper props for progress bar', () => {
-        expect(container.find('ProgressBar')).toHaveProp({
+        expect(wrapper.find('ProgressBar')).toHaveProp({
             animated: true,
         });
-        expect(container.find('ProgressBar')).toHaveProp({
+        expect(wrapper.find('ProgressBar')).toHaveProp({
             now: 100,
         });
-        expect(container.find('ProgressBar')).toHaveProp({
+        expect(wrapper.find('ProgressBar')).toHaveProp({
             variant: "info",
         });
-        expect(container.find('ProgressBar')).toHaveProp({
+        expect(wrapper.find('ProgressBar')).toHaveProp({
             label: 'Loading...',
         });
     });

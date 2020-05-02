@@ -13,7 +13,7 @@ import ToolkitProvider, {Search} from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
-import * as C from "../../constants";
+import {T2_POPTS} from "../../constants";
 
 /**
  * GeneDetailModal renders the information for a given Gene.
@@ -32,6 +32,8 @@ function GeneDetailModal(props) {
         show: PropTypes.bool
     }
 
+    const {active, geneid} = props;
+
     const {GET_GENE_DETAIL, NCBI_GENE_DETAIL} = API_RESOURCES;
 
     const [geneDetail, setGeneDetail] = useState({});
@@ -43,19 +45,19 @@ function GeneDetailModal(props) {
 
     React.useEffect(() => {
         let mounted = true;
-        setIsActive(props.active)
-        if (isActive && props.geneid !== null) {
-            callAPI(GET_GENE_DETAIL, props.geneid)
+        setIsActive(active)
+        if (isActive && geneid !== null) {
+            callAPI(GET_GENE_DETAIL, geneid)
                 .then(res => {
                     if (mounted) {
                         setGeneDetail(res.data);
-                        callAPI(NCBI_GENE_DETAIL, props.geneid)
+                        callAPI(NCBI_GENE_DETAIL, geneid)
                             .then(ncbiRes => {
-                                setGeneDetailNCBI(ncbiRes.data.result[props.geneid]);
+                                setGeneDetailNCBI(ncbiRes.data.result[geneid]);
                                 setIsLoaded(true);
                             })
                             .catch(error => {
-                                console.debug(`NCBI gene(${props.geneid}): ${error}`)
+                                console.debug(`NCBI gene(${geneid}): ${error}`)
                                 setError(`Error fetching gene details from NCBI.\n${parseAPIError(error)}`)
                                 setAlertType('danger')
                             })
@@ -69,16 +71,16 @@ function GeneDetailModal(props) {
         return () => {
             mounted = false
         };
-    }, [GET_GENE_DETAIL, NCBI_GENE_DETAIL, props, isActive]);
+    }, [GET_GENE_DETAIL, NCBI_GENE_DETAIL, active, geneid, isActive]);
 
-    /* Set up our table options and custom formatting */
+    /* Enriched MeSH term Table Columns */
     const columnsMesh = [
         {
             dataField: 'geneId',
             isDummyField: true,
             text: 'Gene Id',
             hidden: true,
-            csvFormatter: (cell, row, rowIndex) => `${props.geneid}`
+            csvFormatter: (cell, row, rowIndex) => `${geneid}`
         },
         {
             dataField: 'meshId',
@@ -103,7 +105,7 @@ function GeneDetailModal(props) {
                         href={`${MESHDB_BASE_URL}${row.meshId}`}
                     >
                         {cell}
-                        <FontAwesomeIcon icon={faExternalLinkAlt} color="cornflowerblue" />
+                        <FontAwesomeIcon icon={faExternalLinkAlt} color="cornflowerblue"/>
                     </a>
                 )
             },
@@ -120,17 +122,22 @@ function GeneDetailModal(props) {
         {
             dataField: 'pvalue',
             text: 'p-Value',
+            formatter: (cell, row) => {
+                return Number.parseFloat(row.pvalue).toExponential(4)
+            },
             type: 'number',
             sort: true
         }
     ];
+
+    /* Gene Co-occurrence Table Columns */
     const columnsGeneCo = [
         {
             dataField: '_goi',
             isDummyField: true,
             text: 'Gene of Interest',
             hidden: true,
-            csvFormatter: (cell, row, rowIndex) => `${props.geneid}`
+            csvFormatter: (cell, row, rowIndex) => `${geneid}`
         },
         {
             dataField: 'geneId',
@@ -158,7 +165,7 @@ function GeneDetailModal(props) {
                         href={`${GENEDB_BASE_URL}/${row.geneId}`}
                     >
                         {cell}
-                        <FontAwesomeIcon icon={faExternalLinkAlt} color="cornflowerblue" />
+                        <FontAwesomeIcon icon={faExternalLinkAlt} color="cornflowerblue"/>
                     </a>
                 )
             }
@@ -170,7 +177,9 @@ function GeneDetailModal(props) {
             sort: true
         }
     ];
+
     const {SearchBar} = Search;
+
     const ExportCSVMesh = (props) => {
         const handleClick = () => {
             props.onExport();
@@ -204,140 +213,133 @@ function GeneDetailModal(props) {
     }
 
     if (isActive) {
-        if (isLoaded) {
-            return (
-                <Modal
-                    {...props}
-                    size="xl"
-                    backdrop="static"
-                    aria-labelledby="contained-modal-title-vcenter"
-                    scrollable={true}
-                    centered
-                >
-                    <Modal.Header closeButton>
-                        <Modal.Title className="text-center">
-                            <Image
-                                alt="DNA Helix"
-                                src={dnaStrand}
-                                style={{
-                                    display: "inline-block",
-                                    margin: "auto",
-                                    height: "30px",
-                                    width: "90%"
-                                }}
-                                fluid
-                            />
-                        </Modal.Title>
-                        <Alert variant={alertType} show={error.length > 0}>{error}</Alert>
-                    </Modal.Header>
-                    <Modal.Body>
-                        <div>
-                            <h2 className="gene-detail-symbol">{geneDetail.symbol}</h2>
-                            <h3 className="gene-detail-desc">{geneDetail.description}</h3>
-                            <h5 className="gene-detail-index">
-                                {geneDetail.geneId} - &nbsp;
-                                <a
-                                    className="co-gene-link"
-                                    target="_blank"
-                                    rel="noopener noreferrer"
-                                    href={`${GENEDB_BASE_URL}/${geneDetail.geneId}`}
-                                >
-                                    {
-                                        (geneDetailNCBI.genomicinfo[0] !== undefined)
-                                            ? geneDetailNCBI.genomicinfo[0].chraccver
-                                            : null
-                                    }
-                                    <FontAwesomeIcon icon={faExternalLinkAlt} color="cornflowerblue"/>
-                                </a>
-                            </h5>
-                        </div>
-                        <div id={`seqv_`}>
-                        </div>
-                        <p className="gene-detail-summary">{geneDetailNCBI.summary}</p>
-                        <div className="gene-detail-table-div">
-                            <h3>MeSH Terms Enriched for {geneDetail.symbol}</h3>
-                            <ToolkitProvider
-                                id='geneDetail_meshResults'
-                                keyField='meshId'
-                                data={geneDetail.meshResults}
-                                columns={columnsMesh}
-                                search
-                                exportCSV={{
-                                    fileName: `winnow_${geneDetail.geneId}_meshterms.csv`,
-                                    onlyExportFiltered: true,
-                                    exportAll: false
-                                }}
+        if (isLoaded) return (
+            <Modal
+                {...props}
+                size="xl"
+                backdrop="static"
+                aria-labelledby="contained-modal-title-vcenter"
+                scrollable={true}
+                centered
+            >
+                <Modal.Header closeButton>
+                    <Modal.Title className="text-center">
+                        <Image
+                            alt="DNA Helix"
+                            src={dnaStrand}
+                            style={{
+                                display: "inline-block",
+                                margin: "auto",
+                                height: "30px",
+                                width: "90%"
+                            }}
+                            fluid
+                        />
+                    </Modal.Title>
+                    <Alert variant={alertType} show={error.length > 0}>{error}</Alert>
+                </Modal.Header>
+                <Modal.Body>
+                    <div>
+                        <h2 className="gene-detail-symbol">{geneDetail.symbol}</h2>
+                        <h3 className="gene-detail-desc">{geneDetail.description}</h3>
+                        <h5 className="gene-detail-index">
+                            {geneDetail.geneId} - &nbsp;
+                            <a
+                                className="co-gene-link"
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                href={`${GENEDB_BASE_URL}/${geneDetail.geneId}`}
                             >
                                 {
-                                    props => (
-                                        <div>
-                                            <SearchBar {...props.searchProps} placeholder="Search MeSH results..."/>
-                                            <BootstrapTable
-                                                {...props.baseProps}
-                                                pagination={
-                                                    paginationFactory(C.T2_POPTS)
-                                                }
-                                                bootstrap4
-                                                striped
-                                                condensed
-                                                hover
-                                            />
-                                            <div className="button-bar">
-                                                <ExportCSVMesh {...props.csvProps} />
-                                            </div>
-                                        </div>
-                                    )
+                                    (geneDetailNCBI.genomicinfo[0] !== undefined)
+                                        ? geneDetailNCBI.genomicinfo[0].chraccver
+                                        : null
                                 }
-                            </ToolkitProvider>
-                        </div>
-                        <div className="gene-detail-table-div">
-                            <h3>Genes Co-occurring in Publications with {geneDetail.symbol}</h3>
-                            <ToolkitProvider
-                                id='geneDetail_geneResults'
-                                keyField='geneId'
-                                data={geneDetail.geneResults}
-                                columns={columnsGeneCo}
-                                search
-                                exportCSV={{
-                                    fileName: `winnow_${geneDetail.geneId}_geneco.csv`,
-                                    onlyExportFiltered: true,
-                                    exportAll: false
-                                }}
-                            >
-                                {
-                                    props => (
-                                        <div>
-                                            <SearchBar {...props.searchProps} placeholder="Search Co-occurring Genes..."/>
-                                            <BootstrapTable
-                                                {...props.baseProps}
-                                                pagination={
-                                                    paginationFactory(C.T2_POPTS)
-                                                }
-                                                bootstrap4
-                                                striped
-                                                condensed
-                                                hover
-                                            />
-                                            <div className="button-bar">
-                                                <ExportCSVGene {...props.csvProps} />
-                                            </div>
+                                <FontAwesomeIcon icon={faExternalLinkAlt} color="cornflowerblue"/>
+                            </a>
+                        </h5>
+                    </div>
+                    <div id={`seqv_`}>
+                    </div>
+                    <p className="gene-detail-summary">{geneDetailNCBI.summary}</p>
+                    <div className="gene-detail-table-div">
+                        <h3>MeSH Terms Enriched for {geneDetail.symbol}</h3>
+                        <ToolkitProvider
+                            id='geneDetail_meshResults'
+                            keyField='meshId'
+                            data={geneDetail.meshResults}
+                            columns={columnsMesh}
+                            search
+                            exportCSV={{
+                                fileName: `winnow_${geneDetail.geneId}_meshterms.csv`,
+                                onlyExportFiltered: true,
+                                exportAll: false
+                            }}
+                        >
+                            {
+                                props => (
+                                    <div>
+                                        <SearchBar {...props.searchProps} placeholder="Search MeSH results..."/>
+                                        <BootstrapTable
+                                            {...props.baseProps}
+                                            pagination={
+                                                paginationFactory(T2_POPTS)
+                                            }
+                                            bootstrap4
+                                            striped
+                                            condensed
+                                            hover
+                                        />
+                                        <div className="button-bar">
+                                            <ExportCSVMesh {...props.csvProps} />
                                         </div>
-                                    )
-                                }
-                            </ToolkitProvider>
-                        </div>
-                    </Modal.Body>
-                </Modal>
-            );
-        } else {
-            return ( /* TODO: Display in separate modal */
-                <PageLoader/>
-            )
-        }
-    } else {
-        return (
-            <span/>
+                                    </div>
+                                )
+                            }
+                        </ToolkitProvider>
+                    </div>
+                    <div className="gene-detail-table-div">
+                        <h3>Genes Co-occurring in Publications with {geneDetail.symbol}</h3>
+                        <ToolkitProvider
+                            id='geneDetail_geneResults'
+                            keyField='geneId'
+                            data={geneDetail.geneResults}
+                            columns={columnsGeneCo}
+                            search
+                            exportCSV={{
+                                fileName: `winnow_${geneDetail.geneId}_geneco.csv`,
+                                onlyExportFiltered: true,
+                                exportAll: false
+                            }}
+                        >
+                            {
+                                props => (
+                                    <div>
+                                        <SearchBar {...props.searchProps} placeholder="Search Co-occurring Genes..."/>
+                                        <BootstrapTable
+                                            {...props.baseProps}
+                                            pagination={
+                                                paginationFactory(T2_POPTS)
+                                            }
+                                            bootstrap4
+                                            striped
+                                            condensed
+                                            hover
+                                        />
+                                        <div className="button-bar">
+                                            <ExportCSVGene {...props.csvProps} />
+                                        </div>
+                                    </div>
+                                )
+                            }
+                        </ToolkitProvider>
+                    </div>
+                </Modal.Body>
+            </Modal>
         )
+        return ( /* TODO: Display in separate modal */ <PageLoader/>)
+    } else {
+        return (<span/>)
     }
 }
 

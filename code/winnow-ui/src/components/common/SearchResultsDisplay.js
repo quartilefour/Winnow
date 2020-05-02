@@ -5,7 +5,7 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faChevronLeft} from "@fortawesome/free-solid-svg-icons";
 import PubMedArticleListDisplay from "../pubmed/PubMedArticleListDisplay";
 import SaveSearchModal from "./SaveSearchModal";
-import * as C from "../../constants";
+import {T2_POPTS} from "../../constants";
 import GeneDetailModal from "../gene/GeneDetailModal";
 import PageLoader from "./PageLoader";
 import BootstrapTable from 'react-bootstrap-table-next';
@@ -25,10 +25,12 @@ import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.m
  */
 function SearchResultsDisplay(props) {
 
-   SearchResultsDisplay.propTypes = {
-       resData: PropTypes.object,
-       history: PropTypes.func
-   }
+    SearchResultsDisplay.propTypes = {
+        resultData: PropTypes.object,
+        history: PropTypes.func
+    }
+
+    const {history, resultData} = props;
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [resData, setResData] = useState('');
@@ -40,13 +42,13 @@ function SearchResultsDisplay(props) {
 
     React.useEffect(() => {
         if (!haveResults) { /* Display search results with Links to Gene details & Pub list */
-            setResData(props.resData);
-            if (props.resData.results !== undefined && props.resData.results.length > 0) {
+            setResData(resultData);
+            if (resultData.results !== undefined && resultData.results.length > 0) {
                 setBookmarkEnabled(true);
             }
             setIsLoaded(true);
         }
-    }, [haveResults, props, activeGeneDetail]);
+    }, [haveResults, resultData, activeGeneDetail]);
 
     /* Set up our table options and custom formatting */
     const columns = [
@@ -121,7 +123,7 @@ function SearchResultsDisplay(props) {
             text: 'P-value',
             type: 'number',
             formatter: (cell, row) => {
-                return parseFloat(row.pvalue).toPrecision(4)
+                return Number.parseFloat(row.pvalue).toExponential(4)
             },
             sort: true
         }
@@ -162,7 +164,7 @@ function SearchResultsDisplay(props) {
                             <Button
                                 variant="outline-info"
                                 size="sm"
-                                onClick={props.history}
+                                onClick={history}
                             >
                             <FontAwesomeIcon icon={faChevronLeft} color="cornflowerblue"/>
                             Back
@@ -187,7 +189,7 @@ function SearchResultsDisplay(props) {
                                         <BootstrapTable
                                             {...props.baseProps}
                                             pagination={
-                                                paginationFactory(C.T2_POPTS)
+                                                paginationFactory(T2_POPTS)
                                             }
                                             bootstrap4
                                             striped

@@ -69,7 +69,9 @@ describe('<SearchResultsDisplay />', () => {
     beforeEach(() => {
         useEffect = jest.spyOn(React, "useEffect");
         props = {
-            resData: response
+            history: jest.fn(() => {
+            }),
+            resultData: response
         };
         if (component) component.unmount();
 
@@ -87,19 +89,5 @@ describe('<SearchResultsDisplay />', () => {
         expect(container.find('ProgressBar').length).toEqual(1);
     });
 
-    it('should have proper props for progress bar', () => {
-        expect(container.find('ProgressBar')).toHaveProp({
-            animated: true,
-        });
-        expect(container.find('ProgressBar')).toHaveProp({
-            now: 100,
-        });
-        expect(container.find('ProgressBar')).toHaveProp({
-            variant: "info",
-        });
-        expect(container.find('ProgressBar')).toHaveProp({
-            label: 'Loading...',
-        });
-    });
      */
 });
