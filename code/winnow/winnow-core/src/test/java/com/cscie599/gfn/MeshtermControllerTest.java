@@ -19,6 +19,7 @@ import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -102,6 +103,17 @@ public class MeshtermControllerTest extends BaseTest {
         assertEquals("260", meshtermTreeViews.get(0).getTreeNodeId());
         assertEquals("Computers", meshtermTreeViews.get(0).getMeshName());
         assertFalse(meshtermTreeViews.get(0).getHasChild());
+    }
+
+    @Test
+    public void testFindAllTrees() {
+        logger.info("testFindAllTrees");
+        List<MeshtermTreeView> meshtermTreeViews = new ArrayList(meshtermController.findEntireTree());
+        assertEquals("Meshterm tree count", meshtermTreeViews.size(), 16);
+        assertEquals("A", meshtermTreeViews.get(0).getMeshId());
+        assertEquals("Anatomy", meshtermTreeViews.get(0).getMeshName());
+        assertEquals("B", meshtermTreeViews.get(1).getMeshId());
+        assertEquals("Organisms", meshtermTreeViews.get(1).getMeshName());
     }
 
     public String createURLWithPort(String uri) {
