@@ -89,6 +89,9 @@ function PubMedArticleListDisplay(props) {
         {
             dataField: 'publicationId',
             text: 'Publication Id',
+            headerStyle: () => {
+                return {width: "15%"};
+            },
             formatter: (cell, row) => {
                 return (
                     <a
@@ -165,16 +168,13 @@ function PubMedArticleListDisplay(props) {
         },
         {
             dataField: 'completedDate',
-            text: 'Completed',
+            text: 'Published',
+            headerStyle: () => {
+                return {width: "15%"};
+            },
             type: 'date',
             sort: true
         },
-        {
-            dataField: 'dateRevised',
-            text: 'Revised',
-            type: 'date',
-            sort: true
-        }
     ];
     const {SearchBar} = Search;
     const ExportCSV = (props) => {

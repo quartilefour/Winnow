@@ -1,5 +1,14 @@
-![Winnow](./src/img/logo.png)
-# Winnow UI
+#![Winnow](./src/img/logo-xs.png) Winnow UI
+    
+| Browser | Version | Support |
+| :------- | :-------: | :-------: |
+| Chrome | &ge;48 | &#10004; |
+| Edge | &ge;44 | &#10004; |
+| Firefox | &ge;72 | &#10004; |
+| Internet Explorer | Any | &#10060; |
+| Opera | &ge; 68 | &#10004; |
+| Safari | &ge; 13 | &#10004; |
+    
 ## ReactJS
 * NodeJS v12
 * Code Base: `code/winnow-ui`
@@ -19,31 +28,17 @@
         ├── service         Winnow application services
         └── tests           Application tests
     ```
-
 ### Local
 * Dependencies
   - `node` version 12.xx.xx
   - `winnow-core` application needs to be running to provide API endpoints.
-  - Browser support:
-    
-    | Browser | Version | Support |
-    | :------- | :-------: | :-------: |
-    | Chrome | &ge;48 | &#10004; |
-    | Edge | &ge;44 | &#10004; |
-    | Firefox | &ge;72 | &#10004; |
-    | Internet Explorer | Any | &#10008; |
-    | Opera | &ge; 12 | &#10004; |
-    | Safari | &ge; 13 | &#10004; |
-    Browser detection script from: [SO](https://stackoverflow.com/questions/52736265/can-i-render-warning-message-if-users-browser-is-not-supported)
+  - Browser support
+    - Compatibility can be updated in `./public/index.html`
+    - Browser detection script from: [SO](https://stackoverflow.com/questions/52736265/can-i-render-warning-message-if-users-browser-is-not-supported)
     
 * Tests
-  - Test Deployed Build bundle
-    ```shell script
-      npm -g install serve
-      npm run build
-      serve -s build
-    ```
-    The build bundle will be served at http://localhost:5000/
+
+  - Testing Framework: Jest with Enzyme
   - Run Test Suite
     ```shell script
       npm install
@@ -52,6 +47,13 @@
   - Coverage Reports
   
     `./coverage/lcov-report/index.html`
+  - Test Deployed Build bundle
+    ```shell script
+      npm -g install serve
+      npm run build
+      serve -s build
+    ```
+    The build bundle will be served at http://localhost:5000/
 * Run
     ```shell script
     npm install
@@ -60,6 +62,9 @@
     Browser should automatically open to http://localhost:3000/
     
 ### Production Deployment
+* Dependencies
+  - `node` version 12.xx.xx
+  
 * Build UI production bundle
   ```shell script
     npm install

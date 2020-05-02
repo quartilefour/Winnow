@@ -52,7 +52,6 @@
 
       function isSupported(browser) {
         var supported = false;
-        console.log(browser.name + ' : ' + browser.version);
         if (browser.name === "Chrome" && browser.version >= 48) {
           supported = true;
         } else if (browser.name === "Firefox" && browser.version >= 72) {
@@ -61,7 +60,7 @@
           supported = false;
         } else if (browser.name === "Edge" && browser.version >= 44) {
           supported = true;
-        } else if (browser.name === "Opera" && browser.version >= 12) {
+        } else if (browser.name === "Opera" && browser.version >= 68) {
           supported = true;
         } else if (browser.name === "Safari" && browser.version >= 13) {
           supported = true;

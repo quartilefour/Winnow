@@ -29,6 +29,7 @@ export const callAPI = (resource, data = '') => {
         GET_GENES,
         GET_GENE_DETAIL,
         GET_ARTICLES,
+        GET_MESH_TREE,
         GET_MESH_CAT,
         GET_MESH_PARENT,
         GET_MESH_NODE,
@@ -74,6 +75,11 @@ export const callAPI = (resource, data = '') => {
         case GET_ARTICLES: /* Retrieves PubMed articles associated with provided Gene/MeSH terms. */
             method = 'post'
             url = `${url}/publications`
+            break
+        case GET_MESH_TREE: /* Retrieves top level MeSH term categories. */
+            method = 'get'
+            url = `${url}/meshterms/tree`
+            data = ''
             break
         case GET_MESH_CAT: /* Retrieves top level MeSH term categories. */
             method = 'get'

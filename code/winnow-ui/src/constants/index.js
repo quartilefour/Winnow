@@ -15,6 +15,7 @@ export const USER_MIN_LEN = 1;
 export const USER_MAX_LEN = 300;
 export const PASS_MIN_LEN = 8;
 export const PASS_MAX_LEN = 64;
+export const SS_MTT = 'meshTermTree';
 export const SS_SH = 'searchHistory';
 export const SS_SI = 'useBatch';
 export const PUBMED_BASE_URL = 'https://pubmed.ncbi.nlm.nih.gov';
@@ -29,11 +30,12 @@ export const API_RESOURCES = {
     GET_GENES: 4,
     GET_GENE_DETAIL: 5,
     GET_ARTICLES: 6,
-    GET_MESH_CAT: 7,
-    GET_MESH_PARENT: 8,
-    GET_MESH_NODE: 9,
-    POST_QUERY: 10,
-    POST_QUERY_FILE: 11,
+    GET_MESH_TREE: 7,
+    GET_MESH_CAT: 8,
+    GET_MESH_PARENT: 9,
+    GET_MESH_NODE: 10,
+    POST_QUERY: 11,
+    POST_QUERY_FILE: 12,
     WATERMARK: 20,
     GET_API_STATUS: 21,
     NCBI_GENE_DETAIL: 25,

@@ -1,10 +1,10 @@
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
 import {Spinner} from "react-bootstrap";
+import {useMeshTree} from "../../context/meshtree";
 import 'react-super-treeview/dist/style.css';
 import {
-    callAPI,
-    parseAPIError
+    callAPI, parseAPIError
 } from "../../service/ApiService";
 import cloneDeep from "lodash/cloneDeep";
 import SuperTreeview from "react-super-treeview";
@@ -29,33 +29,55 @@ export function MeshtermTree(props) {
 
     const {callback} = props;
 
-    const {GET_MESH_CAT, GET_MESH_PARENT, GET_MESH_NODE} = API_RESOURCES;
+    const {GET_MESH_TREE, GET_MESH_CAT, GET_MESH_PARENT, GET_MESH_NODE} = API_RESOURCES;
 
+    const {meshTermTree} = useMeshTree();
     const [isLoaded, setIsLoaded] = useState(false);
     const [meshData, setMeshData] = useState({});
     const [checked, setChecked] = useState([]);
 
     React.useEffect(() => {
+        console.info(`MessTermTree: mesh context: ${JSON.stringify(meshTermTree)}`)
+        /*let mappedData = meshTermTree.map((mesh, index) => {
+            return {
+                children: mesh.c,
+                id: mesh.i,
+                meshIndex: index,
+                name: `${mesh.n} [${mesh.i}] eas`,
+                hasChild: mesh.h
+            }
+        });
+        setMeshData(mappedData);
+        setIsLoaded(true);*/
+
         /* Fetch top level MeSH term categories */
-        callAPI(GET_MESH_CAT)
+        callAPI(GET_MESH_TREE)
             .then(res => {
-                let mappedData = res.data.map((mesh, index) => {
-                    return {
+                /*let mappedData = res.data.map((mesh, index) => {
+                    /*return {
                         children: [],
                         id: mesh.categoryId,
                         meshIndex: index,
                         name: `${mesh.name} [${mesh.categoryId}]`,
                         hasChild: true
-                    };
-                });
-                setMeshData(mappedData);
+                    }
+                    return {
+                        children: mesh.c,
+                        id: mesh.i,
+                        meshIndex: index,
+                        name: `${mesh.n} [${mesh.i}] eas`,
+                        hasChild: mesh.h
+                    }
+                });*/
+                console.info(`MessTermTree: mesh data: ${JSON.stringify(res.data)}`)
+                setMeshData(res.data);
                 setIsLoaded(true);
             })
             .catch(error => {
                 console.debug(`Search failed with fatal error.\n${parseAPIError(error)}`);
                 setIsLoaded(true);
             });
-    }, [GET_MESH_CAT]);
+    }, [GET_MESH_CAT, GET_MESH_TREE, meshTermTree]);
 
     /**
      * Helper function to map MeSH term data to tree view node.
@@ -238,9 +260,10 @@ export function MeshtermTree(props) {
                 return false;
             }}
             isExpandable={(node, depth) => {
-                return node.hasChild;
+                //return node.hasChild;
+                return node.children.length > 0;
             }}
-            onCheckToggleCb={(nodes, depth) => {
+            /*onCheckToggleCb={(nodes, depth) => {
                 //console.debug(`MeshtermTree checkToggle: ${JSON.stringify(nodes)}`);
                 const checkState = nodes[0].isChecked;
                 nodes[0].isExpanded = checkState;
@@ -249,36 +272,41 @@ export function MeshtermTree(props) {
                 /* Recursively checks/unchecks immediate children */
                 //console.debug(`MeshtermTree checkToggle: ${JSON.stringify(nodes)}`);
 
-                applyCheckStateToAllNodes(nodes, depth);
+            //applyCheckStateToAllNodes(nodes, depth);
 
-                // expand all the nodes under the top checked node
-                expandAllNodes(nodes[0], depth);
+            // expand all the nodes under the top checked node
+            //expandAllNodes(nodes[0], depth);
 
-                function applyCheckStateToAllNodes(nodes, depth) {
-                    nodes.forEach((node) => {
-                        applyCheckStateTo(node, depth);
-                    })
-                }
-
-
-                /* Recursively checks/unchecks immediate children */
-                function applyCheckStateTo(node, depth) {
+            /*function applyCheckStateToAllNodes(nodes, depth) {
+                nodes.forEach((node) => {
                     node.isChecked = checkState;
-                    //console.log(`check state is ${node.isChecked}`);
-                    if (node.hasChild) {
-                        let allChildren = getAllChildren(node, depth);
-                        updatesCheckedNodes(node);
-                        if (allChildren.children) {
-                            allChildren.children.forEach((node) => {
-                                applyCheckStateTo(node, depth + 1);
-                            })
-                        }
+                    if (node.children.length > 0) {
+                        node.children.forEach((child) => {
+                            applyCheckStateToAllNodes(child, depth);
+                        })
+                    }
+                })
+            }
+
+
+            /* Recursively checks/unchecks immediate children */
+            /*function applyCheckStateToAllNodes(node, depth) {
+                node.isChecked = checkState;
+                //console.log(`check state is ${node.isChecked}`);
+                if (node.children.length > 0) {
+                    //let allChildren = getAllChildren(node, depth);
+                    //updatesCheckedNodes(node);
+                    //if (allChildren.children) {
+                        allChildren.children.forEach((node) => {
+                            applyCheckStateTo(node, depth + 1);
+                        })
                     }
                 }
-            }}
-            onExpandToggleCb={(node, depth) => {
+            }*/
+            //}}*/
+            /*onExpandToggleCb={(node, depth) => {
                 expandAllNodes(node, depth);
-            }}
+            }}*/
 
         />
     )

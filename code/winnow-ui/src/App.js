@@ -14,6 +14,7 @@ import Error from "./routes/Error";
 import {callAPI} from "./service/ApiService";
 import Maintenance from "./components/error/Maintenance";
 import {API_RESOURCES, W_ENV, WINNOW_API_TIMEOUT, WINNOW_TOKEN} from "./constants";
+import {MeshTreeContext} from "./context/meshtree";
 
 /**
  * Renders the User Interface to the Winnow application.
@@ -30,6 +31,7 @@ function App() {
     /* Authentication stateful objects */
     const token = Cookies.get(WINNOW_TOKEN) ? Cookies.get(WINNOW_TOKEN) : null;
     const [authToken, setAuthToken] = useState(token);
+    const [meshTermTree, setMeshTermTree] = useState({});
 
     React.useEffect(() => {
         /* Check to see if API is available. */
@@ -71,20 +73,22 @@ function App() {
     /* Displays application when API is available */
     if (apiReady) return (
         <AuthContext.Provider value={{authToken, setAuthToken: setToken}}>
-            <Router>
-                <div>
-                    <NavBar/>
-                    <Switch>
-                        <Route path="/login" component={Login}/>
-                        <Route path="/register" component={Register}/>
-                        <PrivateRoute path="/profile" component={Profile}/>
-                        <PrivateRoute path="/support" component={Support}/>
-                        <PrivateRoute exact path="/" component={Dashboard}/>
-                        <PrivateRoute path="/admin" component={Admin}/>
-                        <PrivateRoute component={Error}/>
-                    </Switch>
-                </div>
-            </Router>
+            <MeshTreeContext.Provider value={{meshTermTree, setMeshTermTree}}>
+                <Router>
+                    <div>
+                        <NavBar/>
+                        <Switch>
+                            <Route path="/login" component={Login}/>
+                            <Route path="/register" component={Register}/>
+                            <PrivateRoute path="/profile" component={Profile}/>
+                            <PrivateRoute path="/support" component={Support}/>
+                            <PrivateRoute exact path="/" component={Dashboard}/>
+                            <PrivateRoute path="/admin" component={Admin}/>
+                            <PrivateRoute component={Error}/>
+                        </Switch>
+                    </div>
+                </Router>
+            </MeshTreeContext.Provider>
         </AuthContext.Provider>
     );
 

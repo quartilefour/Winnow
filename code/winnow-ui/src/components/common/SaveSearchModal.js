@@ -71,6 +71,11 @@ function SaveSearchModal(props) {
                             onChange={e => {
                                 setBookmarkName(e.target.value);
                             }}
+                            onKeyPress={e => {
+                                if (e.charCode === 13 && bookmarkName.length > 0) {
+                                    setSaveBookmark(true)
+                                }
+                            }}
                         />
                     </Form.Group>
                 </Form>

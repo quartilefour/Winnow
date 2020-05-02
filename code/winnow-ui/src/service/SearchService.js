@@ -1,9 +1,32 @@
 /**
  * The SearchService manages the current session's search history and other session states.
  *
- * The search history is base64 encoded to save space and stored in a browser session variable.
+ * The large objects are base64 encoded to save space and stored in a browser session variable.
  */
-import {SS_SH, SS_SI, QUERY_FORMATS as QF} from "../constants";
+import {SS_MTT, SS_SH, SS_SI, QUERY_FORMATS as QF} from "../constants";
+
+/**
+ * Puts the MeSH Term Tree into session storage.
+ *
+ * @param tree - JSON Object containing nested MeSH Terms
+ */
+export const initializeMeshTermTree = (tree) => {
+    console.info(`SearchService: meshTree: ${JSON.stringify(tree)}`)
+    let t = (tree !== null && tree !== undefined)
+        ? tree
+        : []
+    console.info(`SearchService: meshTree encoded: ${ssEncode(JSON.stringify(tree))}`)
+    sessionStorage.setItem(SS_MTT, ssEncode(t));
+}
+
+/**
+ * Retrieves MeSH Term Tree.
+ *
+ * @return {any} - JSON Object
+ */
+export const fetchMeshTermTree = () => {
+    return JSON.parse(ssDecode(sessionStorage.getItem(SS_MTT)));
+}
 
 /**
  * Creates initial session search history.
@@ -11,9 +34,7 @@ import {SS_SH, SS_SI, QUERY_FORMATS as QF} from "../constants";
 export const createSearchHistory = () => {
     sessionStorage.setItem(
         SS_SH,
-        Buffer.from(
-            JSON.stringify([])
-        ).toString("base64"));
+        ssEncode(JSON.stringify([])));
 }
 
 /**
@@ -26,10 +47,7 @@ export const getSearchHistory = () => {
         createSearchHistory();
     }
     return JSON.parse(
-        Buffer.from(
-            sessionStorage.getItem(SS_SH),
-            "base64"
-        ).toString("ascii"));
+        ssDecode(sessionStorage.getItem(SS_SH)));
 }
 
 /**
@@ -53,9 +71,7 @@ export const addSearchHistory = (search, isFile) => {
         searchHistory.push(search);
         sessionStorage.setItem(
             SS_SH,
-            Buffer.from(
-                JSON.stringify(searchHistory)
-            ).toString("base64"));
+            ssEncode(JSON.stringify(searchHistory)));
     }
 }
 
@@ -69,11 +85,22 @@ export const removeSearchHistory = (index) => {
     searchHistory.splice(index, 1);
     sessionStorage.setItem(
         SS_SH,
-        Buffer.from(
-            JSON.stringify(searchHistory)
-        ).toString("base64"));
+        ssEncode(JSON.stringify(searchHistory)));
 }
 
+/**
+ * Count the number of search terms in the given query.
+ *
+ * @param query
+ * @return {number}
+ */
+export const countSearchTerms = (query) => {
+    let count = 0
+    Object.keys(query).forEach((key) => {
+        count += query[key].length
+    })
+    return count
+}
 
 /**
  * Retrieves the search input type, true for batch or false for selectors.
@@ -161,4 +188,34 @@ export const prepareSearchQuery = (queryFormat, query) => {
             data = null
     }
     return data;
+}
+
+export const prettySearch = (query) => {
+    let ps = ''
+    Object.keys(query).forEach((key) => {
+        if (query[key].length > 0) {
+            ps = `${ps}${key}: ${query[key].join(',')}\n`
+        }
+    })
+    return ps
+}
+
+/* Internal helper functions */
+
+/**
+ *
+ * @param text
+ * @return {string}
+ */
+function ssEncode(text) {
+    return Buffer.from(text).toString("base64");
+}
+
+/**
+ *
+ * @param encrypted
+ * @return {string}
+ */
+function ssDecode(encrypted) {
+    return Buffer.from(encrypted, "base64").toString("ascii");
 }

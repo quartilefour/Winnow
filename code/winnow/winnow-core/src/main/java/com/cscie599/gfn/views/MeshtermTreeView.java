@@ -5,27 +5,27 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import java.util.*;
 
 public class MeshtermTreeView implements Comparable{
-    @JsonProperty("i")
+    @JsonProperty("id")
     private String meshId;
     @JsonProperty("p")
     private String treeParentId;
     @JsonProperty("t")
     private String treeNodeId;
-    @JsonProperty("n")
+    @JsonProperty("name")
     private String meshName;
-    @JsonProperty("f")
+    @JsonProperty("meshIndex")
     private String fullNodeId;
-    @JsonProperty("h")
+    @JsonProperty("hasChild")
     private boolean hasChild;
-    @JsonProperty("c")
+    @JsonProperty("children")
     private Set<MeshtermTreeView> childNodes;
     public MeshtermTreeView(String meshId, String treeParentId, String treeNodeId, String meshName, boolean hasChild) {
         this.meshId = meshId.trim();
         this.treeParentId = treeParentId.trim();
         this.treeNodeId = treeNodeId.trim();
-        this.meshName = meshName.trim();
         this.hasChild = hasChild;
-        this.fullNodeId = this.treeParentId +"." + this.treeNodeId;
+        this.fullNodeId = this.treeParentId + "." + this.treeNodeId;
+        this.meshName = meshName.trim() + " [" + this.fullNodeId + "]";
         childNodes = new TreeSet<>(new Comparator<MeshtermTreeView>() {
             @Override
             public int compare(MeshtermTreeView o1, MeshtermTreeView o2) {

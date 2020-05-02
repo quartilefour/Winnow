@@ -3,12 +3,13 @@ import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {faPlay, faShareAlt, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {Alert} from "react-bootstrap";
 import PageLoader from "../common/PageLoader";
-import {getSearchHistory, removeSearchHistory} from "../../service/SearchService";
+import {countSearchTerms, getSearchHistory, removeSearchHistory} from "../../service/SearchService";
 import SearchResultsDisplay from "../common/SearchResultsDisplay";
 import {callAPI, parseAPIError} from "../../service/ApiService";
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import ToolkitProvider, {Search} from 'react-bootstrap-table2-toolkit';
+import {prettySearch} from '../../service/SearchService';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
@@ -29,6 +30,7 @@ function RecentSearchesTab() {
     const [searchHistory, setSearchHistory] = useState([]);
     const [removeSearch, setRemoveSearch] = useState(null);
     const [haveResults, setHaveResults] = useState(false);
+    const [searchTermCount, setSearchTermCount] = useState(0);
     const [resultData, setResultData] = useState('');
     const [error, setError] = useState('');
     const [alertType, setAlertType] = useState('');
@@ -61,7 +63,7 @@ function RecentSearchesTab() {
             dataField: 'index',
             text: '#',
             style: {
-                width: '20px'
+                width: '5%'
             },
             formatter: (cell, row) => {
                 return row.index + 1;
@@ -82,10 +84,10 @@ function RecentSearchesTab() {
                 whiteSpace: "nowrap",
             },
             formatter: (cell, row) => {
-                return JSON.stringify(row.searchQuery)
+                return prettySearch(row.searchQuery.searchQuery)
             },
             title: (cell, row) => {
-                return JSON.stringify(row.searchQuery)
+                return prettySearch(row.searchQuery.searchQuery)
             }
         },
         {
@@ -95,7 +97,7 @@ function RecentSearchesTab() {
             align: 'center',
             headerAlign: 'center',
             headerStyle: () => {
-                return {width: "20%"};
+                return {width: "15%"};
             },
             formatter: (cell, row) => {
                 return (
@@ -133,6 +135,7 @@ function RecentSearchesTab() {
 
     /* Submits search criteria to API */
     function executeSearch(searchQuery) {
+        setSearchTermCount(countSearchTerms(searchQuery.searchQuery));
         setIsLoaded(false);
         callAPI(POST_QUERY, searchQuery)
             .then(res => {
@@ -162,21 +165,21 @@ function RecentSearchesTab() {
                     }}
                 >
                     {
-                            props => (
-                                <div>
-                                    <SearchBar {...props.searchProps} placeholder="Search recent..."/>
-                                    <BootstrapTable
-                                        {...props.baseProps}
-                                        pagination={
-                                            paginationFactory(T2_POPTS)
-                                        }
-                                        bootstrap4
-                                        striped
-                                        condensed
-                                        hover
-                                    />
-                                </div>
-                            )
+                        props => (
+                            <div>
+                                <SearchBar {...props.searchProps} placeholder="Search recent..."/>
+                                <BootstrapTable
+                                    {...props.baseProps}
+                                    pagination={
+                                        paginationFactory(T2_POPTS)
+                                    }
+                                    bootstrap4
+                                    striped
+                                    condensed
+                                    hover
+                                />
+                            </div>
+                        )
                     }
                 </ToolkitProvider>
             </div>
@@ -190,7 +193,11 @@ function RecentSearchesTab() {
             </div>
         )
     } else {
-        return (<div><PageLoader/></div>)
+        return (<div><PageLoader message={
+            (searchTermCount > 0)
+                ? `Loading ${searchTermCount} term(s)...`
+                : `Loading...`
+        }/></div>)
     }
 }
 

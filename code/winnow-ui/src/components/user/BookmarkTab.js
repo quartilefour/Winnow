@@ -10,6 +10,7 @@ import SearchResultsDisplay from "../common/SearchResultsDisplay";
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import ToolkitProvider, {Search} from 'react-bootstrap-table2-toolkit';
+import {prettySearch} from "../../service/SearchService";
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
@@ -78,6 +79,14 @@ function BookmarkTab() {
             title: (cell, row) => {
                 return row.searchId
             },
+            headerStyle: () => {
+                return {
+                    width: "20%",
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                };
+            },
             sort: true
         },
         {
@@ -91,11 +100,9 @@ function BookmarkTab() {
                 whiteSpace: "nowrap",
             },
             formatter: (cell, row) => {
-                //return JSON.stringify(row.searchQuery)
                 return prettySearch(row.searchQuery)
             },
             title: (cell, row) => {
-                //return JSON.stringify(row.searchQuery)
                 return prettySearch(row.searchQuery)
             }
         },
@@ -104,23 +111,15 @@ function BookmarkTab() {
             text: 'Created',
             sort: true,
             type: 'date',
+            headerStyle: () => {
+                return {width: "20%"};
+            },
             formatter: (cell, row) => {
                 return <Moment
                     date={row.createdDate}
                     format="YYYY-MMM-DD HH:MM:SS"
                     interval={0}
                 />
-                /*return new Intl.DateTimeFormat("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                    hour12: false,
-                    hour: "numeric",
-                    minute: "numeric",
-                    second: "numeric",
-                    timeZoneName: "short"
-                }).format(new Date(Date.parse(row.createdDate)))*/
-
             }
         },
         {
@@ -128,6 +127,9 @@ function BookmarkTab() {
             isDummyField: true,
             text: 'Action',
             align: 'center',
+            headerStyle: () => {
+                return {width: "15%"};
+            },
             headerAlign: 'center',
             formatter: (cell, row) => {
                 return (
@@ -161,16 +163,6 @@ function BookmarkTab() {
             }
         }
     ]
-
-    const prettySearch = (query) => {
-        let ps = ''
-        Object.keys(query).forEach((key) => {
-            if (query[key].length > 0) {
-                ps = `${ps}${key}: ${query[key].join(',')}\n`
-            }
-        })
-        return ps
-    }
 
     const {SearchBar} = Search;
 

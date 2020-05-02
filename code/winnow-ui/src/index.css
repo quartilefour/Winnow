@@ -74,10 +74,6 @@ th {
     height: 80vh;
 }
 
-#dashboard .row {
-}
-
-
 #dashboard-tabs, .nav-tab-collection {
     padding-top: 2em;
     border: 0;
@@ -92,23 +88,8 @@ th {
     z-index: 98;
     background-color: white;
     color: royalblue;
-    /*box-shadow: -2px -2px 5px darkgrey;*/
 }
 
-/*
-#dashboard-tabs .nav-item .nav-link.active::before {
-    content: "";
-    position: absolute;
-    z-index: 99;
-    right: 1px;
-    top: -6px;
-    height: 4px;
-    width: 3px;
-    border-bottom-right-radius: 4px;
-    background-color: transparent;
-    box-shadow: 2px 2px 0 #1c7430;
-}
-*/
 #dashboard-tabs .nav-item .nav-link, .nav-tab-collection .nav-item .nav-link {
     margin-right: 0;
     border-right: 0;

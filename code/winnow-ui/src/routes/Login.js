@@ -5,9 +5,11 @@ import {Card, Button, Form, Alert} from "react-bootstrap";
 import {sendLoginCredentials, loginSchema} from "../service/AuthService";
 import logoImg from "../img/logo.png";
 import {useAuth} from "../context/auth";
+import {useMeshTree} from "../context/meshtree";
 import {createSearchHistory} from "../service/SearchService";
 import {useFormik} from "formik";
-import {parseAPIError} from "../service/ApiService";
+import {callAPI, parseAPIError} from "../service/ApiService";
+import {API_RESOURCES} from "../constants";
 
 /**
  * Functional component to render Login form and handle response from API.
@@ -24,10 +26,13 @@ function Login(props) {
 
     const {location} = props;
 
+    const {GET_MESH_TREE} = API_RESOURCES;
+
     const [isLoggedIn, setLoggedIn] = useState(false);
     const [error, setError] = useState('');
     const [alertType, setAlertType] = useState('');
     const {authToken, setAuthToken} = useAuth();
+    const {setMeshTermTree} = useMeshTree();
     const referer = (location.state !== undefined) ? location.state.referer : '/';
 
     React.useEffect(() => {
@@ -58,6 +63,14 @@ function Login(props) {
                 setAuthToken(res.headers['authorization'].split(' ')[1]);
                 createSearchHistory();
                 setLoggedIn(true);
+                callAPI(GET_MESH_TREE)
+                    .then(mttRes => {
+                        setMeshTermTree(mttRes.data)
+                        console.info(`Login: setMeshTree context: ${JSON.stringify(mttRes.data)}`)
+                    })
+                    .catch(error => {
+                        console.debug(`Login: getMeshTree: ${parseAPIError(error)}`)
+                    })
             })
             .catch(error => {
                 setAlertType("danger");

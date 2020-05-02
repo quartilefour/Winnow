@@ -214,7 +214,7 @@ function ComboSearchTab() {
                         <div className="separator">Check MeSH Terms below</div>
                         <>
                             <div id="meshterm-tree">
-                                <MeshtermTree callback={getChecked}/>
+                                    <MeshtermTree callback={getChecked}/>
                             </div>
                         </>
                     </div>
@@ -241,7 +241,7 @@ function ComboSearchTab() {
         }
     } else {
         return (
-            <div><PageLoader/></div>
+            <div><PageLoader message={`Searching ${(selectedGenes.length + checkedTerms.length)} term(s)...`}/></div>
         )
     }
 }
