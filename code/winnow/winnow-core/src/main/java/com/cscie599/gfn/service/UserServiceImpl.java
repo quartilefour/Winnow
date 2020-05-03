@@ -27,22 +27,34 @@ public class UserServiceImpl implements UserService {
 
     @Override
     public void save(User user) {
-        logger.info("Going to create new user with pass: " + user.getUserPassword());
         user.setUserPassword(bCryptPasswordEncoder.encode(user.getUserPassword()));
         user.setCreatedAt(new Date());
         user.setUpdatedAt(new Date());
         user.setRoles(new HashSet<>(roleRepository.findAll()));
-        logger.info("Saved new user with pass: " + user.getUserPassword());
         userRepository.saveAndFlush(user);
     }
 
+    public void update(User user) {
+        user.setUpdatedAt(new Date());
+        user.setRoles(new HashSet<>(roleRepository.findAll()));
+        userRepository.saveAndFlush(user);
+    }
 
     public User findByUserEmail(String userEmail) {
         return userRepository.findByUserEmail(userEmail);
     }
 
-
     public boolean isUserExist(User user) {
         return findByUserEmail(user.getUserEmail())!=null;
     }
+
+    public void changeUserPassword(final User user, final String password) {
+        user.setUserPassword(bCryptPasswordEncoder.encode(password));
+        userRepository.save(user);
+    }
+
+    public boolean checkIfValidOldPassword(final User user, final String oldPassword) {
+        return bCryptPasswordEncoder.matches(oldPassword, user.getUserPassword());
+    }
+
 }

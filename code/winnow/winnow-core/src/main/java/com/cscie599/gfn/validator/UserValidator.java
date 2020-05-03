@@ -11,6 +11,7 @@ import org.springframework.validation.Validator;
 
 @Component
 public class UserValidator implements Validator {
+
     @Autowired
     private UserService userService;
 
@@ -21,9 +22,66 @@ public class UserValidator implements Validator {
 
     @Override
     public void validate(Object o, Errors errors) {
-        User user = (User) o;
+    }
 
-        // Validate user email
+    public void validateRegistration(Object o, Errors errors) {
+        User user = (User) o;
+        validateEmail(user, errors);
+        if (userService.isUserExist(user)) {
+            errors.rejectValue("userEmail", "Email already exists.");
+        }
+        validatePassword(user, errors);
+        validateFirstName(user, errors);
+        validateLastName(user, errors);
+    }
+
+    public void validateUpdateProfile(Object o, Errors errors) {
+        User user = (User) o;
+        validateEmail(user, errors);
+        validateFirstName(user, errors);
+        validateLastName(user, errors);
+    }
+
+    public void validateFirstName(User user, Errors errors) {
+        if (user.getFirstName()==null) {
+            errors.rejectValue("userEmail", "First name is required.");
+        }
+        else {
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "First name is required.");
+            if (user.getFirstName().length() < 1 || user.getFirstName().length() > 40) {
+                errors.rejectValue("firstName", "First name must be between 1 and 40 characters.");
+            }
+        }
+    }
+
+    public void validateLastName(User user, Errors errors) {
+        if (user.getLastName()==null) {
+            errors.rejectValue("userEmail", "Last name is required.");
+        }
+        else {
+            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "Last name is required.");
+            if (user.getLastName().length() < 1 || user.getLastName().length() > 40) {
+                errors.rejectValue("lastName", "Last name must be between 1 and 40 characters.");
+            }
+        }
+    }
+
+    public void validatePassword(User user, Errors errors) {
+        if (user.getUserPassword()==null) {
+            errors.rejectValue("userEmail", "Password is required.");
+        }
+        else {
+            ValidationUtils.rejectIfEmpty(errors, "userPassword", "Password is required.");
+            if (user.getUserPassword().length() < 8 || user.getUserPassword().length() > 60) {
+                errors.rejectValue("userPassword", "Password must be between 8 and 60 characters.");
+            }
+            if (user.getPasswordConfirm()==null || !user.getPasswordConfirm().equals(user.getUserPassword())) {
+                errors.rejectValue("passwordConfirm", "Password does not match.");
+            }
+        }
+    }
+
+    public void validateEmail(User user, Errors errors) {
         if (user.getUserEmail()==null) {
             errors.rejectValue("userEmail", "Email is required.");
         }
@@ -35,45 +93,7 @@ public class UserValidator implements Validator {
             if (user.getUserEmail().length() < 6 || user.getUserEmail().length() > 254) {
                 errors.rejectValue("userEmail", "Email must be between 6 to 254 characters.");
             }
-            if (userService.isUserExist(user)) {
-                errors.rejectValue("userEmail", "Email already exists.");
-            }
-        }
-
-        // Validate user password
-        if (user.getUserPassword()==null) {
-            errors.rejectValue("userEmail", "Password is required.");
-        }
-        else {
-            ValidationUtils.rejectIfEmpty(errors, "userPassword", "Password is required.");
-            if (user.getUserPassword().length() < 8 || user.getUserPassword().length() > 64) {
-                errors.rejectValue("userPassword", "Password must be between 8 and 64 characters.");
-            }
-            if (user.getPasswordConfirm()==null || !user.getPasswordConfirm().equals(user.getUserPassword())) {
-                errors.rejectValue("passwordConfirm", "Password does not match.");
-            }
-        }
-
-        // Validate user first name
-        if (user.getFirstName()==null) {
-            errors.rejectValue("userEmail", "First name is required.");
-        }
-        else {
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "firstName", "First name is required.");
-            if (user.getFirstName().length() < 1 || user.getFirstName().length() > 300) {
-                errors.rejectValue("firstName", "First name must be between 1 and 300 characters.");
-            }
-        }
-
-        // Validate user last name
-        if (user.getLastName()==null) {
-            errors.rejectValue("userEmail", "Last name is required.");
-        }
-        else {
-            ValidationUtils.rejectIfEmptyOrWhitespace(errors, "lastName", "Last name is required.");
-            if (user.getLastName().length() < 1 || user.getLastName().length() > 300) {
-                errors.rejectValue("lastName", "Last name must be between 1 and 300 characters.");
-            }
         }
     }
+
 }
