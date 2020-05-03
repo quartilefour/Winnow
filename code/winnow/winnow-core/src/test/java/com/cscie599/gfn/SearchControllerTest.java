@@ -2,21 +2,28 @@ package com.cscie599.gfn;
 
 import com.cscie599.gfn.controller.JobLauncherController;
 import com.cscie599.gfn.controller.SearchController;
-
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONArray;
-import org.junit.BeforeClass;
 import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.web.server.LocalServerPort;
-import org.springframework.http.*;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.web.client.TestRestTemplate;
+import org.springframework.boot.web.server.LocalServerPort;
+import org.springframework.core.io.FileSystemResource;
+import org.springframework.http.*;
+import org.springframework.util.LinkedMultiValueMap;
+import org.springframework.util.MultiValueMap;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.StandardOpenOption;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -37,6 +44,7 @@ public class SearchControllerTest extends BaseTest {
     private static HttpHeaders userHeaders;
     private static HttpHeaders loginHeaders;
     private static HttpHeaders searchHeaders;
+    private static HttpHeaders fileHeaders;
     private static JSONObject userJsonObject;
     private static JSONObject loginJsonObject;
     private static JSONObject emptySearchQueryJsonObject;
@@ -54,11 +62,13 @@ public class SearchControllerTest extends BaseTest {
         userHeaders = new HttpHeaders();
         loginHeaders = new HttpHeaders();
         searchHeaders = new HttpHeaders();
+        fileHeaders = new HttpHeaders();
         userJsonObject = new JSONObject();
         loginJsonObject = new JSONObject();
         userHeaders.setContentType(MediaType.APPLICATION_JSON);
         loginHeaders.setContentType(MediaType.APPLICATION_JSON);
         searchHeaders.setContentType(MediaType.APPLICATION_JSON);
+        fileHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
         userJsonObject.put("userEmail", "bob_harvard@harvard.edu");
         userJsonObject.put("userPassword", "T3st1234!");
         userJsonObject.put("passwordConfirm", "T3st1234!");
@@ -157,6 +167,7 @@ public class SearchControllerTest extends BaseTest {
             ResponseEntity<String> loginResponse = testRestTemplate.postForEntity(createURLWithPort("/api/login"), loginRequest, String.class);
             searchHeaders.set("Authorization", loginResponse.getHeaders().getFirst("Authorization"));
             jobLauncherController.handle();
+            fileHeaders.set("Authorization", loginResponse.getHeaders().getFirst("Authorization"));
         }
         isSetUp = true;
     }
@@ -237,6 +248,77 @@ public class SearchControllerTest extends BaseTest {
         logger.info("Response Body: \"" + response.getBody() + "\"");
         String expectedResponse = "{\"searchQuery\":{\"symbol\":[\"leuD\"],\"geneId\":[\"1246505\"],\"meshTreeId\":[\"B01.050.500.308\"],\"name\":[\"Cnidaria\"],\"description\":[\"isopropylmalate isomerase small subunit\"],\"meshId\":[\"D003063\"]},\"results\":[{\"index\":0,\"geneId\":\"1246505\",\"description\":\"isopropylmalate isomerase small subunit\",\"symbol\":\"leuD\",\"meshId\":\"D003063\",\"name\":\"Cnidaria\",\"publicationCount\":11,\"pvalue\":0.0488}]}";
         assertEquals(expectedResponse, response.getBody());
+    }
+
+    @Test
+    public void testExecuteSearchWithMultipartFileAndValidType() throws IOException {
+        logger.info("testExecuteSearchWithMultipartFileAndValidType");
+        Path testFile = Files.createTempFile("gene1Ids", ".csv");
+        Files.write(testFile, "1246505".getBytes(StandardCharsets.UTF_8));
+        logger.info("file getFileSystem " + testFile.getFileSystem().toString());
+        logger.info("file getFileName " + testFile.getFileName().toString());
+        logger.info("file getParent " + testFile.getParent().toString());
+        FileSystemResource fileSystemResource = new FileSystemResource(testFile.toFile());
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        map.add("file", fileSystemResource);
+        map.add("type", "geneId");
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(map, fileHeaders);
+        ResponseEntity<String> response = testRestTemplate.exchange(createURLWithPort("/api/search/upload"), HttpMethod.POST, request, String.class);
+        logger.info("Response Body: \"" + response.getBody() + "\"");
+        String expectedResponse = "{\"searchQuery\":{\"symbol\":[],\"geneId\":[\"1246505\"],\"meshTreeId\":[],\"name\":[],\"description\":[],\"meshId\":[]},\"results\":[{\"index\":0,\"geneId\":\"1246505\",\"description\":\"isopropylmalate isomerase small subunit\",\"symbol\":\"leuD\",\"meshId\":\"D000818\",\"name\":\"Animals\",\"publicationCount\":13,\"pvalue\":0.001},{\"index\":1,\"geneId\":\"1246505\",\"description\":\"isopropylmalate isomerase small subunit\",\"symbol\":\"leuD\",\"meshId\":\"D003063\",\"name\":\"Cnidaria\",\"publicationCount\":11,\"pvalue\":0.0488},{\"index\":2,\"geneId\":\"1246505\",\"description\":\"isopropylmalate isomerase small subunit\",\"symbol\":\"leuD\",\"meshId\":\"D003201\",\"name\":\"Computers\",\"publicationCount\":1,\"pvalue\":0.5433}]}";
+        assertEquals(expectedResponse, response.getBody());
+        Files.delete(testFile);
+    }
+
+    @Test
+    public void testExecuteSearchWithEmptyMultipartFile() throws IOException {
+        logger.info("testExecuteSearchWithEmptyMultipartFile");
+        Path testFile = Files.createTempFile("gene2Ids", ".csv");
+        FileSystemResource fileSystemResource = new FileSystemResource(testFile.toFile());
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        map.add("file", fileSystemResource);
+        map.add("type", "geneId");
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(map, fileHeaders);
+        ResponseEntity<String> response = testRestTemplate.exchange(createURLWithPort("/api/search/upload"), HttpMethod.POST, request, String.class);
+        logger.info("Response Body: \"" + response.getBody() + "\"");
+        assertEquals("{\"error\":\"File is empty.\"}", response.getBody());
+        Files.delete(testFile);
+    }
+
+    @Test
+    public void testExecuteSearchWithMultipartFileAndInvalidType() throws IOException {
+        logger.info("testExecuteSearchWithMultipartFileAndInvalidType");
+        Path testFile = Files.createTempFile("gene3Ids", ".csv");
+        Files.write(testFile, "1246505".getBytes(StandardCharsets.UTF_8));
+        FileSystemResource fileSystemResource = new FileSystemResource(testFile.toFile());
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        map.add("file", fileSystemResource);
+        map.add("type", "test");
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(map, fileHeaders);
+        ResponseEntity<String> response = testRestTemplate.exchange(createURLWithPort("/api/search/upload"), HttpMethod.POST, request, String.class);
+        logger.info("Response Body: \"" + response.getBody() + "\"");
+        assertEquals("{\"error\":\"Invalid search query type: test.\"}", response.getBody());
+        Files.delete(testFile);
+    }
+
+    @Test
+    public void testExecuteSearchWithMultipartFileExceedingMaxNumberOfRecords() throws IOException {
+        logger.info("testExecuteSearchWithMultipartFileAndInvalidType");
+        int IMPORT_MAX_NUMBER_OF_RECORDS = 1000;
+        Path testFile = Files.createTempFile("gene4Ids", ".csv");
+        String geneId = "1246505" + System.lineSeparator();
+        for (int i = 0; i < IMPORT_MAX_NUMBER_OF_RECORDS + 1; i++) {
+            Files.write(testFile, geneId.getBytes(StandardCharsets.UTF_8), StandardOpenOption.APPEND);
+        }
+        FileSystemResource fileSystemResource = new FileSystemResource(testFile.toFile());
+        MultiValueMap<String, Object> map = new LinkedMultiValueMap<>();
+        map.add("file", fileSystemResource);
+        map.add("type", "geneId");
+        HttpEntity<MultiValueMap<String, Object>> request = new HttpEntity<>(map, fileHeaders);
+        ResponseEntity<String> response = testRestTemplate.exchange(createURLWithPort("/api/search/upload"), HttpMethod.POST, request, String.class);
+        logger.info("Response Body: \"" + response.getBody() + "\"");
+        assertEquals("{\"error\":\"Maximum number of records in import file exceeded 1000.\"}", response.getBody());
+        Files.delete(testFile);
     }
 
     @Test

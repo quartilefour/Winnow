@@ -89,7 +89,7 @@ public class MeshtermControllerTest extends BaseTest {
         assertEquals("D003201", meshtermTreeViews.get(0).getMeshId());
         assertEquals("L01.224.230", meshtermTreeViews.get(0).getTreeParentId());
         assertEquals("260", meshtermTreeViews.get(0).getTreeNodeId());
-        assertEquals("Computers", meshtermTreeViews.get(0).getMeshName());
+        assertEquals("Computers [L01.224.230.260]", meshtermTreeViews.get(0).getMeshName());
         assertFalse(meshtermTreeViews.get(0).getHasChild());
     }
 
@@ -101,7 +101,7 @@ public class MeshtermControllerTest extends BaseTest {
         assertEquals("D003201", meshtermTreeViews.get(0).getMeshId());
         assertEquals("L01.224.230", meshtermTreeViews.get(0).getTreeParentId());
         assertEquals("260", meshtermTreeViews.get(0).getTreeNodeId());
-        assertEquals("Computers", meshtermTreeViews.get(0).getMeshName());
+        assertEquals("Computers [L01.224.230.260]", meshtermTreeViews.get(0).getMeshName());
         assertFalse(meshtermTreeViews.get(0).getHasChild());
     }
 
@@ -111,9 +111,9 @@ public class MeshtermControllerTest extends BaseTest {
         List<MeshtermTreeView> meshtermTreeViews = new ArrayList(meshtermController.findEntireTree());
         assertEquals("Meshterm tree count", meshtermTreeViews.size(), 16);
         assertEquals("A", meshtermTreeViews.get(0).getMeshId());
-        assertEquals("Anatomy", meshtermTreeViews.get(0).getMeshName());
+        assertEquals("Anatomy [.A]", meshtermTreeViews.get(0).getMeshName());
         assertEquals("B", meshtermTreeViews.get(1).getMeshId());
-        assertEquals("Organisms", meshtermTreeViews.get(1).getMeshName());
+        assertEquals("Organisms [.B]", meshtermTreeViews.get(1).getMeshName());
     }
 
     public String createURLWithPort(String uri) {
