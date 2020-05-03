@@ -12,7 +12,7 @@ function Support() {
     return (
         <div>
             <Card
-                className="text-center tab"
+                className="text-center tab entry-form"
                 style={{
                     flexDirection: 'column',
                     maxWidth: '720px',

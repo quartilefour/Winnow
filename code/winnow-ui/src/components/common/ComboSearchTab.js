@@ -5,7 +5,7 @@ import {callAPI, parseAPIError} from "../../service/ApiService";
 import SearchResultsDisplay from "../common/SearchResultsDisplay";
 import SearchTermUploader from "../common/SearchTermUploader";
 import PageLoader from "../common/PageLoader";
-import {addSearchHistory, getLastSearch, getBatch, setBatch, prepareSearchQuery} from "../../service/SearchService";
+import {addSearchHistory, getBatch, setBatch, prepareSearchQuery} from "../../service/SearchService";
 import {MeshtermTree} from "../mesh/MeshtermTree";
 import {API_RESOURCES} from "../../constants";
 
@@ -38,6 +38,7 @@ function ComboSearchTab() {
     const [alertType, setAlertType] = useState('');
     const [submitText, setSubmitText] = useState('Search');
 
+
     React.useEffect(() => {
         if (!haveResults) {
             setUseBatch(getBatch);
@@ -46,6 +47,7 @@ function ComboSearchTab() {
             if (!useBatch && (selectedGenes.length > 0 || checkedTerms.length > 0)) {
                 setActivateSearch(true);
             }
+            console.info(`ComboSearchTab: !haveResults: ${selectedGenes.length}:${checkedTerms.length}:${activateSearch}`)
         } else {
             if (resultData === '') { /* data is not loaded */
                 let search
@@ -55,8 +57,8 @@ function ComboSearchTab() {
                             geneId: selectedGenes,
                             symbol: [],
                             description: [],
-                            meshId: [],
-                            meshTreeId: checkedTerms,
+                            meshId: checkedTerms,
+                            meshTreeId: [],
                             name: []
                         },
                     }
@@ -94,6 +96,7 @@ function ComboSearchTab() {
     }, [
         POST_QUERY,
         POST_QUERY_FILE,
+        activateSearch,
         haveResults,
         selectedGenes,
         checkedTerms,
@@ -108,6 +111,7 @@ function ComboSearchTab() {
     function partialSearch(pattern) {
         callAPI(GET_GENES, pattern)
             .then(res => {
+                /* Maps the gene data to the expect attributes used by the Select component */
                 let mappedData = res.data.map((gene) => {
                     return {
                         value: gene.geneId,
@@ -135,12 +139,11 @@ function ComboSearchTab() {
 
     /* Returns to selection from results display */
     function returnToSelection() {
-        let lastSearch = getLastSearch();
-        if (lastSearch !== undefined && lastSearch !== null) {
-            setSelectedGenes(lastSearch.searchQuery.geneId)
-            setCheckedTerms(lastSearch.searchQuery.meshTreeId)
-        }
+        setSelectedGenes([])
+        setCheckedTerms([])
+        setActivateSearch(false);
         setHaveResults(false);
+        console.info(`ComboSearchTab: returnToSelection`)
     }
 
     /* Callback for MeshtermTree */
@@ -214,7 +217,7 @@ function ComboSearchTab() {
                         <div className="separator">Check MeSH Terms below</div>
                         <>
                             <div id="meshterm-tree">
-                                    <MeshtermTree callback={getChecked}/>
+                                <MeshtermTree callback={getChecked}/>
                             </div>
                         </>
                     </div>
