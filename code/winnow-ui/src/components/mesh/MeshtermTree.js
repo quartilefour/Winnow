@@ -130,9 +130,11 @@ export function MeshtermTree(props) {
 
     /* Updated session object with checked MeSH tree terms and updates parent component */
     function updatesCheckedNodes(node) {
-        if (node && node.id !== null) {
-            //console.log(`updating state for ${node.id}`);
-            if (node && node.id !== null) {
+        // changed to check that node.id !== "" as state was getting "" added to it
+        if (node && node.id !== null && node.id) {
+            //console.log(`updating state for ${node.meshId}`);
+            //console.log(`updating state for ${node.meshId}`);
+            //if (node && node.id !== null) {
                 let sscn = sessionStorage.getItem('mtt');
                 if (node.isChecked && !checked.includes(`${node.meshId}`)) {
                     //console.debug(`MeshtermTree updateCN node ${node.meshId} checked`);
@@ -150,7 +152,7 @@ export function MeshtermTree(props) {
                 }
                 callback([...new Set(sessionStorage.getItem('mtt').split(','))])
             }
-        }
+        //}
     }
 
     function getAllChildren(node, depth) {
@@ -224,11 +226,22 @@ export function MeshtermTree(props) {
 
     function expandAllNodes(node, depth) {
         if (node.isExpanded === true) {
-            //console.debug(`MeshtermTree expanding: ${node.name}`);
-            node.isChildrenLoading = true;
+            //console.debug(`MeshtermTree expanding: ${node.name} and isExpanded is ${node.isExpanded}`);
+            node.isChildrenLoading = true; // this doesn't appear to be working
+            //console.debug(`isLoading set for ${node.isChildrenLoading}`);
 
-            if (depth === 0) {
-                callAPI(GET_MESH_NODE, node.id)
+            if (node.children.length > 0) {
+                for (let i = 0; i < node.children.length; i = i + 1) {
+                    if (node.children[i].children.length > 0) {
+                        node.children[i].isExpanded = true;
+                        expandAllNodes(node.children[i], depth + 1);
+                    }
+                }
+            }
+            node.isChildrenLoading = false;
+            setIsLoaded(true);
+
+               /* callAPI(GET_MESH_NODE, node.id)
                     .then(res => {
                         insertChildNodes(node, depth, mapMeshtermTreeData(res.data, node, depth));
                     }).catch(err => {
@@ -242,10 +255,34 @@ export function MeshtermTree(props) {
                     }).catch(err => {
                     console.debug(`MeshtermTree Error: ${err}`);
                     console.debug(`MeshtermTree Error: ${JSON.stringify(err)}`);
-                })
+                })*/
+            }
+
+    }
+
+    function checkAllChildren(node, depth, checkState) {
+
+        //console.debug(`MeshtermTree checking: ${node.id} and isExpanded is ${node.isExpanded} and checkState is ${node.isChecked}`);
+        //console.debug(`full node is ${JSON.stringify(node)}`);
+        node.isChecked = checkState;
+        updatesCheckedNodes(node);
+        //console.debug(`isLoading set for ${node.isChildrenLoading}`);
+        //console.debug(`the children for node ${node.id} are ${JSON.stringify(node.children)}`)
+        if (node.children.length > 0) {
+            for (let i = 0; i < node.children.length; i = i + 1) {
+                //console.debug(`checking for child ${node.children[i]}`);
+                node.children[i].isChecked = checkState;
+                //console.log(`calling updatesCheckedNodes from within loop ${node.id}`);
+                updatesCheckedNodes(node.children[i]);
+                //console.log(`calling checkAllChildren with ${JSON.stringify(node.children[i])}`);
+                checkAllChildren(node.children[i], depth + 1, checkState);
             }
         }
+
+
+        setIsLoaded(true);
     }
+
 
 
     /* Displays MeSH term tree, dynamically populating/removing children as expanded/collapsed */
@@ -263,13 +300,36 @@ export function MeshtermTree(props) {
                 //return node.hasChild;
                 return node.children.length > 0;
             }}
-            /*onCheckToggleCb={(nodes, depth) => {
-                //console.debug(`MeshtermTree checkToggle: ${JSON.stringify(nodes)}`);
+            onCheckToggleCb={(nodes, depth) =>{
                 const checkState = nodes[0].isChecked;
-                nodes[0].isExpanded = checkState;
+
+                applyCheckStateToAllNodes(nodes, depth, checkState);
 
 
-                /* Recursively checks/unchecks immediate children */
+                function applyCheckStateToAllNodes(nodes, depth, checked) {
+                    for (let n = 0; n < nodes.length; n = n + 1){
+                        nodes[n].isChecked = checkState;
+                        nodes[n].isExpanded = checkState;
+
+                        //expand all the nodes under the top checked node and set isChecked
+                        expandAllNodes(nodes[n], depth);
+                        checkAllChildren(nodes[n], depth, checked);
+
+                        if (nodes[n].children.length > 0) {
+                            for (let i = 0; i < nodes[n].children.length; i = i + 1){
+                                applyCheckStateToAllNodes(nodes[n].children[i], depth + 1, checked);
+                            }
+                        }
+                    }
+                }
+            }}
+                /*onCheckToggleCb={(nodes, depth) => {
+                    //console.debug(`MeshtermTree checkToggle: ${JSON.stringify(nodes)}`);
+                    const checkState = nodes[0].isChecked;
+                    nodes[0].isExpanded = checkState;
+
+
+                    /* Recursively checks/unchecks immediate children */
                 //console.debug(`MeshtermTree checkToggle: ${JSON.stringify(nodes)}`);
 
             //applyCheckStateToAllNodes(nodes, depth);
@@ -304,9 +364,15 @@ export function MeshtermTree(props) {
                 }
             }*/
             //}}*/
-            /*onExpandToggleCb={(node, depth) => {
+            onExpandToggleCb={(node, depth) => {
+                /*if (node.isExpanded) {
+                    node.isExpanded = !(node.isExpanded);
+                }
+                else {
+                    node.isExpanded = true;
+                }*/
                 expandAllNodes(node, depth);
-            }}*/
+            }}
 
         />
     )
