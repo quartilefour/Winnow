@@ -24,6 +24,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
+import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
@@ -302,13 +303,22 @@ public class SearchController {
     public List<GeneMeshterm> getGeneMeshterms(HashMap<String, Object> searchQuery) {
         List<String> geneIds = (ArrayList) searchQuery.get("geneId");
         List<String> symbols = (ArrayList) searchQuery.get("symbol");
+        List<String> updatedSymbols = symbols.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
         List<String> descriptions = (ArrayList) searchQuery.get("description");
+        List<String> updatedDescriptions = descriptions.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
         List<String> meshIds = (ArrayList) searchQuery.get("meshId");
         List<String> names = (ArrayList) searchQuery.get("name");
+        List<String> updatedNames = names.stream()
+                .map(String::toLowerCase)
+                .collect(Collectors.toList());
         List<String> meshTreeIds = (ArrayList) searchQuery.get("meshTreeId");
         List<String> updatedMeshTreeIds = updateMeshTreeIds(meshTreeIds);
-        List<String> updatedGeneIds = geneRepository.findGeneIdsByGeneIdsOrSymbolsOrDescriptions(geneIds, symbols, descriptions);
-        List<String> updatedMeshIds = meshtermRepository.findMeshIdsByMeshIdsOrNamesOrMeshTreeIds(meshIds, names, updatedMeshTreeIds);
+        List<String> updatedGeneIds = geneRepository.findGeneIdsByGeneIdsOrSymbolsOrDescriptions(geneIds, updatedSymbols, updatedDescriptions);
+        List<String> updatedMeshIds = meshtermRepository.findMeshIdsByMeshIdsOrNamesOrMeshTreeIds(meshIds, updatedNames, updatedMeshTreeIds);
         List<GeneMeshterm> geneMeshterms = new ArrayList<>();
         if (geneIds.isEmpty() && symbols.isEmpty() && descriptions.isEmpty() && !(updatedMeshIds.isEmpty())) {
             geneMeshterms = geneMeshtermRepository.findByMeshIdsOrderByPValue(updatedMeshIds);

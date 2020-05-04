@@ -22,7 +22,7 @@ public interface GeneRepository extends JpaRepository<Gene, String> {
             "ORDER BY g.gene_id LIMIT 25")
     List<Gene> findAllContaining(@Param("pattern") String pattern);
 
-    @Query(nativeQuery = true, value = "SELECT gene_id FROM gene g WHERE g.gene_id IN (:geneIds) OR g.symbol IN (:symbols) OR g.description IN (:descriptions)")
+    @Query(nativeQuery = true, value = "SELECT gene_id FROM gene g WHERE g.gene_id IN (:geneIds) OR LOWER(g.symbol) IN (:symbols) OR LOWER(g.description) IN (:descriptions)")
     List<String> findGeneIdsByGeneIdsOrSymbolsOrDescriptions(List<String> geneIds, List<String> symbols, List<String> descriptions);
 
     @Query(nativeQuery = true, value = "SELECT gene_id, COUNT(*) FROM gene_publication WHERE publication_id in " +

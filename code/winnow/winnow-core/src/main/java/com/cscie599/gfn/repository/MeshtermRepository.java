@@ -16,7 +16,7 @@ public interface MeshtermRepository extends JpaRepository<Meshterm, String> {
 
     @Query(nativeQuery = true, value = "SELECT m.mesh_id FROM meshterm m " +
             "INNER JOIN meshterm_tree mt ON m.mesh_id = mt.mesh_id " +
-            "WHERE m.mesh_id IN (:meshIds) OR m.name IN (:names) " +
+            "WHERE m.mesh_id IN (:meshIds) OR LOWER(m.name) IN (:names) " +
             "OR (CONCAT(mt.tree_parent_id, '.', mt.tree_node_id)) IN (:meshTreeIds)")
     List<String> findMeshIdsByMeshIdsOrNamesOrMeshTreeIds(List<String> meshIds, List<String> names, List<String> meshTreeIds);
 }
