@@ -5,20 +5,35 @@ import org.springframework.context.annotation.Configuration;
 import springfox.documentation.builders.ApiInfoBuilder;
 import springfox.documentation.builders.PathSelectors;
 import springfox.documentation.builders.RequestHandlerSelectors;
-import springfox.documentation.service.ApiInfo;
-import springfox.documentation.service.Contact;
+import springfox.documentation.service.*;
 import springfox.documentation.spi.DocumentationType;
+import springfox.documentation.spi.service.contexts.SecurityContext;
 import springfox.documentation.spring.web.plugins.Docket;
 import springfox.documentation.swagger2.annotations.EnableSwagger2;
 
-import static springfox.documentation.builders.PathSelectors.regex;
+import static io.swagger.models.auth.In.HEADER;
+import static java.util.Collections.singletonList;
+import static org.springframework.http.HttpHeaders.AUTHORIZATION;
 
 @Configuration
 @EnableSwagger2
 public class Swagger2Config {
     @Bean
     public Docket api() {
-        return new Docket(DocumentationType.SWAGGER_2).select()
+        return new Docket(DocumentationType.SWAGGER_2)
+                .securitySchemes(singletonList(new ApiKey("JWT", AUTHORIZATION, HEADER.name())))
+                .securityContexts(singletonList(
+                        SecurityContext.builder()
+                                .securityReferences(
+                                        singletonList(SecurityReference.builder()
+                                                .reference("JWT")
+                                                .scopes(new AuthorizationScope[0])
+                                                .build()
+                                        )
+                                )
+                                .build())
+                )
+                .select()
                 .apis(RequestHandlerSelectors
                         .basePackage("com.cscie599.gfn.controller"))
                 .paths(PathSelectors.regex("/.*"))
