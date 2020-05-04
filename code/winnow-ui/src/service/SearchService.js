@@ -6,26 +6,49 @@
 import {SS_MTT, SS_SH, SS_SI, QUERY_FORMATS as QF} from "../constants";
 
 /**
- * Puts the MeSH Term Tree into session storage.
+ * Adds a checked MeSH term to session storage
  *
- * @param tree - JSON Object containing nested MeSH Terms
+ * @param meshId - MeSH term ID
  */
-export const initializeMeshTermTree = (tree) => {
-    console.info(`SearchService: meshTree: ${JSON.stringify(tree)}`)
-    let t = (tree !== null && tree !== undefined)
-        ? tree
-        : []
-    console.info(`SearchService: meshTree encoded: ${ssEncode(JSON.stringify(tree))}`)
-    sessionStorage.setItem(SS_MTT, ssEncode(t));
+export const addMeshterm = (meshId) => {
+    let mesh = new Set(fetchMeshterm());
+    mesh.add(meshId)
+    sessionStorage.setItem(SS_MTT, [...mesh].join(','))
 }
 
 /**
- * Retrieves MeSH Term Tree.
+ * Removes an unchecked MeSH term from the session storage
  *
- * @return {any} - JSON Object
+ * @param meshId - MeSH term ID
  */
-export const fetchMeshTermTree = () => {
-    return JSON.parse(ssDecode(sessionStorage.getItem(SS_MTT)));
+export const removeMeshterm = (meshId) => {
+    let mesh = new Set(fetchMeshterm());
+    mesh.delete(meshId)
+    if (mesh.size === 0) {
+        clearMeshterm()
+    } else {
+        sessionStorage.setItem(SS_MTT, [...mesh].join(','))
+    }
+}
+
+/**
+ * Retrieves current checked MeSH terms
+ *
+ * @return {any} - Set of MeSH term IDs
+ */
+export const fetchMeshterm = () => {
+    let mesh = sessionStorage.getItem(SS_MTT)
+    if (mesh === null || mesh.length <= 1) return new Set();
+    let terms = new Set(sessionStorage.getItem(SS_MTT).split(','))
+    if (terms.has('')) terms.delete('')
+    return terms
+}
+
+/**
+ * Clears the checked MeSH term session storage.
+ */
+export const clearMeshterm = () => {
+    return sessionStorage.removeItem(SS_MTT)
 }
 
 /**

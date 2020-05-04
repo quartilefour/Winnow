@@ -1,4 +1,4 @@
-#![Winnow](./src/img/logo-xs.png) Winnow UI
+# Winnow UI ![Winnow](./src/img/logo-xs.png)
     
 | Browser | Version | Support |
 | :------- | :-------: | :-------: |

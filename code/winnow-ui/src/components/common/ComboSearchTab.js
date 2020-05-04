@@ -5,7 +5,7 @@ import {callAPI, parseAPIError} from "../../service/ApiService";
 import SearchResultsDisplay from "../common/SearchResultsDisplay";
 import SearchTermUploader from "../common/SearchTermUploader";
 import PageLoader from "../common/PageLoader";
-import {addSearchHistory, getBatch, setBatch, prepareSearchQuery} from "../../service/SearchService";
+import {addSearchHistory, getBatch, setBatch, prepareSearchQuery, clearMeshterm} from "../../service/SearchService";
 import {MeshtermTree} from "../mesh/MeshtermTree";
 import {API_RESOURCES} from "../../constants";
 
@@ -44,8 +44,8 @@ function ComboSearchTab() {
             setUseBatch(getBatch);
             setIsLoaded(true);
             setIsMenuLoaded(true);
-            if (!useBatch && (selectedGenes.length > 0 || checkedTerms.length > 0)) {
-                setActivateSearch(true);
+            if (!useBatch) {
+                setActivateSearch((selectedGenes.length > 0 || checkedTerms.length > 0));
             }
             console.info(`ComboSearchTab: !haveResults: ${selectedGenes.length}:${checkedTerms.length}:${activateSearch}`)
         } else {
@@ -83,6 +83,7 @@ function ComboSearchTab() {
                         setSelectedGenes([]);
                         setCheckedTerms([]);
                         sessionStorage.removeItem('mtt');
+                        clearMeshterm();
                         setIsLoaded(true);
                     })
                     .catch(error => {
@@ -141,6 +142,7 @@ function ComboSearchTab() {
     function returnToSelection() {
         setSelectedGenes([])
         setCheckedTerms([])
+        setResultData('')
         setActivateSearch(false);
         setHaveResults(false);
         console.info(`ComboSearchTab: returnToSelection`)
