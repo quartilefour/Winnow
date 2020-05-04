@@ -62,7 +62,7 @@ function Login(props) {
             })
             .catch(error => {
                 setAlertType("danger");
-                if (error.response.status === 403 || error.response.status === 409) {
+                if (error.response.status >= 400 || error.response.status <= 499) {
                     setError(`Invalid E-mail or password`);
                 } else {
                     setError(`Server error: ${parseAPIError(error)}`);

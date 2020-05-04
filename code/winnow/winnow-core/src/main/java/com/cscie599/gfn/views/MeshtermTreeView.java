@@ -24,7 +24,7 @@ public class MeshtermTreeView implements Comparable{
         this.treeParentId = treeParentId.trim();
         this.treeNodeId = treeNodeId.trim();
         this.hasChild = hasChild;
-        this.fullNodeId = this.treeParentId + "." + this.treeNodeId;
+        this.fullNodeId = this.treeParentId.isEmpty() ? this.treeNodeId : this.treeParentId + "." + this.treeNodeId;
         this.meshName = meshName.trim() + " [" + this.fullNodeId + "]";
         childNodes = new TreeSet<>(new Comparator<MeshtermTreeView>() {
             @Override

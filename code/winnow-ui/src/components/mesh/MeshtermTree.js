@@ -1,12 +1,12 @@
 import React, {useState} from 'react';
 import PropTypes from 'prop-types';
-import {Modal, Spinner} from "react-bootstrap";
+import {Spinner} from "react-bootstrap";
 import 'react-super-treeview/dist/style.css';
 import {callAPI, parseAPIError} from "../../service/ApiService";
 import SuperTreeview from "react-super-treeview";
 import PageLoader from "../common/PageLoader";
 import {API_RESOURCES} from "../../constants";
-import {addMeshterm, fetchMeshterm, removeMeshterm} from "../../service/SearchService";
+import {addMeshterm, clearMeshterm, fetchMeshterm, removeMeshterm} from "../../service/SearchService";
 
 /**
  * Dynamically generates MeSH term tree
@@ -30,16 +30,9 @@ export function MeshtermTree(props) {
 
     const [isLoaded, setIsLoaded] = useState(false);
     const [meshData, setMeshData] = useState({});
-    const [showBM, setShowBM] = useState(false);
 
     React.useEffect(() => {
-        setShowBM(showBM)
-        console.info(`MeshtermTree: showBM effect: ${showBM}`)
-    }, [showBM])
-
-    React.useEffect(() => {
-        console.warn(`meshtermtree: rerender!`)
-        removeMeshterm()
+        clearMeshterm()
         /* Fetch MeSH term tree */
         callAPI(GET_MESH_TREE)
             .then(res => {
@@ -52,7 +45,6 @@ export function MeshtermTree(props) {
             });
     }, [GET_MESH_TREE]);
 
-    //let checkedTerms = new Set();
 
     /* Updated session object with checked MeSH tree terms and updates parent component */
     function updatesCheckedNodes(node) {
@@ -68,6 +60,7 @@ export function MeshtermTree(props) {
         }
     }
 
+    /* Recursively checks/unchecks and expands/collapses all descendants of clicked node*/
     function applyCheckStateToAllNodes(nodes, depth, checkState) {
         for (let n = 0; n < nodes.length; n = n + 1) {
             nodes[n].isChecked = checkState;
@@ -88,19 +81,9 @@ export function MeshtermTree(props) {
         callback([...fetchMeshterm()]);
     }
 
-    function addEl() {
-        let test = document.createElement("div")
-        test.setAttribute("id", "waitModal");
-        test.innerText = 'Help me!'
-        let myNode = document.getElementById('meshterm-tree')
-        console.info(`MeshtermTree find add element node:`)
-        myNode.parentElement.prepend(test)
-    }
-
     /* Displays MeSH term tree, dynamically populating/removing children as expanded/collapsed */
     if (isLoaded) return (
         <div>
-            <Modal show={showBM}>Stand By</Modal>
             <SuperTreeview
                 loadingElement={<Spinner animation="border" size="sm" variant="info"/>}
                 data={meshData}

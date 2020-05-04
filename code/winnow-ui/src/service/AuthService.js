@@ -55,7 +55,7 @@ export const sendLoginCredentials = (credentials) => {
  * @returns {Promise<>}
  */
 export const sendProfileUpdate = (userInfo) => {
-    return axios.patch(
+    return axios.put(
         `${C.WINNOW_API_BASE_URL}/profile`,
         userInfo,
         {
@@ -71,7 +71,7 @@ export const sendProfileUpdate = (userInfo) => {
  * @return {Promise<>}
  */
 export const sendChangePassword = (credentials) => {
-    return axios.put(
+    return axios.patch(
         `${C.WINNOW_API_BASE_URL}/profile`,
         credentials,
         {

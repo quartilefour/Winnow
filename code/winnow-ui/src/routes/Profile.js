@@ -11,6 +11,7 @@ import {
 import PageLoader from "../components/common/PageLoader";
 import {useFormik} from "formik";
 import {parseAPIError} from "../service/ApiService";
+import {useAuth} from "../context/auth";
 
 /**
  * Functional component to render User Profile form.
@@ -20,6 +21,7 @@ import {parseAPIError} from "../service/ApiService";
  */
 function Profile() {
 
+    const {setAuthToken} = useAuth();
     const [isLoaded, setIsLoaded] = useState(false);
     const [error, setError] = useState('');
     const [alertType, setAlertType] = useState('');
@@ -34,6 +36,8 @@ function Profile() {
                 setLastName(res.data.lastName);
                 setUserEmail(res.data.userEmail);
                 setIsLoaded(true);
+                setError('Changing E-mail Address will log you out.')
+                setAlertType("info")
             })
             .catch(error => {
                 setError(`Error retrieving profile.\n${parseAPIError(error)}`);
@@ -74,7 +78,10 @@ function Profile() {
             userEmail: values.userEmail
         };
         sendProfileUpdate(userInfo)
-            .then(() => {
+            .then((res) => {
+                if (res.status === 201) {
+                    setAuthToken(null);
+                }
                 setAlertType("success");
                 setError("Profile successfully updated.")
             })

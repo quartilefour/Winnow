@@ -82,7 +82,6 @@ function ComboSearchTab() {
                         setResultData(res.data);
                         setSelectedGenes([]);
                         setCheckedTerms([]);
-                        sessionStorage.removeItem('mtt');
                         clearMeshterm();
                         setIsLoaded(true);
                     })
@@ -145,14 +144,11 @@ function ComboSearchTab() {
         setResultData('')
         setActivateSearch(false);
         setHaveResults(false);
-        console.info(`ComboSearchTab: returnToSelection`)
     }
 
-    /* Callback for MeshtermTree */
+    /* Callback for MeshtermTree to send checked MeSH terms */
     const getChecked = (checkedNodes) => {
-        //console.log(`inside ComboSearchTab getChecked ${JSON.stringify(checkedNodes)}`);
         setCheckedTerms(checkedNodes);
-        //console.info(`ComboSearchTab: getChecked: ${JSON.stringify(checkedTerms)}`);
     };
 
     /* Callback for enabling search button from Batch */
@@ -172,7 +168,7 @@ function ComboSearchTab() {
 
     if (isLoaded) {
         if (!haveResults) {
-            if (!useBatch)  /* Displays Gene Dropdown & Meshterm Checkboxes */
+            if (!useBatch)  /* Displays Gene Dropdown & MeSH term Checkboxes */
                 return (
                     <div>
                         <Alert variant={alertType} show={error.length > 0} dismissible={true}>{error}</Alert>
