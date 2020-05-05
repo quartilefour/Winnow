@@ -177,7 +177,6 @@ public class MeshtermController {
                 return null;
             }
             iterableParentView.getChildNodes().add(currentPathMeshtermTreeView);
-            iterableParentView.setHasChild(true);
             iterableParentView = currentPathMeshtermTreeView;
         }
         return superParentView;

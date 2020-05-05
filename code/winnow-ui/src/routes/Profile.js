@@ -79,7 +79,7 @@ function Profile() {
         };
         sendProfileUpdate(userInfo)
             .then((res) => {
-                if (res.status === 201) {
+                if (res.status === 201) { /* Force logout if user changes their email */
                     setAuthToken(null);
                 }
                 setAlertType("success");

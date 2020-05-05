@@ -47,7 +47,6 @@ function ComboSearchTab() {
             if (!useBatch) {
                 setActivateSearch((selectedGenes.length > 0 || checkedTerms.length > 0));
             }
-            console.info(`ComboSearchTab: !haveResults: ${selectedGenes.length}:${checkedTerms.length}:${activateSearch}`)
         } else {
             if (resultData === '') { /* data is not loaded */
                 let search

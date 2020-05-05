@@ -51,10 +51,8 @@ export function MeshtermTree(props) {
         // changed to check that node.id !== "" as state was getting "" added to it
         if (node && node.id !== null && node.id) {
             if (node.isChecked) {
-                console.debug(`MeshtermTree updateCN node ${node.id} checked`);
                 addMeshterm(node.id)
             } else {
-                console.debug(`MeshtermTree updateCN node ${node.id} unchecked`);
                 removeMeshterm(node.id)
             }
         }

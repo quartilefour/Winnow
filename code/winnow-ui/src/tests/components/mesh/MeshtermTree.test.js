@@ -14,6 +14,68 @@ describe('<MeshtermTree {props}/>', () => {
     let useEffect;
     let component;
 
+    const responseTree = [
+        {
+            "id": "A",
+            "p": "",
+            "t": "A",
+            "name": "Anatomy [A]",
+            "meshIndex": "A",
+            "children": []
+        },
+        {
+            "id": "B",
+            "p": "",
+            "t": "B",
+            "name": "Organisms [B]",
+            "meshIndex": "B",
+            "children": []
+        },
+        {
+            "id": "C",
+            "p": "",
+            "t": "C",
+            "name": "Diseases [C]",
+            "meshIndex": "C",
+            "children": [
+                {
+                    "id": "D007239",
+                    "p": "",
+                    "t": "C01",
+                    "name": "Infections [C01]",
+                    "meshIndex": "C01",
+                    "children": [
+                        {
+                            "id": "D000785",
+                            "p": "C01",
+                            "t": "069",
+                            "name": "Aneurysm, Infected [C01.069]",
+                            "meshIndex": "C01.069",
+                            "children": []
+                        },
+                        {
+                            "id": "D001170",
+                            "p": "C01",
+                            "t": "100",
+                            "name": "Arthritis, Infectious [C01.100]",
+                            "meshIndex": "C01.100",
+                            "children": [
+                                {
+                                    "id": "D016918",
+                                    "p": "C01.100",
+                                    "t": "500",
+                                    "name": "Arthritis, Reactive [C01.100.500]",
+                                    "meshIndex": "C01.100.500",
+                                    "children": []
+                                }
+                            ]
+                        }
+                    ]
+                }
+            ]
+        }
+    ]
+
     const responseCat = [
         {
             "categoryId": "A", "name": "Anatomy"
@@ -28,10 +90,18 @@ describe('<MeshtermTree {props}/>', () => {
 
     const responseParent = [
         {
-            "meshId":"D000785","treeParentId":"C01","treeNodeId":"069","meshName":"Aneurysm, Infected","hasChild":false
+            "meshId": "D000785",
+            "treeParentId": "C01",
+            "treeNodeId": "069",
+            "meshName": "Aneurysm, Infected",
+            "hasChild": false
         },
         {
-            "meshId":"D001170","treeParentId":"C01","treeNodeId":"100","meshName":"Arthritis, Infectious","hasChild":true
+            "meshId": "D001170",
+            "treeParentId": "C01",
+            "treeNodeId": "100",
+            "meshName": "Arthritis, Infectious",
+            "hasChild": true
         }
     ]
 
@@ -71,7 +141,7 @@ describe('<MeshtermTree {props}/>', () => {
     it('should get empty tree', async () => {
         const mock = new MockAdapter(axios);
         mock
-            .onGet(`${WINNOW_API_BASE_URL}/meshterms/category`)
+            .onGet(`${WINNOW_API_BASE_URL}/meshterms/tree`)
             .reply(500, "Internal server error");
         const c = mount(<MeshtermTree {...props}/>);
         await act(async () => {
@@ -88,8 +158,8 @@ describe('<MeshtermTree {props}/>', () => {
     it('should get some mock data', async () => {
         const mock = new MockAdapter(axios);
         mock
-            .onGet(`${WINNOW_API_BASE_URL}/meshterms/category`)
-            .reply(200, responseCat);
+            .onGet(`${WINNOW_API_BASE_URL}/meshterms/tree`)
+            .reply(200, responseTree);
         const c = mount(<MeshtermTree {...props}/>);
         await act(async () => {
             await Promise.resolve(c);
@@ -106,8 +176,8 @@ describe('<MeshtermTree {props}/>', () => {
     it('should check checkbox', async () => {
         const mock = new MockAdapter(axios);
         mock
-            .onGet(`${WINNOW_API_BASE_URL}/meshterms/category`)
-            .reply(200, responseCat);
+            .onGet(`${WINNOW_API_BASE_URL}/meshterms/tree`)
+            .reply(200, responseTree);
         const c = mount(<MeshtermTree {...props}/>);
         await act(async () => {
             await Promise.resolve(c);
@@ -126,12 +196,8 @@ describe('<MeshtermTree {props}/>', () => {
     it('should expand node', async () => {
         const mock = new MockAdapter(axios);
         mock
-            .onGet(`${WINNOW_API_BASE_URL}/meshterms/category`)
-            .reply(200, responseCat)
-            .onGet(`${WINNOW_API_BASE_URL}/meshterms/tree/nodeid/C`)
-            .reply(200, responseNode)
-            .onGet(`${WINNOW_API_BASE_URL}/meshterms/tree/parentid/C01`)
-            .reply(200, responseParent);
+            .onGet(`${WINNOW_API_BASE_URL}/meshterms/tree`)
+            .reply(200, responseTree);
 
         const c = mount(<MeshtermTree {...props}/>);
         await act(async () => {

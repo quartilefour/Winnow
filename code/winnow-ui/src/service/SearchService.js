@@ -213,6 +213,12 @@ export const prepareSearchQuery = (queryFormat, query) => {
     return data;
 }
 
+/**
+ * Cleans up a search query to be slightly more friendly to read.
+ *
+ * @param query - JSON object describing a search query.
+ * @return {string}
+ */
 export const prettySearch = (query) => {
     let ps = ''
     Object.keys(query).forEach((key) => {
@@ -226,18 +232,20 @@ export const prettySearch = (query) => {
 /* Internal helper functions */
 
 /**
+ * Base64 encode provided text.
  *
- * @param text
- * @return {string}
+ * @param text - String to be encoded
+ * @return {string} Base64 encoded string
  */
 function ssEncode(text) {
     return Buffer.from(text).toString("base64");
 }
 
 /**
+ * Decode provided base64 encoded string to plain text.
  *
- * @param encrypted
- * @return {string}
+ * @param encrypted - String to be decoded
+ * @return {string} Plain text string
  */
 function ssDecode(encrypted) {
     return Buffer.from(encrypted, "base64").toString("ascii");

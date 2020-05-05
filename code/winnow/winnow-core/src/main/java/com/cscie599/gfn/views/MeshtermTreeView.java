@@ -15,15 +15,12 @@ public class MeshtermTreeView implements Comparable{
     private String meshName;
     @JsonProperty("meshIndex")
     private String fullNodeId;
-    @JsonProperty("hasChild")
-    private boolean hasChild;
     @JsonProperty("children")
     private Set<MeshtermTreeView> childNodes;
     public MeshtermTreeView(String meshId, String treeParentId, String treeNodeId, String meshName, boolean hasChild) {
         this.meshId = meshId.trim();
         this.treeParentId = treeParentId.trim();
         this.treeNodeId = treeNodeId.trim();
-        this.hasChild = hasChild;
         this.fullNodeId = this.treeParentId.isEmpty() ? this.treeNodeId : this.treeParentId + "." + this.treeNodeId;
         this.meshName = meshName.trim() + " [" + this.fullNodeId + "]";
         childNodes = new TreeSet<>(new Comparator<MeshtermTreeView>() {
@@ -48,12 +45,6 @@ public class MeshtermTreeView implements Comparable{
 
     public String getMeshName() {
         return meshName;
-    }
-
-    public boolean getHasChild() { return hasChild; }
-
-    public void setHasChild(boolean hasChild) {
-        this.hasChild = hasChild;
     }
 
     public Set<MeshtermTreeView> getChildNodes() {
@@ -93,7 +84,6 @@ public class MeshtermTreeView implements Comparable{
                 ", treeNodeId='" + treeNodeId + '\'' +
                 ", meshName='" + meshName + '\'' +
                 ", fullNodeId='" + fullNodeId + '\'' +
-                ", hasChild=" + hasChild +
                 ", childNodes=" + childNodes +
                 '}';
     }

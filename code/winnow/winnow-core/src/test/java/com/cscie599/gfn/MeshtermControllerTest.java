@@ -90,7 +90,6 @@ public class MeshtermControllerTest extends BaseTest {
         assertEquals("L01.224.230", meshtermTreeViews.get(0).getTreeParentId());
         assertEquals("260", meshtermTreeViews.get(0).getTreeNodeId());
         assertEquals("Computers [L01.224.230.260]", meshtermTreeViews.get(0).getMeshName());
-        assertFalse(meshtermTreeViews.get(0).getHasChild());
     }
 
     @Test
@@ -102,7 +101,6 @@ public class MeshtermControllerTest extends BaseTest {
         assertEquals("L01.224.230", meshtermTreeViews.get(0).getTreeParentId());
         assertEquals("260", meshtermTreeViews.get(0).getTreeNodeId());
         assertEquals("Computers [L01.224.230.260]", meshtermTreeViews.get(0).getMeshName());
-        assertFalse(meshtermTreeViews.get(0).getHasChild());
     }
 
     @Test
