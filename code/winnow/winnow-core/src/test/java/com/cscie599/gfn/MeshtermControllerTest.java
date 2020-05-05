@@ -111,9 +111,9 @@ public class MeshtermControllerTest extends BaseTest {
         List<MeshtermTreeView> meshtermTreeViews = new ArrayList(meshtermController.findEntireTree());
         assertEquals("Meshterm tree count", meshtermTreeViews.size(), 16);
         assertEquals("A", meshtermTreeViews.get(0).getMeshId());
-        assertEquals("Anatomy [.A]", meshtermTreeViews.get(0).getMeshName());
+        assertEquals("Anatomy [A]", meshtermTreeViews.get(0).getMeshName());
         assertEquals("B", meshtermTreeViews.get(1).getMeshId());
-        assertEquals("Organisms [.B]", meshtermTreeViews.get(1).getMeshName());
+        assertEquals("Organisms [B]", meshtermTreeViews.get(1).getMeshName());
     }
 
     public String createURLWithPort(String uri) {
