@@ -4,7 +4,6 @@ import MockAdapter from 'axios-mock-adapter';
 import {act} from "react-dom/test-utils";
 import {WINNOW_API_BASE_URL} from "../../constants";
 import Profile from '../../routes/Profile';
-import {mountWrap, shallowWrap} from "../_helpers";
 import {mount, shallow} from "enzyme";
 
 describe('<Profile />', () => {
@@ -18,9 +17,6 @@ describe('<Profile />', () => {
     const mockUseEffect = () => {
         useEffect.mockImplementationOnce(f => f());
     }
-
-    const wrappedShallow = () => shallowWrap(<Profile {...props} />);
-    const wrappedMount = () => mountWrap(<Profile {...props} />);
 
     beforeEach(() => {
         useEffect = jest.spyOn(React, "useEffect");
@@ -44,7 +40,7 @@ describe('<Profile />', () => {
         mock
             .onGet(`${WINNOW_API_BASE_URL}/profile`)
             .reply(200, response)
-            .onPatch(`${WINNOW_API_BASE_URL}/profile`)
+            .onPut(`${WINNOW_API_BASE_URL}/profile`)
             .reply(200, {})
         const c = mount(<Profile/>);
         await act(async () => {
@@ -56,7 +52,7 @@ describe('<Profile />', () => {
         //console.log(c.debug());
     });
 
-    it('should get mock password data', async () => {
+    it('should mock password change', async () => {
         const mock = new MockAdapter(axios);
         mock
             .onGet(`${WINNOW_API_BASE_URL}/profile`)
@@ -68,6 +64,37 @@ describe('<Profile />', () => {
             await Promise.resolve(c);
             await new Promise(resolve => setImmediate(resolve));
             c.update()
+            console.log(c.debug());
+            const pass1 = c.find('FormControl[name="userPassword"]')
+            const pass2 = c.find('FormControl[name="userPasswordNew"]')
+            const pass3 = c.find('FormControl[name="passwordConfirm"]')
+            expect(pass1.length).toEqual(1)
+            expect(pass2.length).toEqual(1)
+            expect(pass3.length).toEqual(1)
+            pass1.simulate('change', {
+                persist: () => {
+                },
+                target: {
+                    name: 'userPassword',
+                    value: 'Test1234!'
+                }
+            })
+            pass2.simulate('change', {
+                persist: () => {
+                },
+                target: {
+                    name: 'userPasswordNew',
+                    value: 'Test5678!'
+                }
+            })
+            pass3.simulate('change', {
+                persist: () => {
+                },
+                target: {
+                    name: 'passwordConfirm',
+                    value: 'Test5678!'
+                }
+            })
             c.find('Form').last().simulate('submit')
         });
         //console.log(c.debug());

@@ -30,9 +30,6 @@ export const callAPI = (resource, data = '') => {
         GET_GENE_DETAIL,
         GET_ARTICLES,
         GET_MESH_TREE,
-        GET_MESH_CAT,
-        GET_MESH_PARENT,
-        GET_MESH_NODE,
         POST_QUERY,
         POST_QUERY_FILE,
         GET_API_STATUS,
@@ -79,21 +76,6 @@ export const callAPI = (resource, data = '') => {
         case GET_MESH_TREE: /* Retrieves top level MeSH term categories. */
             method = 'get'
             url = `${url}/meshterms/tree`
-            data = ''
-            break
-        case GET_MESH_CAT: /* Retrieves top level MeSH term categories. */
-            method = 'get'
-            url = `${url}/meshterms/category`
-            data = ''
-            break
-        case GET_MESH_PARENT: /* Retrieves MeSH term tree one level for given parent node. */
-            method = 'get'
-            url = `${url}/meshterms/tree/parentid/${data}`
-            data = ''
-            break
-        case GET_MESH_NODE: /* Retrieves MeSH term tree node. */
-            method = 'get'
-            url = `${url}/meshterms/tree/nodeid/${data}`
             data = ''
             break
         case POST_QUERY: /* Retrieves search results for selected Genes/MeSH terms. */

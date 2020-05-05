@@ -173,7 +173,7 @@ describe('<MeshtermTree {props}/>', () => {
         expect(cNode.length).toEqual(1);
     });
 
-    it('should check checkbox', async () => {
+    it('should check/uncheck checkbox', async () => {
         const mock = new MockAdapter(axios);
         mock
             .onGet(`${WINNOW_API_BASE_URL}/meshterms/tree`)
@@ -190,6 +190,7 @@ describe('<MeshtermTree {props}/>', () => {
 
         cNode.simulate('click', {target: {checked: true, isChecked: true}})
         //console.log(c.debug())
+        cNode.simulate('click', {target: {checked: false, isChecked: false}})
 
     });
 
@@ -207,7 +208,7 @@ describe('<MeshtermTree {props}/>', () => {
             //console.log(`I want to see: ${c.debug()}`)
 
             const t = c.find('div[className="super-treeview-triangle-btn super-treeview-triangle-btn-right"]')
-            console.log(`cat nodes: ${t.length}`)
+            //console.log(`cat nodes: ${t.length}`)
             t.last().simulate('click')
             c.update()
             //console.log(`I want to see: ${c.debug()}`)
@@ -216,10 +217,35 @@ describe('<MeshtermTree {props}/>', () => {
             //console.log(`parent node contents: ${JSON.stringify(c.find('input[id="C"]'))}`)
             expect(cNode.find('div').length).toEqual(1);
         });
+    });
 
+    it('should collapse node', async () => {
+        const mock = new MockAdapter(axios);
+        mock
+            .onGet(`${WINNOW_API_BASE_URL}/meshterms/tree`)
+            .reply(200, responseTree);
 
-        //cNode.simulate('click')
-        //console.log(c.debug())
+        const c = mount(<MeshtermTree {...props}/>);
+        await act(async () => {
+            await Promise.resolve(c);
+            await new Promise(resolve => setImmediate(resolve));
+            c.update()
+            //console.log(`I want to see: ${c.debug()}`)
+
+            const t = c.find('div[className="super-treeview-triangle-btn super-treeview-triangle-btn-right"]')
+            //console.log(`cat nodes: ${t.length}`)
+            t.last().simulate('click')
+            c.update()
+            //console.log(`I want to see: ${c.debug()}`)
+            const cNode = c.find('input[id="C"]').parent();
+            expect(cNode.is('div')).toEqual(true)
+            //console.log(`parent node contents: ${JSON.stringify(c.find('input[id="C"]'))}`)
+            expect(cNode.find('div').length).toEqual(1);
+            t.last().simulate('click')
+            c.update()
+            //expect(cNode.find('div').length).toEqual(0);
+        });
+
 
     });
 });

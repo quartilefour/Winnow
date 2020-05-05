@@ -5,7 +5,7 @@ import axios from "axios";
 import {WINNOW_API_BASE_URL} from "../../../constants";
 import {act} from "react-dom/test-utils";
 import SaveSearchModal from '../../../components/common/SaveSearchModal';
-import {mountWrap, shallowWrap} from "../../_helpers";
+import {searchResults} from "../../data/mockResponseData";
 
 describe('<SaveSearchModal />', () => {
     let props;
@@ -18,59 +18,13 @@ describe('<SaveSearchModal />', () => {
         useEffect.mockImplementationOnce(f => f());
     }
 
-    const wrappedShallow = () => shallowWrap(<SaveSearchModal {...props} />);
-    const wrappedMount = () => mountWrap(<SaveSearchModal {...props} />);
 
     beforeEach(() => {
         useEffect = jest.spyOn(React, "useEffect");
         props = {
-            searchdata: {
-                "searchQuery": {
-                    "geneId": ["7168", "7169", "7170", "7171"],
-                    "symbol": [],
-                    "description": [],
-                    "meshId": [],
-                    "meshTreeId": ["C06.689.202"],
-                    "name": []
-                },
-                "results": [{
-                    "index": 0,
-                    "geneId": "7171",
-                    "description": "tropomyosin 4",
-                    "symbol": "TPM4",
-                    "meshId": "D003550",
-                    "name": "Cystic Fibrosis",
-                    "publicationCount": 1,
-                    "pvalue": 0.05446439662
-                }, {
-                    "index": 1,
-                    "geneId": "7169",
-                    "description": "tropomyosin 2",
-                    "symbol": "TPM2",
-                    "meshId": "D003550",
-                    "name": "Cystic Fibrosis",
-                    "publicationCount": 1,
-                    "pvalue": 0.189968535432
-                }, {
-                    "index": 2,
-                    "geneId": "7170",
-                    "description": "tropomyosin 3",
-                    "symbol": "TPM3",
-                    "meshId": "D003550",
-                    "name": "Cystic Fibrosis",
-                    "publicationCount": 1,
-                    "pvalue": 0.343838274335
-                }, {
-                    "index": 3,
-                    "geneId": "7168",
-                    "description": "tropomyosin 1",
-                    "symbol": "TPM1",
-                    "meshId": "D003550",
-                    "name": "Cystic Fibrosis",
-                    "publicationCount": 1,
-                    "pvalue": 0.581850965367
-                }]
-            },
+            show: true,
+            searchdata: searchResults,
+            onHide: jest.fn()
         };
         if (component) component.unmount();
 
@@ -79,40 +33,52 @@ describe('<SaveSearchModal />', () => {
     })
 
     it('should render with mock data in snapshot', () => {
-        //const wrapper = wrappedShallow();
         expect(wrapper).toMatchSnapshot();
     });
 
-    it('should get some mock data', async () => {
-        //mockUseEffect();
+    it('should get some mock data and save new bookmark', async () => {
         const mock = new MockAdapter(axios);
         mock
             .onPost(`${WINNOW_API_BASE_URL}/bookmarks`)
             .reply(200, "Saved bookmark");
         const c = mount(<SaveSearchModal {...props}/>);
         await act(async () => {
-            const bmInput = wrapper.find('FormControl[id="bm-input"]');
-            expect(bmInput.length).toEqual(1);
-            bmInput.simulate('change', {target: {value: 'BM 1'}});
-            const saveButton = wrapper.find('Button').last();
-            saveButton.simulate('click')
-            mockUseEffect();
-            mockUseEffect();
             await Promise.resolve(c);
             await new Promise(resolve => setImmediate(resolve));
             c.update()
         });
+        console.log(c.debug());
+        const bmInput = c.find('FormControl[id="bm-input"]');
+        expect(bmInput.length).toEqual(1);
+        bmInput.simulate('change', {
+            persist: () => {
+            }, target: {name: 'bm-input', value: 'BM 1'}
+        });
+        const saveButton = c.find('Button').last();
+        saveButton.simulate('click')
     });
 
-    it('should have input for bookmark', () => {
-        const bmInput = wrapper.find('FormControl[id="bm-input"]');
+    it('should have input for bookmark and save on enter', async () => {
+        const mock = new MockAdapter(axios);
+        mock
+            .onPost(`${WINNOW_API_BASE_URL}/bookmarks`)
+            .reply(200, "Saved bookmark");
+        const c = mount(<SaveSearchModal {...props}/>);
+        await act(async () => {
+            await Promise.resolve(c);
+            await new Promise(resolve => setImmediate(resolve));
+            c.update()
+        });
+        //console.log(c.debug());
+        const bmInput = c.find('FormControl[name="bm-input"]');
         expect(bmInput.length).toEqual(1);
-
-        bmInput.simulate('change', {target: {value: 'BM 1'}});
-        const saveButton = wrapper.find('Button').last();
-        saveButton.simulate('click')
-        mockUseEffect();
-        mockUseEffect();
+        bmInput.simulate('change', {
+            persist: () => {
+            }, target: {name: 'bm-input', value: 'BM 1'}
+        });
+        mockUseEffect()
+        mockUseEffect()
+        bmInput.simulate('keypress', {key: 'Enter'});
     });
     /*
 

@@ -29,17 +29,27 @@ describe('<Dashboard {props}/>', () => {
         expect(wrapper.find('TabContainer').length).toEqual(1);
     });
 
-/*
-    it('loads error', () => {
-        expect(props.error).toEqual('404: Page Not Found!');
-    })
+    it('should have be able to select Tab', () => {
+        const tabs = wrapper.find('NavLink');
+        expect(tabs.length).toEqual(3);
+        tabs.at(1).simulate('click')
 
-    it('should render when no error is passed', () => {
-        props.error = null;
-        mockUseEffect();
-        wrapper = shallow(<Dashboard {...props} />);
-        expect(props.error).toEqual(null);
-        expect(wrapper.find('Card').length).toEqual(1);
-    })
- */
+        const container = wrapper.find('TabContainer')
+        container.simulate('select', {target: {value: 'search'}})
+        //console.log(wrapper.debug());
+    });
+
+    /*
+        it('loads error', () => {
+            expect(props.error).toEqual('404: Page Not Found!');
+        })
+
+        it('should render when no error is passed', () => {
+            props.error = null;
+            mockUseEffect();
+            wrapper = shallow(<Dashboard {...props} />);
+            expect(props.error).toEqual(null);
+            expect(wrapper.find('Card').length).toEqual(1);
+        })
+     */
 });
