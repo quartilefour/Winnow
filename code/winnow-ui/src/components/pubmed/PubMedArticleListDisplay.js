@@ -222,7 +222,9 @@ function PubMedArticleListDisplay(props) {
                             keyField='publicationId'
                             data={pubmedData.results}
                             columns={columns}
-                            search
+                            search={{
+                                searchFormatted: true
+                            }}
                             exportCSV={{
                                 fileName: `winnow_pubmed_${Date.now()}.csv`,
                                 onlyExportFiltered: true,

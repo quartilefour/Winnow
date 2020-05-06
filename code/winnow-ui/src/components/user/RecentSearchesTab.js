@@ -1,6 +1,6 @@
 import React, {useState} from "react";
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {faPlay, faShareAlt, faTimes} from "@fortawesome/free-solid-svg-icons";
+import {faPlay, faTimes} from "@fortawesome/free-solid-svg-icons";
 import {Alert} from "react-bootstrap";
 import PageLoader from "../common/PageLoader";
 import {countSearchTerms, getSearchHistory, removeSearchHistory} from "../../service/SearchService";
@@ -111,12 +111,6 @@ function RecentSearchesTab() {
                             executeSearch(row.searchQuery)
                         }}
                     />
-                <FontAwesomeIcon
-                    className="searchActions"
-                    icon={faShareAlt}
-                    color="cornflowerblue"
-                    title="Share Search"
-                />
                 <FontAwesomeIcon
                     className="searchActions"
                     icon={faTimes}

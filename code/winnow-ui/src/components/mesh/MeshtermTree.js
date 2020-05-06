@@ -75,8 +75,6 @@ export function MeshtermTree(props) {
                 applyCheckStateToAllNodes(nodes[n].children, depth + 1, checkState);
             }
         }
-        /* Update array of checked MeSH terms in parent for search */
-        callback([...fetchMeshterm()]);
     }
 
     /* Displays MeSH term tree, dynamically populating/removing children as expanded/collapsed */
@@ -88,15 +86,18 @@ export function MeshtermTree(props) {
                 onUpdateCb={(updatedData) => {
                     setMeshData(updatedData);
                 }}
-                isDeletable={(node, depth) => {
+                isDeletable={() => {
                     return false;
                 }}
-                isExpandable={(node, depth) => {
+                isExpandable={(node) => {
                     return node.children.length > 0;
                 }}
                 onCheckToggleCb={(nodes, depth) => {
                     const checkState = nodes[0].isChecked;
                     applyCheckStateToAllNodes(nodes, depth, checkState)
+
+                    /* Update array of checked MeSH terms in parent for search */
+                    callback([...fetchMeshterm()]);
                 }}
             />
         </div>
