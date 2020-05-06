@@ -115,14 +115,17 @@ export const parseAPIError = (error) => {
     if (error.response) {
         /* The request was made and the server responded with a status code
            that falls out of the range of 2xx */
-        return `${error.response.status}: ${error.response.data}`
+        console.debug(`${JSON.stringify(error.response)}`)
+        return `${error.response.status}: ${error.response.data.error}`
     } else if (error.request) {
         /* The request was made but no response was received
            `error.request` is an instance of XMLHttpRequest in the browser and an instance of
            http.ClientRequest in node.js */
-        return `${error.request.toString()}`
+        console.debug(`${JSON.stringify(error.request)}`)
+        return `Request was sent, but server did not respond.`
     } else {
         /* Something happened in setting up the request that triggered an Error */
+        console.debug(`${JSON.stringify(error.message)}`)
         return `${error.message}`
     }
 }

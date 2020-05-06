@@ -5,7 +5,14 @@ import {callAPI, parseAPIError} from "../../service/ApiService";
 import SearchResultsDisplay from "../common/SearchResultsDisplay";
 import SearchTermUploader from "../common/SearchTermUploader";
 import PageLoader from "../common/PageLoader";
-import {addSearchHistory, getBatch, setBatch, prepareSearchQuery, clearMeshterm} from "../../service/SearchService";
+import {
+    addSearchHistory,
+    getBatch,
+    setBatch,
+    prepareSearchQuery,
+    clearMeshterm,
+    countSearchTerms
+} from "../../service/SearchService";
 import {MeshtermTree} from "../mesh/MeshtermTree";
 import {API_RESOURCES} from "../../constants";
 

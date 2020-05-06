@@ -10,7 +10,7 @@ import SearchResultsDisplay from "../common/SearchResultsDisplay";
 import BootstrapTable from 'react-bootstrap-table-next';
 import paginationFactory from 'react-bootstrap-table2-paginator';
 import ToolkitProvider, {Search} from 'react-bootstrap-table2-toolkit';
-import {prettySearch} from "../../service/SearchService";
+import {countSearchTerms, prettySearch} from "../../service/SearchService";
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
@@ -29,6 +29,7 @@ function BookmarkTab() {
     const [bookmarkData, setBookmarkData] = useState([]);
     const [deleteBookmark, setDeleteBookmark] = useState(null);
     const [haveResults, setHaveResults] = useState(false);
+    const [searchTermCount, setSearchTermCount] = useState(0);
     const [resultData, setResultData] = useState('');
     const [error, setError] = useState('');
     const [alertType, setAlertType] = useState('');
@@ -173,6 +174,7 @@ function BookmarkTab() {
 
     /* Submits search criteria to API */
     function executeSearch(searchQuery) {
+        setSearchTermCount(countSearchTerms(searchQuery.searchQuery));
         setIsLoaded(false);
         callAPI(POST_QUERY, searchQuery)
             .then(res => {
@@ -233,7 +235,11 @@ function BookmarkTab() {
             </div>
         )
     } else {
-        return (<div><PageLoader/></div>)
+        return (<div><PageLoader message={
+            (searchTermCount > 0)
+                ? `Loading ${searchTermCount} term(s)...`
+                : `Loading...`
+        }/></div>)
     }
 }
 
