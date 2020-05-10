@@ -14,8 +14,6 @@ import org.springframework.boot.test.web.client.TestRestTemplate;
 import org.springframework.boot.web.server.LocalServerPort;
 import org.springframework.http.*;
 import org.springframework.http.client.HttpComponentsClientHttpRequestFactory;
-import org.springframework.util.LinkedMultiValueMap;
-import org.springframework.util.MultiValueMap;
 import org.springframework.web.client.RestTemplate;
 
 import static org.junit.Assert.assertEquals;
@@ -29,7 +27,6 @@ public class UserTest extends BaseTest {
     private static HttpHeaders userHeaders;
     private static HttpHeaders loginHeaders;
     private static HttpHeaders profileHeaders;
-    private static HttpHeaders patchHeaders;
     private static JSONObject userJsonObject;
     private static JSONObject user2JsonObject;
     private static JSONObject user3JsonObject;
@@ -45,7 +42,6 @@ public class UserTest extends BaseTest {
         userHeaders = new HttpHeaders();
         loginHeaders = new HttpHeaders();
         profileHeaders = new HttpHeaders();
-        patchHeaders = new HttpHeaders();
         userJsonObject = new JSONObject();
         user2JsonObject = new JSONObject();
         user3JsonObject = new JSONObject();
@@ -55,7 +51,6 @@ public class UserTest extends BaseTest {
         userHeaders.setContentType(MediaType.APPLICATION_JSON);
         loginHeaders.setContentType(MediaType.APPLICATION_JSON);
         profileHeaders.setContentType(MediaType.APPLICATION_JSON);
-        patchHeaders.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
         userJsonObject.put("userEmail", "frank_harvard@harvard.edu");
         userJsonObject.put("userPassword", "T3st1234!");
@@ -93,7 +88,6 @@ public class UserTest extends BaseTest {
             patchRestTemplate = restTemplate.getRestTemplate();
             HttpClient httpClient = HttpClientBuilder.create().build();
             patchRestTemplate.setRequestFactory(new HttpComponentsClientHttpRequestFactory(httpClient));
-            patchHeaders.set("Authorization", loginResponse.getHeaders().getFirst("Authorization"));
         }
         isSetUp = true;
     }
@@ -199,19 +193,19 @@ public class UserTest extends BaseTest {
     @Test
     public void testChangePassword() throws Exception {
         logger.info("testChangePassword");
-        MultiValueMap<String, String> map1 = new LinkedMultiValueMap<>();
-        map1.add("userPassword", "T3st1234!");
-        map1.add("userPasswordNew", "Test1234!");
-        map1.add("passwordConfirm", "Test1234!");
-        HttpEntity<MultiValueMap<String, String>> request1 = new HttpEntity<>(map1, patchHeaders);
+        JSONObject updateProfileJsonObject1 = new JSONObject();
+        updateProfileJsonObject1.put("userPassword", "T3st1234!");
+        updateProfileJsonObject1.put("userPasswordNew", "Test1234!");
+        updateProfileJsonObject1.put("passwordConfirm", "Test1234!");
+        HttpEntity<String> request1 = new HttpEntity<>(updateProfileJsonObject1.toString(), profileHeaders);
         ResponseEntity<String> response1 = patchRestTemplate.exchange(createURLWithPort("/api/profile"), HttpMethod.PATCH, request1, String.class);
         logger.info("Response Body: \"" + response1.getBody() + "\"");
         assertEquals("{\"success\":\"Password changed.\"}", response1.getBody());
-        MultiValueMap<String, String> map2 = new LinkedMultiValueMap<>();
-        map2.add("userPassword", "Test1234!");
-        map2.add("userPasswordNew", "T3st1234!");
-        map2.add("passwordConfirm", "T3st1234!");
-        HttpEntity<MultiValueMap<String, String>> request2 = new HttpEntity<>(map2, patchHeaders);
+        JSONObject updateProfileJsonObject2 = new JSONObject();
+        updateProfileJsonObject2.put("userPassword", "Test1234!");
+        updateProfileJsonObject2.put("userPasswordNew", "T3st1234!");
+        updateProfileJsonObject2.put("passwordConfirm", "T3st1234!");
+        HttpEntity<String> request2 = new HttpEntity<>(updateProfileJsonObject2.toString(), profileHeaders);
         ResponseEntity<String> response2 = patchRestTemplate.exchange(createURLWithPort("/api/profile"), HttpMethod.PATCH, request2, String.class);
         logger.info("Response Body: \"" + response2.getBody() + "\"");
         assertEquals("{\"success\":\"Password changed.\"}", response2.getBody());
@@ -220,11 +214,11 @@ public class UserTest extends BaseTest {
     @Test
     public void testChangePasswordWithWrongCurrentPassword() throws Exception {
         logger.info("testChangePasswordWithWrongCurrentPassword");
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("userPassword", "Test1234!");
-        map.add("userPasswordNew", "T3st1234!");
-        map.add("passwordConfirm", "T3st1234!");
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, patchHeaders);
+        JSONObject updateProfileJsonObject = new JSONObject();
+        updateProfileJsonObject.put("userPassword", "Test1234!");
+        updateProfileJsonObject.put("userPasswordNew", "T3st1234!");
+        updateProfileJsonObject.put("passwordConfirm", "T3st1234!");
+        HttpEntity<String> request = new HttpEntity<>(updateProfileJsonObject.toString(), profileHeaders);
         ResponseEntity<String> response = patchRestTemplate.exchange(createURLWithPort("/api/profile"), HttpMethod.PATCH, request, String.class);
         logger.info("Response Body: \"" + response.getBody() + "\"");
         assertEquals("{\"error\":\"Wrong current password.\"}", response.getBody());
@@ -233,11 +227,11 @@ public class UserTest extends BaseTest {
     @Test
     public void testChangePasswordWithInvalidNewPassword() throws Exception {
         logger.info("testChangePasswordWithInvalidNewPassword");
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("userPassword", "T3st1234!");
-        map.add("userPasswordNew", "test");
-        map.add("passwordConfirm", "test");
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, patchHeaders);
+        JSONObject updateProfileJsonObject = new JSONObject();
+        updateProfileJsonObject.put("userPassword", "T3st1234!");
+        updateProfileJsonObject.put("userPasswordNew", "test");
+        updateProfileJsonObject.put("passwordConfirm", "test");
+        HttpEntity<String> request = new HttpEntity<>(updateProfileJsonObject.toString(), profileHeaders);
         ResponseEntity<String> response = patchRestTemplate.exchange(createURLWithPort("/api/profile"), HttpMethod.PATCH, request, String.class);
         logger.info("Response Body: \"" + response.getBody() + "\"");
         assertEquals("{\"error\":\"Password must be between 8 and 60 characters.\"}", response.getBody());
@@ -246,14 +240,78 @@ public class UserTest extends BaseTest {
     @Test
     public void testChangePasswordWithInvalidConfirmPassword() throws Exception {
         logger.info("testChangePasswordWithInvalidConfirmPassword");
-        MultiValueMap<String, String> map = new LinkedMultiValueMap<>();
-        map.add("userPassword", "T3st1234!");
-        map.add("userPasswordNew", "Test1234!");
-        map.add("passwordConfirm", "Test12345!");
-        HttpEntity<MultiValueMap<String, String>> request = new HttpEntity<>(map, patchHeaders);
+        JSONObject updateProfileJsonObject = new JSONObject();
+        updateProfileJsonObject.put("userPassword", "T3st1234!");
+        updateProfileJsonObject.put("userPasswordNew", "Test1234!");
+        updateProfileJsonObject.put("passwordConfirm", "Test12345!");
+        HttpEntity<String> request = new HttpEntity<>(updateProfileJsonObject.toString(), profileHeaders);
         ResponseEntity<String> response = patchRestTemplate.exchange(createURLWithPort("/api/profile"), HttpMethod.PATCH, request, String.class);
         logger.info("Response Body: \"" + response.getBody() + "\"");
         assertEquals("{\"error\":\"Password does not match.\"}", response.getBody());
+    }
+
+    @Test
+    public void testForgotPasswordWithMissingUserEmail() throws Exception {
+        logger.info("testForgotPasswordWithMissingUserEmail");
+        JSONObject forgotPasswordJsonObject = new JSONObject();
+        HttpEntity<String> request = new HttpEntity<>(forgotPasswordJsonObject.toString(), profileHeaders);
+        ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort("/api/forgot"), request, String.class);
+        logger.info("Response Status Code: \"" + response.getStatusCode().toString() + "\"");
+        assertEquals(response.getStatusCode(), HttpStatus.CONFLICT);
+        logger.info("Response Body: \"" + response.getBody() + "\"");
+        assertEquals("{\"error\":\"Missing userEmail.\"}", response.getBody());
+    }
+
+    @Test
+    public void testForgotPasswordWithUserEmail() throws Exception {
+        logger.info("testForgotPasswordWithUserEmail");
+        JSONObject forgotPasswordJsonObject = new JSONObject();
+        forgotPasswordJsonObject.put("userEmail", "test1234@harvard.edu");
+        HttpEntity<String> request = new HttpEntity<>(forgotPasswordJsonObject.toString(), profileHeaders);
+        ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort("/api/forgot"), request, String.class);
+        logger.info("Response Status Code: \"" + response.getStatusCode().toString() + "\"");
+        assertEquals(response.getStatusCode(), HttpStatus.OK);
+        logger.info("Response Body: \"" + response.getBody() + "\"");
+        assertEquals("{\"success\":\"Please check your email for password reset link.\"}", response.getBody());
+    }
+
+    @Test
+    public void testCheckPasswordResetLink() throws Exception {
+        logger.info("testCheckPasswordResetLink");
+        HttpEntity<String> request = new HttpEntity<>(profileHeaders);
+        ResponseEntity<String> response = restTemplate.exchange(createURLWithPort("/api/reset?token=test"),
+                HttpMethod.GET, request, String.class);
+        logger.info("Response Status Code: \"" + response.getStatusCode().toString() + "\"");
+        assertEquals(response.getStatusCode(), HttpStatus.CONFLICT);
+    }
+
+    @Test
+    public void testResetPasswordWithMissingToken() throws Exception {
+        logger.info("testResetPasswordWithMissingToken");
+        JSONObject resetPasswordJsonObject = new JSONObject();
+        resetPasswordJsonObject.put("userPasswordNew", "Test1234!");
+        resetPasswordJsonObject.put("passwordConfirm", "Test1234!");
+        HttpEntity<String> request = new HttpEntity<>(resetPasswordJsonObject.toString(), profileHeaders);
+        ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort("/api/reset"), request, String.class);
+        logger.info("Response Status Code: \"" + response.getStatusCode().toString() + "\"");
+        assertEquals(response.getStatusCode(), HttpStatus.CONFLICT);
+        logger.info("Response Body: \"" + response.getBody() + "\"");
+        assertEquals("{\"error\":\"Missing token.\"}", response.getBody());
+    }
+
+    @Test
+    public void testResetPasswordWithInvalidToken() throws Exception {
+        logger.info("testResetPasswordWithInvalidToken");
+        JSONObject resetPasswordJsonObject = new JSONObject();
+        resetPasswordJsonObject.put("token", "test");
+        resetPasswordJsonObject.put("userPasswordNew", "Test1234!");
+        resetPasswordJsonObject.put("passwordConfirm", "Test1234!");
+        HttpEntity<String> request = new HttpEntity<>(resetPasswordJsonObject.toString(), profileHeaders);
+        ResponseEntity<String> response = restTemplate.postForEntity(createURLWithPort("/api/reset"), request, String.class);
+        logger.info("Response Status Code: \"" + response.getStatusCode().toString() + "\"");
+        assertEquals(response.getStatusCode(), HttpStatus.CONFLICT);
+        logger.info("Response Body: \"" + response.getBody() + "\"");
+        assertEquals("{\"error\":\"Invalid password reset link.\"}", response.getBody());
     }
 
     private String createURLWithPort(String uri) {

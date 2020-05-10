@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 @RestController
@@ -38,7 +39,7 @@ public class UserController {
      * Retrieve current user profile.
      *
      * @param authentication Token for authentication request
-     * @return UserView       User view containing user email, first name, last name
+     * @return User view containing user email, first name, last name
      */
     @ApiOperation(value = "Retrieve current user profile.")
     @GetMapping("/profile")
@@ -55,10 +56,10 @@ public class UserController {
     /**
      * Update current user profile including user email, first name, and last name.
      *
-     * @param user             Request body representing user for update
-     * @param authentication   Token for authentication request
-     * @param bindingResult    BindingResult containing errors if any
-     * @return ResponseEntity  ResponseEntity including user view and OK/Created or error
+     * @param user           Request body representing user for update
+     * @param authentication Token for authentication request
+     * @param bindingResult  BindingResult containing errors if any
+     * @return ResponseEntity including user view and OK/Created or error
      */
     @ApiOperation(value = "Update current user profile including user email, first name, and last name.")
     @PutMapping("/profile")
@@ -95,24 +96,26 @@ public class UserController {
     /**
      * Change current user password.
      *
-     * @param userPassword     Current user password
-     * @param userPasswordNew  New user password
-     * @param passwordConfirm  Confirm new user password
-     * @param authentication   Token for authentication request
-     * @return ResponseEntity  ResponseEntity including success or error
+     * @param body           Request body representing password update
+     * @param authentication Token for authentication request
+     * @return ResponseEntity including success or error
      */
     @ApiOperation(value = "Change current user password.")
     @PatchMapping("/profile")
-    public ResponseEntity<?> changePassword(@RequestParam("userPassword") String userPassword, @RequestParam("userPasswordNew") String userPasswordNew, @RequestParam("passwordConfirm") String passwordConfirm, Authentication authentication) {
-        HashMap<String, Object> response = new HashMap<>();
+    public ResponseEntity<?> changePassword(@RequestBody Map<String, String> body, Authentication authentication) {
+        String[] parameters = {"userPassword", "userPasswordNew", "passwordConfirm"};
+        HashMap<String, Object> response = validate(body, parameters);
+        if (response.containsKey("error")) {
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
         User user = userService.findByUserEmail(authentication.getPrincipal().toString());
-        if (!userService.checkIfValidOldPassword(user, userPassword)) {
+        if (!userService.checkIfValidOldPassword(user, body.get("userPassword"))) {
             response.put("error", "Wrong current password.");
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
-        if (isNewPasswordInvalid(userPasswordNew, passwordConfirm, response))
+        if (isNewPasswordInvalid(body.get("userPasswordNew"), body.get("passwordConfirm"), response))
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-        userService.changeUserPassword(user, userPasswordNew);
+        userService.changeUserPassword(user, body.get("userPasswordNew"));
         response.put("success", "Password changed.");
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -120,9 +123,9 @@ public class UserController {
     /**
      * Register new user.
      *
-     * @param user            Request body representing user for update
-     * @param bindingResult   BindingResult containing errors if any
-     * @return ResponseEntity ResponseEntity including success or error
+     * @param user          Request body representing user for update
+     * @param bindingResult BindingResult containing errors if any
+     * @return ResponseEntity including success or error
      */
     @ApiOperation(value = "Register new user.")
     @PostMapping("/registration")
@@ -146,31 +149,39 @@ public class UserController {
     /**
      * Send password reset link email to existing user email.
      *
-     * @param userEmail User email to receive the password reset link
-     * @param request   HttpServletRequest for sending email using URL
+     * @param body    Request body containing user email
+     * @param request HttpServletRequest for sending email using URL
      * @return ResponseEntity ResponseEntity including OK regardless whether an email was sent or not
      */
     @ApiOperation(value = "Send password reset link email to existing user email.")
     @PostMapping("/forgot")
-    public ResponseEntity<?> forgotPassword(@RequestParam("userEmail") String userEmail, HttpServletRequest request) {
-        User user = userService.findByUserEmail(userEmail);
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body, HttpServletRequest request) {
+        String[] parameters = {"userEmail"};
+        HashMap<String, Object> response = validate(body, parameters);
+        if (response.containsKey("error")) {
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
+        User user = userService.findByUserEmail(body.get("userEmail"));
         // Add reset token to existing user and send password reset link email
-        if (userService.isUserExist(user)) {
+        if (userService.isPresent(user)) {
             user.setResetToken(UUID.randomUUID().toString());
             userService.update(user);
             String appUrl = request.getScheme() + "://" + request.getServerName();
-            SimpleMailMessage passwordResetEmail = emailService.createEmail(user.getUserEmail(), "Password Reset Request",
-                    "To reset your password, click the link: " + appUrl + "/reset?token=" + user.getResetToken());
+            SimpleMailMessage passwordResetEmail = new SimpleMailMessage();
+            passwordResetEmail.setTo(user.getUserEmail());
+            passwordResetEmail.setSubject("Password Reset Request");
+            passwordResetEmail.setText("To reset your password, click the link: " + appUrl + "/reset?token=" + user.getResetToken());
             emailService.sendEmail(passwordResetEmail);
         }
-        return new ResponseEntity<>("Please check your email for password reset link.", HttpStatus.OK);
+        response.put("success", "Please check your email for password reset link.");
+        return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
     /**
      * Check if token exists for user.
      *
      * @param token Token set for user email that forgot password
-     * @return ResponseEntity ResponseEntity including OK or CONFLICT
+     * @return ResponseEntity including OK or CONFLICT
      */
     @ApiOperation(value = "Check if token exists for user.")
     @GetMapping("/reset")
@@ -187,22 +198,24 @@ public class UserController {
     /**
      * Reset password.
      *
-     * @param token           Token set for user email that forgot password
-     * @param userPasswordNew New user password
-     * @param passwordConfirm Confirm new user password
-     * @return ResponseEntity ResponseEntity including success or failure
+     * @param body Request body containing token, new user password, and confirm password
+     * @return ResponseEntity including success or failure
      */
     @ApiOperation(value = "Reset password.")
     @PostMapping("/reset")
-    public ResponseEntity<?> resetPassword(@RequestParam("token") String token, @RequestParam("userPasswordNew") String userPasswordNew, @RequestParam("passwordConfirm") String passwordConfirm) {
-        HashMap<String, Object> response = new HashMap<>();
-        User user = userService.findUserByResetToken(token);
+    public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
+        String[] parameters = {"token", "userPasswordNew", "passwordConfirm"};
+        HashMap<String, Object> response = validate(body, parameters);
+        if (response.containsKey("error")) {
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
+        User user = userService.findUserByResetToken(body.get("token"));
         // If the token exists for a user and new password is good, update user with new password and reset token to null
         if (userService.isPresent(user)) {
-            if (isNewPasswordInvalid(userPasswordNew, passwordConfirm, response)) {
+            if (isNewPasswordInvalid(body.get("userPasswordNew"), body.get("passwordConfirm"), response)) {
                 return new ResponseEntity<>(response, HttpStatus.CONFLICT);
             } else {
-                userService.changeUserPassword(user, userPasswordNew);
+                userService.changeUserPassword(user, body.get("userPasswordNew"));
                 user.setResetToken(null);
                 userService.update(user);
                 response.put("success", "Password reset.");
@@ -220,7 +233,7 @@ public class UserController {
      * @param userPasswordNew New user password
      * @param passwordConfirm Confirm new user password
      * @param response        Response to be returned in the ResponseEntity
-     * @return boolean        true if new password is invalid else false
+     * @return Boolean true if new password is invalid else false
      */
     private boolean isNewPasswordInvalid(String userPasswordNew, String passwordConfirm, HashMap<String, Object> response) {
         if (userPasswordNew.length() < 8 || userPasswordNew.length() > 60) {
@@ -231,5 +244,22 @@ public class UserController {
             return true;
         }
         return false;
+    }
+
+    /**
+     * Validate body for required parameters.
+     *
+     * @param body       Request body containing parameters
+     * @param parameters Required parameters
+     * @return Response containing error if any
+     */
+    private HashMap<String, Object> validate(Map<String, String> body, String[] parameters) {
+        HashMap<String, Object> response = new HashMap<>();
+        for (String parameter : parameters) {
+            if (!(body.containsKey(parameter))) {
+                response.put("error", "Missing " + parameter + ".");
+            }
+        }
+        return response;
     }
 }
