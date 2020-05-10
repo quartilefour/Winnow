@@ -9,6 +9,7 @@ import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.mail.SimpleMailMessage;
@@ -32,6 +33,9 @@ public class UserController {
 
     @Autowired
     private EmailService emailService;
+
+    @Value("${email.forgot.password}")
+    private String forgotPasswordEmail;
 
     public static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -168,6 +172,7 @@ public class UserController {
             userService.update(user);
             String appUrl = request.getScheme() + "://" + request.getServerName();
             SimpleMailMessage passwordResetEmail = new SimpleMailMessage();
+            passwordResetEmail.setFrom(forgotPasswordEmail);
             passwordResetEmail.setTo(user.getUserEmail());
             passwordResetEmail.setSubject("Password Reset Request");
             passwordResetEmail.setText("To reset your password, click the link: " + appUrl + "/reset?token=" + user.getResetToken());
