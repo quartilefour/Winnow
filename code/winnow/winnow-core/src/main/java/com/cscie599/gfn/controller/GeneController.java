@@ -12,6 +12,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,6 +24,9 @@ import java.math.BigInteger;
 @RequestMapping("/api")
 @Api(value = "Genes", description = "Operations pertaining to genes in Gene Function Navigation")
 public class GeneController {
+
+    @Value("${search.result.limit}")
+    private int searchResultLimit;
 
     @Autowired
     GeneRepository geneRepository;
@@ -107,7 +111,7 @@ public class GeneController {
         }
         // Get all the MeSH terms, publication counts, and p-values associated with the gene
         List<GeneDetailMeshtermView> geneDetailMeshtermViews = new ArrayList<>();
-        List<GeneMeshterm> geneMeshterms = geneMeshtermRepository.findByGeneIdOrderByPValue(geneId);
+        List<GeneMeshterm> geneMeshterms = geneMeshtermRepository.findByGeneIdOrderByPValue(geneId, 0, searchResultLimit);
         for (GeneMeshterm geneMeshterm : geneMeshterms) {
             geneDetailMeshtermViews.add(new GeneDetailMeshtermView(
                     geneMeshterm.getMeshterm().getMeshId().trim(),

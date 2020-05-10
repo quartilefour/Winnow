@@ -14,7 +14,10 @@ import com.cscie599.gfn.views.SearchView;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
@@ -30,6 +33,11 @@ import java.util.stream.Collectors;
 @RequestMapping("/api")
 @Api(value = "Searches", description = "Operations pertaining to searches in Gene Function Navigation")
 public class SearchController {
+
+    private static final Log logger = LogFactory.getLog(SearchController.class);
+
+    @Value("${search.result.limit}")
+    private int searchResultLimit;
 
     @Autowired
     SearchRepository searchRepository;
@@ -185,8 +193,21 @@ public class SearchController {
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
         HashMap<String, Object> searchQuery = (HashMap<String, Object>) body.get("searchQuery");
-        updateResponse(response, searchQuery);
+        long queryOffset = getQueryOffset(body);
+        updateResponse(response, searchQuery, queryOffset);
         return new ResponseEntity<>(response, HttpStatus.OK);
+    }
+
+    /**
+     * Checks if the requestBody has the field <b>queryOffset</b>. If it exists returns its value otherwise returns 0;
+     */
+    private long getQueryOffset(Map<String, Object> body) {
+        try {
+            return (long) body.getOrDefault("queryOffset", 0L);
+        } catch (Exception ex) {
+            logger.error("Input queryOffset needs to be a long type " + body.get("queryOffset"));
+        }
+        return 0;
     }
 
     /*
@@ -226,7 +247,7 @@ public class SearchController {
                     response.put("error", "Invalid search query type: " + type + ".");
                     return new ResponseEntity<>(response, HttpStatus.CONFLICT);
                 } else {
-                    updateResponse(response, searchQuery);
+                    updateResponse(response, searchQuery, 0L);
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 }
             } catch (IOException e) {
@@ -261,8 +282,7 @@ public class SearchController {
             if (!(searchQuery.get(searchQueryType) instanceof List)) {
                 response.put("error", "Invalid " + searchQueryType + ".");
                 return response;
-            }
-            else {
+            } else {
                 if (((List) (searchQuery.get(searchQueryType))).isEmpty()) {
                     count++;
                 }
@@ -278,29 +298,33 @@ public class SearchController {
     /*
      * Update the response with the original search query and search results.
      */
-    public void updateResponse(LinkedHashMap<String, Object> response, HashMap<String, Object> searchQuery) {
-        List<GeneMeshterm> geneMeshterms = getGeneMeshterms(searchQuery);
+    public void updateResponse(LinkedHashMap<String, Object> response, HashMap<String, Object> searchQuery, long offset) {
+        List<GeneMeshterm> geneMeshterms = getGeneMeshterms(searchQuery, offset);
         List<GeneMeshtermView> geneMeshtermViews = new ArrayList<>();
-        int i = 0;
+        long i = offset;
+        long endIndex = offset + searchResultLimit;
         for (GeneMeshterm geneMeshterm : geneMeshterms) {
-            geneMeshtermViews.add(new GeneMeshtermView(
-                    i++,
-                    geneMeshterm.getGene().getGeneId().trim(),
-                    geneMeshterm.getGene().getDescription().trim(),
-                    geneMeshterm.getGene().getSymbol().trim(),
-                    geneMeshterm.getMeshterm().getMeshId().trim(),
-                    geneMeshterm.getMeshterm().getName().trim(),
-                    geneMeshterm.getPublicationCount(),
-                    geneMeshterm.getPValue()));
+            if (i < endIndex) {
+                geneMeshtermViews.add(new GeneMeshtermView(
+                        i++,
+                        geneMeshterm.getGene().getGeneId().trim(),
+                        geneMeshterm.getGene().getDescription().trim(),
+                        geneMeshterm.getGene().getSymbol().trim(),
+                        geneMeshterm.getMeshterm().getMeshId().trim(),
+                        geneMeshterm.getMeshterm().getName().trim(),
+                        geneMeshterm.getPublicationCount(),
+                        geneMeshterm.getPValue()));
+            }
         }
         response.put("searchQuery", searchQuery);
         response.put("results", geneMeshtermViews);
+        response.put("hasMoreResults", geneMeshterms.size() > searchResultLimit ? true : false);
     }
 
     /*
      * Get the list of gene and MeSH term results based on the search query.
      */
-    public List<GeneMeshterm> getGeneMeshterms(HashMap<String, Object> searchQuery) {
+    public List<GeneMeshterm> getGeneMeshterms(HashMap<String, Object> searchQuery, long offset) {
         List<String> geneIds = (ArrayList) searchQuery.get("geneId");
         List<String> symbols = (ArrayList) searchQuery.get("symbol");
         List<String> updatedSymbols = symbols.stream()
@@ -320,12 +344,15 @@ public class SearchController {
         List<String> updatedGeneIds = geneRepository.findGeneIdsByGeneIdsOrSymbolsOrDescriptions(geneIds, updatedSymbols, updatedDescriptions);
         List<String> updatedMeshIds = meshtermRepository.findMeshIdsByMeshIdsOrNamesOrMeshTreeIds(meshIds, updatedNames, updatedMeshTreeIds);
         List<GeneMeshterm> geneMeshterms = new ArrayList<>();
+        // We always query for 1 additional record then what gets returned as the response to check if
+        // there are any more records after the current batch
+        int recordsToQuery = searchResultLimit + 1;
         if (geneIds.isEmpty() && symbols.isEmpty() && descriptions.isEmpty() && !(updatedMeshIds.isEmpty())) {
-            geneMeshterms = geneMeshtermRepository.findByMeshIdsOrderByPValue(updatedMeshIds);
+            geneMeshterms = geneMeshtermRepository.findByMeshIdsOrderByPValue(updatedMeshIds, offset, recordsToQuery);
         } else if (meshIds.isEmpty() && names.isEmpty() && meshTreeIds.isEmpty() && !(updatedGeneIds.isEmpty())) {
-            geneMeshterms = geneMeshtermRepository.findByGeneIdsOrderByPValue(updatedGeneIds);
+            geneMeshterms = geneMeshtermRepository.findByGeneIdsOrderByPValue(updatedGeneIds, offset, recordsToQuery);
         } else if (!(updatedGeneIds.isEmpty()) && !(updatedMeshIds.isEmpty())) {
-            geneMeshterms = geneMeshtermRepository.findByGeneIdsAndMeshIdsOrderByPValue(updatedGeneIds, updatedMeshIds);
+            geneMeshterms = geneMeshtermRepository.findByGeneIdsAndMeshIdsOrderByPValue(updatedGeneIds, updatedMeshIds, offset, recordsToQuery);
         }
         return geneMeshterms;
     }

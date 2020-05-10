@@ -7,6 +7,7 @@ import com.cscie599.gfn.service.IngestionService;
 import org.junit.BeforeClass;
 import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.text.SimpleDateFormat;
@@ -27,6 +28,9 @@ import static org.junit.Assert.assertTrue;
 public class IngestionExtractedTest extends BaseTest {
 
     private final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+
+    @Value("${search.result.limit}")
+    private int searchResultLimit;
 
     @Autowired
     IngestionService ingestionService;
@@ -64,8 +68,8 @@ public class IngestionExtractedTest extends BaseTest {
         assertTrue(gene.getGeneId().equals("814636"));
 
         assertEquals("Gene Mesh count", geneMeshtermRepository.findAll().size(), 127);
-        assertTrue(geneMeshtermRepository.findByGeneIdOrderByPValue("8655732").size() == 3);
-        GeneMeshterm geneMeshterm = geneMeshtermRepository.findByGeneIdOrderByPValue("8655732").get(0);
+        assertTrue(geneMeshtermRepository.findByGeneIdOrderByPValue("8655732",0L, searchResultLimit).size() == 3);
+        GeneMeshterm geneMeshterm = geneMeshtermRepository.findByGeneIdOrderByPValue("8655732",0L, searchResultLimit).get(0);
         assertTrue(geneMeshterm.getGeneMeshtermPK().getGeneId().equals("8655732"));
         assertTrue(geneMeshterm.getGeneMeshtermPK().getMeshId().equals("D003063"));
         assertTrue(geneMeshterm.getPublicationCount() == 0);

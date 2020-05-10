@@ -1,7 +1,7 @@
 package com.cscie599.gfn.views;
 
 public class GeneMeshtermView {
-    private int index;
+    private long index;
     private String geneId;
     private String description;
     private String symbol;
@@ -10,7 +10,7 @@ public class GeneMeshtermView {
     private int publicationCount;
     private double pValue;
 
-    public GeneMeshtermView(int index, String geneId, String description, String symbol, String meshId, String name, int publicationCount, double pValue) {
+    public GeneMeshtermView(long index, String geneId, String description, String symbol, String meshId, String name, int publicationCount, double pValue) {
         this.index = index;
         this.geneId = geneId;
         this.description = description;
@@ -21,7 +21,7 @@ public class GeneMeshtermView {
         this.pValue = pValue;
     }
 
-    public Integer getIndex() { return index; }
+    public long getIndex() { return index; }
 
     public String getGeneId() {
         return geneId;
