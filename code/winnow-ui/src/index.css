@@ -60,6 +60,16 @@ th {
     /*-webkit-text-stroke: 1px midnightblue;*/
 }
 
+.btn-gene {
+    color: #444;
+    font-weight: bold;
+}
+
+.btn-gene:hover {
+    color: #fff;
+    font-weight: bold;
+}
+
 .form-row {
     margin-bottom: 5px;
 }

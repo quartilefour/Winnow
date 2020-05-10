@@ -88,7 +88,7 @@ function PubMedArticleListDisplay(props) {
         },
         {
             dataField: 'publicationId',
-            text: 'Publication Id',
+            text: 'PubMed Id',
             headerStyle: () => {
                 return {width: "15%"};
             },

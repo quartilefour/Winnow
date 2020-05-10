@@ -1,4 +1,4 @@
-import React, {useState} from "react";
+import React, {forwardRef, useImperativeHandle, useState} from "react";
 import {Form, Button, Alert} from "react-bootstrap";
 import Select from "react-select";
 import {callAPI, parseAPIError} from "../../service/ApiService";
@@ -11,7 +11,6 @@ import {
     setBatch,
     prepareSearchQuery,
     clearMeshterm,
-    countSearchTerms
 } from "../../service/SearchService";
 import {MeshtermTree} from "../mesh/MeshtermTree";
 import {API_RESOURCES} from "../../constants";
@@ -25,7 +24,7 @@ import {API_RESOURCES} from "../../constants";
  * @returns {*}
  * @constructor
  */
-function ComboSearchTab() {
+const ComboSearchTab = forwardRef((props, ref) => {
 
     const {GET_GENES, POST_QUERY, POST_QUERY_FILE} = API_RESOURCES;
 
@@ -45,6 +44,10 @@ function ComboSearchTab() {
     const [alertType, setAlertType] = useState('');
     const [submitText, setSubmitText] = useState('Search');
 
+    /* Allows parent Dashboard to reset search when clicking on 'Search' tab */
+    useImperativeHandle(ref, () => ({
+        returnToSelection
+    }))
 
     React.useEffect(() => {
         if (!haveResults) {
@@ -185,7 +188,8 @@ function ComboSearchTab() {
                                 size="sm"
                                 disabled={!activateSearch}
                             >Search</Button>
-                            <Button onClick={toggleBatch} style={{display: "inline-block", float: "right"}}
+                            <Button className="btn-search" onClick={toggleBatch}
+                                    style={{display: "inline-block", float: "right"}}
                                     variant="info" size="sm">Batch Import</Button>
                         </div>
                         <Form>
@@ -253,6 +257,6 @@ function ComboSearchTab() {
             <div><PageLoader message={`Searching ${(selectedGenes.length + checkedTerms.length)} term(s)...`}/></div>
         )
     }
-}
+})
 
 export default ComboSearchTab;

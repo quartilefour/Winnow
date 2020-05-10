@@ -67,6 +67,7 @@ function SearchResultsDisplay(props) {
                 return (
                     <Button
                         variant="outline-info"
+                        className="btn-gene"
                         size="sm"
                         title={`Details for ${row.symbol}`}
                         onClick={() => {setActiveGeneDetail(row.geneId)}}

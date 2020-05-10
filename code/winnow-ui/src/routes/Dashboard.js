@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useRef, useState} from 'react';
 import {Nav, Tab, Row, Col} from "react-bootstrap";
 import BookmarkTab from "../components/user/BookmarkTab";
 import RecentSearchesTab from "../components/user/RecentSearchesTab";
@@ -12,6 +12,8 @@ import ComboSearchTab from "../components/common/ComboSearchTab";
  */
 function Dashboard() {
     const [currentTab, setCurrentTab] = useState('search');
+
+    const searchRef = useRef();
 
     React.useEffect(() => {
         let storedTab = sessionStorage.getItem('dashboardTab');
@@ -30,7 +32,7 @@ function Dashboard() {
                            onSelect={
                                (e) => {
                                    if (e === 'search' && currentTab === 'search') {
-                                       console.info(`Dashboard: clicked Search tab`)
+                                       searchRef.current.returnToSelection()
                                    }
                                    sessionStorage.setItem('dashboardTab', e);
                                    setCurrentTab(e)
@@ -58,7 +60,7 @@ function Dashboard() {
                             </Tab.Pane>
                             <Tab.Pane eventKey="search">
                                 <p className="tab-heading">Gene/MeSH Search</p>
-                                <ComboSearchTab/>
+                                <ComboSearchTab ref={searchRef}/>
                             </Tab.Pane>
                             <Tab.Pane eventKey="search-history">
                                 <p className="tab-heading">Recent Searches</p>
