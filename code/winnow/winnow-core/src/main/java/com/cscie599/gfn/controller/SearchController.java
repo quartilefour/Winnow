@@ -193,7 +193,7 @@ public class SearchController {
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
         HashMap<String, Object> searchQuery = (HashMap<String, Object>) body.get("searchQuery");
-        long queryOffset = getQueryOffset(body);
+        int queryOffset = getQueryOffset(body);
         updateResponse(response, searchQuery, queryOffset);
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
@@ -201,11 +201,11 @@ public class SearchController {
     /**
      * Checks if the requestBody has the field <b>queryOffset</b>. If it exists returns its value otherwise returns 0;
      */
-    private long getQueryOffset(Map<String, Object> body) {
+    private int getQueryOffset(Map<String, Object> body) {
         try {
-            return (long) body.getOrDefault("queryOffset", 0L);
+            return (Integer) body.getOrDefault("queryOffset", 0);
         } catch (Exception ex) {
-            logger.error("Input queryOffset needs to be a long type " + body.get("queryOffset"));
+            logger.warn("Input queryOffset needs to be a long type " + body.get("queryOffset"));
         }
         return 0;
     }
@@ -247,7 +247,7 @@ public class SearchController {
                     response.put("error", "Invalid search query type: " + type + ".");
                     return new ResponseEntity<>(response, HttpStatus.CONFLICT);
                 } else {
-                    updateResponse(response, searchQuery, 0L);
+                    updateResponse(response, searchQuery, 0);
                     return new ResponseEntity<>(response, HttpStatus.OK);
                 }
             } catch (IOException e) {
@@ -298,7 +298,7 @@ public class SearchController {
     /*
      * Update the response with the original search query and search results.
      */
-    public void updateResponse(LinkedHashMap<String, Object> response, HashMap<String, Object> searchQuery, long offset) {
+    public void updateResponse(LinkedHashMap<String, Object> response, HashMap<String, Object> searchQuery, int offset) {
         List<GeneMeshterm> geneMeshterms = getGeneMeshterms(searchQuery, offset);
         List<GeneMeshtermView> geneMeshtermViews = new ArrayList<>();
         long i = offset;
