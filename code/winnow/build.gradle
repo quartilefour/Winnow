@@ -60,6 +60,7 @@ subprojects {
 		compile 'org.springframework.boot:spring-boot-starter-tomcat'
 		compile 'com.google.code.findbugs:annotations:3.0.1'
 		compile group: 'org.apache.commons', name: 'commons-text', version: '1.8'
+		compile group: 'org.springframework.boot', name: 'spring-boot-starter-mail', version: '2.2.7.RELEASE'
 		testImplementation('org.springframework.boot:spring-boot-starter-test') {
 			exclude group: 'org.junit.vintage', module: 'junit-vintage-engine'
 		}

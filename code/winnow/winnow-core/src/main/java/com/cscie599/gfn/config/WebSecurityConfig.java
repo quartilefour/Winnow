@@ -39,6 +39,8 @@ public class WebSecurityConfig extends WebSecurityConfigurerAdapter {
                 .authorizeRequests()
                 .antMatchers("/resources/**",
                         "/api/registration",
+                        "/api/forgot",
+                        "/api/reset",
                         "/api/status",
                         "/jobLauncher.html",
                         "/v2/api-docs",

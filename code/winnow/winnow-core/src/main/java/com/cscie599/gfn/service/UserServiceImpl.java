@@ -48,6 +48,10 @@ public class UserServiceImpl implements UserService {
         return findByUserEmail(user.getUserEmail())!=null;
     }
 
+    public boolean isPresent(User user) {
+        return user!=null;
+    }
+
     public void changeUserPassword(final User user, final String password) {
         user.setUserPassword(bCryptPasswordEncoder.encode(password));
         userRepository.save(user);
@@ -55,6 +59,10 @@ public class UserServiceImpl implements UserService {
 
     public boolean checkIfValidOldPassword(final User user, final String oldPassword) {
         return bCryptPasswordEncoder.matches(oldPassword, user.getUserPassword());
+    }
+
+    public User findUserByResetToken(String resetToken) {
+        return userRepository.findByResetToken(resetToken);
     }
 
 }

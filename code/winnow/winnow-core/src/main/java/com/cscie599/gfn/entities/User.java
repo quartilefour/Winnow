@@ -65,6 +65,8 @@ public class User implements Serializable {
             inverseJoinColumns = {@JoinColumn(name="role_id", referencedColumnName="role_id")}
     )
     private Set<Role> roles;
+    @Column(name = "reset_token")
+    private String resetToken;
 
     public User() {
     }
@@ -183,6 +185,14 @@ public class User implements Serializable {
 
     public void setRoles(Set<Role> roles) {
         this.roles = roles;
+    }
+
+    public String getResetToken() {
+        return resetToken;
+    }
+
+    public void setResetToken(String resetToken) {
+        this.resetToken = resetToken;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package com.cscie599.gfn.controller;
 
 import com.cscie599.gfn.entities.User;
+import com.cscie599.gfn.service.EmailService;
 import com.cscie599.gfn.service.UserService;
 import com.cscie599.gfn.validator.UserValidator;
 import com.cscie599.gfn.views.UserView;
@@ -10,11 +11,14 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.mail.SimpleMailMessage;
 import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api")
@@ -24,6 +28,9 @@ public class UserController {
 
     @Autowired
     private UserValidator userValidator;
+
+    @Autowired
+    private EmailService emailService;
 
     public static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -103,14 +110,8 @@ public class UserController {
             response.put("error", "Wrong current password.");
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
         }
-        if (userPasswordNew.length() < 8 || userPasswordNew.length() > 60) {
-            response.put("error", "Password must be between 8 and 60 characters.");
+        if (isNewPasswordInvalid(userPasswordNew, passwordConfirm, response))
             return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-        }
-        if (!userPasswordNew.equals(passwordConfirm)) {
-            response.put("error", "Password does not match.");
-            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
-        }
         userService.changeUserPassword(user, userPasswordNew);
         response.put("success", "Password changed.");
         return new ResponseEntity<>(response, HttpStatus.OK);
@@ -142,4 +143,93 @@ public class UserController {
         }
     }
 
+    /**
+     * Send password reset link email to existing user email.
+     *
+     * @param userEmail User email to receive the password reset link
+     * @param request   HttpServletRequest for sending email using URL
+     * @return ResponseEntity ResponseEntity including OK regardless whether an email was sent or not
+     */
+    @ApiOperation(value = "Send password reset link email to existing user email.")
+    @PostMapping("/forgot")
+    public ResponseEntity<?> forgotPassword(@RequestParam("userEmail") String userEmail, HttpServletRequest request) {
+        User user = userService.findByUserEmail(userEmail);
+        // Add reset token to existing user and send password reset link email
+        if (userService.isUserExist(user)) {
+            user.setResetToken(UUID.randomUUID().toString());
+            userService.update(user);
+            String appUrl = request.getScheme() + "://" + request.getServerName();
+            SimpleMailMessage passwordResetEmail = emailService.createEmail(user.getUserEmail(), "Password Reset Request",
+                    "To reset your password, click the link: " + appUrl + "/reset?token=" + user.getResetToken());
+            emailService.sendEmail(passwordResetEmail);
+        }
+        return new ResponseEntity<>("Please check your email for password reset link.", HttpStatus.OK);
+    }
+
+    /**
+     * Check if token exists for user.
+     *
+     * @param token Token set for user email that forgot password
+     * @return ResponseEntity ResponseEntity including OK or CONFLICT
+     */
+    @ApiOperation(value = "Check if token exists for user.")
+    @GetMapping("/reset")
+    public ResponseEntity<?> checkPasswordResetLink(@RequestParam("token") String token) {
+        User user = userService.findUserByResetToken(token);
+        // If the token exists for a user, send HTTP Status OK else CONFLICT
+        if (userService.isPresent(user)) {
+            return new ResponseEntity<>(HttpStatus.OK);
+        } else {
+            return new ResponseEntity<>(HttpStatus.CONFLICT);
+        }
+    }
+
+    /**
+     * Reset password.
+     *
+     * @param token           Token set for user email that forgot password
+     * @param userPasswordNew New user password
+     * @param passwordConfirm Confirm new user password
+     * @return ResponseEntity ResponseEntity including success or failure
+     */
+    @ApiOperation(value = "Reset password.")
+    @PostMapping("/reset")
+    public ResponseEntity<?> resetPassword(@RequestParam("token") String token, @RequestParam("userPasswordNew") String userPasswordNew, @RequestParam("passwordConfirm") String passwordConfirm) {
+        HashMap<String, Object> response = new HashMap<>();
+        User user = userService.findUserByResetToken(token);
+        // If the token exists for a user and new password is good, update user with new password and reset token to null
+        if (userService.isPresent(user)) {
+            if (isNewPasswordInvalid(userPasswordNew, passwordConfirm, response)) {
+                return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+            } else {
+                userService.changeUserPassword(user, userPasswordNew);
+                user.setResetToken(null);
+                userService.update(user);
+                response.put("success", "Password reset.");
+                return new ResponseEntity<>(response, HttpStatus.OK);
+            }
+        } else {
+            response.put("error", "Invalid password reset link.");
+            return new ResponseEntity<>(response, HttpStatus.CONFLICT);
+        }
+    }
+
+    /**
+     * Check if the new password is valid or not when updating.
+     *
+     * @param userPasswordNew New user password
+     * @param passwordConfirm Confirm new user password
+     * @param response        Response to be returned in the ResponseEntity
+     * @return boolean        true if new password is invalid else false
+     */
+    private boolean isNewPasswordInvalid(String userPasswordNew, String passwordConfirm, HashMap<String, Object> response) {
+        if (userPasswordNew.length() < 8 || userPasswordNew.length() > 60) {
+            response.put("error", "Password must be between 8 and 60 characters.");
+            return true;
+        } else if (!userPasswordNew.equals(passwordConfirm)) {
+            response.put("error", "Password does not match.");
+            return true;
+        }
+        return false;
+    }
 }

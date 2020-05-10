@@ -44,7 +44,8 @@ CREATE TABLE "user" (
   "first_name" varchar(40),
   "last_name" varchar(40),
   "created_at" timestamp,
-  "updated_at" timestamp
+  "updated_at" timestamp,
+  "reset_token" char(36)
 );
 
 CREATE TABLE "gene_relationship" (

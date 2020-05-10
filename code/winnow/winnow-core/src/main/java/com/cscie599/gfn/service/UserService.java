@@ -12,7 +12,11 @@ public interface UserService {
 
     boolean isUserExist(User user);
 
+    boolean isPresent(User user);
+
     void changeUserPassword(final User user, final String password);
 
     boolean checkIfValidOldPassword(final User user, final String oldPassword);
+
+    User findUserByResetToken(String resetToken);
 }
