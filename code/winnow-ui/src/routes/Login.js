@@ -143,6 +143,10 @@ function Login(props) {
                     <Link to="/register" title="Register for an account">
                         Don't have an account?
                     </Link>
+                    <span className="sep"/>
+                    <Link to="/forgot" title="Forgot password">
+                        Forgot password?
+                    </Link>
                 </Card.Footer>
             </Card>
         </div>

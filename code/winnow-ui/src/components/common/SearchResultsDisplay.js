@@ -14,6 +14,7 @@ import ToolkitProvider, {Search} from 'react-bootstrap-table2-toolkit';
 import 'react-bootstrap-table2-toolkit/dist/react-bootstrap-table2-toolkit.min.css';
 import 'react-bootstrap-table-next/dist/react-bootstrap-table2.min.css';
 import 'react-bootstrap-table2-paginator/dist/react-bootstrap-table2-paginator.min.css';
+import {prettySearch} from "../../service/SearchService";
 
 
 /**
@@ -171,6 +172,7 @@ function SearchResultsDisplay(props) {
                             </Button>
                         </span>
                         <h3>Results</h3>
+                        <h5 className="result-query-disp">Search: {prettySearch(resData.searchQuery)}</h5>
                         <ToolkitProvider
                             keyField='index'
                             data={resData.results}
@@ -191,6 +193,7 @@ function SearchResultsDisplay(props) {
                                             pagination={
                                                 paginationFactory(T2_POPTS)
                                             }
+                                            defaultSorted={[{dataField: 'pvalue', order: 'asc'}]}
                                             bootstrap4
                                             striped
                                             condensed

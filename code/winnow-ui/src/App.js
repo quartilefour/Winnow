@@ -14,6 +14,8 @@ import Error from "./routes/Error";
 import {callAPI} from "./service/ApiService";
 import Maintenance from "./components/error/Maintenance";
 import {API_RESOURCES, W_ENV, WINNOW_API_TIMEOUT, WINNOW_TOKEN} from "./constants";
+import ForgotPassword from "./routes/ForgotPassword";
+import ResetPassword from "./routes/ResetPassword";
 
 /**
  * Renders the User Interface to the Winnow application.
@@ -75,10 +77,12 @@ function App() {
                 <div>
                     <NavBar/>
                     <Switch>
+                        <Route path="/support" component={Support}/>
                         <Route path="/login" component={Login}/>
+                        <Route path="/forgot" component={ForgotPassword}/>
+                        <Route path="/reset" component={ResetPassword}/>
                         <Route path="/register" component={Register}/>
                         <PrivateRoute path="/profile" component={Profile}/>
-                        <PrivateRoute path="/support" component={Support}/>
                         <PrivateRoute exact path="/" component={Dashboard}/>
                         <PrivateRoute path="/admin" component={Admin}/>
                         <PrivateRoute component={Error}/>

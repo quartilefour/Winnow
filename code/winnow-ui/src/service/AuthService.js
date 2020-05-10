@@ -81,6 +81,32 @@ export const sendChangePassword = (credentials) => {
 };
 
 /**
+ * Sends the userEmail for sending a forgot password link.
+ *
+ * @param credentials
+ * @return {Promise<>}
+ */
+export const forgotPassword = (credentials) => {
+    return axios.post(
+        `${C.WINNOW_API_BASE_URL}/forgot`,
+        credentials
+    )
+};
+
+/**
+ * Passes new user password to API profile endpoint.
+ *
+ * @param credentials
+ * @return {Promise<>}
+ */
+export const resetPassword = (credentials) => {
+    return axios.post(
+        `${C.WINNOW_API_BASE_URL}/reset`,
+        credentials
+    )
+};
+
+/**
  * Parses and decodes the payload portion of the JWT received from the
  * API login endpoint;
  *
@@ -132,9 +158,33 @@ export const loginSchema = Yup.object().shape({
         .email(`Invalid email\n`)
         .required(`E-mail address required\n`),
     userPassword: Yup.string()
+        .required(`Password required\n`),
+})
+
+/**
+ * Forgot Password form validation schema
+ */
+export const forgotSchema = Yup.object().shape({
+    userEmail: Yup.string()
+        .trim()
+        .email(`Invalid email\n`)
+        .required(`E-mail address required\n`),
+})
+
+/**
+ * Reset Password form validation schema
+ */
+export const resetSchema = Yup.object().shape({
+    userPassword: Yup.string()
         .min(C.PASS_MIN_LEN, `Password must be at least ${C.PASS_MIN_LEN} characters\n`)
         .max(C.PASS_MAX_LEN, `Password cannot be more than ${C.PASS_MAX_LEN} characters\n`)
         .required(`Password required\n`),
+    passwordConfirm: Yup.string()
+        .required(`Password confirmation required\n`)
+        .oneOf(
+            [Yup.ref('userPassword'), null],
+            `Passwords must match\n`,
+        )
 })
 
 /**

@@ -11,7 +11,7 @@ import ComboSearchTab from "../components/common/ComboSearchTab";
  * @constructor
  */
 function Dashboard() {
-    const [currentTab, setCurrentTab] = useState('bookmarks');
+    const [currentTab, setCurrentTab] = useState('search');
 
     React.useEffect(() => {
         let storedTab = sessionStorage.getItem('dashboardTab');
@@ -29,6 +29,9 @@ function Dashboard() {
                            unmountOnExit={true}
                            onSelect={
                                (e) => {
+                                   if (e === 'search' && currentTab === 'search') {
+                                       console.info(`Dashboard: clicked Search tab`)
+                                   }
                                    sessionStorage.setItem('dashboardTab', e);
                                    setCurrentTab(e)
                                }
@@ -37,13 +40,13 @@ function Dashboard() {
                     <Col sm={2} id="dashboard-outer-tabs">
                         <Nav id="dashboard-tabs" variant="tabs" className="flex-column">
                             <Nav.Item>
-                                <Nav.Link eventKey="bookmarks">BOOKMARKS</Nav.Link>
-                            </Nav.Item>
-                            <Nav.Item>
                                 <Nav.Link eventKey="search">SEARCH</Nav.Link>
                             </Nav.Item>
                             <Nav.Item>
                                 <Nav.Link eventKey="search-history">RECENT SEARCHES</Nav.Link>
+                            </Nav.Item>
+                            <Nav.Item>
+                                <Nav.Link eventKey="bookmarks">BOOKMARKS</Nav.Link>
                             </Nav.Item>
                         </Nav>
                     </Col>

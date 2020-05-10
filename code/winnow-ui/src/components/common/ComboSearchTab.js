@@ -179,13 +179,14 @@ function ComboSearchTab() {
                     <div>
                         <Alert variant={alertType} show={error.length > 0} dismissible={true}>{error}</Alert>
                         <div className="button-bar">
-                            <Button onClick={toggleBatch} variant="info" size="sm">Batch Import</Button>
                             <Button
                                 onClick={executeSearch}
                                 variant="info"
                                 size="sm"
                                 disabled={!activateSearch}
                             >Search</Button>
+                            <Button onClick={toggleBatch} style={{display: "inline-block", float: "right"}}
+                                    variant="info" size="sm">Batch Import</Button>
                         </div>
                         <Form>
                             <>
@@ -196,7 +197,7 @@ function ComboSearchTab() {
                                     hideSelectedOptions={true}
                                     isLoading={!isMenuLoaded}
                                     loadingMessage="Loading..."
-                                    placeholder="Enter partial Gene Id, Symbol, or Description"
+                                    placeholder="Enter partial Gene Id, Gene Symbol, or Gene Description"
                                     autoFocus={true}
                                     name="gene"
                                     onInputChange={e => {
@@ -230,13 +231,14 @@ function ComboSearchTab() {
                 <div>
                     <Alert variant={alertType} show={error.length > 0} dismissible={true}>{error}</Alert>
                     <div className="button-bar">
-                        <Button onClick={toggleBatch} variant="info" size="sm">Selector</Button>
                         <Button
                             onClick={executeSearch}
                             variant="info"
                             size="sm"
                             disabled={!activateSearch}
                         >{submitText}</Button>
+                        <Button onClick={toggleBatch} style={{display: "inline-block", float: "right"}} variant="info"
+                                size="sm">Selector</Button>
                     </div>
                     <SearchTermUploader active={useBatch} update={batchSearch} searchable={batchSearchState}/>
                 </div>

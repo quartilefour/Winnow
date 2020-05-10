@@ -48,7 +48,7 @@ function Register() {
             .catch(error => {
                 setAlertType("danger");
                 if (error.response.status === 409) {
-                    setError(`${error.response.data}`);
+                    setError(`${error.response.data.error}`);
                 } else {
                     setError(`Server error: ${parseAPIError(error)}`);
                 }

@@ -69,7 +69,8 @@
       }
 
       if (!isSupported(browser)) {
-        document.write("<h1 style='background: #7abaff; text-align: center'>This browser is outdated/unsupported, please switch to a modern browser.</h1>")
+        var url = location.protocol + "//" + location.hostname + ":" + location.port + "/support"
+        document.write("<h1 style='background: #7abaff; text-align: center'>This browser is unsupported, please switch to a modern browser.</h1><h3 style='background: #7abaff; text-align: center;'>A list of supported browsers can be found <a href='" + url + "'>here</a></h3>")
       }
     </script>
   </head>

@@ -38,6 +38,11 @@ code {
     text-shadow: 3px 3px 5px cornflowerblue;
 }
 
+.sep {
+    display: block;
+    margin: 1em;
+}
+
 table {
     box-shadow: 3px 3px 5px grey;
 }
@@ -52,7 +57,7 @@ th {
 
 .btn {
     box-shadow: 3px 3px 5px darkgrey;
-
+    /*-webkit-text-stroke: 1px midnightblue;*/
 }
 
 .form-row {
@@ -163,9 +168,18 @@ th {
     white-space: nowrap;
 }
 
+.result-query-disp {
+    width: auto;
+    max-width: 75%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 .exit-results {
     display: inline-block;
     float: right;
+    color: midnightblue;
 }
 
 .exit-results :hover {

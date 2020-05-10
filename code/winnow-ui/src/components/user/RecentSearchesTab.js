@@ -171,6 +171,8 @@ function RecentSearchesTab() {
                                     striped
                                     condensed
                                     hover
+                                    caption={`Oldest search is #1.`}
+                                    defaultSorted={[{dataField: 'index', order: 'desc'}]}
                                 />
                             </div>
                         )
