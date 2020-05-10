@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Redirect} from "react-router-dom";
+import {Redirect, useLocation} from "react-router-dom";
 import {Card, Button, Form, Alert} from "react-bootstrap";
 import {resetPassword, resetSchema} from "../service/AuthService";
 import logoImg from "../img/logo.png";
@@ -18,17 +18,29 @@ function ResetPassword() {
     const [isLoggedIn, setLoggedIn] = useState(false);
     const [error, setError] = useState('');
     const [alertType, setAlertType] = useState('');
+    const [resetToken, setResetToken] = useState('');
+    const [isTokenValid, setIsTokenValid] = useState(true);
     const {authToken} = useAuth();
 
+    const query = new URLSearchParams(useLocation().search);
+
     React.useEffect(() => {
+        let token = query.get("token")
+        if (token === undefined || token === '') {
+            setIsTokenValid(false)
+        } else {
+            setResetToken(token)
+        }
         if (authToken) {
             setLoggedIn(true);
         }
-    }, [authToken, isLoggedIn]);
+    }, [authToken, isLoggedIn, query]);
 
     const resetForm = useFormik({
         initialValues: {
-            userEmail: '',
+            userPassword: '',
+            passwordConfirm: '',
+            token: resetToken
         },
         validationSchema: resetSchema,
         onSubmit: values => {
@@ -40,6 +52,7 @@ function ResetPassword() {
     function postResetPassword(values) {
         const credentials = {
             userEmail: values.userEmail,
+            token: values.token
         };
         resetPassword(credentials)
             .then(() => {
@@ -55,6 +68,14 @@ function ResetPassword() {
                 }
             });
     }
+
+    if (!isTokenValid) return (
+        <Redirect to={{
+            pathname: `/error`,
+            state: {errorMessage: 'Your Password Reset token is invalid!'}
+        }}/>
+    )
+
 
     /* Displays ResetPassword form */
     if (!isLoggedIn) return (
@@ -74,6 +95,13 @@ function ResetPassword() {
                 <Card.Img variant="top" src={logoImg} style={{margin: 'auto', width: '50%'}}/>
                 <Card.Body>
                     <Form onSubmit={resetForm.handleSubmit}>
+                        <Form.Group>
+                            <Form.Control
+                                type="hidden"
+                                name="token"
+                                value={resetForm.values.token}
+                            />
+                        </Form.Group>
                         <Form.Group>
                             <Form.Control
                                 type="password"

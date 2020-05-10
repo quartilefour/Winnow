@@ -13,13 +13,17 @@ function Error(props) {
         errorMessage: ''
     }
 
-    const {errorMessage} = props;
+    const {errorMessage, location} = props;
 
     const [error, setError] = useState('Page Not Found');
 
     React.useEffect(() => {
-        setError(errorMessage)
-    }, [errorMessage]);
+        if (errorMessage !== '') {
+            setError(errorMessage)
+        } else if (location.state.errorMessage !== undefined) {
+            setError(location.state.errorMessage)
+        }
+    }, [errorMessage, location]);
 
     return (
         <div>

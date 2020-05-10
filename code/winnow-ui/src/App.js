@@ -85,7 +85,7 @@ function App() {
                         <PrivateRoute path="/profile" component={Profile}/>
                         <PrivateRoute exact path="/" component={Dashboard}/>
                         <PrivateRoute path="/admin" component={Admin}/>
-                        <PrivateRoute component={Error}/>
+                        <Route component={Error}/>
                     </Switch>
                 </div>
             </Router>

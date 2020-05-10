@@ -60,6 +60,14 @@ th {
     /*-webkit-text-stroke: 1px midnightblue;*/
 }
 
+.btn-search {
+    font-weight: bold;
+}
+
+.btn:disabled {
+    font-weight: bold;
+}
+
 .btn-gene {
     color: #444;
     font-weight: bold;

@@ -183,12 +183,13 @@ const ComboSearchTab = forwardRef((props, ref) => {
                         <Alert variant={alertType} show={error.length > 0} dismissible={true}>{error}</Alert>
                         <div className="button-bar">
                             <Button
+                                className="btn-search"
                                 onClick={executeSearch}
                                 variant="info"
-                                size="sm"
+                                title={(activateSearch) ? 'Execute Search' : 'Must select Genes/MeSH terms to activate search'}
                                 disabled={!activateSearch}
                             >Search</Button>
-                            <Button className="btn-search" onClick={toggleBatch}
+                            <Button onClick={toggleBatch}
                                     style={{display: "inline-block", float: "right"}}
                                     variant="info" size="sm">Batch Import</Button>
                         </div>
@@ -236,9 +237,10 @@ const ComboSearchTab = forwardRef((props, ref) => {
                     <Alert variant={alertType} show={error.length > 0} dismissible={true}>{error}</Alert>
                     <div className="button-bar">
                         <Button
+                            className="btn-search"
                             onClick={executeSearch}
                             variant="info"
-                            size="sm"
+                            title={(activateSearch) ? 'Execute Search' : 'Must select file or input terms & type to activate search'}
                             disabled={!activateSearch}
                         >{submitText}</Button>
                         <Button onClick={toggleBatch} style={{display: "inline-block", float: "right"}} variant="info"
