@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Redirect, useLocation} from "react-router-dom";
+import {Link, Redirect, useLocation} from "react-router-dom";
 import {Card, Button, Form, Alert} from "react-bootstrap";
 import {resetPassword, resetSchema} from "../service/AuthService";
 import logoImg from "../img/logo.png";
@@ -18,18 +18,17 @@ function ResetPassword() {
     const [isLoggedIn, setLoggedIn] = useState(false);
     const [error, setError] = useState('');
     const [alertType, setAlertType] = useState('');
-    const [resetToken, setResetToken] = useState('');
     const [isTokenValid, setIsTokenValid] = useState(true);
     const {authToken} = useAuth();
 
     const query = new URLSearchParams(useLocation().search);
+    console.info(`ResetPassword: ${JSON.stringify(useLocation().search)}`)
 
     React.useEffect(() => {
         let token = query.get("token")
+        console.info(`ResetPassword: token: ${token}`)
         if (token === undefined || token === '') {
             setIsTokenValid(false)
-        } else {
-            setResetToken(token)
         }
         if (authToken) {
             setLoggedIn(true);
@@ -38,9 +37,9 @@ function ResetPassword() {
 
     const resetForm = useFormik({
         initialValues: {
-            userPassword: '',
+            userPasswordNew: '',
             passwordConfirm: '',
-            token: resetToken
+            token: query.get("token")
         },
         validationSchema: resetSchema,
         onSubmit: values => {
@@ -51,18 +50,19 @@ function ResetPassword() {
     /* Submits user credentials to API login endpoint. */
     function postResetPassword(values) {
         const credentials = {
-            userEmail: values.userEmail,
+            userPasswordNew: values.userPasswordNew,
+            passwordConfirm: values.passwordConfirm,
             token: values.token
         };
         resetPassword(credentials)
             .then(() => {
-                setAlertType('info')
-                setError('Please check your email and follow the Winnow Reset Password link.')
+                setAlertType('success')
+                setError('')
             })
             .catch(error => {
                 setAlertType("danger");
                 if (error.response.status >= 400 || error.response.status <= 499) {
-                    setError(`Invalid E-mail`);
+                    setError(`${error.response.data.error}`);
                 } else {
                     setError(`Server error: ${parseAPIError(error)}`);
                 }
@@ -105,12 +105,12 @@ function ResetPassword() {
                         <Form.Group>
                             <Form.Control
                                 type="password"
-                                name="userPassword"
+                                name="userPasswordNew"
                                 autoComplete="new-password"
-                                value={resetForm.values.userPassword}
+                                value={resetForm.values.userPasswordNew}
                                 onChange={resetForm.handleChange}
                                 onBlur={resetForm.handleBlur}
-                                placeholder="Password"
+                                placeholder="New Password"
                             />
                         </Form.Group>
                         <Form.Group>
@@ -124,11 +124,11 @@ function ResetPassword() {
                                 placeholder="Confirm Password"
                             />
                             <Alert
-                                variant="danger"
-                                show={!!(resetForm.errors.userPassword || resetForm.errors.passwordConfirm)}
+                                variant={!!(resetForm.errors.userPasswordNew || resetForm.errors.passwordConfirm) ? "danger" : ""}
+                                show={!!(resetForm.errors.userPasswordNew || resetForm.errors.passwordConfirm)}
                             >
-                                {resetForm.touched.userPassword && resetForm.errors.userPassword ?
-                                    resetForm.errors.userPassword : null}
+                                {resetForm.touched.userPasswordNew && resetForm.errors.userPasswordNew ?
+                                    resetForm.errors.userPasswordNew : null}
                                 {resetForm.touched.passwordConfirm && resetForm.errors.passwordConfirm ?
                                     resetForm.errors.passwordConfirm : null}
                             </Alert>
@@ -144,6 +144,9 @@ function ResetPassword() {
                 </Card.Body>
                 <Card.Footer>
                     <Alert variant={alertType} show={error.length > 0}>{error}</Alert>
+                    <Alert variant={alertType} show={alertType === "success"}>
+                        Password reset successfully, please <Alert.Link href="/login" title="Login">login</Alert.Link>.
+                    </Alert>
                 </Card.Footer>
             </Card>
         </div>

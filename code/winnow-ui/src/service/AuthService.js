@@ -175,14 +175,14 @@ export const forgotSchema = Yup.object().shape({
  * Reset Password form validation schema
  */
 export const resetSchema = Yup.object().shape({
-    userPassword: Yup.string()
+    userPasswordNew: Yup.string()
         .min(C.PASS_MIN_LEN, `Password must be at least ${C.PASS_MIN_LEN} characters\n`)
         .max(C.PASS_MAX_LEN, `Password cannot be more than ${C.PASS_MAX_LEN} characters\n`)
         .required(`Password required\n`),
     passwordConfirm: Yup.string()
         .required(`Password confirmation required\n`)
         .oneOf(
-            [Yup.ref('userPassword'), null],
+            [Yup.ref('userPasswordNew'), null],
             `Passwords must match\n`,
         )
 })
