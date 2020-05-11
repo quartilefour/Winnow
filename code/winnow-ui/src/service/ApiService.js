@@ -116,7 +116,13 @@ export const parseAPIError = (error) => {
         /* The request was made and the server responded with a status code
            that falls out of the range of 2xx */
         console.debug(`${JSON.stringify(error.response)}`)
-        return `${error.response.status}: ${error.response.data.error}`
+        let winnowError
+        if (error.response.data.error !== undefined) {
+            winnowError = error.response.data.error
+        } else {
+            winnowError = error.response.data
+        }
+        return `${error.response.status}: ${winnowError}`
     } else if (error.request) {
         /* The request was made but no response was received
            `error.request` is an instance of XMLHttpRequest in the browser and an instance of

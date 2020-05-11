@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Redirect} from "react-router-dom";
+import {Link, Redirect} from "react-router-dom";
 import {Card, Button, Form, Alert} from "react-bootstrap";
 import {forgotPassword, forgotSchema} from "../service/AuthService";
 import logoImg from "../img/logo.png";
@@ -105,6 +105,9 @@ function ForgotPassword() {
                 </Card.Body>
                 <Card.Footer>
                     <Alert variant={alertType} show={error.length > 0}>{error}</Alert>
+                    <Link to="/login" title="Log in">
+                        Login
+                    </Link>
                 </Card.Footer>
             </Card>
         </div>

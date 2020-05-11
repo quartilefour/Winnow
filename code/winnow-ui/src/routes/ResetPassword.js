@@ -1,5 +1,5 @@
 import React, {useState} from "react";
-import {Link, Redirect, useLocation} from "react-router-dom";
+import {Redirect, useLocation} from "react-router-dom";
 import {Card, Button, Form, Alert} from "react-bootstrap";
 import {resetPassword, resetSchema} from "../service/AuthService";
 import logoImg from "../img/logo.png";
@@ -22,12 +22,9 @@ function ResetPassword() {
     const {authToken} = useAuth();
 
     const query = new URLSearchParams(useLocation().search);
-    console.info(`ResetPassword: ${JSON.stringify(useLocation().search)}`)
 
     React.useEffect(() => {
-        let token = query.get("token")
-        console.info(`ResetPassword: token: ${token}`)
-        if (token === undefined || token === '') {
+        if (query.get("token") === undefined || query.get("token") === '') {
             setIsTokenValid(false)
         }
         if (authToken) {

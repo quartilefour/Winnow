@@ -240,6 +240,7 @@ function PubMedArticleListDisplay(props) {
                                             pagination={
                                                 paginationFactory(T2_POPTS)
                                             }
+                                            defaultSorted={[{dataField: 'completedDate', order: 'desc'}]}
                                             bootstrap4
                                             striped
                                             condensed

@@ -47,7 +47,7 @@ describe('<SaveSearchModal />', () => {
             await new Promise(resolve => setImmediate(resolve));
             c.update()
         });
-        console.log(c.debug());
+        //console.log(c.debug());
         const bmInput = c.find('FormControl[id="bm-input"]');
         expect(bmInput.length).toEqual(1);
         bmInput.simulate('change', {

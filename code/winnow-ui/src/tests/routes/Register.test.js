@@ -6,6 +6,7 @@ import MockAdapter from 'axios-mock-adapter';
 import {act} from "react-dom/test-utils";
 import {WINNOW_API_BASE_URL} from "../../constants";
 import {mount, shallow} from "enzyme";
+import * as api from "../../service/ApiService";
 
 
 describe('<Register />', () => {
@@ -70,8 +71,9 @@ describe('<Register />', () => {
         const mock = new MockAdapter(axios);
         mock
             .onPost(`${WINNOW_API_BASE_URL}/registration`)
-            .reply(201, '')
-        const c = mount(<Router><Register {...props}/></Router>)
+            .reply(201)
+        //const c = mount(<Router><Register {...props}/></Router>)
+        const c = mount(<Router><Register/></Router>)
         await act(async () => {
             await Promise.resolve(c);
             await new Promise(resolve => setImmediate(resolve));
@@ -121,53 +123,17 @@ describe('<Register />', () => {
             c.find('Form').simulate('submit')
 
             c.update()
-            mock.reset()
+            //mock.reset()
         });
 
     });
-
-
-    /*
-    it('button click changes submits form', async () => {
-        // cache button element
-        const button = container.find('Button').last();
-        const eventMock = {
-            target: {
-                onClick: function () {
-                    return true
-                }
-            }
-        };
-        // pass mocked event object
-        //await button.onSubmit(eventMock);
-        expect(container.find('Button').length).toEqual(1);
-    });
-    */
-});
-
-describe('<Register /> with existing email', () => {
-    let props;
-    let wrapper;
-    let useEffect;
-    let component;
-
-    const mockUseEffect = () => {
-        useEffect.mockImplementationOnce(f => f());
-    }
-
-    beforeEach(() => {
-        useEffect = jest.spyOn(React, "useEffect");
-        props = {};
-        if (component) component.unmount();
-        mockUseEffect();
-        wrapper = shallow(<Register {...props} />)
-    })
 
     it('should submit credentials with existing email when button is clicked', async () => {
         const mock = new MockAdapter(axios);
         mock
             .onPost(`${WINNOW_API_BASE_URL}/registration`)
-            .reply(409, { error: 'E-mail address already registered'})
+            .reply(409, {error: 'E-mail address already registered'})
+        api.parseAPIError = jest.fn().mockReturnValue('E-mail address already registered');
         const c = mount(<Router><Register {...props}/></Router>)
         await act(async () => {
             await Promise.resolve(c);
@@ -219,7 +185,7 @@ describe('<Register /> with existing email', () => {
 
             //console.log(c.debug());
             c.update()
-            mock.reset()
+            //mock.reset()
         });
 
     });

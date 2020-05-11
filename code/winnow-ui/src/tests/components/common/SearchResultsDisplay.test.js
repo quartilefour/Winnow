@@ -1,5 +1,5 @@
 import React from 'react';
-import {shallow} from 'enzyme';
+import {mount, shallow} from 'enzyme';
 import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import {act} from "react-dom/test-utils";
@@ -33,13 +33,25 @@ describe('<SearchResultsDisplay />', () => {
 
     it('should match the snapshot', () => {
         expect(wrapper.html()).toMatchSnapshot();
-        //console.log(wrapper.debug());
     });
 
-    /*
-    it('should have progress bar', () => {
-        expect(container.find('ProgressBar').length).toEqual(1);
+    it('should get some mock data', () => {
+        const c = mount(<SearchResultsDisplay {...props}/>);
+        console.info(`SearchResultsDisplay: ${c.debug()}`)
+
+        const csvExport = c.find('ExportCSV')
+        expect(csvExport.length).toEqual(1);
+
+        const btnGene = c.find('.btn-gene')
+        expect(btnGene.length).toEqual(8)
+
+        btnGene.at(0).simulate('click')
+
+        const btnPub = c.find('Button[title~="Publication"]')
+        expect(btnPub.length).toEqual(4)
+
+        btnPub.at(0).simulate('click')
+
     });
 
-     */
 });

@@ -15,6 +15,7 @@ describe('<Error {props}/>', () => {
     beforeEach(() => {
         useEffect = jest.spyOn(React, "useEffect");
         props = {
+            location: {state: {errorMessage: undefined}},
             error: '404: Page Not Found!'
         };
         if (component) component.unmount();

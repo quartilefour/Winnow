@@ -4,116 +4,15 @@ import axios from 'axios';
 import MockAdapter from 'axios-mock-adapter';
 import {act} from "react-dom/test-utils";
 import {WINNOW_API_BASE_URL} from "../../../constants";
-import {mountWrap, shallowWrap} from "../../_helpers";
 import {MeshtermTree} from '../../../components/mesh/MeshtermTree';
-import GeneDetailModal from "../../../components/gene/GeneDetailModal";
+import {responseTree} from "../../data/mockResponseData";
+import * as api from "../../../service/ApiService";
 
 describe('<MeshtermTree {props}/>', () => {
     let props;
     let wrapper;
     let useEffect;
     let component;
-
-    const responseTree = [
-        {
-            "id": "A",
-            "p": "",
-            "t": "A",
-            "name": "Anatomy [A]",
-            "meshIndex": "A",
-            "children": []
-        },
-        {
-            "id": "B",
-            "p": "",
-            "t": "B",
-            "name": "Organisms [B]",
-            "meshIndex": "B",
-            "children": []
-        },
-        {
-            "id": "C",
-            "p": "",
-            "t": "C",
-            "name": "Diseases [C]",
-            "meshIndex": "C",
-            "children": [
-                {
-                    "id": "D007239",
-                    "p": "",
-                    "t": "C01",
-                    "name": "Infections [C01]",
-                    "meshIndex": "C01",
-                    "children": [
-                        {
-                            "id": "D000785",
-                            "p": "C01",
-                            "t": "069",
-                            "name": "Aneurysm, Infected [C01.069]",
-                            "meshIndex": "C01.069",
-                            "children": []
-                        },
-                        {
-                            "id": "D001170",
-                            "p": "C01",
-                            "t": "100",
-                            "name": "Arthritis, Infectious [C01.100]",
-                            "meshIndex": "C01.100",
-                            "children": [
-                                {
-                                    "id": "D016918",
-                                    "p": "C01.100",
-                                    "t": "500",
-                                    "name": "Arthritis, Reactive [C01.100.500]",
-                                    "meshIndex": "C01.100.500",
-                                    "children": []
-                                }
-                            ]
-                        }
-                    ]
-                }
-            ]
-        }
-    ]
-
-    const responseCat = [
-        {
-            "categoryId": "A", "name": "Anatomy"
-        },
-        {
-            "categoryId": "B", "name": "Organisms"
-        },
-        {
-            "categoryId": "C", "name": "Diseases"
-        }
-    ];
-
-    const responseParent = [
-        {
-            "meshId": "D000785",
-            "treeParentId": "C01",
-            "treeNodeId": "069",
-            "meshName": "Aneurysm, Infected",
-            "hasChild": false
-        },
-        {
-            "meshId": "D001170",
-            "treeParentId": "C01",
-            "treeNodeId": "100",
-            "meshName": "Arthritis, Infectious",
-            "hasChild": true
-        }
-    ]
-
-    const responseNode = [
-        {
-            meshId: "D007239", treeParentId: "", treeNodeId: "C01", meshName: "Infections", hasChild: true
-        },
-        {
-            meshId: "D009369", treeParentId: "", treeNodeId: "C04", meshName: "Neoplasms", hasChild: true
-        }
-    ]
-
 
     const mockUseEffect = () => {
         useEffect.mockImplementationOnce(f => f());
@@ -142,7 +41,8 @@ describe('<MeshtermTree {props}/>', () => {
         const mock = new MockAdapter(axios);
         mock
             .onGet(`${WINNOW_API_BASE_URL}/meshterms/tree`)
-            .reply(500, "Internal server error");
+            .reply(500, {error: "Internal server error"});
+        api.parseAPIError = jest.fn().mockReturnValue("Winnow API error")
         const c = mount(<MeshtermTree {...props}/>);
         await act(async () => {
             await Promise.resolve(c);
