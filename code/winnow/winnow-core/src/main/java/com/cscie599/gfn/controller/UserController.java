@@ -17,7 +17,6 @@ import org.springframework.security.core.Authentication;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
-import javax.servlet.http.HttpServletRequest;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
@@ -36,6 +35,9 @@ public class UserController {
 
     @Value("${email.forgot.password}")
     private String forgotPasswordEmail;
+
+    @Value("${url.application}")
+    private String appUrl;
 
     public static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
@@ -154,12 +156,11 @@ public class UserController {
      * Send password reset link email to existing user email.
      *
      * @param body    Request body containing user email
-     * @param request HttpServletRequest for sending email using URL
      * @return ResponseEntity ResponseEntity including OK regardless whether an email was sent or not
      */
     @ApiOperation(value = "Send password reset link email to existing user email.")
     @PostMapping("/forgot")
-    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body, HttpServletRequest request) {
+    public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
         String[] parameters = {"userEmail"};
         HashMap<String, Object> response = validate(body, parameters);
         if (response.containsKey("error")) {
@@ -170,7 +171,6 @@ public class UserController {
         if (userService.isPresent(user)) {
             user.setResetToken(UUID.randomUUID().toString());
             userService.update(user);
-            String appUrl = request.getScheme() + "://" + request.getServerName();
             SimpleMailMessage passwordResetEmail = new SimpleMailMessage();
             passwordResetEmail.setFrom(forgotPasswordEmail);
             passwordResetEmail.setTo(user.getUserEmail());
