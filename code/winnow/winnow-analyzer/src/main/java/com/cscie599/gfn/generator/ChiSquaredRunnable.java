@@ -68,7 +68,7 @@ public class ChiSquaredRunnable implements Runnable {
         this.outputFile = new File(outputDirectory + File.separator + "" + index + ".csv");
         this.outputZippedFile = new File(outputDirectory + File.separator + "" + index + ".csv.gz");
         this.csvWriter = new CsvWriter();
-        df.setMaximumFractionDigits(12);
+        df.setMaximumFractionDigits(20);
     }
 
     @Override

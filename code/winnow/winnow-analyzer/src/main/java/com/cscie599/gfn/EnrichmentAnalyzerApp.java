@@ -98,17 +98,19 @@ public class EnrichmentAnalyzerApp implements CommandLineRunner {
         }
     }
 
+    /**
+     * Splits the genes into a list of size no more than {@param n} and returning a list of pairs for all the genes and meshterms
+     * to be processed by each node.
+     */
     private List<Pair<List<GeneRawStats>, List<MeshtermRawStats>>> getPartitionedPairsToProcess(int n) {
         List<GeneRawStats> geneRawStats = Lists.newArrayList(inMemoryCache.getCachedGeneStats().values());
         List<MeshtermRawStats> meshRawStats = Lists.newArrayList(inMemoryCache.getCachedMeshStats().values());
 
         int geneBatchSize = (geneRawStats.size() + 100) / n;
-        int meshBatchSize = (meshRawStats.size() + 100) / n;
         List<List<GeneRawStats>> partitionedGenes = Lists.partition(geneRawStats, geneBatchSize);
-        List<List<MeshtermRawStats>> partitionedMesh = Lists.partition(meshRawStats, meshBatchSize);
         List<Pair<List<GeneRawStats>, List<MeshtermRawStats>>> returnPairList = new ArrayList<>(n);
         for (int i = 0; i < n; i++) {
-            Pair<List<GeneRawStats>, List<MeshtermRawStats>> pair = new Pair<>(partitionedGenes.get(i), partitionedMesh.get(i));
+            Pair<List<GeneRawStats>, List<MeshtermRawStats>> pair = new Pair<>(partitionedGenes.get(i), meshRawStats);
             returnPairList.add(pair);
         }
         return returnPairList;
