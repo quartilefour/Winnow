@@ -11,8 +11,6 @@ import com.cscie599.gfn.repository.SearchRepository;
 import com.cscie599.gfn.repository.UserRepository;
 import com.cscie599.gfn.views.GeneMeshtermView;
 import com.cscie599.gfn.views.SearchView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -31,7 +29,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api")
-@Api(value = "Searches", description = "Operations pertaining to searches in Gene Function Navigation")
 public class SearchController {
 
     private static final Log logger = LogFactory.getLog(SearchController.class);
@@ -56,11 +53,12 @@ public class SearchController {
 
     private static String[] searchQueryTypes = {"geneId", "symbol", "description", "meshTreeId", "meshId", "name"};
 
-    /*
-     * When I click the bookmark tab,
-     * GET to /bookmarks
+    /**
+     * Gets a user's list of bookmarked searches.
+     *
+     * @param authentication Authentication token
+     * @return ResponseEntity containing search views
      */
-    @ApiOperation(value = "View user's bookmarks.")
     @GetMapping("/bookmarks")
     public ResponseEntity<?> getAllSearches(Authentication authentication) {
         String userEmail = authentication.getPrincipal().toString();
@@ -77,23 +75,13 @@ public class SearchController {
         return new ResponseEntity<>(searchViews, HttpStatus.OK);
     }
 
-    /*
-     * When I click the bookmark button to bookmark the search results,
-     * POST to /bookmarks
-     * Request
-     * {
-     *     "searchQuery": {
-     *         "geneId": ["geneId1", "geneId2",],
-     *         "description": ["geneDescription1", "geneDescription2",],
-     *         "symbol": ["geneSymbol1", "geneSymbol2",],
-     *         "meshId": ["meshId1", "meshId2",],
-     *         "meshTreeId": ["meshTreeId1", "meshTreeId2",],
-     *         "name": ["meshName1", "meshName2",]
-     *     }
-     *     "searchName": "search name"
-     * }
+    /**
+     * Bookmark a search. searchQuery is a JSON object containing search terms.
+     *
+     * @param body           RequestBody containing search query and search name
+     * @param authentication Authentication token
+     * @return ResponseEntity containing success or error
      */
-    @ApiOperation(value = "Bookmark a search.")
     @PostMapping("/bookmarks")
     public ResponseEntity<?> bookmarkSearch(@RequestBody Map<String, Object> body, Authentication authentication) {
         LinkedHashMap<String, Object> response = validate(body);
@@ -115,16 +103,18 @@ public class SearchController {
         search.setSearchQuery((HashMap<String, Object>) body.get("searchQuery"));
         search.setCreatedDate(new Date());
         search.setUpdatedAt(new Date());
-        Search savedSearch = searchRepository.save(search);
+        searchRepository.save(search);
         response.put("success", "Search bookmarked.");
         return new ResponseEntity<>(response, HttpStatus.CREATED);
     }
 
-    /*
-     * When I click the delete button for a bookmark,
-     * DELETE to /bookmarks/{id}
+    /**
+     * Delete a bookmarked search.
+     *
+     * @param id             Bookmark ID
+     * @param authentication Authentication token
+     * @return ResponseEntity containing success or error
      */
-    @ApiOperation(value = "Delete a bookmark.")
     @DeleteMapping("/bookmarks/{id}")
     public ResponseEntity<?> deleteSearch(@PathVariable Long id, Authentication authentication) {
         HashMap<String, Object> response = new HashMap<>();
@@ -139,53 +129,13 @@ public class SearchController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /*
-     * When I click the search button after entering my genes and/or MeSH terms,
-     * POST to /search
-     * Request
-     * {
-     *     "searchQuery": {
-     *         "geneId": ["geneId1", "geneId2",],
-     *         "description": ["geneDescription1", "geneDescription2",],
-     *         "symbol": ["geneSymbol1", "geneSymbol2",],
-     *         "meshId": ["meshId1", "meshId2",],
-     *         "meshTreeId": ["meshTreeId1", "meshTreeId2",],
-     *         "name": ["meshName1", "meshName2",]
-     *     }
-     * }
-     * Response
-     * {
-     *     "searchQuery": {
-     *         "geneId": ["geneId1", "geneId2",],
-     *         "description": ["geneDescription1", "geneDescription2",],
-     *         "symbol": ["geneSymbol1", "geneSymbol2",],
-     *         "meshId": ["meshId1", "meshId2",],
-     *         "meshTreeId": ["meshTreeId1", "meshTreeId2",],
-     *         "name": ["meshName1", "meshName2",]
-     *     }
-     *     "results": [
-     *         {
-     *             "geneId": "geneId1",
-     *             "description": "geneDescription1",
-     *             "symbol": "geneSymbol1",
-     *             "meshId": "meshId1",
-     *             "name": "meshName1",
-     *             "publicationCount": "publicationCount",
-     *             "pvalue": "pValue"
-     *         },
-     *         {
-     *             "geneId": "geneId2",
-     *             "description": "geneDescription2",
-     *             "symbol": "geneSymbol2",
-     *             "meshId": "meshId2",
-     *             "name": "meshName2",
-     *             "publicationCount": "publicationCount",
-     *             "pvalue": "pValue"
-     *         },
-     *     ]
-     * }
+    /**
+     * Retrieves search results given a search query. Search query includes the following types:
+     * gene ids, gene symbols, gene descriptions, MeSH term ids, MeSH term names, and MeSH term tree ids.
+     *
+     * @param body Request body containing search query
+     * @return ResponseEntity containing search query, search results, and has more search results, or error
      */
-    @ApiOperation(value = "Search results.")
     @PostMapping("/search")
     public ResponseEntity<?> executeSearch(@RequestBody Map<String, Object> body) {
         LinkedHashMap<String, Object> response = validate(body);
@@ -199,28 +149,13 @@ public class SearchController {
     }
 
     /**
-     * Checks if the requestBody has the field <b>queryOffset</b>. If it exists returns its value otherwise returns 0;
+     * Uploads a CSV list of genes or MeSH terms along with a search query type. Search query type includes:
+     * gene ids, gene symbols, gene descriptions, MeSH term ids, MeSH term names, and MeSH term tree ids.
+     *
+     * @param file CSV file of genes or MeSH terms
+     * @param type Search query type geneId|symbol|description|meshTreeId|meshId|name
+     * @return ResponseEntity containing search query, search results, and has more search results, or error
      */
-    private int getQueryOffset(Map<String, Object> body) {
-        try {
-            return (Integer) body.getOrDefault("queryOffset", 0);
-        } catch (Exception ex) {
-            logger.warn("Input queryOffset needs to be a long type " + body.get("queryOffset"));
-        }
-        return 0;
-    }
-
-    /*
-     * When I upload my CSV import file of genes or MeSH terms with the search query type,
-     * POST to /search/upload
-     * Request
-     * form-data
-     * Key  | Value
-     * ---------------
-     * file | CSV file
-     * type | geneId|symbol|description|meshTreeId|meshId|name
-     */
-    @ApiOperation(value = "Search results via CSV import file upload.")
     @PostMapping("/search/upload")
     public ResponseEntity<?> upload(@RequestParam("file") MultipartFile file, @RequestParam("type") String type) {
         LinkedHashMap<String, Object> response = new LinkedHashMap<>();
@@ -260,10 +195,28 @@ public class SearchController {
         }
     }
 
-    /*
-     * Validate the search body request.
+    /**
+     * Checks if the requestBody has the field <b>queryOffset</b>. If it exists returns its value otherwise returns 0;
+     *
+     * @param body Request body
+     * @return Query offset if set else 0
      */
-    public LinkedHashMap<String, Object> validate(Map<String, Object> body) {
+    private int getQueryOffset(Map<String, Object> body) {
+        try {
+            return (Integer) body.getOrDefault("queryOffset", 0);
+        } catch (Exception ex) {
+            logger.warn("Input queryOffset needs to be a long type " + body.get("queryOffset"));
+        }
+        return 0;
+    }
+
+    /**
+     * Validates the body request for searches.
+     *
+     * @param body Request body
+     * @return Response containing error if any
+     */
+    private LinkedHashMap<String, Object> validate(Map<String, Object> body) {
         LinkedHashMap<String, Object> response = new LinkedHashMap<>();
         if (!(body.containsKey("searchQuery"))) {
             response.put("error", "Missing search query.");
@@ -295,10 +248,14 @@ public class SearchController {
         return response;
     }
 
-    /*
-     * Update the response with the original search query and search results.
+    /**
+     * Updates the response with the search query, search results, and has more search results
+     *
+     * @param response    Response containing search query, search results, and has more search results
+     * @param searchQuery Search query
+     * @param offset      Offset for search results
      */
-    public void updateResponse(LinkedHashMap<String, Object> response, HashMap<String, Object> searchQuery, int offset) {
+    private void updateResponse(LinkedHashMap<String, Object> response, HashMap<String, Object> searchQuery, int offset) {
         List<GeneMeshterm> geneMeshterms = getGeneMeshterms(searchQuery, offset);
         List<GeneMeshtermView> geneMeshtermViews = new ArrayList<>();
         long i = offset;
@@ -321,10 +278,14 @@ public class SearchController {
         response.put("hasMoreResults", geneMeshterms.size() > searchResultLimit ? true : false);
     }
 
-    /*
-     * Get the list of gene and MeSH term results based on the search query.
+    /**
+     * Gets the list of gene to MeSH term pairs.
+     *
+     * @param searchQuery Search query
+     * @param offset      Offset for search results
+     * @return List of Gene to MeSH term pairs
      */
-    public List<GeneMeshterm> getGeneMeshterms(HashMap<String, Object> searchQuery, long offset) {
+    private List<GeneMeshterm> getGeneMeshterms(HashMap<String, Object> searchQuery, long offset) {
         List<String> geneIds = (ArrayList) searchQuery.get("geneId");
         List<String> symbols = (ArrayList) searchQuery.get("symbol");
         List<String> updatedSymbols = symbols.stream()
@@ -357,11 +318,14 @@ public class SearchController {
         return geneMeshterms;
     }
 
-    /*
-     * Update the search query list so that the mesh tree records with empty parent ids have "." before it
-     * (for example, "B50" -> ".B50") for findMeshIdsByMeshIdsOrNamesOrMeshTreeIds() method in MeshtermRepository.
+    /**
+     * Prepends a list of MeSH tree IDs for records that have empty parent tree IDs with a period
+     * (for example, "B50" -> ".B50") for findMeshIdsByMeshIdsOrNamesOrMeshTreeIds method in MeshtermRepository.
+     *
+     * @param meshTreeIds List of MeSH tree IDs
+     * @return Updated list of MeSH tree IDs
      */
-    public List<String> updateMeshTreeIds(List<String> meshTreeIds) {
+    private List<String> updateMeshTreeIds(List<String> meshTreeIds) {
         List<String> updatedMeshTreeIds = new ArrayList<>();
         for (String s : meshTreeIds) {
             String[] treeId = s.split("\\.");

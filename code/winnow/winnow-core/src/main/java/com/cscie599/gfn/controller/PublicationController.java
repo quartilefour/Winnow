@@ -5,8 +5,6 @@ import com.cscie599.gfn.entities.Publication;
 import com.cscie599.gfn.entities.PublicationAuthor;
 import com.cscie599.gfn.repository.PublicationRepository;
 import com.cscie599.gfn.views.PublicationView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +23,6 @@ import java.util.*;
 
 @RestController
 @RequestMapping("/api")
-@Api(value = "Searches", description = "Operations pertaining to publications in Gene Function Navigation")
 public class PublicationController {
 
     protected static final Log logger = LogFactory.getLog(PublicationController.class);
@@ -36,55 +33,12 @@ public class PublicationController {
     @Autowired
     PublicationRepository publicationRepository;
 
-    /*
-     * When I click the publications button in the search results page,
-     * POST to /publications
-     * Request
-     * {
-     *     "geneId": "geneId",
-     *     "meshId": "meshId"
-     * }
-     * Response
-     * {
-     *     "geneId": "geneId",
-     *     "meshId": "meshId",
-     *     "results": [
-     *         {
-     *             "publicationId": "publicationId1",
-     *             "completedDate": "completedDate1",
-     *             "dateRevised": "dateRevised1",
-     *             "title": "title1",
-     *             "authors": [
-     *                 {
-     *                     "foreName": "foreName1",
-     *                     "lastName": "lastName2"
-     *                 },
-     *                 {
-     *                     "foreName": "foreName1",
-     *                     "lastName": "lastName2"
-     *                 },
-     *             ]
-     *         }
-     *         {
-     *             "publicationId": "publicationId2",
-     *             "completedDate": "completedDate2",
-     *             "dateRevised": "dateRevised2",
-     *             "title": "title2",
-     *             "authors": [
-     *                 {
-     *                     "foreName": "foreName1",
-     *                     "lastName": "lastName2"
-     *                 },
-     *                 {
-     *                     "foreName": "foreName1",
-     *                     "lastName": "lastName2"
-     *                 },
-     *             ]
-     *         }
-     *     ]
-     * }
+    /**
+     * Retrieves all publications for a gene-MeSH term combination.
+     *
+     * @param body Request body containing a gene ID and a MeSH term ID
+     * @return ResponseEntity containing publications or error
      */
-    @ApiOperation(value = "View publications based on the gene and mesh term combination.")
     @PostMapping("/publications")
     public ResponseEntity<?> getAllPublications(@RequestBody Map<String, Object> body) {
         LinkedHashMap<String, Object> response = validate(body);
@@ -135,10 +89,13 @@ public class PublicationController {
         logger.info("taxIdsToProcess has been initialized with " + taxIdsToProcess);
     }
 
-    /*
-     * Validate the search body request.
+    /**
+     * Validates the body request for getAllPublications.
+     *
+     * @param body Request body
+     * @return Response containing error if any
      */
-    LinkedHashMap<String, Object> validate(Map<String, Object> body) {
+    private LinkedHashMap<String, Object> validate(Map<String, Object> body) {
         LinkedHashMap<String, Object> response = new LinkedHashMap<>();
         if (!(body.containsKey("geneId"))) {
             response.put("error", "Missing gene ID.");

@@ -5,7 +5,6 @@ import com.cscie599.gfn.service.EmailService;
 import com.cscie599.gfn.service.UserService;
 import com.cscie599.gfn.validator.UserValidator;
 import com.cscie599.gfn.views.UserView;
-import io.swagger.annotations.ApiOperation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -42,12 +41,11 @@ public class UserController {
     public static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
     /**
-     * Retrieve current user profile.
+     * Gets the current user's profile.
      *
-     * @param authentication Token for authentication request
+     * @param authentication Authentication token
      * @return User view containing user email, first name, last name
      */
-    @ApiOperation(value = "Retrieve current user profile.")
     @GetMapping("/profile")
     public UserView getProfile(Authentication authentication) {
         String userEmail = authentication.getPrincipal().toString();
@@ -60,14 +58,13 @@ public class UserController {
     }
 
     /**
-     * Update current user profile including user email, first name, and last name.
+     * Updates user profile.
      *
-     * @param user           Request body representing user for update
-     * @param authentication Token for authentication request
+     * @param user           RequestBody containing user email, first name, and last name
+     * @param authentication Authentication token
      * @param bindingResult  BindingResult containing errors if any
-     * @return ResponseEntity including user view and OK/Created or error
+     * @return ResponseEntity containing user view or error
      */
-    @ApiOperation(value = "Update current user profile including user email, first name, and last name.")
     @PutMapping("/profile")
     public ResponseEntity<?> updateProfile(@RequestBody User user, Authentication authentication, BindingResult bindingResult) {
         // Validate the request body before proceeding with the request
@@ -100,13 +97,12 @@ public class UserController {
     }
 
     /**
-     * Change current user password.
+     * Changes the user's current password.
      *
-     * @param body           Request body representing password update
-     * @param authentication Token for authentication request
-     * @return ResponseEntity including success or error
+     * @param body           RequestBody containing user password, new password, and confirm password
+     * @param authentication Authentication token
+     * @return ResponseEntity containing success or error
      */
-    @ApiOperation(value = "Change current user password.")
     @PatchMapping("/profile")
     public ResponseEntity<?> changePassword(@RequestBody Map<String, String> body, Authentication authentication) {
         String[] parameters = {"userPassword", "userPasswordNew", "passwordConfirm"};
@@ -127,13 +123,12 @@ public class UserController {
     }
 
     /**
-     * Register new user.
+     * Registers a new user with first name, last name, and email address.
      *
-     * @param user          Request body representing user for update
+     * @param user          RequestBody containing user email, password, confirm password, first name, and last name
      * @param bindingResult BindingResult containing errors if any
-     * @return ResponseEntity including success or error
+     * @return ResponseEntity containing success or error
      */
-    @ApiOperation(value = "Register new user.")
     @PostMapping("/registration")
     public ResponseEntity<?> registration(@RequestBody User user, BindingResult bindingResult) {
         // Validate the request body before proceeding with the request
@@ -153,12 +148,11 @@ public class UserController {
     }
 
     /**
-     * Send password reset link email to existing user email.
+     * Sends email with password reset link to the email address.
      *
-     * @param body    Request body containing user email
-     * @return ResponseEntity ResponseEntity including OK regardless whether an email was sent or not
+     * @param body RequestBody containing user email
+     * @return ResponseEntity containing success regardless whether an email was sent or not
      */
-    @ApiOperation(value = "Send password reset link email to existing user email.")
     @PostMapping("/forgot")
     public ResponseEntity<?> forgotPassword(@RequestBody Map<String, String> body) {
         String[] parameters = {"userEmail"};
@@ -183,12 +177,11 @@ public class UserController {
     }
 
     /**
-     * Check if token exists for user.
+     * Gets the HTTP status of password reset link including a token.
      *
      * @param token Token set for user email that forgot password
-     * @return ResponseEntity including OK or CONFLICT
+     * @return ResponseEntity containing OK or CONFLICT
      */
-    @ApiOperation(value = "Check if token exists for user.")
     @GetMapping("/reset")
     public ResponseEntity<?> checkPasswordResetLink(@RequestParam("token") String token) {
         User user = userService.findUserByResetToken(token);
@@ -201,12 +194,11 @@ public class UserController {
     }
 
     /**
-     * Reset password.
+     * Resets the user's current password with the new password based on the token.
      *
      * @param body Request body containing token, new user password, and confirm password
-     * @return ResponseEntity including success or failure
+     * @return ResponseEntity containing success or error
      */
-    @ApiOperation(value = "Reset password.")
     @PostMapping("/reset")
     public ResponseEntity<?> resetPassword(@RequestBody Map<String, String> body) {
         String[] parameters = {"token", "userPasswordNew", "passwordConfirm"};
@@ -233,11 +225,11 @@ public class UserController {
     }
 
     /**
-     * Check if the new password is valid or not when updating.
+     * Checks if the new password is valid or not when updating.
      *
      * @param userPasswordNew New user password
-     * @param passwordConfirm Confirm new user password
-     * @param response        Response to be returned in the ResponseEntity
+     * @param passwordConfirm Confirm password
+     * @param response        Response returned within the ResponseEntity
      * @return Boolean true if new password is invalid else false
      */
     private boolean isNewPasswordInvalid(String userPasswordNew, String passwordConfirm, HashMap<String, Object> response) {
@@ -252,9 +244,9 @@ public class UserController {
     }
 
     /**
-     * Validate body for required parameters.
+     * Validates request body for required parameters.
      *
-     * @param body       Request body containing parameters
+     * @param body       Request body
      * @param parameters Required parameters
      * @return Response containing error if any
      */

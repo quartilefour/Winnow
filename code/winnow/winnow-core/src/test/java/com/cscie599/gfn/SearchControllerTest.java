@@ -19,8 +19,6 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardOpenOption;
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -358,18 +356,6 @@ public class SearchControllerTest extends SearchControllerBaseTest {
         assertEquals(response.getStatusCode(), HttpStatus.CONFLICT);
         logger.info("Delete Search Response Body: \"" + response.getBody() + "\"");
         assertEquals("{\"error\":\"Invalid bookmark.\"}", response.getBody());
-    }
-
-    @Test
-    public void testUpdateMeshTreeIds() {
-        List<String> meshTreeIds = new ArrayList<>();
-        meshTreeIds.add("B01");
-        meshTreeIds.add("B01.050");
-        List<String> expectedMeshTreeIds = new ArrayList<>();
-        expectedMeshTreeIds.add(".B01");
-        expectedMeshTreeIds.add("B01.050");
-        List<String> updatedMeshTreeIds = searchController.updateMeshTreeIds(meshTreeIds);
-        assertEquals(expectedMeshTreeIds, updatedMeshTreeIds);
     }
 
 }

@@ -7,8 +7,6 @@ import com.cscie599.gfn.repository.MeshtermCategoryRepository;
 import com.cscie599.gfn.repository.MeshtermTreeRepository;
 import com.cscie599.gfn.views.MeshtermCategoryView;
 import com.cscie599.gfn.views.MeshtermTreeView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,7 +20,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @RestController
 @RequestMapping("/api")
-@Api(value = "MeSH terms", description = "Operations pertaining to MeSH terms in Gene Function Navigation")
 public class MeshtermController {
 
     private static final Log logger = LogFactory.getLog(MeshtermController.class);
@@ -35,7 +32,11 @@ public class MeshtermController {
 
     AtomicReference<Collection<MeshtermTreeView>> meshTermTreeView = new AtomicReference<>();
 
-    @ApiOperation(value = "View all MeSH term categories.", response = List.class)
+    /**
+     * Gets all MeSH term categories.
+     *
+     * @return List of all MeSH term category views
+     */
     @GetMapping("/meshterms/category")
     public List<MeshtermCategoryView> findAllCategories() {
         List<MeshtermCategory> meshtermCategories = meshtermCategoryRepository.findAll();
@@ -46,21 +47,35 @@ public class MeshtermController {
         return meshtermCategoryViews;
     }
 
-    @ApiOperation(value = "View all MeSH term tree records by tree node id starting with particular string.")
+    /**
+     * Gets tree records with tree node id starting with nodeid.
+     *
+     * @param nodeid Tree node ID
+     * @return List of MeSH term tree views
+     */
     @GetMapping("/meshterms/tree/nodeid/{nodeid}")
     public List<MeshtermTreeView> findAllTreesByTreeNodeIdStartingWith(@PathVariable String nodeid) {
         List<MeshtermTree> meshtermTrees = meshtermTreeRepository.findByTreeNodeIdStartingWithOrderByMeshtermTreePK(nodeid);
         return getMeshtermTreeViews(meshtermTrees);
     }
 
-    @ApiOperation(value = "View all MeSH term tree records that have particular parent id.")
+    /**
+     * Gets tree records with parent node id parentid.
+     *
+     * @param parentid Parent node ID
+     * @return List of MeSH term tree views
+     */
     @GetMapping("/meshterms/tree/parentid/{parentid}")
     public List<MeshtermTreeView> findAllTreesByParentNodeId(@PathVariable String parentid) {
         List<MeshtermTree> meshtermTrees = meshtermTreeRepository.findByTreeParentIdOrderByMeshtermTreePK(parentid);
         return getMeshtermTreeViews(meshtermTrees);
     }
 
-    @ApiOperation(value = "Returns all MeSH term tree records.")
+    /**
+     * Gets the entire MeSH term tree hierarchy as a nested object.
+     *
+     * @return Collection of all MeSH term tree views
+     */
     @GetMapping("/meshterms/tree")
     public Collection<MeshtermTreeView> findEntireTree() {
         if (meshTermTreeView.get() == null) {
@@ -74,6 +89,7 @@ public class MeshtermController {
     public void invalidate(){
         meshTermTreeView.set(null);
     }
+
     /**
      * Returns a collection of nested objects of {@href MeshtermTreeView} from the passed in query result and the category list.
      */
@@ -190,7 +206,13 @@ public class MeshtermController {
         return id.split("\\.")[0];
     }
 
-    public List<MeshtermTreeView> getMeshtermTreeViews(List<MeshtermTree> meshtermTrees) {
+    /**
+     * Returns a list of MeSH term tree views.
+     *
+     * @param meshtermTrees List of MeSH term trees
+     * @return List of MeSH term tree views
+     */
+    private List<MeshtermTreeView> getMeshtermTreeViews(List<MeshtermTree> meshtermTrees) {
         List<MeshtermTreeView> meshtermTreeViews = new ArrayList<>();
         for (MeshtermTree meshtermTree : meshtermTrees) {
             meshtermTreeViews.add(new MeshtermTreeView(meshtermTree.getMeshtermTreePK().getMeshId(),
@@ -202,7 +224,13 @@ public class MeshtermController {
         return meshtermTreeViews;
     }
 
-    public boolean meshtermTreehasChild(MeshtermTree meshtermTree) {
+    /**
+     * Checks if the MeSH term tree has at least one child.
+     *
+     * @param meshtermTree MeSH term tree record
+     * @return Boolean true if record has at least one child else false
+     */
+    private boolean meshtermTreehasChild(MeshtermTree meshtermTree) {
         String meshtermTreeId;
         if (meshtermTree.getMeshtermTreePK().getTreeParentId().isEmpty()) {
             meshtermTreeId = meshtermTree.getMeshtermTreePK().getTreeNodeId();

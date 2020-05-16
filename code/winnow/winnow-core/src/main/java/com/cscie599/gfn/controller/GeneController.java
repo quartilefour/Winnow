@@ -8,8 +8,6 @@ import com.cscie599.gfn.repository.GeneRepository;
 import com.cscie599.gfn.views.GeneDetailCoOccuringGeneView;
 import com.cscie599.gfn.views.GeneDetailMeshtermView;
 import com.cscie599.gfn.views.GeneView;
-import io.swagger.annotations.Api;
-import io.swagger.annotations.ApiOperation;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,7 +20,6 @@ import java.math.BigInteger;
 
 @RestController
 @RequestMapping("/api")
-@Api(value = "Genes", description = "Operations pertaining to genes in Gene Function Navigation")
 public class GeneController {
 
     @Value("${search.result.limit}")
@@ -34,13 +31,22 @@ public class GeneController {
     @Autowired
     GeneMeshtermRepository geneMeshtermRepository;
 
-    @ApiOperation(value = "Catch empty search")
+    /**
+     * Catches empty search.
+     *
+     * @return empty ArrayList
+     */
     @GetMapping("/genes/search/")
     public List<GeneView> findNone() {
         return new ArrayList<>();
     }
 
-    @ApiOperation(value = "Get genes whose id, symbol or description contain 'pattern'")
+    /**
+     * Gets gene IDs, symbols, or descriptions matching pattern.
+     *
+     * @param pattern Pattern for matching gene
+     * @return List of gene views for genes matching the pattern
+     */
     @GetMapping("/genes/search/{pattern}")
     public List<GeneView> findAllContaining(@PathVariable String pattern) {
         List<Gene> genes = geneRepository.findAllContaining(pattern.toLowerCase());
@@ -51,49 +57,12 @@ public class GeneController {
         return geneViews;
     }
 
-    /*
-     * When I click the link of a gene in the search results page,
-     * POST to /genes
-     * Request
-     * {
-     *     "geneId": geneId
-     * }
-     * Response
-     * {
-     *     "geneId": geneId,
-     *     "symbol": geneSymbol,
-     *     "description": geneDescription,
-     *     "meshResults": [
-     *         {
-     *             "meshId": "meshId1",
-     *             "name": "meshName1",
-     *             "publicationCount": "publicationCount",
-     *             "pvalue": "pValue"
-     *         },
-     *         {
-     *             "meshId": "meshId2",
-     *             "name": "meshName2",
-     *             "publicationCount": "publicationCount",
-     *             "pvalue": "pValue"
-     *         },
-     *     ],
-     *     "geneResults": [
-     *         {
-     *             "geneId": "geneId1",
-     *             "description": "geneDescription1",
-     *             "symbol": "geneSymbol1",
-     *             "publicationCount": "publicationCount"
-     *         },
-     *         {
-     *             "geneId": "geneId2",
-     *             "description": "geneDescription2",
-     *             "symbol": "geneSymbol2",
-     *             "publicationCount": "publicationCount"
-     *         },
-     *     ]
-     * }
+    /**
+     * Retrieves gene detail and MeSH terms enriched for publications and co-occurring genes in publications.
+     *
+     * @param body Request body containing gene ID
+     * @return ResponseEntity containing gene detail, MeSH terms enriched for publications, and co-occurring genes in publications
      */
-    @ApiOperation(value = "View gene detail including MeSH terms enriched for gene and co-occurring genes.")
     @PostMapping("/genes")
     public ResponseEntity<?> getGeneDetail(@RequestBody Map<String, Object> body) {
         // Validate the request body before proceeding with the request
@@ -140,10 +109,13 @@ public class GeneController {
         return new ResponseEntity<>(response, HttpStatus.OK);
     }
 
-    /*
-     * Validate the body request for getting the gene detail.
+    /**
+     * Validates the body request for getGeneDetail.
+     *
+     * @param body Request body
+     * @return Response containing error if any
      */
-    LinkedHashMap<String, Object> validate(Map<String, Object> body) {
+    private LinkedHashMap<String, Object> validate(Map<String, Object> body) {
         LinkedHashMap<String, Object> response = new LinkedHashMap<>();
         if (!(body.containsKey("geneId"))) {
             response.put("error", "Missing gene ID.");
